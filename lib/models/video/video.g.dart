@@ -6,14 +6,17 @@ part of 'video.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Video _$VideoFromJson(Map<String, dynamic> json) {
-  return Video(
-    videoPath: json['videoPath'] as String,
-    videoTitle: json['videoTitle'] as String,
+ExerciseSet _$ExcerciseSetFromJson(Map<String, dynamic> json) {
+  return ExerciseSet(
+    title: json['title'] as String,
+    description: json['description'] as String,
+    restPeriodAfter: json['restPeriodAfter'] as int,
   );
 }
 
-Map<String, dynamic> _$VideoToJson(Video instance) => <String, dynamic>{
-      'videoPath': instance.videoPath,
-      'videoTitle': instance.videoTitle,
+Map<String, dynamic> _$ExcerciseSetToJson(ExerciseSet instance) =>
+    <String, dynamic>{
+      'title': instance.title,
+      'description': instance.description,
+      'restPeriodAfter': instance.restPeriodAfter,
     };

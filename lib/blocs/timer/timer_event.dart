@@ -1,3 +1,4 @@
+/*
 part of 'timer_bloc.dart';
 
 abstract class TimerEvent extends Equatable {
@@ -33,3 +34,4 @@ class TimerTicked extends TimerEvent {
   @override
   String toString() => "TimerTicked { duration: $duration }";
 }
+*/

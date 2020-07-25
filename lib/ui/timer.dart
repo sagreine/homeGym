@@ -1,11 +1,17 @@
-import 'dart:io';
-
+//import 'dart:io';
+//import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/remote_media_player.dart';
-import 'package:home_gym/blocs/timer/timer_bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+//import 'package:home_gym/blocs/timer/timer_bloc.dart';
+//import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_fling/flutter_fling.dart';
+//import 'package:home_gym/blocs/video/video_bloc.dart';
+import 'package:home_gym/widgets/widgets.dart';
+import 'package:home_gym/models/models.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:provider/provider.dart';
+import 'dart:convert';
 
 //sagre.HomeGymTV.player
 
@@ -63,29 +69,49 @@ class _MyTimerState extends State<Timer> {
 
   castMediaTo(RemoteMediaPlayer player) async {
     _selectedPlayer = player;
+    var exercise = Provider.of<ExerciseSet>(context, listen: false);
 
 //String uri_to_try =  await rootBundle.loadString('assets/videos/science.mp4');
 
-    await FlutterFling.play((state, condition, position) {
-      setState(() {
-        _mediaState = '$state';
-        _mediaCondition = '$condition';
-        _mediaPosition = '$position';
-      });
-    },
-            player: _selectedPlayer,
-            mediaUri: "https://i.imgur.com/ACgwkoh.mp4",
-            //"https://i.imgur.com/USHrpMe.mp4",
-            //"file:///android_asset/flutter_assets/assets/videos/science.mp4",
-            //"https://ran.openstorage.host/dl/IJ4CGyOjKl1BjOyTAxFnGA/1565422242/889127646/5ca3772258fd44.44825533/D%20C%20Proper.mkv",
-            //(Uri.dataFromString("assets/videos/science.mp4")).toString(),
-            //uri_to_try,
+    await FlutterFling.play(
+      (state, condition, position) {
+        setState(() {
+          _mediaState = '$state';
+          _mediaCondition = '$condition';
+          _mediaPosition = '$position';
+        });
+      },
+      player: _selectedPlayer,
 
-            //(Uri.dataFromString("file:///android_asset/videos/science.mp4")).toString(),
-            //Uri.   .fromFile(new File("file:///android_asset/videos/science.mp4"));
+// this code will be used to https-isize and to not include json vars we don't want to send if the jsonkey Ignore doesn't work
+/*
+Map<String dynamic> mappedVehicle = vehicle.toJson();
 
-            mediaTitle:
-                "{'title':'Sample Video for Mary :)', 'description': 'Scott benching, 12/2020', 'type': 'video/'}")
+  vehicle.remove("tires");
+  vehicle.remove("seats");
+  // This will remove the fields 
+
+  var finalVehicle = jsonEncode(mappedVehicle);
+
+  final Response response = await put(
+      Uri.https(apiEndpoint, {"auth": authKey}),
+      headers: headers,
+      body: finalVehicle);
+*/
+
+      mediaUri: "https://i.imgur.com/ACgwkoh.mp4",
+      //"https://i.imgur.com/USHrpMe.mp4",
+      //"file:///android_asset/flutter_assets/assets/videos/science.mp4",
+      //"https://ran.openstorage.host/dl/IJ4CGyOjKl1BjOyTAxFnGA/1565422242/889127646/5ca3772258fd44.44825533/D%20C%20Proper.mkv",
+      //(Uri.dataFromString("assets/videos/science.mp4")).toString(),
+      //uri_to_try,
+
+      //(Uri.dataFromString("file:///android_asset/videos/science.mp4")).toString(),
+      //Uri.   .fromFile(new File("file:///android_asset/videos/science.mp4"));
+
+      mediaTitle: json.encode(exercise.toJson()),
+    )
+        //"{'title':'Sample Video for Mary :)', 'description': 'Scott benching, 12/2020', 'type': 'video/'}")
         .then((_) => getSelectedDevice());
   }
 
@@ -93,6 +119,19 @@ class _MyTimerState extends State<Timer> {
   void dispose() async {
     await FlutterFling.stopDiscoveryController();
     super.dispose();
+  }
+
+  Future getVideo() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.getVideo(source: ImageSource.camera);
+    var exercise = Provider.of<ExerciseSet>(context, listen: false);
+    //print("this is where the video is: " + pickedFile.path.toString());
+    exercise.videoPath = pickedFile.path.toString();
+    exercise.title = "a generated title";
+    exercise.description = 'Scott benching, 12-2020';
+    exercise.restPeriodAfter = 6;
+    print(json.encode(exercise.toJson()));
+    //.toString());
   }
 
   @override
@@ -131,6 +170,10 @@ class _MyTimerState extends State<Timer> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
           RaisedButton(
+            child: Text('Record Video'),
+            onPressed: () => getVideo(),
+          ),
+          RaisedButton(
             child: Text('Search'),
             onPressed: () => getCastDevices(),
           ),
@@ -152,10 +195,6 @@ class _MyTimerState extends State<Timer> {
             onPressed: () async => await FlutterFling.playPlayer(),
           ),
           RaisedButton(
-            child: Text('Pause Cast'),
-            onPressed: () async => await FlutterFling.pausePlayer(),
-          ),
-          RaisedButton(
             child: Text('Stop Cast'),
             onPressed: () async {
               await FlutterFling.stopPlayer();
@@ -168,29 +207,33 @@ class _MyTimerState extends State<Timer> {
             child: Text('Mute Cast'),
             onPressed: () async => await FlutterFling.mutePlayer(true),
           ),
-          RaisedButton(
-            child: Text('Unmute Cast'),
-            onPressed: () async => await FlutterFling.mutePlayer(false),
-          ),
-          RaisedButton(
-            child: Text('Forward Cast'),
-            onPressed: () async => await FlutterFling.seekForwardPlayer(),
-          ),
-          RaisedButton(
-            child: Text('Back Cast'),
-            onPressed: () async => await FlutterFling.seekBackPlayer(),
-          ),
-          RaisedButton(
-            child: Text('Seek to 30sec'),
-            onPressed: () async =>
-                await FlutterFling.seekToPlayer(position: 30000),
-          )
         ],
       ),
     );
   }
 }
 
+/*
+    return BlocBuilder<VideoBloc, VideoState>(builder: (context, state) {
+      final video = (state as VideoInitial);
+      return Scaffold(
+        body: Center(
+          child: FlatButton(
+            child: Text("lallala"),
+            onPressed: () {
+              BlocProvider.of<VideoBloc>(context).add(VideoRecordStart());
+            },
+          ),
+        ),
+      );
+    });
+*/
+/*
+    
+  
+  }
+}
+*/
 /*Stack(children: [
         //Background(),
        Column(
@@ -228,7 +271,7 @@ class _MyTimerState extends State<Timer> {
     );
   }
 }*/
-
+/*
 class Actions extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -288,7 +331,7 @@ class Actions extends StatelessWidget {
     return [];
   }
 }
-/*
+
 class Background extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -321,4 +364,5 @@ class Background extends StatelessWidget {
       backgroundColor: Colors.blue[50],
     );
   }
-}*/
+}
+*/

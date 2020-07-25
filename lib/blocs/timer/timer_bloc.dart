@@ -1,3 +1,4 @@
+/*
 import 'dart:async';
 import 'package:meta/meta.dart';
 import 'package:bloc/bloc.dart';
@@ -80,3 +81,4 @@ class TimerBloc extends Bloc<TimerEvent, TimerState> {
         : TimerRunComplete();
   }
 }
+*/
