@@ -74,7 +74,7 @@ class _MyTimerState extends State<Timer> {
       });
     },
             player: _selectedPlayer,
-            mediaUri: "https://i.imgur.com/7UcOMlN.mp4",
+            mediaUri: "https://i.imgur.com/ACgwkoh.mp4",
             //"https://i.imgur.com/USHrpMe.mp4",
             //"file:///android_asset/flutter_assets/assets/videos/science.mp4",
             //"https://ran.openstorage.host/dl/IJ4CGyOjKl1BjOyTAxFnGA/1565422242/889127646/5ca3772258fd44.44825533/D%20C%20Proper.mkv",
@@ -85,7 +85,7 @@ class _MyTimerState extends State<Timer> {
             //Uri.   .fromFile(new File("file:///android_asset/videos/science.mp4"));
 
             mediaTitle:
-                "{'title':'Sample Video for Mary :)', 'type': 'video/'}")
+                "{'title':'Sample Video for Mary :)', 'description': 'Scott benching, 12/2020', 'type': 'video/'}")
         .then((_) => getSelectedDevice());
   }
 

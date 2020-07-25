@@ -29,6 +29,9 @@ dependencies:
   meta: ^1.1.8
   flutter_fling: 
     path: C:\Users\sagre\Desktop\flutter_fling-master\flutter_fling-master
+  camera: ^0.5.8+2
+  path_provider: ^1.6.11
+  json_annotation: ^3.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -37,6 +40,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  json_serializable: ^3.3.0
+  build_runner: ^1.10.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
