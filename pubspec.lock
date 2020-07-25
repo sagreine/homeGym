@@ -319,6 +319,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "3.3.0"
+  local_assets_server:
+    dependency: "direct main"
+    description:
+      name: local_assets_server
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.2+5"
   logging:
     dependency: transitive
     description:

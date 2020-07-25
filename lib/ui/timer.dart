@@ -1,5 +1,8 @@
 //import 'dart:io';
 //import 'package:camera/camera.dart';
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/remote_media_player.dart';
@@ -10,10 +13,106 @@ import 'package:flutter_fling/flutter_fling.dart';
 import 'package:home_gym/widgets/widgets.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'dart:convert';
+import 'package:local_assets_server/local_assets_server.dart';
+import 'package:mime/mime.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 //sagre.HomeGymTV.player
+
+///This class allows you to create a simple server on `http://localhost:[port]/` in order to be able to load your assets file on a server. The default [port] value is `8080`.
+class InAppLocalhostServer {
+  HttpServer _server;
+  int _port = 8080;
+
+  InAppLocalhostServer({int port = 8080}) {
+    this._port = port;
+  }
+
+  ///Starts a server on http://localhost:[port]/.
+  ///
+  ///**NOTE for iOS**: For the iOS Platform, you need to add the `NSAllowsLocalNetworking` key with `true` in the `Info.plist` file (See [ATS Configuration Basics](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW35)):
+  ///```xml
+  ///<key>NSAppTransportSecurity</key>
+  ///<dict>
+  ///    <key>NSAllowsLocalNetworking</key>
+  ///    <true/>
+  ///</dict>
+  ///```
+  ///The `NSAllowsLocalNetworking` key is available since **iOS 10**.
+
+  Future<void> start() async {
+    if (this._server != null) {
+      throw Exception('Server already started on http://localhost:$_port');
+    }
+
+    var completer = Completer();
+
+    //runZoned(() {
+    HttpServer.bind('127.0.0.1', _port).then((server) {
+      print('Server running on http://localhost:' + _port.toString());
+
+      this._server = server;
+
+      server.listen((HttpRequest request) async {
+        var body = List<int>();
+        var path = request.requestedUri.path;
+        path = (path.startsWith('/')) ? path.substring(1) : path;
+        //path += (path.endsWith('/')) ? 'index.html' : '';
+
+        final directory = await getApplicationDocumentsDirectory();
+        path = directory.path + "/video1.txt";
+        print(path);
+
+        String path2 = "http://localhost:8080/video1.txt";
+        print(path2);
+        //File('$path/video1.txt');
+
+        try {
+          body = (await File(path).readAsBytes()).buffer.asUint8List();
+          //body = (await rootBundle.load(path))
+          //.buffer
+          //.asUint8List();
+        } catch (e) {
+          print(e.toString());
+          request.response.close();
+          return;
+        }
+
+        var contentType = ['text', 'html'];
+        if (!request.requestedUri.path.endsWith('/') &&
+            request.requestedUri.pathSegments.isNotEmpty) {
+          var mimeType =
+              lookupMimeType(request.requestedUri.path, headerBytes: body);
+          if (mimeType != null) {
+            contentType = mimeType.split('/');
+          }
+        }
+
+        request.response.headers.contentType =
+            ContentType(contentType[0], contentType[1], charset: 'utf-8');
+        request.response.add(body);
+        request.response.close();
+      });
+
+      completer.complete();
+    });
+    //}, onError: (e, stackTrace) => print('Error: $e $stackTrace'));
+
+    return completer.future;
+  }
+
+  ///Closes the server.
+  Future<void> close() async {
+    if (this._server != null) {
+      await this._server.close(force: true);
+      print('Server running on http://localhost:$_port closed');
+      this._server = null;
+    }
+  }
+}
 
 class Timer extends StatefulWidget {
   @override
@@ -32,13 +131,34 @@ class _MyTimerState extends State<Timer> {
   String _mediaCondition = "null";
   String _mediaPosition = "null";
   FlutterFling fling;
+  String address;
+  int port;
+  InAppLocalhostServer appServer; // = new InAppLocalhostServer();
 
   @override
   void initState() {
     super.initState();
+    //_initServer();
+
     fling = FlutterFling();
     getSelectedDevice();
   }
+/*
+  _initServer() async {
+    final server = new LocalAssetsServer(
+      address: InternetAddress.loopbackIPv4,
+      assetsBasePath: (await getApplicationDocumentsDirectory()).toString(),
+    );
+
+    final address = await server.serve();
+    String p = await readCounter();
+    print("read back value is: " + p);
+
+    setState(() {
+      this.address = address.address;
+      port = server.boundPort;
+    });
+  }*/
 
   getCastDevices() async {
     FlutterFling.startDiscoveryController((status, player) {
@@ -53,6 +173,40 @@ class _MyTimerState extends State<Timer> {
         });
       }
     });
+  }
+
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+    //final directory = 'http://$address:$port';
+    //return directory;
+  }
+
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/video1.txt');
+  }
+
+  Future<File> writeCounter(String counter) async {
+    final file = await _localFile;
+
+    // Write the file.
+    return file.writeAsString(counter);
+  }
+
+  Future<String> readCounter() async {
+    try {
+      final file = await _localFile;
+      print(file.path.toString());
+
+      // Read the file
+      String contents = await file.readAsString();
+      print(contents);
+      return contents;
+    } catch (e) {
+      // If encountering an error, return 0
+      return "error it didn't work";
+    }
   }
 
   getSelectedDevice() async {
@@ -99,7 +253,8 @@ Map<String dynamic> mappedVehicle = vehicle.toJson();
       body: finalVehicle);
 */
 
-      mediaUri: "https://i.imgur.com/ACgwkoh.mp4",
+      mediaUri: exercise.videoPath,
+      //"https://i.imgur.com/ACgwkoh.mp4",
       //"https://i.imgur.com/USHrpMe.mp4",
       //"file:///android_asset/flutter_assets/assets/videos/science.mp4",
       //"https://ran.openstorage.host/dl/IJ4CGyOjKl1BjOyTAxFnGA/1565422242/889127646/5ca3772258fd44.44825533/D%20C%20Proper.mkv",
@@ -119,18 +274,28 @@ Map<String dynamic> mappedVehicle = vehicle.toJson();
   void dispose() async {
     await FlutterFling.stopDiscoveryController();
     super.dispose();
+    appServer.close();
   }
 
   Future getVideo() async {
     final picker = ImagePicker();
     final pickedFile = await picker.getVideo(source: ImageSource.camera);
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
-    //print("this is where the video is: " + pickedFile.path.toString());
+    // placeholders for now.
     exercise.videoPath = pickedFile.path.toString();
     exercise.title = "a generated title";
     exercise.description = 'Scott benching, 12-2020';
     exercise.restPeriodAfter = 6;
     print(json.encode(exercise.toJson()));
+    //writeCounter(pickedFile.readAsBytes());
+    writeCounter("testvalue");
+    appServer = new InAppLocalhostServer();
+    await appServer.start();
+    address = "localhost";
+    port = 8080;
+    //String p = await readCounter();
+    //print("read back value is: " + p);
+    //print('http://$address:$port');
     //.toString());
   }
 
