@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:video_compress/video_compress.dart';
 
 void createDatabaseRecord(ExerciseSet exercise) async {
   /*await databaseReference.collection("VIDEOS").document("2").setData({
