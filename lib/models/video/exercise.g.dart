@@ -13,6 +13,8 @@ ExerciseSet _$ExerciseSetFromJson(Map<String, dynamic> json) {
     description: json['description'] as String,
     restPeriodAfter: json['restPeriodAfter'] as int,
     type: json['type'] as String,
+    weight: json['weight'] as int,
+    reps: json['reps'] as int,
   );
 }
 
@@ -23,4 +25,6 @@ Map<String, dynamic> _$ExerciseSetToJson(ExerciseSet instance) =>
       'description': instance.description,
       'type': instance.type,
       'restPeriodAfter': instance.restPeriodAfter,
+      'weight': instance.weight,
+      'reps': instance.reps,
     };
