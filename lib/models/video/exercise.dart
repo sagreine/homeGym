@@ -16,13 +16,18 @@ class ExerciseSet extends ChangeNotifier {
   // TV app uses this to pick vidoes - for now
   String type;
   int restPeriodAfter;
+  int weight;
+  int reps;
 
-  ExerciseSet(
-      {this.videoPath,
-      this.title,
-      this.description,
-      this.restPeriodAfter,
-      this.type});
+  ExerciseSet({
+    this.videoPath,
+    this.title,
+    this.description,
+    this.restPeriodAfter,
+    this.type,
+    this.weight,
+    this.reps,
+  });
 
   factory ExerciseSet.fromJson(Map<String, dynamic> json) =>
       _$ExerciseSetFromJson(json);
@@ -36,5 +41,7 @@ class ExerciseSet extends ChangeNotifier {
         description,
         type,
         restPeriodAfter,
+        reps,
+        weight,
       ];
 }

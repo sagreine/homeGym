@@ -10,6 +10,13 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 class HomeController {
+  TextEditingController formControllerTitle = new TextEditingController();
+  TextEditingController formControllerDescription = new TextEditingController();
+  TextEditingController formControllerReps = new TextEditingController();
+  TextEditingController formControllerWeight = new TextEditingController();
+  TextEditingController formControllerRestInterval =
+      new TextEditingController();
+
   Future<String> getVideo(bool isLocalTesting) async {
     // placeholders for now.
     /*
