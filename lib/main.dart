@@ -4,7 +4,7 @@ import 'package:home_gym/models/models.dart';
 //import 'package:home_gym/blocs/blocs.dart';
 //import 'package:home_gym/blocs/timer/timer_bloc.dart';
 //import 'package:home_gym/ticker.dart';
-import 'package:home_gym/ui/timer.dart';
+import 'package:home_gym/views/home.dart';
 import 'package:provider/provider.dart';
 //import 'package:home_gym/simple_bloc_delegate.dart';
 //import 'package:bloc/bloc.dart';
@@ -30,8 +30,14 @@ import 'package:provider/provider.dart';
 
 void main() {
   //Bloc.observer = SimpleBlocObserver();
-  runApp(ChangeNotifierProvider(
-      create: (context) => ExerciseSet(), child: MyApp()));
+  runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (context) => ExerciseSet(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => FlingMediaModel(),
+    ),
+  ], child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -44,7 +50,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       title: 'Home Gym',
-      home: Timer(),
+      home: Home(),
 
       /*BlocProvider(
         create: (context) => VideoBloc(),

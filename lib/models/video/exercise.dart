@@ -1,14 +1,7 @@
-import 'package:equatable/equatable.dart';
 import 'package:flutter/cupertino.dart';
-//import 'package:camera/camera.dart';
-//import 'package:flutter/material.dart';
-//import 'dart:async';
-//import 'dart:io';
-//import 'package:path_provider/path_provider.dart';
-
 import 'package:json_annotation/json_annotation.dart';
 
-part 'video.g.dart';
+part 'exercise.g.dart';
 
 //? not sure
 
@@ -36,7 +29,7 @@ class ExerciseSet extends ChangeNotifier {
 
   Map<String, dynamic> toJson() => _$ExerciseSetToJson(this);
 
-  @override
+  //@override
   List<Object> get props => [
         videoPath,
         title,
