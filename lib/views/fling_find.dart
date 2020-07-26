@@ -18,7 +18,7 @@ class FlingFinderState extends State<FlingFinder> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home Gym')),
+      appBar: AppBar(title: Text('Home Gym TV')),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,

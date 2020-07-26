@@ -17,20 +17,14 @@ class HomeController {
   TextEditingController formControllerRestInterval =
       new TextEditingController();
 
-  Future<String> getVideo(bool isLocalTesting) async {
-    // placeholders for now.
-    /*
-  exercise.title = "sample_video23456";
-  exercise.description = 'Scott benching, 12-2020';
-  exercise.restPeriodAfter = 625;
-  exercise.type = 'video/';
-  */
+  Future<String> getVideo(bool isLocalTesting, BuildContext context) async {
+    var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var url;
-
     if (!isLocalTesting) {
       final picker = ImagePicker();
       final pickedFile = await picker.getVideo(source: ImageSource.camera);
       url = await uploadToCloudStorage(File(pickedFile.path));
+      exercise.videoPath = url;
     } else {
       url = "https://i.imgur.com/ACgwkoh.mp4";
     }
@@ -58,7 +52,7 @@ class HomeController {
         // });
       },
       player: player,
-      mediaUri: await getVideo(true),
+      mediaUri: await getVideo(true, context),
       mediaTitle: json.encode(exercise.toJson()),
     );
     ////// can't get this to work? not sure what it does?
