@@ -18,11 +18,14 @@ import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'package:local_assets_server/local_assets_server.dart';
 import 'package:mime/mime.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/services.dart' show rootBundle;
 
 //sagre.HomeGymTV.player
 
 ///This class allows you to create a simple server on `http://localhost:[port]/` in order to be able to load your assets file on a server. The default [port] value is `8080`.
+/*
 class InAppLocalhostServer {
   HttpServer _server;
   int _port = 8080;
@@ -30,19 +33,19 @@ class InAppLocalhostServer {
   InAppLocalhostServer({int port = 8080}) {
     this._port = port;
   }
-
-  ///Starts a server on http://localhost:[port]/.
-  ///
-  ///**NOTE for iOS**: For the iOS Platform, you need to add the `NSAllowsLocalNetworking` key with `true` in the `Info.plist` file (See [ATS Configuration Basics](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW35)):
-  ///```xml
-  ///<key>NSAppTransportSecurity</key>
-  ///<dict>
-  ///    <key>NSAllowsLocalNetworking</key>
-  ///    <true/>
-  ///</dict>
-  ///```
-  ///The `NSAllowsLocalNetworking` key is available since **iOS 10**.
-
+*/
+///Starts a server on http://localhost:[port]/.
+///
+///**NOTE for iOS**: For the iOS Platform, you need to add the `NSAllowsLocalNetworking` key with `true` in the `Info.plist` file (See [ATS Configuration Basics](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW35)):
+///```xml
+///<key>NSAppTransportSecurity</key>
+///<dict>
+///    <key>NSAllowsLocalNetworking</key>
+///    <true/>
+///</dict>
+///```
+///The `NSAllowsLocalNetworking` key is available since **iOS 10**.
+/*
   Future<void> start() async {
     if (this._server != null) {
       throw Exception('Server already started on http://localhost:$_port');
@@ -112,7 +115,7 @@ class InAppLocalhostServer {
       this._server = null;
     }
   }
-}
+}*/
 
 class Timer extends StatefulWidget {
   @override
@@ -133,7 +136,37 @@ class _MyTimerState extends State<Timer> {
   FlutterFling fling;
   String address;
   int port;
-  InAppLocalhostServer appServer; // = new InAppLocalhostServer();
+  //InAppLocalhostServer appServer; // = new InAppLocalhostServer();
+
+  final databaseReference = Firestore.instance;
+//  final storageReference = FirebaseStorage.instance;
+
+  void createDatabaseRecord([PickedFile pickedFile]) async {
+    await databaseReference.collection("VIDEOS").document("2").setData({
+      'title': 'Mastering Flutter',
+      'description': 'Programming Guide for Dart',
+      'videoItself': pickedFile,
+    });
+
+    DocumentReference ref = await databaseReference.collection("VIDEOS").add({
+      'title': 'Flutter in Action',
+      'description': 'Complete Programming Guide to learn Flutter'
+    });
+    print(ref.documentID);
+  }
+
+  Future<String> uploadToCloudStorage(File fileToUpload) async {
+    final StorageReference firebaseStorageRef =
+        FirebaseStorage.instance.ref().child("sample_video");
+    StorageUploadTask uploadTask = firebaseStorageRef.putFile(fileToUpload);
+    StorageTaskSnapshot storageSnapshot = await uploadTask.onComplete;
+    var downloadUrl = await storageSnapshot.ref.getDownloadURL();
+    if (uploadTask.isComplete) {
+      var url = downloadUrl.toString();
+      return url;
+    }
+    return null;
+  }
 
   @override
   void initState() {
@@ -253,7 +286,7 @@ Map<String dynamic> mappedVehicle = vehicle.toJson();
       body: finalVehicle);
 */
 
-      mediaUri: exercise.videoPath,
+      mediaUri: await getVideo(), //exercise.videoPath,
       //"https://i.imgur.com/ACgwkoh.mp4",
       //"https://i.imgur.com/USHrpMe.mp4",
       //"file:///android_asset/flutter_assets/assets/videos/science.mp4",
@@ -274,25 +307,30 @@ Map<String dynamic> mappedVehicle = vehicle.toJson();
   void dispose() async {
     await FlutterFling.stopDiscoveryController();
     super.dispose();
-    appServer.close();
+    //appServer.close();
   }
 
-  Future getVideo() async {
+  Future<String> getVideo() async {
     final picker = ImagePicker();
     final pickedFile = await picker.getVideo(source: ImageSource.camera);
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     // placeholders for now.
     exercise.videoPath = pickedFile.path.toString();
-    exercise.title = "a generated title";
+    exercise.title = "sample_video2";
     exercise.description = 'Scott benching, 12-2020';
     exercise.restPeriodAfter = 6;
     print(json.encode(exercise.toJson()));
     //writeCounter(pickedFile.readAsBytes());
     writeCounter("testvalue");
-    appServer = new InAppLocalhostServer();
-    await appServer.start();
+    //appServer = new InAppLocalhostServer();
+    //await appServer.start();
     address = "localhost";
     port = 8080;
+    createDatabaseRecord();
+    var url = await uploadToCloudStorage(File(pickedFile.path));
+    print(url);
+    return url;
+
     //String p = await readCounter();
     //print("read back value is: " + p);
     //print('http://$address:$port');
