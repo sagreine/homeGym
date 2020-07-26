@@ -141,17 +141,26 @@ class _MyTimerState extends State<Timer> {
   final databaseReference = Firestore.instance;
 //  final storageReference = FirebaseStorage.instance;
 
-  void createDatabaseRecord([PickedFile pickedFile]) async {
-    await databaseReference.collection("VIDEOS").document("2").setData({
+  // ExcericseSet exercise
+  void createDatabaseRecord(ExerciseSet exercise) async {
+    /*await databaseReference.collection("VIDEOS").document("2").setData({
       'title': 'Mastering Flutter',
       'description': 'Programming Guide for Dart',
       'videoItself': pickedFile,
-    });
+    });*/
 
     DocumentReference ref = await databaseReference.collection("VIDEOS").add({
       'title': 'Flutter in Action',
       'description': 'Complete Programming Guide to learn Flutter'
     });
+
+    //untested
+    await databaseReference.collection("VIDEOS").add(
+          Map<String, dynamic>.from((exercise.toJson())),
+
+          //'title': 'Flutter in Action',
+          //'description': 'Complete Programming Guide to learn Flutter'
+        );
     print(ref.documentID);
   }
 
@@ -315,20 +324,15 @@ Map<String dynamic> mappedVehicle = vehicle.toJson();
     final pickedFile = await picker.getVideo(source: ImageSource.camera);
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     // placeholders for now.
-    exercise.videoPath = pickedFile.path.toString();
-    exercise.title = "sample_video2";
+
+    exercise.title = "sample_video23456";
     exercise.description = 'Scott benching, 12-2020';
     exercise.restPeriodAfter = 6;
-    print(json.encode(exercise.toJson()));
-    //writeCounter(pickedFile.readAsBytes());
-    writeCounter("testvalue");
-    //appServer = new InAppLocalhostServer();
-    //await appServer.start();
-    address = "localhost";
-    port = 8080;
-    createDatabaseRecord();
+    exercise.type = 'video/';
     var url = await uploadToCloudStorage(File(pickedFile.path));
-    print(url);
+    exercise.videoPath = url;
+    print(json.encode(exercise.toJson()));
+    createDatabaseRecord(exercise);
     return url;
 
     //String p = await readCounter();
@@ -372,10 +376,6 @@ Map<String dynamic> mappedVehicle = vehicle.toJson();
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: <Widget>[
-          RaisedButton(
-            child: Text('Record Video'),
-            onPressed: () => getVideo(),
-          ),
           RaisedButton(
             child: Text('Search'),
             onPressed: () => getCastDevices(),
