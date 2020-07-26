@@ -149,11 +149,6 @@ class _MyTimerState extends State<Timer> {
       'videoItself': pickedFile,
     });*/
 
-    DocumentReference ref = await databaseReference.collection("VIDEOS").add({
-      'title': 'Flutter in Action',
-      'description': 'Complete Programming Guide to learn Flutter'
-    });
-
     //untested
     await databaseReference.collection("VIDEOS").add(
           Map<String, dynamic>.from((exercise.toJson())),
@@ -161,7 +156,6 @@ class _MyTimerState extends State<Timer> {
           //'title': 'Flutter in Action',
           //'description': 'Complete Programming Guide to learn Flutter'
         );
-    print(ref.documentID);
   }
 
   Future<String> uploadToCloudStorage(File fileToUpload) async {
@@ -278,34 +272,7 @@ class _MyTimerState extends State<Timer> {
         });
       },
       player: _selectedPlayer,
-
-// this code will be used to https-isize and to not include json vars we don't want to send if the jsonkey Ignore doesn't work
-/*
-Map<String dynamic> mappedVehicle = vehicle.toJson();
-
-  vehicle.remove("tires");
-  vehicle.remove("seats");
-  // This will remove the fields 
-
-  var finalVehicle = jsonEncode(mappedVehicle);
-
-  final Response response = await put(
-      Uri.https(apiEndpoint, {"auth": authKey}),
-      headers: headers,
-      body: finalVehicle);
-*/
-
-      mediaUri: await getVideo(), //exercise.videoPath,
-      //"https://i.imgur.com/ACgwkoh.mp4",
-      //"https://i.imgur.com/USHrpMe.mp4",
-      //"file:///android_asset/flutter_assets/assets/videos/science.mp4",
-      //"https://ran.openstorage.host/dl/IJ4CGyOjKl1BjOyTAxFnGA/1565422242/889127646/5ca3772258fd44.44825533/D%20C%20Proper.mkv",
-      //(Uri.dataFromString("assets/videos/science.mp4")).toString(),
-      //uri_to_try,
-
-      //(Uri.dataFromString("file:///android_asset/videos/science.mp4")).toString(),
-      //Uri.   .fromFile(new File("file:///android_asset/videos/science.mp4"));
-
+      mediaUri: await getVideo(true),
       mediaTitle: json.encode(exercise.toJson()),
     )
         //"{'title':'Sample Video for Mary :)', 'description': 'Scott benching, 12/2020', 'type': 'video/'}")
@@ -319,9 +286,7 @@ Map<String dynamic> mappedVehicle = vehicle.toJson();
     //appServer.close();
   }
 
-  Future<String> getVideo() async {
-    final picker = ImagePicker();
-    final pickedFile = await picker.getVideo(source: ImageSource.camera);
+  Future<String> getVideo(bool is_local_testing) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     // placeholders for now.
 
@@ -329,16 +294,21 @@ Map<String dynamic> mappedVehicle = vehicle.toJson();
     exercise.description = 'Scott benching, 12-2020';
     exercise.restPeriodAfter = 6;
     exercise.type = 'video/';
-    var url = await uploadToCloudStorage(File(pickedFile.path));
-    exercise.videoPath = url;
-    print(json.encode(exercise.toJson()));
-    createDatabaseRecord(exercise);
-    return url;
+    var url;
 
-    //String p = await readCounter();
-    //print("read back value is: " + p);
-    //print('http://$address:$port');
-    //.toString());
+    if (!is_local_testing) {
+      final picker = ImagePicker();
+      final pickedFile = await picker.getVideo(source: ImageSource.camera);
+      url = await uploadToCloudStorage(File(pickedFile.path));
+      exercise.videoPath = url;
+      createDatabaseRecord(exercise);
+    } else {
+      url = "https://i.imgur.com/ACgwkoh.mp4";
+    }
+
+    print(json.encode(exercise.toJson()));
+    //
+    return url;
   }
 
   @override
