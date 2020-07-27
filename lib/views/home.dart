@@ -221,31 +221,26 @@ class _HomeState extends State<Home> {
                             ),
                           ],
                         ),
+                        // we don't use the data here so it is wasteful to build a widget...
                         Consumer<ExerciseSet>(
                           builder: (context, thisSet, child) {
-                            thisSet.description =
-                                homeController.formControllerDescription.text;
-                            thisSet.title =
-                                homeController.formControllerTitle.text;
-                            // first time through set to 0, otherwise parse the int.
-                            thisSet.restPeriodAfter = homeController
-                                        .formControllerRestInterval.text ==
-                                    ""
-                                ? 0
-                                : int.parse(homeController
-                                    .formControllerRestInterval.text);
-                            thisSet.weight = homeController
-                                        .formControllerWeight.text ==
-                                    ""
-                                ? 0
-                                : int.parse(
-                                    homeController.formControllerWeight.text);
-                            thisSet.type = "video/";
                             return RaisedButton(
                               onPressed: () {
                                 if (_formkey.currentState.validate()) {
                                   print("valid form");
                                   if (flingy.selectedPlayer != null) {
+                                    thisSet.updateExercise(
+                                      title: homeController
+                                          .formControllerTitle.text,
+                                      description: homeController
+                                          .formControllerDescription.text,
+                                      reps: int.parse(homeController
+                                          .formControllerReps.text),
+                                      weight: int.parse(homeController
+                                          .formControllerWeight.text),
+                                      restPeriodAfter: int.parse(homeController
+                                          .formControllerRestInterval.text),
+                                    );
                                     homeController.castMediaTo(
                                         flingy.selectedPlayer, context);
                                   } else {

@@ -29,7 +29,6 @@ dependencies:
   meta: ^1.1.8
   flutter_fling: 
     path: C:\Users\sagre\Desktop\flutter_fling-master\flutter_fling-master
-  camera: ^0.5.8+2
   path_provider: ^1.6.11
   json_annotation: ^3.0.1
   provider: ^4.3.1

@@ -5,22 +5,14 @@ import 'package:home_gym/models/models.dart';
 import 'package:video_compress/video_compress.dart';
 
 void createDatabaseRecord(ExerciseSet exercise) async {
-  /*await databaseReference.collection("VIDEOS").document("2").setData({
-      'title': 'Mastering Flutter',
-      'description': 'Programming Guide for Dart',
-      'videoItself': pickedFile,
-    });*/
-
-  //untested
+  // would put everyone in their own bucket and manage that via IAM
   final databaseReference = Firestore.instance;
   await databaseReference.collection("VIDEOS").add(
         Map<String, dynamic>.from((exercise.toJson())),
-
-        //'title': 'Flutter in Action',
-        //'description': 'Complete Programming Guide to learn Flutter'
       );
 }
 
+//TODO: use title of video or something, not sample_video
 Future<String> uploadToCloudStorage(File fileToUpload) async {
   final StorageReference firebaseStorageRef =
       FirebaseStorage.instance.ref().child("sample_video");

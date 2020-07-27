@@ -47,11 +47,13 @@ class FlingFinderState extends State<FlingFinder> {
                         : flingy.flingDevices.length,
                     itemBuilder: (context, index) {
                       return ListTile(
-                        title: Text(flingy.flingDevices[index].name),
-                        subtitle: Text(flingy.flingDevices[index].uid),
+                        title: Text(flingy.flingDevices.elementAt(index).name),
+                        subtitle:
+                            Text(flingy.flingDevices.elementAt(index).uid),
                         onTap: () => {
                           setState(() {
-                            flingy.selectedPlayer = flingy.flingDevices[index];
+                            flingy.selectedPlayer =
+                                flingy.flingDevices.elementAt(index);
                           })
                         },
                       );
@@ -70,7 +72,7 @@ class FlingFinderState extends State<FlingFinder> {
                       await FlutterFling.stopDiscoveryController();
                       setState(() {
                         // call a Controller function to do this instead.....
-                        flingy.flingDevices = List();
+                        flingy.flingDevices = Set();
                         flingy.mediaState = 'null';
                         flingy.mediaCondition = 'null';
                         flingy.mediaPosition = '0';

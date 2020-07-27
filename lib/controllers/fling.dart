@@ -13,17 +13,15 @@ class FlingController {
     var prov = Provider.of<FlingMediaModel>(context, listen: false);
 
     await FlutterFling.startDiscoveryController((status, player) {
-      prov.flingDevices = List();
+      if (prov == null) {
+        prov.flingDevices = Set();
+      }
       if (status == PlayerDiscoveryStatus.Found) {
-        //setState(() {
         prov.addFlingDevices(player);
       } else {
-        //setState(() {
         prov.removeFlingDevice(player);
       }
-      //);
     });
-    //});
   }
 
   getSelectedDevice(BuildContext context) async {
@@ -33,9 +31,7 @@ class FlingController {
     } on PlatformException {
       print('Failed to get selected device');
     }
-    //setState(() {
     Provider.of<FlingMediaModel>(context, listen: false).selectedPlayer =
         selectedDevice;
-    //});
   }
 }

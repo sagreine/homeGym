@@ -17,6 +17,7 @@ class HomeController {
   TextEditingController formControllerRestInterval =
       new TextEditingController();
 
+  //TODO this doesn't bring in the other context / ExerciseSet values so look into that..
   Future<String> getVideo(bool isLocalTesting, BuildContext context) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var url;
@@ -25,6 +26,7 @@ class HomeController {
       final pickedFile = await picker.getVideo(source: ImageSource.camera);
       url = await uploadToCloudStorage(File(pickedFile.path));
       exercise.videoPath = url;
+      createDatabaseRecord(exercise);
     } else {
       url = "https://i.imgur.com/ACgwkoh.mp4";
     }
@@ -34,7 +36,7 @@ class HomeController {
   void updateExercise() {
     //exercise.videoPath = url;
     //print(json.encode(exercise.toJson()));
-    //createDatabaseRecord(exercise);
+    //
   }
 
   castMediaTo(RemoteMediaPlayer player, BuildContext context) async {

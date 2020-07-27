@@ -29,6 +29,21 @@ class ExerciseSet extends ChangeNotifier {
     this.reps,
   });
 
+  void updateExercise(
+      {String title,
+      String description,
+      int restPeriodAfter,
+      int weight,
+      int reps}) {
+    this.title = title;
+    this.description = description;
+    this.restPeriodAfter = restPeriodAfter;
+    this.weight = weight;
+    this.reps = reps;
+    this.type = "video/";
+    notifyListeners();
+  }
+
   factory ExerciseSet.fromJson(Map<String, dynamic> json) =>
       _$ExerciseSetFromJson(json);
 

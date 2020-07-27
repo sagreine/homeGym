@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_fling/remote_media_player.dart';
 
 class FlingMediaModel extends ChangeNotifier {
-  List<RemoteMediaPlayer> flingDevices;
+  Set<RemoteMediaPlayer> flingDevices;
   RemoteMediaPlayer selectedPlayer;
   String mediaState;
   String mediaCondition;
@@ -23,7 +23,9 @@ class FlingMediaModel extends ChangeNotifier {
       this.selectedPlayer,
       this.mediaCondition,
       this.mediaPosition,
-      this.mediaState});
+      this.mediaState}) {
+    flingDevices = Set();
+  }
 
   //@override
   List<Object> get props =>
