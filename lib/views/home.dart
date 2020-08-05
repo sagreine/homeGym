@@ -23,7 +23,9 @@ class _HomeState extends State<Home> {
   HomeController homeController = HomeController();
   final _formkey = GlobalKey<FormState>();
 
+  // i don't know if we need these? shouldn't, ideally..
   FlutterFling fling;
+  ExerciseDay exerciseDay;
   String address;
   int port;
 
@@ -222,42 +224,47 @@ class _HomeState extends State<Home> {
                           ],
                         ),
                         // we don't use the data here so it is wasteful to build a widget...
-                        Consumer<ExerciseSet>(
-                          builder: (context, thisSet, child) {
-                            return RaisedButton(
-                              onPressed: () {
-                                if (_formkey.currentState.validate()) {
-                                  print("valid form");
-                                  if (flingy.selectedPlayer != null) {
-                                    thisSet.updateExercise(
-                                      title: homeController
-                                          .formControllerTitle.text,
-                                      description: homeController
-                                          .formControllerDescription.text,
-                                      reps: int.parse(homeController
-                                          .formControllerReps.text),
-                                      weight: int.parse(homeController
-                                          .formControllerWeight.text),
-                                      restPeriodAfter: int.parse(homeController
-                                          .formControllerRestInterval.text),
-                                    );
-                                    homeController.castMediaTo(
-                                        flingy.selectedPlayer, context);
-                                  } else {
-                                    print(
-                                        "form is valid but no fling player selected. launching settings");
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute<void>(
-                                          builder: (BuildContext context) =>
-                                              FlingFinder()),
-                                    );
+                        Consumer<ExerciseDay>(
+                            builder: (context, thisSet, child) {
+                          return Consumer<ExerciseSet>(
+                            builder: (context, thisSet, child) {
+                              return RaisedButton(
+                                onPressed: () {
+                                  if (_formkey.currentState.validate()) {
+                                    print("valid form");
+                                    if (flingy.selectedPlayer != null) {
+                                      thisSet.updateExercise(
+                                        title: homeController
+                                            .formControllerTitle.text,
+                                        description: homeController
+                                            .formControllerDescription.text,
+                                        reps: int.parse(homeController
+                                            .formControllerReps.text),
+                                        weight: int.parse(homeController
+                                            .formControllerWeight.text),
+                                        restPeriodAfter: int.parse(
+                                            homeController
+                                                .formControllerRestInterval
+                                                .text),
+                                      );
+                                      homeController.castMediaTo(
+                                          flingy.selectedPlayer, context);
+                                    } else {
+                                      print(
+                                          "form is valid but no fling player selected. launching settings");
+                                      Navigator.of(context).push(
+                                        MaterialPageRoute<void>(
+                                            builder: (BuildContext context) =>
+                                                FlingFinder()),
+                                      );
+                                    }
                                   }
-                                }
-                              },
-                              child: Text("Record and cast"),
-                            );
-                          },
-                        ),
+                                },
+                                child: Text("Record and cast"),
+                              );
+                            },
+                          );
+                        }),
                       ],
                     ),
                   ),
@@ -266,18 +273,15 @@ class _HomeState extends State<Home> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     RaisedButton(
-                      child: Text('Play Cast'),
-                      onPressed: () async => await FlutterFling.playPlayer(),
-                    ),
+                        child: Text('Get Exercises'),
+                        onPressed: () {
+                          homeController.getExercises(context);
+                        }),
                     RaisedButton(
-                      child: Text('Stop Cast'),
-                      onPressed: () async {
-                        await FlutterFling.stopPlayer();
-                        setState(() {
-                          flingy.flingDevices = null;
-                        });
-                      },
-                    ),
+                        child: Text('Next Exercise'),
+                        onPressed: () {
+                          homeController.nextExercise();
+                        }),
                   ],
                 ),
               ],

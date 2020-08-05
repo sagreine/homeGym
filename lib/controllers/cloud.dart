@@ -4,6 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:video_compress/video_compress.dart';
 
+//TODO: this should be a class?
+
 void createDatabaseRecord(ExerciseSet exercise) async {
   // would put everyone in their own bucket and manage that via IAM
   final databaseReference = Firestore.instance;
