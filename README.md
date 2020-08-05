@@ -1,16 +1,8 @@
 # home_gym
 
-A new Flutter project.
+Pairs with HomeGymTV
 
-## Getting Started
+## what it is
+this is me learning flutter + android (via android TV which is fun) + google cloud + some machine learning things eventually + fling/cast/etc.
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
-
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+feel free to jump in if you want. i'm making a mess of it but having fun along the way.
