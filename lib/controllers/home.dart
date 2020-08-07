@@ -37,6 +37,18 @@ class HomeController {
     return url;
   }
 
+  // update our model.
+  void updateThisExercise(context) {
+    var thisSet = Provider.of<ExerciseSet>(context, listen: false);
+    thisSet.updateExercise(
+        title: formControllerTitle.text,
+        description: formControllerDescription.text,
+        reps: int.parse(formControllerReps.text),
+        weight: int.parse(formControllerWeight.text),
+        restPeriodAfter: int.parse(formControllerRestInterval.text));
+  }
+
+  // may eventually move to ExerciseDay is a collection of ExerciseSet objects...
   void updateExercise(context) {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
@@ -50,11 +62,10 @@ class HomeController {
     //formControllerDescription
     formControllerReps.text = exercise.reps.toString();
     formControllerWeight.text = exercise.weight.toString();
-    //formControllerRestInterval
 
-    //exercise.videoPath = url;
-    //print(json.encode(exercise.toJson()));
-    //
+    // then push to the next set
+    //thisDay.nextSet();
+    nextExercise(context);
   }
 
   void getExercises(BuildContext context) async {
@@ -88,10 +99,16 @@ class HomeController {
     exerciseDayController.nextSet(context);
   }
 
+// see about this ---> pass in the next exercise? concatenate JSON...
+
   // or just don't wait? once we send the video there's nothing
   // stoppping us from retrieving and updating the app right?
   castMediaTo(RemoteMediaPlayer player, BuildContext context) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
+    String thisExercise = json.encode(exercise.toJson());
+    updateExercise(context);
+    String nextExercise = json.encode(exercise.toJson());
+
     //String url = await getVideo(false, context);
 
     await FlutterFling.play(
@@ -112,7 +129,7 @@ class HomeController {
       },
       player: player,
       mediaUri: await getVideo(false, context), // url,
-      mediaTitle: json.encode(exercise.toJson()),
+      mediaTitle: thisExercise + nextExercise, //json.encode(exercise.toJson()),
     ); //.then((_) => print("after the fact..."));
 
     //.then((_) => getSelectedDevice());

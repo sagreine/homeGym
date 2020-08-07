@@ -48,7 +48,7 @@ class _HomeState extends State<Home> {
         title: Text("Home Gym TV"),
         leading: Padding(
           padding: EdgeInsets.all(3),
-          child: Image.asset("assets/images/poc_icon.png"),
+          child: Image.asset("assets/images/pos_icon.png"),
         ),
         actions: <Widget>[
           IconButton(
@@ -73,6 +73,7 @@ class _HomeState extends State<Home> {
                 Expanded(
                   child: Form(
                     key: _formkey,
+                    // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...
                     child: ListView(
                       children: <Widget>[
                         SizedBox(height: 8.0),
@@ -225,51 +226,38 @@ class _HomeState extends State<Home> {
                         ),
                         // we don't use the data here so it is wasteful to build a widget...
                         Consumer<ExerciseDay>(
-                            builder: (context, thisDay, child) {
-                          return Consumer<ExerciseSet>(
-                            builder: (context, thisSet, child) {
-                              return RaisedButton(
-                                onPressed: () async {
-                                  if (_formkey.currentState.validate()) {
-                                    print("valid form");
-                                    // make any updates that are necessary, check we have a fling device, then cast
-                                    if (flingy.selectedPlayer != null) {
-                                      thisSet.updateExercise(
-                                        title: homeController
-                                            .formControllerTitle.text,
-                                        description: homeController
-                                            .formControllerDescription.text,
-                                        reps: int.parse(homeController
-                                            .formControllerReps.text),
-                                        weight: int.parse(homeController
-                                            .formControllerWeight.text),
-                                        restPeriodAfter: int.parse(
-                                            homeController
-                                                .formControllerRestInterval
-                                                .text),
-                                      );
-                                      // may need to await this, if it is updating our exercise that we're sending....
-                                      await homeController.castMediaTo(
-                                          flingy.selectedPlayer, context);
-
-                                      // then get the next exercise's info into the form (not fully implemented of course)
-                                      homeController.updateExercise(context);
-                                    } else {
-                                      print(
-                                          "form is valid but no fling player selected. launching settings");
-                                      Navigator.of(context).push(
-                                        MaterialPageRoute<void>(
-                                            builder: (BuildContext context) =>
-                                                FlingFinder()),
-                                      );
-                                    }
+                          builder: (context, thisDay, child) {
+                            return RaisedButton(
+                              onPressed: () async {
+                                if (_formkey.currentState.validate()) {
+                                  print("valid form");
+                                  // make any updates that are necessary, check we have a fling device, then cast
+                                  if (flingy.selectedPlayer != null) {
+                                    // do it so it goes -> update exercise, getNextExercise(this updates what you see though?),
+                                    // cast (them both)
+                                    homeController.updateThisExercise(
+                                      context,
+                                    );
+                                    // then get the next exercise's info into the form (not fully implemented of course)
+                                    //homeController.updateExercise(context);
+                                    // may need to await this, if it is updating our exercise that we're sending....
+                                    await homeController.castMediaTo(
+                                        flingy.selectedPlayer, context);
+                                  } else {
+                                    print(
+                                        "form is valid but no fling player selected. launching settings");
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute<void>(
+                                          builder: (BuildContext context) =>
+                                              FlingFinder()),
+                                    );
                                   }
-                                },
-                                child: Text("Record and cast"),
-                              );
-                            },
-                          );
-                        }),
+                                }
+                              },
+                              child: Text("Record and cast"),
+                            );
+                          },
+                        ),
                       ],
                     ),
                   ),
