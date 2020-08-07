@@ -35,6 +35,9 @@ void main() {
       create: (context) => ExerciseSet(),
     ),
     ChangeNotifierProvider(
+      create: (context) => ExerciseDay(),
+    ),
+    ChangeNotifierProvider(
       create: (context) => FlingMediaModel(),
     ),
   ], child: MyApp()));

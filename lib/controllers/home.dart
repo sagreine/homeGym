@@ -20,15 +20,13 @@ class HomeController {
 
   ExerciseDayController exerciseDayController = new ExerciseDayController();
 
-  // this needs to be a model.
-  DocumentSnapshot pctAndReps;
-
-  //TODO this doesn't bring in the other context / ExerciseSet values so look into that..
+  //TODO this doesn't bring in the other context / ExerciseSet values before uploading so look into that..
   Future<String> getVideo(bool isLocalTesting, BuildContext context) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var url;
     if (!isLocalTesting) {
       final picker = ImagePicker();
+      // TODO: doesn't handle if they press back
       final pickedFile = await picker.getVideo(source: ImageSource.camera);
       url = await uploadToCloudStorage(File(pickedFile.path));
       exercise.videoPath = url;
@@ -39,14 +37,30 @@ class HomeController {
     return url;
   }
 
-  void updateExercise() {
+  void updateExercise(context) {
+    var exercise = Provider.of<ExerciseSet>(context, listen: false);
+    var thisDay = Provider.of<ExerciseDay>(context, listen: false);
+    exercise.updateExercise(
+      // reps is a straight pull
+      reps: thisDay.reps[thisDay.currentSet],
+      // weight is percentage * trainingMax - for now just 100 lb.
+      weight: ((thisDay.percentages[thisDay.currentSet]) * 100).toInt(),
+    );
+    //formControllerTitle
+    //formControllerDescription
+    formControllerReps.text = exercise.reps.toString();
+    formControllerWeight.text = exercise.weight.toString();
+    //formControllerRestInterval
+
     //exercise.videoPath = url;
     //print(json.encode(exercise.toJson()));
     //
   }
 
-  void getExercises() async {
+  void getExercises(BuildContext context) async {
     // would update the exercise model here so pass in context...
+    // this needs to be a model.
+    DocumentSnapshot pctAndReps;
 
     /*var percentAndReps = await Firestore.instance
         .collection('PROGRAMS')
@@ -56,18 +70,29 @@ class HomeController {
         .collection('PROGRAMS')
         .document("bbbWeek1")
         .get();
-    sets = pctAndReps.data[0].length;
-    print("pctAndReps = " + pctAndReps.toString());
-    print("sets = " + sets.toString());
+    List<int> reps = new List<int>.from(pctAndReps.data["reps"]);
+    List<double> percentages =
+        new List<double>.from(pctAndReps.data["percentages"]);
+    //var exercise = Provider.of<ExerciseDay>(context, listen: false);
+    exerciseDayController.updateDay(context, reps, percentages);
+
+    //sets = pctAndReps.data[0].length;
+    //print("pctAndReps = " + pctAndReps.toString());
+    //print("sets = " + sets.toString());
     //.snapshots()
     //.listen((data) => data.documents.forEach((doc) => print(doc["title"])));
     //sets = ''
   }
 
-  void nextExercise() {}
+  void nextExercise(BuildContext context) {
+    exerciseDayController.nextSet(context);
+  }
 
+  // or just don't wait? once we send the video there's nothing
+  // stoppping us from retrieving and updating the app right?
   castMediaTo(RemoteMediaPlayer player, BuildContext context) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
+    //String url = await getVideo(false, context);
 
     await FlutterFling.play(
       (state, condition, position) {
@@ -79,12 +104,19 @@ class HomeController {
           */
 
         // });
+        print(state.toString());
+        if (state.toString() == "MediaState.Finished") {
+          print("context has finished");
+          FlutterFling.stopPlayer();
+        }
       },
       player: player,
-      mediaUri: await getVideo(false, context),
+      mediaUri: await getVideo(false, context), // url,
       mediaTitle: json.encode(exercise.toJson()),
-    );
-    ////// can't get this to work? not sure what it does?
+    ); //.then((_) => print("after the fact..."));
+
     //.then((_) => getSelectedDevice());
+    ////// can't get this to work? not sure what it does?
+    //
   }
 }

@@ -35,9 +35,16 @@ class ExerciseSet extends ChangeNotifier {
       int restPeriodAfter,
       int weight,
       int reps}) {
-    this.title = title;
-    this.description = description;
-    this.restPeriodAfter = restPeriodAfter;
+    // should hanlde this another way probably -> controller if nothing else.
+    if (title != null) {
+      this.title = title;
+    }
+    if (description != null) {
+      this.description = description;
+    }
+    if (restPeriodAfter != null) {
+      this.restPeriodAfter = restPeriodAfter;
+    }
     this.weight = weight;
     this.reps = reps;
     this.type = "video/";

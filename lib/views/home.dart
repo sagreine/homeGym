@@ -225,13 +225,14 @@ class _HomeState extends State<Home> {
                         ),
                         // we don't use the data here so it is wasteful to build a widget...
                         Consumer<ExerciseDay>(
-                            builder: (context, thisSet, child) {
+                            builder: (context, thisDay, child) {
                           return Consumer<ExerciseSet>(
                             builder: (context, thisSet, child) {
                               return RaisedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   if (_formkey.currentState.validate()) {
                                     print("valid form");
+                                    // make any updates that are necessary, check we have a fling device, then cast
                                     if (flingy.selectedPlayer != null) {
                                       thisSet.updateExercise(
                                         title: homeController
@@ -247,8 +248,12 @@ class _HomeState extends State<Home> {
                                                 .formControllerRestInterval
                                                 .text),
                                       );
-                                      homeController.castMediaTo(
+                                      // may need to await this, if it is updating our exercise that we're sending....
+                                      await homeController.castMediaTo(
                                           flingy.selectedPlayer, context);
+
+                                      // then get the next exercise's info into the form (not fully implemented of course)
+                                      homeController.updateExercise(context);
                                     } else {
                                       print(
                                           "form is valid but no fling player selected. launching settings");
@@ -280,7 +285,7 @@ class _HomeState extends State<Home> {
                     RaisedButton(
                         child: Text('Next Exercise'),
                         onPressed: () {
-                          homeController.nextExercise();
+                          homeController.nextExercise(context);
                         }),
                   ],
                 ),

@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -28,8 +27,15 @@ class ExerciseDay extends ChangeNotifier {
     notifyListeners();
   }
 
+  // hmmm
+  void nextSet() {
+    print("old current set: " + currentSet.toString());
+    currentSet++;
+    print("new current set: " + currentSet.toString());
+    notifyListeners();
+  }
+
   // update currentSet here .... check it is < sets - 1 etc.
-  notifyListeners();
 
   factory ExerciseDay.fromJson(Map<String, dynamic> json) =>
       _$ExerciseDayFromJson(json);
