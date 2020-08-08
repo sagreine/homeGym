@@ -30,7 +30,11 @@ class ExerciseDay extends ChangeNotifier {
   // hmmm
   void nextSet() {
     print("old current set: " + currentSet.toString());
-    currentSet++;
+    if (currentSet + 1 < sets) {
+      currentSet++;
+    } else {
+      print("this was the last set");
+    }
     print("new current set: " + currentSet.toString());
     notifyListeners();
   }

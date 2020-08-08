@@ -20,7 +20,6 @@ class HomeController {
 
   ExerciseDayController exerciseDayController = new ExerciseDayController();
 
-  //TODO this doesn't bring in the other context / ExerciseSet values before uploading so look into that..
   Future<String> getVideo(bool isLocalTesting, BuildContext context) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var url;
@@ -49,6 +48,7 @@ class HomeController {
   }
 
   // may eventually move to ExerciseDay is a collection of ExerciseSet objects...
+  // but for now staying away from relational stuff.
   void updateExercise(context) {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
@@ -64,7 +64,6 @@ class HomeController {
     formControllerWeight.text = exercise.weight.toString();
 
     // then push to the next set
-    //thisDay.nextSet();
     nextExercise(context);
   }
 
@@ -77,6 +76,7 @@ class HomeController {
         .collection('PROGRAMS')
         .where("id", isEqualTo: "bbbWeek1")
         .getDocuments();*/
+    // pull these from a .xml file
     pctAndReps = await Firestore.instance
         .collection('PROGRAMS')
         .document("bbbWeek1")
@@ -86,13 +86,6 @@ class HomeController {
         new List<double>.from(pctAndReps.data["percentages"]);
     //var exercise = Provider.of<ExerciseDay>(context, listen: false);
     exerciseDayController.updateDay(context, reps, percentages);
-
-    //sets = pctAndReps.data[0].length;
-    //print("pctAndReps = " + pctAndReps.toString());
-    //print("sets = " + sets.toString());
-    //.snapshots()
-    //.listen((data) => data.documents.forEach((doc) => print(doc["title"])));
-    //sets = ''
   }
 
   void nextExercise(BuildContext context) {
@@ -113,14 +106,6 @@ class HomeController {
 
     await FlutterFling.play(
       (state, condition, position) {
-        //setState(() {
-        /*
-          _mediaState = '$state';
-          _mediaCondition = '$condition';
-          _mediaPosition = '$position';
-          */
-
-        // });
         print(state.toString());
         if (state.toString() == "MediaState.Finished") {
           print("context has finished");
@@ -130,10 +115,6 @@ class HomeController {
       player: player,
       mediaUri: await getVideo(false, context), // url,
       mediaTitle: thisExercise + nextExercise, //json.encode(exercise.toJson()),
-    ); //.then((_) => print("after the fact..."));
-
-    //.then((_) => getSelectedDevice());
-    ////// can't get this to work? not sure what it does?
-    //
+    );
   }
 }
