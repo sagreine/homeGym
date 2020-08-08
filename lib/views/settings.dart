@@ -78,7 +78,7 @@ class SettingsState extends State<Settings> {
                       controller: settingsController.barWeightTextController,
                       onSubmitted: (String value) {
                         settingsController.lifterWeightsController
-                            .updateBarWeight(context, int.parse(value));
+                            .updateBarWeight(context, double.parse(value));
                       },
                     ),
                     Text(
@@ -115,42 +115,54 @@ class SettingsState extends State<Settings> {
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
                     // this is not yet 'controlled' of course and doesn't use real data yet.
-                    DataTable(
-                      sortColumnIndex: 0,
-                      sortAscending: true,
-                      columns: [
-                        DataColumn(label: Text('Lift'), numeric: true),
-                        DataColumn(label: Text('Max'), numeric: true),
-                      ],
-                      rows: [
-                        DataRow(selected: true, cells: [
-                          DataCell(
-                              Text('Deadlift', style: TextStyle(fontSize: 14))),
-                          DataCell(Text('221', style: TextStyle(fontSize: 14)),
-                              showEditIcon: true),
-                        ]),
-                        DataRow(cells: [
-                          DataCell(
-                            Text('Bench', style: TextStyle(fontSize: 14)),
-                          ),
-                          DataCell(Text('195', style: TextStyle(fontSize: 14)),
-                              showEditIcon: true),
-                        ]),
-                        DataRow(cells: [
-                          DataCell(
-                            Text('Squat', style: TextStyle(fontSize: 14)),
-                          ),
-                          DataCell(Text('159', style: TextStyle(fontSize: 14)),
-                              showEditIcon: true),
-                        ]),
-                        DataRow(cells: [
-                          DataCell(
-                            Text('Press', style: TextStyle(fontSize: 14)),
-                          ),
-                          DataCell(Text('125', style: TextStyle(fontSize: 14)),
-                              showEditIcon: true),
-                        ]),
-                      ],
+                    Consumer<LiftMaxes>(
+                      builder: (context, liftMaxes, child) {
+                        return DataTable(
+                          sortColumnIndex: 0,
+                          sortAscending: true,
+                          columns: [
+                            DataColumn(label: Text('Lift'), numeric: true),
+                            DataColumn(label: Text('Max'), numeric: true),
+                          ],
+                          rows: [
+                            DataRow(selected: true, cells: [
+                              DataCell(Text('Deadlift',
+                                  style: TextStyle(fontSize: 14))),
+                              DataCell(
+                                  Text(liftMaxes.deadliftMax.toString(),
+                                      style: TextStyle(fontSize: 14)),
+                                  showEditIcon: true),
+                            ]),
+                            DataRow(cells: [
+                              DataCell(
+                                Text('Bench', style: TextStyle(fontSize: 14)),
+                              ),
+                              DataCell(
+                                  Text(liftMaxes.benchMax.toString(),
+                                      style: TextStyle(fontSize: 14)),
+                                  showEditIcon: true),
+                            ]),
+                            DataRow(cells: [
+                              DataCell(
+                                Text('Squat', style: TextStyle(fontSize: 14)),
+                              ),
+                              DataCell(
+                                  Text(liftMaxes.squatMax.toString(),
+                                      style: TextStyle(fontSize: 14)),
+                                  showEditIcon: true),
+                            ]),
+                            DataRow(cells: [
+                              DataCell(
+                                Text('Press', style: TextStyle(fontSize: 14)),
+                              ),
+                              DataCell(
+                                  Text(liftMaxes.pressMax.toString(),
+                                      style: TextStyle(fontSize: 14)),
+                                  showEditIcon: true),
+                            ]),
+                          ],
+                        );
+                      },
                     ),
                   ],
                 );

@@ -6,7 +6,7 @@ part 'lifter_weights.g.dart';
 
 @JsonSerializable()
 class LifterWeights extends ChangeNotifier {
-  int barWeight = 20;
+  double barWeight;
   List<double> plates = [
     1.25,
     2.5,
@@ -25,8 +25,9 @@ class LifterWeights extends ChangeNotifier {
     this.plates,
     this.plateCount,
   });
-  updateBarWeight(int newWeight) {
+  updateBarWeight(double newWeight) {
     barWeight = newWeight;
+
     notifyListeners();
   }
 

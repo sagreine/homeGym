@@ -12,6 +12,7 @@ import 'package:provider/provider.dart';
 
 //TODO: implement dispose
 // shouldn't really be raw querying in here...
+//TODO: this is all kind of just thrown in here for now. some is from startup that isn't created yet.
 class HomeController {
   TextEditingController formControllerTitle = new TextEditingController();
   TextEditingController formControllerDescription = new TextEditingController();
@@ -113,6 +114,17 @@ class HomeController {
     exerciseDayController.updateDay(
         context, reps, percentages, pctAndReps.data["trainingMaxPct"]);
     getMaxes(context);
+    getBarWeight(context);
+  }
+
+  void getBarWeight(BuildContext context) async {
+    DocumentSnapshot barWeight;
+    barWeight = await Firestore.instance
+        .collection('AVAILABLE_WEIGHTS')
+        .document("bar")
+        .get();
+    var liftweights = Provider.of<LifterWeights>(context, listen: false);
+    liftweights.barWeight = barWeight.data["weight"];
   }
 
   // should make this lazier

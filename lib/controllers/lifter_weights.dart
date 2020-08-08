@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
+
 import 'package:provider/provider.dart';
+import 'package:home_gym/controllers/controllers.dart';
 
 //TODO: implement dispose
 class LifterWeightsController {
   updatePlates(BuildContext context) {
     //TODO: implement, updload to cloud
   }
-  updateBarWeight(BuildContext context, int newBarWeight) {
+  updateBarWeight(BuildContext context, double newBarWeight) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
     liftweights.updateBarWeight(newBarWeight);
+    updateBarWeightCloud(newBarWeight);
   }
 }
 

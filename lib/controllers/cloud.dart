@@ -15,6 +15,17 @@ void createDatabaseRecord(ExerciseSet exercise) async {
       );
 }
 
+void updateBarWeightCloud(double newWeight) async {
+  final databaseReference = Firestore.instance;
+  Map data = Map<String, dynamic>();
+  data["weight"] = newWeight;
+
+  await databaseReference
+      .collection("AVAILABLE_WEIGHTS")
+      .document("bar")
+      .setData(data);
+}
+
 //TODO: use title of video or something, not sample_video
 Future<String> uploadToCloudStorage(File fileToUpload) async {
   final StorageReference firebaseStorageRef =
