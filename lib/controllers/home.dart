@@ -23,6 +23,8 @@ class HomeController {
 
   ExerciseDayController exerciseDayController = new ExerciseDayController();
   LiftMaxController liftMaxController = new LiftMaxController();
+  LifterWeightsController lifterWeightsController =
+      new LifterWeightsController();
 
   Future<String> getVideo(bool isLocalTesting, BuildContext context) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
@@ -115,6 +117,7 @@ class HomeController {
         context, reps, percentages, pctAndReps.data["trainingMaxPct"]);
     getMaxes(context);
     getBarWeight(context);
+    getPlates(context);
   }
 
   void getBarWeight(BuildContext context) async {
@@ -160,6 +163,28 @@ class HomeController {
             .elementAt(maxes.documents
                 .indexWhere((document) => document.documentID == "press"))
             .data["currentMax"]);
+  }
+
+  // very stupid. rearrange db organization instead of doing this.
+  void getPlates(BuildContext context) async {
+    QuerySnapshot plates;
+
+    //await Firestore.instance.collection('AVAILABLE_WEIGHTS').getDocuments();
+    plates =
+        await Firestore.instance.collection("AVAILABLE_WEIGHTS").getDocuments();
+
+    plates.documents.forEach((result) {
+      if (result.documentID != "bar") {
+        print(result.data["count"]);
+        lifterWeightsController.updatePlate(
+            context,
+            double.parse(
+                result.documentID.substring(0, result.documentID.indexOf("_"))),
+            result.data["count"]);
+      }
+    });
+
+    //var liftweights = Provider.of<LifterWeights>(context, listen: false);
   }
 
   void nextExercise(BuildContext context) {
