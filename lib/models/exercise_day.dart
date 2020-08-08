@@ -7,24 +7,30 @@ part 'exercise_day.g.dart';
 class ExerciseDay extends ChangeNotifier {
   // sets is derivable no?
   int sets;
+  double trainingMax;
   int currentSet;
   // 2d list? or, list of Exercises? probably ultimately a list of exericses will be what we want to use.
   List<int> reps;
   List<double> percentages;
 
-  ExerciseDay({
-    this.sets,
-    this.reps,
-    this.currentSet,
-    this.percentages,
-  });
+  ExerciseDay(
+      {this.sets,
+      this.reps,
+      this.currentSet,
+      this.percentages,
+      this.trainingMax});
 
   void buildDay(
-      {int sets, List<int> reps, List<double> percentages, int currentSet}) {
+      {int sets,
+      List<int> reps,
+      List<double> percentages,
+      int currentSet,
+      double trainingMax}) {
     this.sets = sets;
     this.reps = reps;
     this.percentages = percentages;
     this.currentSet = currentSet;
+    this.trainingMax = trainingMax;
     notifyListeners();
   }
 
@@ -53,5 +59,6 @@ class ExerciseDay extends ChangeNotifier {
         reps,
         percentages,
         currentSet,
+        trainingMax,
       ];
 }

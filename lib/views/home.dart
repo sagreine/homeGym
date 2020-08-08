@@ -57,7 +57,7 @@ class _HomeState extends State<Home> {
             onPressed: () {
               Navigator.of(context).push(
                 MaterialPageRoute<void>(
-                    builder: (BuildContext context) => FlingFinder()),
+                    builder: (BuildContext context) => Settings()),
               );
             },
           ),
@@ -249,7 +249,7 @@ class _HomeState extends State<Home> {
                                     Navigator.of(context).push(
                                       MaterialPageRoute<void>(
                                           builder: (BuildContext context) =>
-                                              FlingFinder()),
+                                              Settings()),
                                     );
                                   }
                                 }

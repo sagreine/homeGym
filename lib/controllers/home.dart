@@ -10,6 +10,8 @@ import 'package:home_gym/models/models.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+//TODO: implement dispose
+// shouldn't really be raw querying in here...
 class HomeController {
   TextEditingController formControllerTitle = new TextEditingController();
   TextEditingController formControllerDescription = new TextEditingController();
@@ -19,6 +21,7 @@ class HomeController {
       new TextEditingController();
 
   ExerciseDayController exerciseDayController = new ExerciseDayController();
+  LiftMaxController liftMaxController = new LiftMaxController();
 
   Future<String> getVideo(bool isLocalTesting, BuildContext context) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
@@ -52,11 +55,32 @@ class HomeController {
   void updateExercise(context) {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
+    var thisMax = Provider.of<LiftMaxes>(context, listen: false);
+    int trainingMax = 100;
+    switch (exercise.title) {
+      case "deadlift":
+        trainingMax =
+            (thisMax.deadliftMax.toDouble() * thisDay.trainingMax).toInt();
+        break;
+      case "bench":
+        trainingMax =
+            (thisMax.benchMax.toDouble() * thisDay.trainingMax).toInt();
+        break;
+      case "press":
+        trainingMax =
+            (thisMax.pressMax.toDouble() * thisDay.trainingMax).toInt();
+        break;
+      case "squat":
+        trainingMax =
+            (thisMax.squatMax.toDouble() * thisDay.trainingMax).toInt();
+        break;
+    }
+
     exercise.updateExercise(
       // reps is a straight pull
       reps: thisDay.reps[thisDay.currentSet],
       // weight is percentage * trainingMax - for now just 100 lb.
-      weight: ((thisDay.percentages[thisDay.currentSet]) * 100).toInt(),
+      weight: ((thisDay.percentages[thisDay.currentSet]) * trainingMax).toInt(),
     );
     //formControllerTitle
     //formControllerDescription
@@ -84,8 +108,46 @@ class HomeController {
     List<int> reps = new List<int>.from(pctAndReps.data["reps"]);
     List<double> percentages =
         new List<double>.from(pctAndReps.data["percentages"]);
+
     //var exercise = Provider.of<ExerciseDay>(context, listen: false);
-    exerciseDayController.updateDay(context, reps, percentages);
+    exerciseDayController.updateDay(
+        context, reps, percentages, pctAndReps.data["trainingMaxPct"]);
+    getMaxes(context);
+  }
+
+  // should make this lazier
+  void getMaxes(BuildContext context) async {
+    QuerySnapshot maxes;
+    maxes = await Firestore.instance.collection('MAXES').getDocuments();
+
+    liftMaxController.updateMax(
+        context: context,
+        lift: "bench",
+        newMax: maxes.documents
+            .elementAt(maxes.documents
+                .indexWhere((document) => document.documentID == "bench"))
+            .data["currentMax"]);
+    liftMaxController.updateMax(
+        context: context,
+        lift: "deadlift",
+        newMax: maxes.documents
+            .elementAt(maxes.documents
+                .indexWhere((document) => document.documentID == "deadlift"))
+            .data["currentMax"]);
+    liftMaxController.updateMax(
+        context: context,
+        lift: "squat",
+        newMax: maxes.documents
+            .elementAt(maxes.documents
+                .indexWhere((document) => document.documentID == "squat"))
+            .data["currentMax"]);
+    liftMaxController.updateMax(
+        context: context,
+        lift: "press",
+        newMax: maxes.documents
+            .elementAt(maxes.documents
+                .indexWhere((document) => document.documentID == "press"))
+            .data["currentMax"]);
   }
 
   void nextExercise(BuildContext context) {

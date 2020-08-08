@@ -1,10 +1,11 @@
 // may want this to be a changeNotifier just to simplify things..
 
+import 'package:flutter/cupertino.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'lifter_weights.g.dart';
 
 @JsonSerializable()
-class LifterWeights {
+class LifterWeights extends ChangeNotifier {
   int barWeight = 20;
   List<double> plates = [
     1.25,
@@ -24,6 +25,10 @@ class LifterWeights {
     this.plates,
     this.plateCount,
   });
+  updateBarWeight(int newWeight) {
+    barWeight = newWeight;
+    notifyListeners();
+  }
 
   List<Object> get props => [
         barWeight,
@@ -38,7 +43,7 @@ class LifterWeights {
 }
 
 @JsonSerializable()
-class LiftMaxes {
+class LiftMaxes extends ChangeNotifier {
   int deadliftMax;
   int squatMax;
   int benchMax;

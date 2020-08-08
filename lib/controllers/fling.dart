@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 // change this to singleton?
 class FlingController {
-  getCastDevices(BuildContext context) async {
+  void getCastDevices(BuildContext context) async {
     var prov = Provider.of<FlingMediaModel>(context, listen: false);
 
     await FlutterFling.startDiscoveryController((status, player) {
@@ -24,14 +24,22 @@ class FlingController {
     });
   }
 
-  getSelectedDevice(BuildContext context) async {
-    RemoteMediaPlayer selectedDevice;
+  void selectPlayer(
+      BuildContext context, RemoteMediaPlayer _selectedPlayer) async {
     try {
-      selectedDevice = await FlutterFling.selectedPlayer;
+      Provider.of<FlingMediaModel>(context, listen: false)
+          .selectPlayer(_selectedPlayer);
+      ;
     } on PlatformException {
       print('Failed to get selected device');
     }
-    Provider.of<FlingMediaModel>(context, listen: false).selectedPlayer =
-        selectedDevice;
+  }
+
+  void dispose(context) async {
+    var prov = Provider.of<FlingMediaModel>(context, listen: false);
+    await FlutterFling.stopDiscoveryController();
+    // call a Controller function to do this instead.....
+    prov.reset();
+    //prov.dispose();
   }
 }

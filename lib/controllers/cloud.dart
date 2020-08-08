@@ -5,6 +5,7 @@ import 'package:home_gym/models/models.dart';
 import 'package:video_compress/video_compress.dart';
 
 //TODO: this should be a class?
+//TODO: implement dispose
 
 void createDatabaseRecord(ExerciseSet exercise) async {
   // would put everyone in their own bucket and manage that via IAM
