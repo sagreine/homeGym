@@ -31,6 +31,8 @@ import 'package:provider/provider.dart';
 void main() {
   //Bloc.observer = SimpleBlocObserver();
   runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(create: (context) => LifterWeights()),
+    ChangeNotifierProvider(create: (context) => LiftMaxes()),
     ChangeNotifierProvider(
       create: (context) => ExerciseSet(),
     ),

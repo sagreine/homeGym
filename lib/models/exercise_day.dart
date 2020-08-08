@@ -5,6 +5,7 @@ part 'exercise_day.g.dart';
 
 @JsonSerializable()
 class ExerciseDay extends ChangeNotifier {
+  // sets is derivable no?
   int sets;
   int currentSet;
   // 2d list? or, list of Exercises? probably ultimately a list of exericses will be what we want to use.
