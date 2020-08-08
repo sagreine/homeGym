@@ -26,6 +26,18 @@ void updateBarWeightCloud(double newWeight) async {
       .setData(data);
 }
 
+void updatePlateCloud(double _plate, int _plateCount) async {
+  final databaseReference = Firestore.instance;
+  Map data = Map<String, dynamic>();
+  data["count"] = _plateCount;
+  await databaseReference
+      .collection("AVAILABLE_WEIGHTS")
+      .document(_plate.toString() + "_POUNDS")
+      .setData(data);
+}
+
+void updateTrainingMaxCloud(String lift, double newMax) async {}
+
 //TODO: use title of video or something, not sample_video
 Future<String> uploadToCloudStorage(File fileToUpload) async {
   final StorageReference firebaseStorageRef =

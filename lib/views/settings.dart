@@ -86,28 +86,46 @@ class SettingsState extends State<Settings> {
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
-                    // this is not yet 'controlled' of course and doesn't use real data yet.
-                    DataTable(
-                      sortColumnIndex: 0,
-                      sortAscending: true,
-                      columns: [
-                        DataColumn(label: Text('Weight'), numeric: true),
-                        DataColumn(label: Text('# Plates'), numeric: true),
-                      ],
-                      rows: [
-                        DataRow(selected: true, cells: [
-                          DataCell(Text('45', style: TextStyle(fontSize: 14))),
-                          DataCell(Text('2', style: TextStyle(fontSize: 14)),
-                              showEditIcon: true),
-                        ]),
-                        DataRow(cells: [
-                          DataCell(
-                            Text('35', style: TextStyle(fontSize: 14)),
-                          ),
-                          DataCell(Text('2', style: TextStyle(fontSize: 14)),
-                              showEditIcon: true),
-                        ]),
-                      ],
+                    Consumer<LifterWeights>(
+                      builder: (context, lifterweights, child) {
+                        return
+                            // this is not yet 'controlled' of course and doesn't use real data yet.
+                            DataTable(
+                                sortColumnIndex: 0,
+                                sortAscending: true,
+                                columns: [
+                                  DataColumn(
+                                      label: Text('Weight'), numeric: true),
+                                  DataColumn(
+                                      label: Text('# Plates'), numeric: true),
+                                ],
+                                // will build rows dynamically here, so no error checking up front.
+                                rows: lifterweights.plates == null
+                                    ? [
+                                        DataRow(cells: [
+                                          DataCell(Text("add your plates!")),
+                                          DataCell(Text("add your plates!"))
+                                        ])
+                                      ]
+                                    : lifterweights.plates
+                                        .map((e) =>
+                                            DataRow(selected: true, cells: [
+                                              DataCell(Text("$e",
+                                                  style:
+                                                      TextStyle(fontSize: 14))),
+                                              DataCell(
+                                                  Text(
+                                                      lifterweights.plateCount[
+                                                              lifterweights
+                                                                  .plates
+                                                                  .indexOf(e)]
+                                                          .toString(),
+                                                      style: TextStyle(
+                                                          fontSize: 14)),
+                                                  showEditIcon: true),
+                                            ]))
+                                        .toList());
+                      },
                     ),
                     Text(
                       "Your One Rep Maxes",

@@ -7,28 +7,37 @@ part 'lifter_weights.g.dart';
 @JsonSerializable()
 class LifterWeights extends ChangeNotifier {
   double barWeight;
-  List<double> plates = [
-    1.25,
-    2.5,
-    2.5,
-    5,
-    5,
-    10,
-    10,
-    20,
-    20,
-  ];
+  // this is an object of itself......... way simpler too...
+  List<double> plates; // = [2.5, 2.75, 5, 10, 11, 22, 25, 33, 35, 44, 45];
+  List<int> plateCount; // = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
 
-  List<int> plateCount = [2, 2, 2, 2, 2, 2, 2];
   LifterWeights({
     this.barWeight,
     this.plates,
     this.plateCount,
   });
+
   updateBarWeight(double newWeight) {
     barWeight = newWeight;
-
     notifyListeners();
+  }
+
+  bool updatePlate(double _plate, int _plateCount) {
+    if (plates == null) {
+      plates = new List<double>();
+      plateCount = new List<int>();
+    } else if (plates.contains(_plate)) {
+      // if we already have this plate and it's plateCount is equal to what we passed in, return false
+      if (plateCount[plates.indexOf(_plate)] == _plateCount) {
+        return false;
+      }
+      plateCount[plates.indexOf(_plate)] = _plateCount;
+    } else {
+      plates.add(_plate);
+      plateCount.add(_plateCount);
+    }
+    notifyListeners();
+    return true;
   }
 
   List<Object> get props => [
