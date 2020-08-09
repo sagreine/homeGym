@@ -87,7 +87,7 @@ class HomeController {
       reps: thisDay.reps[thisDay.currentSet],
       // weight is percentage * trainingMax - for now just 100 lb.
       weight: targetWeight.toInt(),
-      description:
+      description: "Weight each side: " +
           thisWeights.pickPlates(targetWeight: targetWeight)[0].toString(),
     );
     //formControllerTitle
