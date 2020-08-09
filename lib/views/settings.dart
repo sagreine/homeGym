@@ -88,6 +88,12 @@ class SettingsState extends State<Settings> {
                     ),
                     Consumer<LifterWeights>(
                       builder: (context, lifterweights, child) {
+                        var platesAsList;
+                        if (lifterweights.plates == null) {
+                          platesAsList =
+                              new List.from(lifterweights.plates.keys.toList());
+                        }
+                        platesAsList.sort((b, a) => a.compareTo(b));
                         return
                             // this is not yet 'controlled' of course and doesn't use real data yet.
                             DataTable(
@@ -107,7 +113,7 @@ class SettingsState extends State<Settings> {
                                           DataCell(Text("add your plates!"))
                                         ])
                                       ]
-                                    : lifterweights.plates.keys
+                                    : platesAsList
                                         .map((
                                           e,
                                         ) =>
