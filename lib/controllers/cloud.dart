@@ -40,9 +40,20 @@ void updateTrainingMaxCloud(String lift, double newMax) async {}
 
 //TODO: use title of video or something, not sample_video
 Future<String> uploadToCloudStorage(File fileToUpload) async {
+  print("File size: " + fileToUpload.lengthSync().toString());
+  MediaInfo mediaInfo = await VideoCompress.compressVideo(
+    fileToUpload.path,
+    quality: VideoQuality.MediumQuality,
+    deleteOrigin: false, // It's false by default
+  );
+  print(
+      "Compressed File size: " + File(mediaInfo.path).lengthSync().toString());
+
   final StorageReference firebaseStorageRef =
       FirebaseStorage.instance.ref().child("sample_video");
-  StorageUploadTask uploadTask = firebaseStorageRef.putFile(fileToUpload);
+  StorageUploadTask uploadTask =
+      firebaseStorageRef.putFile(File(mediaInfo.path));
+
   StorageTaskSnapshot storageSnapshot = await uploadTask.onComplete;
   var downloadUrl = await storageSnapshot.ref.getDownloadURL();
   if (uploadTask.isComplete) {
