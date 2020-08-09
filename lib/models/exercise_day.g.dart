@@ -14,12 +14,14 @@ ExerciseDay _$ExerciseDayFromJson(Map<String, dynamic> json) {
     percentages: (json['percentages'] as List)
         ?.map((e) => (e as num)?.toDouble())
         ?.toList(),
+    trainingMax: (json['trainingMax'] as num)?.toDouble(),
   );
 }
 
 Map<String, dynamic> _$ExerciseDayToJson(ExerciseDay instance) =>
     <String, dynamic>{
       'sets': instance.sets,
+      'trainingMax': instance.trainingMax,
       'currentSet': instance.currentSet,
       'reps': instance.reps,
       'percentages': instance.percentages,

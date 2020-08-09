@@ -5,16 +5,17 @@ import 'package:json_annotation/json_annotation.dart';
 part 'lifter_weights.g.dart';
 
 @JsonSerializable()
+//@CustomDoubleConverter()
 class LifterWeights extends ChangeNotifier {
   double barWeight;
-  // this is an object of itself......... way simpler too...
-  List<double> plates; // = [2.5, 2.75, 5, 10, 11, 22, 25, 33, 35, 44, 45];
-  List<int> plateCount; // = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1];
+  //List<double> plates;
+  //List<int> plateCount;
+  Map<dynamic, int> plates;
 
   LifterWeights({
     this.barWeight,
     this.plates,
-    this.plateCount,
+    //this.plateCount,
   });
 
   updateBarWeight(double newWeight) {
@@ -22,28 +23,29 @@ class LifterWeights extends ChangeNotifier {
     notifyListeners();
   }
 
+// the bool part of this is hanlded automatically by widgets. probably cloud too but just to be safe for now
   bool updatePlate(double _plate, int _plateCount) {
     if (plates == null) {
-      plates = new List<double>();
-      plateCount = new List<int>();
-    } else if (plates.contains(_plate)) {
+      plates = new Map<double, int>();
+    } else if (plates.containsKey(_plate)) {
       // if we already have this plate and it's plateCount is equal to what we passed in, return false
-      if (plateCount[plates.indexOf(_plate)] == _plateCount) {
+      if (plates[_plate] == _plateCount) {
         return false;
       }
-      plateCount[plates.indexOf(_plate)] = _plateCount;
-    } else {
-      plates.add(_plate);
-      plateCount.add(_plateCount);
     }
+    plates[_plate] = _plateCount;
     notifyListeners();
     return true;
+  }
+
+  List<double> pickPlates({BuildContext context, double targetWeight}) {
+    return [2.0];
   }
 
   List<Object> get props => [
         barWeight,
         plates,
-        plateCount,
+        //plateCount,
       ];
 
   factory LifterWeights.fromJson(Map<String, dynamic> json) =>
@@ -51,6 +53,18 @@ class LifterWeights extends ChangeNotifier {
 
   Map<String, dynamic> toJson() => _$LifterWeightsToJson(this);
 }
+
+/*
+class CustomDoubleConverter implements JsonConverter<Map<double,int>, String> {
+  const CustomDoubleConverter();
+
+  @override
+  Map<double,int> fromJson(Map<double,int> map, String json) =>
+      json == null ? null : double.parse(json[]);
+
+  @override
+  String toJson(double object) => object.toString();
+}*/
 
 @JsonSerializable()
 class LiftMaxes extends ChangeNotifier {
@@ -76,35 +90,3 @@ class LiftMaxes extends ChangeNotifier {
 
   Map<String, dynamic> toJson() => _$LiftMaxesToJson(this);
 }
-
-/*
-
-
-
-const sumPlates = (plates) => {
-  return plates.reduce((acc, plate) => {
-    return acc + (plate * 2);
-  }, 0);
-};
-
-const rack = (targetWeight) => {
-  const sortedPlates = PLATES.sort((a, b) => b - a);
-
-  const rackedPlates = sortedPlates.reduce((acc, plate) => {
-    if ((BAR + (plate * 2) + sumPlates(acc)) > targetWeight) {
-      // Calculate here the closest possible rack weight
-      return acc;
-    }
-
-    acc.push(plate);
-
-    return acc;
-  }, []);
-
-  return {
-    targetWeight,
-    barbellWeight: BAR + sumPlates(rackedPlates),
-    plates: rackedPlates,
-  };
-};
-*/

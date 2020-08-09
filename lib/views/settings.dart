@@ -107,18 +107,17 @@ class SettingsState extends State<Settings> {
                                           DataCell(Text("add your plates!"))
                                         ])
                                       ]
-                                    : lifterweights.plates
-                                        .map((e) =>
-                                            DataRow(selected: true, cells: [
+                                    : lifterweights.plates.keys
+                                        .map((
+                                          e,
+                                        ) =>
+                                            DataRow(cells: [
                                               DataCell(Text("$e",
                                                   style:
                                                       TextStyle(fontSize: 14))),
                                               DataCell(
                                                   Text(
-                                                      lifterweights.plateCount[
-                                                              lifterweights
-                                                                  .plates
-                                                                  .indexOf(e)]
+                                                      lifterweights.plates[e]
                                                           .toString(),
                                                       style: TextStyle(
                                                           fontSize: 14)),

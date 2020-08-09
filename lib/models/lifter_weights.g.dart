@@ -8,10 +8,10 @@ part of 'lifter_weights.dart';
 
 LifterWeights _$LifterWeightsFromJson(Map<String, dynamic> json) {
   return LifterWeights(
-    barWeight: json['barWeight'] as double,
-    plates:
-        (json['plates'] as List)?.map((e) => (e as num)?.toDouble())?.toList(),
-    plateCount: (json['plateCount'] as List)?.map((e) => e as int)?.toList(),
+    barWeight: (json['barWeight'] as num)?.toDouble(),
+    plates: (json['plates'] as Map<String, dynamic>)?.map(
+      (k, e) => MapEntry(k, e as int),
+    ),
   );
 }
 
@@ -19,7 +19,6 @@ Map<String, dynamic> _$LifterWeightsToJson(LifterWeights instance) =>
     <String, dynamic>{
       'barWeight': instance.barWeight,
       'plates': instance.plates,
-      'plateCount': instance.plateCount,
     };
 
 LiftMaxes _$LiftMaxesFromJson(Map<String, dynamic> json) {
