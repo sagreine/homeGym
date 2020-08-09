@@ -59,6 +59,7 @@ class HomeController {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
     var thisMax = Provider.of<LiftMaxes>(context, listen: false);
+    var thisWeights = Provider.of<LifterWeights>(context, listen: false);
     int trainingMax = 100;
     switch (exercise.title) {
       case "deadlift":
@@ -78,15 +79,19 @@ class HomeController {
             (thisMax.squatMax.toDouble() * thisDay.trainingMax).toInt();
         break;
     }
+    double targetWeight =
+        ((thisDay.percentages[thisDay.currentSet]) * trainingMax);
 
     exercise.updateExercise(
       // reps is a straight pull
       reps: thisDay.reps[thisDay.currentSet],
       // weight is percentage * trainingMax - for now just 100 lb.
-      weight: ((thisDay.percentages[thisDay.currentSet]) * trainingMax).toInt(),
+      weight: targetWeight.toInt(),
+      description:
+          thisWeights.pickPlates(targetWeight: targetWeight)[0].toString(),
     );
     //formControllerTitle
-    //formControllerDescription
+    formControllerDescription.text = exercise.description;
     formControllerReps.text = exercise.reps.toString();
     formControllerWeight.text = exercise.weight.toString();
 

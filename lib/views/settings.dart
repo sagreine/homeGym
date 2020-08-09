@@ -88,12 +88,13 @@ class SettingsState extends State<Settings> {
                     ),
                     Consumer<LifterWeights>(
                       builder: (context, lifterweights, child) {
-                        var platesAsList;
-                        if (lifterweights.plates == null) {
+                        List<double> platesAsList;
+                        if (lifterweights.plates != null) {
                           platesAsList =
                               new List.from(lifterweights.plates.keys.toList());
+                          platesAsList.sort((b, a) => a.compareTo(b));
                         }
-                        platesAsList.sort((b, a) => a.compareTo(b));
+
                         return
                             // this is not yet 'controlled' of course and doesn't use real data yet.
                             DataTable(
@@ -110,7 +111,8 @@ class SettingsState extends State<Settings> {
                                     ? [
                                         DataRow(cells: [
                                           DataCell(Text("add your plates!")),
-                                          DataCell(Text("add your plates!"))
+                                          DataCell(
+                                              Text("add your plates count!"))
                                         ])
                                       ]
                                     : platesAsList

@@ -6,15 +6,14 @@ import 'package:home_gym/controllers/controllers.dart';
 
 //TODO: implement dispose
 class LifterWeightsController {
-  updatePlate(BuildContext context, double plate, int _plateCount) {
+  void updatePlate(BuildContext context, double plate, int _plateCount) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
-
     if (liftweights.updatePlate(plate, _plateCount)) {
       updatePlateCloud(plate, _plateCount);
     }
   }
 
-  updateBarWeight(BuildContext context, double newBarWeight) {
+  void updateBarWeight(BuildContext context, double newBarWeight) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
     liftweights.updateBarWeight(newBarWeight);
     updateBarWeightCloud(newBarWeight);
@@ -22,7 +21,7 @@ class LifterWeightsController {
 
   List<double> pickPlates({BuildContext context, double targetWeight}) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
-    return liftweights.pickPlates(context: context, targetWeight: targetWeight);
+    return liftweights.pickPlates(targetWeight: targetWeight);
   }
 }
 

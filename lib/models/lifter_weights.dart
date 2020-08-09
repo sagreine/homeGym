@@ -8,17 +8,14 @@ part 'lifter_weights.g.dart';
 //@CustomDoubleConverter()
 class LifterWeights extends ChangeNotifier {
   double barWeight;
-  //List<double> plates;
-  //List<int> plateCount;
   Map<dynamic, int> plates;
 
   LifterWeights({
     this.barWeight,
     this.plates,
-    //this.plateCount,
   });
 
-  updateBarWeight(double newWeight) {
+  void updateBarWeight(double newWeight) {
     barWeight = newWeight;
     notifyListeners();
   }
@@ -38,14 +35,59 @@ class LifterWeights extends ChangeNotifier {
     return true;
   }
 
-  List<double> pickPlates({BuildContext context, double targetWeight}) {
-    return [2.0];
+/*
+  Set<dynamic> sumPlates = (plates) => {
+   plates.reduce((acc, plate) => {
+     acc + (plate * 2)
+  }, 0)
+};*/
+/*
+   get_plate_picking_matrix(Map<dynamic, int> plates, int targetWeight){
+    var m = 
+    
+    [[0 for _ in range(targetWeight + 1)] for _ in range(len(plates) + 1)]
+
+
+    for i in range(1, targetWeight + 1):
+        m[0][i] = float('inf')  // By default there is no way of making change
+    return m;
+   }*/
+
+  List<double> pickPlates({double targetWeight}) {
+    return [(targetWeight - barWeight) / 2];
+    /*
+    double weightEachSide = (targetWeight - barWeight) / 2;
+var sortedPlates;
+var rackedPlates;
+    List<double> tempPlates = new List.from(plates.keys.toList());                        
+    List<int> tempPlateCount = new List.from(plates.values.toList()); 
+    tempPlates.sort((b, a) => a.compareTo(b));
+
+ var rack = (targetWeight) => {    
+    rackedPlates = tempPlates.reduce((acc, plate) => {
+    if ((barWeight + (plate * 2) + sumPlates(acc)) > targetWeight) {
+      // Calculate here the closest possible rack weight
+      return acc;
+    }
+
+    acc.push(plate);
+
+    return acc;
+  }, []);
+
+  return {
+    targetWeight,
+    barbellWeight: BAR + sumPlates(rackedPlates),
+    plates: rackedPlates,
+  };
+};
+
+*/
   }
 
   List<Object> get props => [
         barWeight,
         plates,
-        //plateCount,
       ];
 
   factory LifterWeights.fromJson(Map<String, dynamic> json) =>
