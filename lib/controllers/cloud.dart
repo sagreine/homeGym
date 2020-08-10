@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:video_compress/video_compress.dart';
 
@@ -50,7 +51,7 @@ Future<String> uploadToCloudStorage(File fileToUpload) async {
       "Compressed File size: " + File(mediaInfo.path).lengthSync().toString());
 
   final StorageReference firebaseStorageRef =
-      FirebaseStorage.instance.ref().child("sample_video");
+      FirebaseStorage.instance.ref().child(UniqueKey().toString());
   StorageUploadTask uploadTask =
       firebaseStorageRef.putFile(File(mediaInfo.path));
 

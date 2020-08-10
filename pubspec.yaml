@@ -32,8 +32,7 @@ dependencies:
   path_provider: ^1.6.11
   json_annotation: ^3.0.1
   provider: ^4.3.1
-  image_picker: ^0.6.7+4
-  local_assets_server: ^1.0.2+5
+  image_picker: ^0.6.7+4  
   cloud_firestore: ^0.13.7
   firebase_storage: ^3.1.6
   video_compress: ^2.0.0

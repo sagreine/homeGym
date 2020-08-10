@@ -4,19 +4,35 @@ import 'package:provider/provider.dart';
 
 //TODO: implement dispose
 class ExerciseDayController {
-  updateDay(BuildContext context, List<int> reps, List<double> percentages,
-      double trainingMaxPct) {
+  updateDay(
+      {BuildContext context,
+      List<int> reps,
+      List<double> percentages,
+      double trainingMaxPct,
+      List<String> assistanceCore,
+      List<String> assistancePull,
+      List<String> assistancePush,
+      int assistanceCoreReps,
+      int assistancePullReps,
+      int assistancePushReps}) {
     var day = Provider.of<ExerciseDay>(context, listen: false);
     day.buildDay(
-        currentSet: 0,
-        reps: reps,
-        percentages: percentages,
-        sets: reps.length,
-        trainingMax: trainingMaxPct);
+      currentSet: 0,
+      reps: reps,
+      percentages: percentages,
+      sets: reps.length,
+      trainingMax: trainingMaxPct,
+      assistanceCore: assistanceCore,
+      assistanceCoreReps: assistanceCoreReps,
+      assistancePull: assistancePull,
+      assistancePullReps: assistancePullReps,
+      assistancePush: assistancePush,
+      assistancePushReps: assistancePushReps,
+    );
   }
 
-  nextSet(BuildContext context) {
+  bool nextSet(BuildContext context) {
     var day = Provider.of<ExerciseDay>(context, listen: false);
-    day.nextSet();
+    return day.nextSet();
   }
 }

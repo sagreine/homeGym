@@ -61,7 +61,7 @@ class HomeController {
     var thisMax = Provider.of<LiftMaxes>(context, listen: false);
     var thisWeights = Provider.of<LifterWeights>(context, listen: false);
     int trainingMax = 100;
-    switch (exercise.title) {
+    switch (exercise.title.toLowerCase()) {
       case "deadlift":
         trainingMax =
             (thisMax.deadliftMax.toDouble() * thisDay.trainingMax).toInt();
@@ -96,7 +96,10 @@ class HomeController {
     formControllerWeight.text = exercise.weight.toString();
 
     // then push to the next set
-    nextExercise(context);
+    // this is a hack for now.
+    if (!nextExercise(context)) {
+      formControllerDescription.text += "- Last set!";
+    }
   }
 
   void getExercises(BuildContext context) async {
@@ -119,7 +122,17 @@ class HomeController {
 
     //var exercise = Provider.of<ExerciseDay>(context, listen: false);
     exerciseDayController.updateDay(
-        context, reps, percentages, pctAndReps.data["trainingMaxPct"]);
+      context: context,
+      reps: reps,
+      percentages: percentages,
+      trainingMaxPct: pctAndReps.data["trainingMaxPct"],
+      assistanceCore: new List<String>.from(pctAndReps.data["assistance_core"]),
+      assistanceCoreReps: pctAndReps.data["assistance_core_reps"],
+      assistancePull: new List<String>.from(pctAndReps.data["assistance_pull"]),
+      assistancePullReps: pctAndReps.data["assistance_pull_reps"],
+      assistancePush: new List<String>.from(pctAndReps.data["assistance_push"]),
+      assistancePushReps: pctAndReps.data["assistance_push_reps"],
+    );
     getMaxes(context);
     getBarWeight(context);
     getPlates(context);
@@ -192,8 +205,8 @@ class HomeController {
     //var liftweights = Provider.of<LifterWeights>(context, listen: false);
   }
 
-  void nextExercise(BuildContext context) {
-    exerciseDayController.nextSet(context);
+  bool nextExercise(BuildContext context) {
+    return exerciseDayController.nextSet(context);
   }
 
 // see about this ---> pass in the next exercise? concatenate JSON...
@@ -202,14 +215,17 @@ class HomeController {
   // stoppping us from retrieving and updating the app right?
   castMediaTo(RemoteMediaPlayer player, BuildContext context) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
+    var thisDay = Provider.of<ExerciseDay>(context, listen: false);
     String thisExercise = json.encode(exercise.toJson());
     updateExercise(context);
     String nextExercise = json.encode(exercise.toJson());
+    String thisDayJSON = json.encode(thisDay.toJson());
 
     //String url = await getVideo(false, context);
 
     await FlutterFling.play(
       (state, condition, position) {
+        // not sure we need this
         print(state.toString());
         if (state.toString() == "MediaState.Finished") {
           print("context has finished");
@@ -218,7 +234,9 @@ class HomeController {
       },
       player: player,
       mediaUri: await getVideo(false, context), // url,
-      mediaTitle: thisExercise + nextExercise, //json.encode(exercise.toJson()),
+      mediaTitle: thisExercise +
+          nextExercise +
+          thisDayJSON, //json.encode(exercise.toJson()),
     );
   }
 }
