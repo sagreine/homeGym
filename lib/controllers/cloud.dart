@@ -39,7 +39,6 @@ void updatePlateCloud(double _plate, int _plateCount) async {
 
 void updateTrainingMaxCloud(String lift, double newMax) async {}
 
-//TODO: use title of video or something, not sample_video
 Future<String> uploadToCloudStorage(File fileToUpload) async {
   print("File size: " + fileToUpload.lengthSync().toString());
   MediaInfo mediaInfo = await VideoCompress.compressVideo(
@@ -50,8 +49,11 @@ Future<String> uploadToCloudStorage(File fileToUpload) async {
   print(
       "Compressed File size: " + File(mediaInfo.path).lengthSync().toString());
 
-  final StorageReference firebaseStorageRef =
-      FirebaseStorage.instance.ref().child(UniqueKey().toString());
+  final StorageReference firebaseStorageRef = FirebaseStorage.instance
+      .ref()
+      .child(UniqueKey().toString() +
+          UniqueKey().toString() +
+          UniqueKey().toString());
   StorageUploadTask uploadTask =
       firebaseStorageRef.putFile(File(mediaInfo.path));
 

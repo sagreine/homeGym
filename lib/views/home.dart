@@ -242,7 +242,8 @@ class _HomeState extends State<Home> {
                                     //homeController.updateExercise(context);
                                     // may need to await this, if it is updating our exercise that we're sending....
                                     await homeController.castMediaTo(
-                                        flingy.selectedPlayer, context);
+                                        player: flingy.selectedPlayer,
+                                        context: context);
                                   } else {
                                     print(
                                         "form is valid but no fling player selected. launching settings");
@@ -271,9 +272,9 @@ class _HomeState extends State<Home> {
                           homeController.getExercises(context);
                         }),
                     RaisedButton(
-                        child: Text('Next Exercise'),
+                        child: Text('Do Warmup'),
                         onPressed: () {
-                          homeController.nextExercise(context);
+                          await homeController.showWarmup();
                         }),
                   ],
                 ),

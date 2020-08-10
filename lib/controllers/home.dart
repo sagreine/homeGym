@@ -8,6 +8,7 @@ import 'package:flutter_fling/remote_media_player.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
 
 //TODO: implement dispose
@@ -209,20 +210,45 @@ class HomeController {
     return exerciseDayController.nextSet(context);
   }
 
+  void showWarmup() {
+    //castMediaTo
+    Map<String, String> jsonToSend;
+    jsonToSend["title"] = "Warmups!";
+    ExerciseSet ex = new ExerciseSet(
+      type: "video/",
+      title: "",
+      description: "",
+      reps: 5,
+      weight: 5,
+      videoPath: "",
+      restPeriodAfter: 5,
+    );
+  }
+
 // see about this ---> pass in the next exercise? concatenate JSON...
 
   // or just don't wait? once we send the video there's nothing
   // stoppping us from retrieving and updating the app right?
-  castMediaTo(RemoteMediaPlayer player, BuildContext context) async {
-    var exercise = Provider.of<ExerciseSet>(context, listen: false);
-    var thisDay = Provider.of<ExerciseDay>(context, listen: false);
-    String thisExercise = json.encode(exercise.toJson());
-    updateExercise(context);
-    String nextExercise = json.encode(exercise.toJson());
-    String thisDayJSON = json.encode(thisDay.toJson());
+  castMediaTo(
+      {RemoteMediaPlayer player,
+      BuildContext context,
+      Map<String, dynamic> jsonHardcode}) async {
+    String jsonToSend;
+    if (context != null && jsonHardcode == null) {
+      var exercise = Provider.of<ExerciseSet>(context, listen: false);
+      var thisDay = Provider.of<ExerciseDay>(context, listen: false);
+      String thisExercise = json.encode(exercise.toJson());
+      updateExercise(context);
+      String nextExercise = json.encode(exercise.toJson());
+      String thisDayJSON = json.encode(thisDay.toJson());
+      jsonToSend = thisExercise + nextExercise + thisDayJSON;
+    } else if (context == null && jsonHardcode != null) {
+      jsonToSend = json.encode(jsonHardcode.toString());
+    } else {
+      print("this should never happen");
+    }
 
     //String url = await getVideo(false, context);
-
     await FlutterFling.play(
       (state, condition, position) {
         // not sure we need this
@@ -234,9 +260,7 @@ class HomeController {
       },
       player: player,
       mediaUri: await getVideo(false, context), // url,
-      mediaTitle: thisExercise +
-          nextExercise +
-          thisDayJSON, //json.encode(exercise.toJson()),
+      mediaTitle: jsonToSend, //json.encode(exercise.toJson()),
     );
   }
 }
