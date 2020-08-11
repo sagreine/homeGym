@@ -270,11 +270,6 @@ class _HomeState extends State<Home> {
                         onPressed: () {
                           homeController.getExercises(context);
                         }),
-                    RaisedButton(
-                        child: Text('Next Exercise'),
-                        onPressed: () {
-                          homeController.nextExercise(context);
-                        }),
                   ],
                 ),
               ],

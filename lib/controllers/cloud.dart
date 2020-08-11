@@ -50,8 +50,11 @@ Future<String> uploadToCloudStorage(File fileToUpload) async {
   print(
       "Compressed File size: " + File(mediaInfo.path).lengthSync().toString());
 
-  final StorageReference firebaseStorageRef =
-      FirebaseStorage.instance.ref().child(UniqueKey().toString());
+  final StorageReference firebaseStorageRef = FirebaseStorage.instance
+      .ref()
+      .child(UniqueKey().toString() +
+          UniqueKey().toString() +
+          UniqueKey().toString());
   StorageUploadTask uploadTask =
       firebaseStorageRef.putFile(File(mediaInfo.path));
 
