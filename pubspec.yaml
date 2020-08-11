@@ -25,7 +25,6 @@ dependencies:
     sdk: flutter
   
   equatable: ^1.0.0
-  wave: ^0.0.8
   meta: ^1.1.8
   flutter_fling: 
     path: C:\Users\sagre\Desktop\flutter_fling-master\flutter_fling-master

@@ -76,6 +76,18 @@ class _HomeState extends State<Home> {
                     // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...
                     child: ListView(
                       children: <Widget>[
+                        new DropdownButton<String>(
+                          items: <String>['Squat', 'Press', 'Deadlift', 'Bench']
+                              .map((String value) {
+                            return new DropdownMenuItem<String>(
+                              value: value,
+                              child: new Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (value) {
+                            homeController.formControllerTitle.text = value;
+                          },
+                        ),
                         SizedBox(height: 8.0),
                         TextFormField(
                           decoration: new InputDecoration(

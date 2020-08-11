@@ -88,7 +88,9 @@ class HomeController {
       // weight is percentage * trainingMax - for now just 100 lb.
       weight: targetWeight.toInt(),
       description: "Weight each side: " +
-          thisWeights.pickPlates(targetWeight: targetWeight)[0].toString(),
+          (thisWeights.pickPlates(targetWeight: targetWeight)[0])
+              .round()
+              .toString(),
     );
     //formControllerTitle
     formControllerDescription.text = exercise.description;
