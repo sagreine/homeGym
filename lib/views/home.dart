@@ -41,6 +41,7 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
+  String _selectedTitle;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -77,6 +78,21 @@ class _HomeState extends State<Home> {
                     child: ListView(
                       children: <Widget>[
                         new DropdownButton<String>(
+                          hint: _selectedTitle == null
+                              ? Text('Main exercise for the day')
+                              : SizedBox(
+                                  width: 50,
+                                  child: TextFormField(
+                                    controller:
+                                        homeController.formControllerTitle,
+                                    validator: (value) {
+                                      if (value.isEmpty) {
+                                        return "Title can't be blank";
+                                      }
+                                      return null;
+                                    },
+                                  ),
+                                ),
                           items: <String>['Squat', 'Press', 'Deadlift', 'Bench']
                               .map((String value) {
                             return new DropdownMenuItem<String>(
@@ -84,36 +100,16 @@ class _HomeState extends State<Home> {
                               child: new Text(value),
                             );
                           }).toList(),
-                          onChanged: (value) {
-                            homeController.formControllerTitle.text = value;
+                          value: _selectedTitle,
+                          onChanged: (_) {
+                            setState(() {
+                              homeController.formControllerTitle.text = _;
+                              _selectedTitle = _;
+                            });
                           },
                         ),
                         SizedBox(height: 8.0),
-                        TextFormField(
-                          decoration: new InputDecoration(
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                color: Colors.greenAccent,
-                                width: 1.0,
-                                style: BorderStyle.solid,
-                              ),
-                            ),
-                            enabledBorder: OutlineInputBorder(
-                              borderSide: BorderSide(
-                                  color: Colors.blueGrey, width: 1.0),
-                            ),
-                            labelText: "Exercise Title",
-                          ),
-                          autocorrect: true,
-                          enableSuggestions: true,
-                          controller: homeController.formControllerTitle,
-                          validator: (value) {
-                            if (value.isEmpty) {
-                              return "Title can't be blank";
-                            }
-                            return null;
-                          },
-                        ),
+
                         SizedBox(height: 8.0),
                         TextFormField(
                           decoration: new InputDecoration(
