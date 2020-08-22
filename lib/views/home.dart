@@ -11,6 +11,9 @@ import 'package:home_gym/controllers/controllers.dart';
 // more of this should go in controller functions
 
 class Home extends StatefulWidget {
+  final String program;
+  final String exercise;
+  Home({Key key, this.program, this.exercise});
   @override
   _HomeState createState() => _HomeState();
 }
@@ -25,10 +28,13 @@ class _HomeState extends State<Home> {
 
   // i don't know if we need these? shouldn't, ideally..
   FlutterFling fling;
+  String _selectedTitle;
 
   @override
   void initState() {
     super.initState();
+    homeController.formControllerTitle.text = widget.exercise;
+    _selectedTitle = widget.exercise;
     fling = FlutterFling();
   }
 
@@ -38,7 +44,6 @@ class _HomeState extends State<Home> {
     super.dispose();
   }
 
-  String _selectedTitle;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -275,7 +280,7 @@ class _HomeState extends State<Home> {
                     RaisedButton(
                         child: Text('Get Exercises'),
                         onPressed: () {
-                          homeController.getExercises(context);
+                          homeController.getExercises(context, widget.program);
                         }),
                   ],
                 ),

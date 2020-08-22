@@ -104,7 +104,7 @@ class HomeController {
     }
   }
 
-  void getExercises(BuildContext context) async {
+  void getExercises(BuildContext context, String program) async {
     // would update the exercise model here so pass in context...
     // this needs to be a model.
     DocumentSnapshot pctAndReps;
@@ -114,10 +114,8 @@ class HomeController {
         .where("id", isEqualTo: "bbbWeek1")
         .getDocuments();*/
     // pull these from a .xml file
-    pctAndReps = await Firestore.instance
-        .collection('PROGRAMS')
-        .document("bbbWeek1")
-        .get();
+    pctAndReps =
+        await Firestore.instance.collection('PROGRAMS').document(program).get();
     List<int> reps = new List<int>.from(pctAndReps.data["reps"]);
     List<double> percentages =
         new List<double>.from(pctAndReps.data["percentages"]);

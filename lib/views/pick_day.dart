@@ -147,7 +147,7 @@ class _PickDayState extends State<PickDay> {
                   child: Text("Go!", style: TextStyle(fontSize: 50)),
                   onPressed: !pickDayController.readyToGo
                       ? null
-                      : () => print("ready to go"),
+                      : () => pickDayController.launchDay(context),
                   disabledColor: Color(0xFF06ac51),
                   color: Color(0xFF1976D2),
                 )

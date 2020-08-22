@@ -31,6 +31,7 @@ class PickDayController {
     updateReadyToGo();
   }
 
+// TODO: review this, async is messing up if you pick exercise then pick program, or Go button isn't being refreshed at least on the first itme thorugh
   void pickProgram(BuildContext context) async {
     // launch the page to pick them, return it when done
     /// - do this more safely obviously. if they OS-back button this goes badly.
@@ -40,5 +41,17 @@ class PickDayController {
     programController.text = selectedProgram;
     // or just do actual state management...
     updateReadyToGo();
+  }
+
+  // launch the day, which is program and exercise
+  // not sure we care about context here?
+  void launchDay(BuildContext context) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => Home(
+                program: selectedProgram,
+                exercise: exercises[
+                    selectedExercise.indexWhere((element) => element)])));
   }
 }
