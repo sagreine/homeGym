@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:home_gym/controllers/cloud.dart';
 import 'package:home_gym/views/views.dart';
 
 class PickDayController {
