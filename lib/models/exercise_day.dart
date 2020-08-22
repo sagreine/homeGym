@@ -6,6 +6,7 @@ part 'exercise_day.g.dart';
 @JsonSerializable()
 class ExerciseDay extends ChangeNotifier {
   // sets is derivable no?
+  String program;
   int sets;
   double trainingMax;
   int currentSet;
@@ -20,6 +21,7 @@ class ExerciseDay extends ChangeNotifier {
   List<String> assistancePush;
 
   ExerciseDay({
+    this.program,
     this.sets,
     this.reps,
     this.currentSet,
@@ -34,6 +36,7 @@ class ExerciseDay extends ChangeNotifier {
   });
 
   void buildDay({
+    String program,
     int sets,
     List<int> reps,
     List<double> percentages,
@@ -46,6 +49,7 @@ class ExerciseDay extends ChangeNotifier {
     List<String> assistanceCore,
     List<String> assistancePush,
   }) {
+    this.program = program;
     this.sets = sets;
     this.reps = reps;
     this.percentages = percentages;
@@ -61,17 +65,20 @@ class ExerciseDay extends ChangeNotifier {
   }
 
   // hmmm
+  // also, previously returned true right away with no notify. might want that...
   bool nextSet() {
+    bool returnval;
     print("old current set: " + currentSet.toString());
     if (currentSet + 1 < sets) {
       currentSet++;
-      return true;
+      returnval = true;
     } else {
       print("this was the last set");
-      false;
+      returnval = false;
     }
     print("new current set: " + currentSet.toString());
     notifyListeners();
+    return returnval;
   }
 
   // update currentSet here .... check it is < sets - 1 etc.
@@ -83,6 +90,7 @@ class ExerciseDay extends ChangeNotifier {
 
   //@override
   List<Object> get props => [
+        program,
         sets,
         reps,
         percentages,

@@ -11,7 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 //TODO: implement dispose
-// shouldn't really be raw querying in here...
+//TODO: put raw querying in cloud layer...
 //TODO: this is all kind of just thrown in here for now. some is from startup that isn't created yet.
 class HomeController {
   TextEditingController formControllerTitle = new TextEditingController();
@@ -104,7 +104,7 @@ class HomeController {
     }
   }
 
-  void getExercises(BuildContext context) async {
+  void getExercises(BuildContext context, String program) async {
     // would update the exercise model here so pass in context...
     // this needs to be a model.
     DocumentSnapshot pctAndReps;
@@ -114,10 +114,8 @@ class HomeController {
         .where("id", isEqualTo: "bbbWeek1")
         .getDocuments();*/
     // pull these from a .xml file
-    pctAndReps = await Firestore.instance
-        .collection('PROGRAMS')
-        .document("bbbWeek1")
-        .get();
+    pctAndReps =
+        await Firestore.instance.collection('PROGRAMS').document(program).get();
     List<int> reps = new List<int>.from(pctAndReps.data["reps"]);
     List<double> percentages =
         new List<double>.from(pctAndReps.data["percentages"]);
@@ -154,7 +152,6 @@ class HomeController {
   void getMaxes(BuildContext context) async {
     QuerySnapshot maxes;
     maxes = await Firestore.instance.collection('MAXES').getDocuments();
-
     liftMaxController.updateMax(
         context: context,
         lift: "bench",

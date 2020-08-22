@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 class ExerciseDayController {
   updateDay(
       {BuildContext context,
+      String program,
       List<int> reps,
       List<double> percentages,
       double trainingMaxPct,
@@ -17,6 +18,7 @@ class ExerciseDayController {
       int assistancePushReps}) {
     var day = Provider.of<ExerciseDay>(context, listen: false);
     day.buildDay(
+      program: program,
       currentSet: 0,
       reps: reps,
       percentages: percentages,

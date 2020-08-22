@@ -29,7 +29,6 @@ class FlingController {
     try {
       Provider.of<FlingMediaModel>(context, listen: false)
           .selectPlayer(_selectedPlayer);
-      ;
     } on PlatformException {
       print('Failed to get selected device');
     }
