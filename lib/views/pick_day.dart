@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/views/views.dart';
 
 class PickDay extends StatefulWidget {
@@ -7,10 +8,7 @@ class PickDay extends StatefulWidget {
 }
 
 class _PickDayState extends State<PickDay> {
-  // this is an obviously bad idea
-  List<String> exercises = ["Squat", "Deadlift", "Bench", "Press"];
-  List<bool> selectedExercise = [false, false, false, false];
-  bool readyToGo = false;
+  PickDayController pickDayController = PickDayController();
 
   @override
   Widget build(BuildContext context) {
@@ -55,7 +53,7 @@ class _PickDayState extends State<PickDay> {
                     children: List.generate(4, (index) {
                       return AnimatedContainer(
                         decoration: BoxDecoration(
-                          gradient: selectedExercise[index]
+                          gradient: pickDayController.selectedExercise[index]
                               ? LinearGradient(
                                   colors: <Color>[
                                     Color(0xFF0D47A1),
@@ -88,18 +86,22 @@ class _PickDayState extends State<PickDay> {
                               onTap: () {
                                 // this is lazy and bad.
                                 setState(() {
-                                  if (selectedExercise[index]) {
-                                    selectedExercise[index] = false;
+                                  if (pickDayController
+                                      .selectedExercise[index]) {
+                                    pickDayController.selectedExercise[index] =
+                                        false;
                                   } else {
-                                    selectedExercise.setAll(
+                                    pickDayController.selectedExercise.setAll(
                                         0, [false, false, false, false]);
-                                    selectedExercise[index] = true;
+                                    pickDayController.selectedExercise[index] =
+                                        true;
                                   }
                                 });
                               },
-                              splashColor: !selectedExercise[index]
-                                  ? Color(0xFF1976D2)
-                                  : Color(0xFF06ac51),
+                              splashColor:
+                                  !pickDayController.selectedExercise[index]
+                                      ? Color(0xFF1976D2)
+                                      : Color(0xFF06ac51),
                               child: SizedBox(
                                 width: 400,
                                 height: 400,
@@ -109,7 +111,9 @@ class _PickDayState extends State<PickDay> {
                                         CrossAxisAlignment.center,
                                     mainAxisSize: MainAxisSize.max,
                                     children: [
-                                      Text(exercises[index].toString(),
+                                      Text(
+                                          pickDayController.exercises[index]
+                                              .toString(),
                                           style: TextStyle(fontSize: 50)),
                                     ]),
                               )),
@@ -125,28 +129,34 @@ class _PickDayState extends State<PickDay> {
                   height: 80,
                   width: 380,
                   child: TextFormField(
-                      decoration: new InputDecoration(
-                        enabledBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Color(0xFF06ac51),
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ),
+                    controller: pickDayController.programController,
+                    decoration: new InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Color(0xFF06ac51),
+                          width: 1.0,
+                          style: BorderStyle.solid,
                         ),
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Color(0xFF1976D2), width: 1.0),
-                        ),
-                        labelText: "Select Program",
                       ),
-                      readOnly: true,
-                      style: TextStyle(fontSize: 50),
-                      onTap: () {}),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Color(0xFF1976D2), width: 1.0),
+                      ),
+                      labelText: "Select Program",
+                    ),
+                    readOnly: true,
+                    style: TextStyle(fontSize: 50),
+                    onTap: () {
+                      pickDayController.pickProgram(context);
+                    },
+                  ),
                 ),
                 SizedBox(height: 10),
                 RaisedButton(
                   child: Text("Go!", style: TextStyle(fontSize: 50)),
-                  onPressed: !readyToGo ? null : () => print("ready to go"),
+                  onPressed: !pickDayController.readyToGo
+                      ? null
+                      : () => print("ready to go"),
                   disabledColor: Color(0xFF06ac51),
                   color: Color(0xFF1976D2),
                 )

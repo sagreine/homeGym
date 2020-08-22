@@ -25,9 +25,6 @@ class _HomeState extends State<Home> {
 
   // i don't know if we need these? shouldn't, ideally..
   FlutterFling fling;
-  ExerciseDay exerciseDay;
-  String address;
-  int port;
 
   @override
   void initState() {
@@ -251,6 +248,8 @@ class _HomeState extends State<Home> {
                                     // may need to await this, if it is updating our exercise that we're sending....
                                     await homeController.castMediaTo(
                                         flingy.selectedPlayer, context);
+                                    // TODO: this routing should be done through controller
+                                    // but need to have context...
                                   } else {
                                     print(
                                         "form is valid but no fling player selected. launching settings");

@@ -16,6 +16,21 @@ void createDatabaseRecord(ExerciseSet exercise) async {
       );
 }
 
+Future getPrograms() async {
+  //List<String> programs = new List<String>();
+/*
+  await Firestore.instance.collection('PROGRAMS').getDocuments().then((value) {
+    value.documents.forEach((element) {
+      programs.add(element.documentID);
+    });
+    return programs;
+  });
+*/
+  QuerySnapshot abc =
+      await Firestore.instance.collection('PROGRAMS').getDocuments();
+  return abc;
+}
+
 void updateBarWeightCloud(double newWeight) async {
   final databaseReference = Firestore.instance;
   Map data = Map<String, dynamic>();
