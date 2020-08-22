@@ -11,7 +11,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 //TODO: implement dispose
-// shouldn't really be raw querying in here...
+//TODO: put raw querying in cloud layer...
 //TODO: this is all kind of just thrown in here for now. some is from startup that isn't created yet.
 class HomeController {
   TextEditingController formControllerTitle = new TextEditingController();
@@ -154,7 +154,6 @@ class HomeController {
   void getMaxes(BuildContext context) async {
     QuerySnapshot maxes;
     maxes = await Firestore.instance.collection('MAXES').getDocuments();
-
     liftMaxController.updateMax(
         context: context,
         lift: "bench",

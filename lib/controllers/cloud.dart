@@ -38,8 +38,6 @@ void updatePlateCloud(double _plate, int _plateCount) async {
 }
 
 void updateTrainingMaxCloud(String lift, double newMax) async {}
-
-//TODO: use title of video or something, not sample_video
 Future<String> uploadToCloudStorage(File fileToUpload) async {
   print("File size: " + fileToUpload.lengthSync().toString());
   MediaInfo mediaInfo = await VideoCompress.compressVideo(

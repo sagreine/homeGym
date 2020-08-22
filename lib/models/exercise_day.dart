@@ -61,17 +61,20 @@ class ExerciseDay extends ChangeNotifier {
   }
 
   // hmmm
+  // also, previously returned true right away with no notify. might want that...
   bool nextSet() {
+    bool returnval;
     print("old current set: " + currentSet.toString());
     if (currentSet + 1 < sets) {
       currentSet++;
-      return true;
+      returnval = true;
     } else {
       print("this was the last set");
-      false;
+      returnval = false;
     }
     print("new current set: " + currentSet.toString());
     notifyListeners();
+    return returnval;
   }
 
   // update currentSet here .... check it is < sets - 1 etc.

@@ -43,5 +43,6 @@ class LiftMaxController {
         liftMaxes.squatMax = newMax;
         break;
     }
+    // call (perhaps not implemented yet) cloud update liftMax function - that'd be if the max both wasn't null and is now different.
   }
 }
