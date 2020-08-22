@@ -7,51 +7,47 @@ class PickDay extends StatefulWidget {
 }
 
 class _PickDayState extends State<PickDay> {
-  bool isPickedTest = false;
+  List<String> exercises = ["Squat", "Deadlift", "Bench", "Press"];
+  List<bool> selectedExercise = [false, false, false, false];
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Home Gym TV"),
-        leading: Padding(
-          padding: EdgeInsets.all(3),
-          child: Image.asset("assets/images/pos_icon.png"),
+        appBar: AppBar(
+          title: Text("Home Gym TV"),
+          leading: Padding(
+            padding: EdgeInsets.all(3),
+            child: Image.asset("assets/images/pos_icon.png"),
+          ),
+          actions: <Widget>[
+            IconButton(
+              icon: const Icon(Icons.settings),
+              tooltip: 'Settings',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                      builder: (BuildContext context) => Settings()),
+                );
+              },
+            ),
+          ],
         ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Settings',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                    builder: (BuildContext context) => Settings()),
-              );
-            },
-          ),
-        ],
-      ),
-      body: ListView(
-        children: [
-          SizedBox(
-            height: 20,
-            child: Text("Select an exercise for today"),
-          ),
-          SizedBox(
-            height: 400,
-            child: GridView.count(
-              crossAxisSpacing: 2,
-              crossAxisCount: 2,
-              children: [
-                RaisedButton(
-                  onPressed: () {
-                    isPickedTest = !isPickedTest;
-                    setState(() {});
-                  },
-                  padding: const EdgeInsets.all(0.0),
-                  elevation: 4,
-                  child: Ink(
+        body: ListView(
+          children: [
+            SizedBox(
+              height: 20,
+              child: Text("Select an exercise for today"),
+            ),
+            SizedBox(
+              height: 400,
+              child: GridView.count(
+                mainAxisSpacing: 2,
+                crossAxisSpacing: 2,
+                crossAxisCount: 2,
+                children: List.generate(4, (index) {
+                  return AnimatedContainer(
                     decoration: BoxDecoration(
-                      gradient: isPickedTest
+                      gradient: selectedExercise[index]
                           ? LinearGradient(
                               colors: <Color>[
                                 Color(0xFF0D47A1),
@@ -61,93 +57,57 @@ class _PickDayState extends State<PickDay> {
                             )
                           : LinearGradient(
                               colors: <Color>[
-                                Color(0xFF42A5F5),
-                                Color(0xFF1976D2),
-                                Color(0xFF0D47A1),
+                                Color(0xFF058f43),
+                                Color(0xFF06ac51),
+                                Color(0xFF1bcc50),
                               ],
                             ),
                     ),
-                    child: Container(
-                      alignment: Alignment.center,
-                      width: 400,
-                      height: 400,
-                      decoration: const BoxDecoration(),
-                      padding: const EdgeInsets.all(10.0),
-                      child:
-                          const Text('Squat', style: TextStyle(fontSize: 50)),
+                    //color: isPickedTest ? Colors.blue : Colors.yellow[200],
+                    duration: Duration(milliseconds: 300),
+                    width: 400,
+                    height: 400,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.all(0),
+                    // this isn't a great idea. allows splash, but doing it this way makes things harder to work with
+                    // e.g. you need the sized box below because alignment: up above would otherwise shrink this to the
+                    // size of the text box...
+                    child: Material(
+                      type: MaterialType.transparency,
+                      child: InkWell(
+                          onTap: () {
+                            // this is lazy and bad.
+                            setState(() {
+                              if (selectedExercise[index]) {
+                                selectedExercise[index] = false;
+                              } else {
+                                selectedExercise
+                                    .setAll(0, [false, false, false, false]);
+                                selectedExercise[index] = true;
+                              }
+                            });
+                          },
+                          splashColor: !selectedExercise[index]
+                              ? Color(0xFF1976D2)
+                              : Color(0xFF06ac51),
+                          child: SizedBox(
+                            width: 400,
+                            height: 400,
+                            child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                mainAxisSize: MainAxisSize.max,
+                                children: [
+                                  Text(exercises[index].toString(),
+                                      style: TextStyle(fontSize: 50)),
+                                ]),
+                          )),
                     ),
-                  ),
-//                  splashColor: Colors.yellow[200],
-//                  animationDuration: Duration(seconds: 2),
-                ),
-
-                //splashColor: Colors.yellow[200],
-                //padding: const EdgeInsets.all(0.0),
-                AnimatedContainer(
-                  color: isPickedTest ? Colors.blue : Colors.yellow[200],
-                  duration: Duration(milliseconds: 300),
-
-                  width: 400,
-                  height: 400,
-                  //padding: const EdgeInsets.all(10.0),
-
-                  child: InkWell(
-                    onTap: () {
-                      isPickedTest = !isPickedTest;
-                      setState(() {});
-                    },
-                    splashColor:
-                        !isPickedTest ? Colors.blue : Colors.yellow[200],
-                    child:
-                        const Text('Deadlift', style: TextStyle(fontSize: 50)),
-                  ),
-                ),
-
-//
-                RaisedButton(
-                  onPressed: () {
-                    isPickedTest = !isPickedTest;
-                    setState(() {});
-                  },
-                  animationDuration: Duration(seconds: 2),
-                  autofocus: true,
-                  clipBehavior: Clip.none,
-                  splashColor: isPickedTest ? Colors.blue : Colors.yellow[200],
-                  elevation: isPickedTest ? 2 : 4,
-                  shape:
-                      isPickedTest ? CircleBorder() : BeveledRectangleBorder(),
-                  color: isPickedTest ? Colors.blue : Colors.yellow[200],
-                  child: Text(
-                    "Bench",
-                    style: Theme.of(context).textTheme.headline5,
-                  ),
-                ),
-                AnimatedContainer(
-                  color: isPickedTest ? Colors.blue : Colors.yellow[200],
-                  duration: Duration(milliseconds: 300),
-
-                  width: 400,
-                  height: 400,
-                  //padding: const EdgeInsets.all(10.0),
-                  child: Material(
-                    type: MaterialType.transparency,
-                    child: InkWell(
-                      onTap: () {
-                        isPickedTest = !isPickedTest;
-                        setState(() {});
-                      },
-                      splashColor:
-                          !isPickedTest ? Colors.blue : Colors.yellow[200],
-                      child: const Text('Deadlift',
-                          style: TextStyle(fontSize: 50)),
-                    ),
-                  ),
-                ),
-              ],
+                  );
+                }),
+              ),
             ),
-          ),
-        ],
-      ),
-    );
+          ],
+        ));
   }
 }
