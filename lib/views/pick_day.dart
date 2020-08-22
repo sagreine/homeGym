@@ -86,16 +86,7 @@ class _PickDayState extends State<PickDay> {
                               onTap: () {
                                 // this is lazy and bad.
                                 setState(() {
-                                  if (pickDayController
-                                      .selectedExercise[index]) {
-                                    pickDayController.selectedExercise[index] =
-                                        false;
-                                  } else {
-                                    pickDayController.selectedExercise.setAll(
-                                        0, [false, false, false, false]);
-                                    pickDayController.selectedExercise[index] =
-                                        true;
-                                  }
+                                  pickDayController.pickExercise(index);
                                 });
                               },
                               splashColor:
