@@ -22,9 +22,6 @@ class HomeController {
       new TextEditingController();
 
   ExerciseDayController exerciseDayController = new ExerciseDayController();
-  LiftMaxController liftMaxController = new LiftMaxController();
-  LifterWeightsController lifterWeightsController =
-      new LifterWeightsController();
 
   Future<String> getVideo(bool isLocalTesting, BuildContext context) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
@@ -122,6 +119,7 @@ class HomeController {
 
     //var exercise = Provider.of<ExerciseDay>(context, listen: false);
     exerciseDayController.updateDay(
+      program: program,
       context: context,
       reps: reps,
       percentages: percentages,
@@ -133,75 +131,6 @@ class HomeController {
       assistancePush: new List<String>.from(pctAndReps.data["assistance_push"]),
       assistancePushReps: pctAndReps.data["assistance_push_reps"],
     );
-    getMaxes(context);
-    getBarWeight(context);
-    getPlates(context);
-  }
-
-  void getBarWeight(BuildContext context) async {
-    DocumentSnapshot barWeight;
-    barWeight = await Firestore.instance
-        .collection('AVAILABLE_WEIGHTS')
-        .document("bar")
-        .get();
-    var liftweights = Provider.of<LifterWeights>(context, listen: false);
-    liftweights.barWeight = barWeight.data["weight"];
-  }
-
-  // should make this lazier
-  void getMaxes(BuildContext context) async {
-    QuerySnapshot maxes;
-    maxes = await Firestore.instance.collection('MAXES').getDocuments();
-    liftMaxController.updateMax(
-        context: context,
-        lift: "bench",
-        newMax: maxes.documents
-            .elementAt(maxes.documents
-                .indexWhere((document) => document.documentID == "bench"))
-            .data["currentMax"]);
-    liftMaxController.updateMax(
-        context: context,
-        lift: "deadlift",
-        newMax: maxes.documents
-            .elementAt(maxes.documents
-                .indexWhere((document) => document.documentID == "deadlift"))
-            .data["currentMax"]);
-    liftMaxController.updateMax(
-        context: context,
-        lift: "squat",
-        newMax: maxes.documents
-            .elementAt(maxes.documents
-                .indexWhere((document) => document.documentID == "squat"))
-            .data["currentMax"]);
-    liftMaxController.updateMax(
-        context: context,
-        lift: "press",
-        newMax: maxes.documents
-            .elementAt(maxes.documents
-                .indexWhere((document) => document.documentID == "press"))
-            .data["currentMax"]);
-  }
-
-  // very stupid. rearrange db organization instead of doing this.
-  void getPlates(BuildContext context) async {
-    QuerySnapshot plates;
-
-    //await Firestore.instance.collection('AVAILABLE_WEIGHTS').getDocuments();
-    plates =
-        await Firestore.instance.collection("AVAILABLE_WEIGHTS").getDocuments();
-
-    plates.documents.forEach((result) {
-      if (result.documentID != "bar") {
-        print(result.data["count"]);
-        lifterWeightsController.updatePlate(
-            context,
-            double.parse(
-                result.documentID.substring(0, result.documentID.indexOf("_"))),
-            result.data["count"]);
-      }
-    });
-
-    //var liftweights = Provider.of<LifterWeights>(context, listen: false);
   }
 
   bool nextExercise(BuildContext context) {

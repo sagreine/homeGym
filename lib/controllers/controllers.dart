@@ -9,3 +9,4 @@ export 'package:home_gym/controllers/home.dart';
 export 'package:home_gym/controllers/settings.dart';
 export 'package:home_gym/controllers/pick_day.dart';
 export 'package:home_gym/controllers/programs.dart';
+export 'package:home_gym/controllers/login.dart';

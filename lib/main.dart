@@ -56,7 +56,7 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       title: 'Home Gym',
-      home: PickDay(),
+      home: Login(),
       //Home(),
 
       /*BlocProvider(
