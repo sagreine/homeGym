@@ -40,8 +40,8 @@ class _HomeState extends State<Home> {
 
   @override
   void dispose() async {
-    await FlutterFling.stopDiscoveryController();
     super.dispose();
+    await FlutterFling.stopDiscoveryController();
   }
 
   @override

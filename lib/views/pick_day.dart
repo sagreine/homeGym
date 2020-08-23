@@ -53,7 +53,7 @@ class _PickDayState extends State<PickDay> {
                     children: List.generate(4, (index) {
                       return AnimatedContainer(
                         decoration: BoxDecoration(
-                          gradient: pickDayController.selectedExercise[index]
+                          gradient: !pickDayController.selectedExercise[index]
                               ? LinearGradient(
                                   colors: <Color>[
                                     Color(0xFF0D47A1),
@@ -91,8 +91,8 @@ class _PickDayState extends State<PickDay> {
                               },
                               splashColor:
                                   !pickDayController.selectedExercise[index]
-                                      ? Color(0xFF1976D2)
-                                      : Color(0xFF06ac51),
+                                      ? Color(0xFF06ac51)
+                                      : Color(0xFF1976D2),
                               child: SizedBox(
                                 width: 400,
                                 height: 400,
@@ -124,21 +124,22 @@ class _PickDayState extends State<PickDay> {
                     decoration: new InputDecoration(
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(
-                          color: Color(0xFF06ac51),
+                          color: Color(0xFF1976D2),
                           width: 1.0,
                           style: BorderStyle.solid,
                         ),
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderSide:
-                            BorderSide(color: Color(0xFF1976D2), width: 1.0),
+                            BorderSide(color: Color(0xFF06ac51), width: 1.0),
                       ),
                       labelText: "Select Program",
                     ),
                     readOnly: true,
                     style: TextStyle(fontSize: 50),
-                    onTap: () {
-                      pickDayController.pickProgram(context);
+                    onTap: () async {
+                      await pickDayController.pickProgram(context);
+                      setState(() {});
                     },
                   ),
                 ),
@@ -148,8 +149,8 @@ class _PickDayState extends State<PickDay> {
                   onPressed: !pickDayController.readyToGo
                       ? null
                       : () => pickDayController.launchDay(context),
-                  disabledColor: Color(0xFF06ac51),
-                  color: Color(0xFF1976D2),
+                  disabledColor: Color(0xFF1976D2),
+                  color: Color(0xFF06ac51),
                 )
               ],
             ),

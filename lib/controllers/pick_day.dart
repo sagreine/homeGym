@@ -37,15 +37,18 @@ class PickDayController {
   }
 
 // TODO: review this, async is messing up if you pick exercise then pick program, or Go button isn't being refreshed at least on the first itme thorugh
-  void pickProgram(BuildContext context) async {
+  Future<void> pickProgram(BuildContext context) async {
     // launch the page to pick them, return it when done
     /// - do this more safely obviously. if they OS-back button this goes badly.
-    selectedProgram = await Navigator.push(
+    String temp = await Navigator.push(
         context, MaterialPageRoute(builder: (context) => Programs()));
     // update the page we're on now
-    programController.text = selectedProgram;
-    // or just do actual state management...
-    updateReadyToGo();
+    if (temp != null) {
+      selectedProgram = temp;
+      programController.text = selectedProgram;
+      // or just... do actual state management...
+      updateReadyToGo();
+    }
   }
 
   Future<void> getExercises(BuildContext context, String program) async {
