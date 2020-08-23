@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/views/pick_day.dart';
 import 'package:home_gym/controllers/controllers.dart';
-import 'package:home_gym/models/models.dart';
 
 class Login extends StatefulWidget {
   @override
@@ -14,9 +13,11 @@ class _LoginState extends State<Login> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // for now, just send them to the pick day page.
-      body: RaisedButton(
+        // for now, just send them to the pick day page.
+        body: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+      RaisedButton(
           onPressed: () {
+            // validate first, then get the maxes for this user and move onto today...
             loginController.getMaxes(context);
             loginController.getBarWeight(context);
             loginController.getPlates(context);
@@ -24,6 +25,6 @@ class _LoginState extends State<Login> {
                 builder: (BuildContext context) => PickDay()));
           },
           child: Text("Login page")),
-    );
+    ]));
   }
 }

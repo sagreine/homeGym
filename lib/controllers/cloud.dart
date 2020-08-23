@@ -27,11 +27,12 @@ Future getPrograms() async {
     return programs;
   });
 */
-  QuerySnapshot abc =
+  QuerySnapshot programs =
       await Firestore.instance.collection('PROGRAMS').getDocuments();
-  return abc;
+  return programs;
 }
 
+//TODO untested
 void updateBarWeightCloud(double newWeight) async {
   final databaseReference = Firestore.instance;
   Map data = Map<String, dynamic>();
@@ -43,6 +44,7 @@ void updateBarWeightCloud(double newWeight) async {
       .setData(data);
 }
 
+//TODO untested
 void updatePlateCloud(double _plate, int _plateCount) async {
   final databaseReference = Firestore.instance;
   Map data = Map<String, dynamic>();
@@ -53,7 +55,9 @@ void updatePlateCloud(double _plate, int _plateCount) async {
       .setData(data);
 }
 
+//TODO: implement, test
 void updateTrainingMaxCloud(String lift, double newMax) async {}
+
 Future<String> uploadToCloudStorage(File fileToUpload) async {
   print("File size: " + fileToUpload.lengthSync().toString());
   MediaInfo mediaInfo = await VideoCompress.compressVideo(
@@ -90,7 +94,7 @@ Future<double> getBarWeightCloud() async {
 }
 
 // should make this lazier
-// not liking having the controller in here. would rather return a
+// not liking having the controller in here? would rather return a
 // list to the page that then uses the controller or something..
 void getMaxesCloud(context) async {
   LiftMaxController liftMaxController = new LiftMaxController();
@@ -143,4 +147,36 @@ void getPlatesCloud(context) async {
           result.data["count"]);
     }
   });
+}
+
+Future<void> getExercisesCloud(context, String program) async {
+  ExerciseDayController exerciseDayController = ExerciseDayController();
+  // would update the exercise model here so pass in context...
+  // this needs to be a model.
+  DocumentSnapshot pctAndReps;
+
+  /*var percentAndReps = await Firestore.instance
+        .collection('PROGRAMS')
+        .where("id", isEqualTo: "bbbWeek1")
+        .getDocuments();*/
+  // pull these from a .xml file
+  pctAndReps =
+      await Firestore.instance.collection('PROGRAMS').document(program).get();
+  List<int> reps = new List<int>.from(pctAndReps.data["reps"]);
+  List<double> percentages =
+      new List<double>.from(pctAndReps.data["percentages"]);
+  //var exercise = Provider.of<ExerciseDay>(context, listen: false);
+  await exerciseDayController.updateDay(
+    program: program,
+    context: context,
+    reps: reps,
+    percentages: percentages,
+    trainingMaxPct: pctAndReps.data["trainingMaxPct"],
+    assistanceCore: new List<String>.from(pctAndReps.data["assistance_core"]),
+    assistanceCoreReps: pctAndReps.data["assistance_core_reps"],
+    assistancePull: new List<String>.from(pctAndReps.data["assistance_pull"]),
+    assistancePullReps: pctAndReps.data["assistance_pull_reps"],
+    assistancePush: new List<String>.from(pctAndReps.data["assistance_push"]),
+    assistancePushReps: pctAndReps.data["assistance_push_reps"],
+  );
 }

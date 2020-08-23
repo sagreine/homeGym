@@ -40,7 +40,7 @@ class HomeController {
   }
 
   // update our model.
-  void updateThisExercise(context) {
+  void updateThisExercise(BuildContext context) {
     var thisSet = Provider.of<ExerciseSet>(context, listen: false);
     thisSet.updateExercise(
         title: formControllerTitle.text,
@@ -52,89 +52,18 @@ class HomeController {
 
   // may eventually move to ExerciseDay is a collection of ExerciseSet objects...
   // but for now staying away from relational stuff.
-  void updateExercise(context) {
-    var exercise = Provider.of<ExerciseSet>(context, listen: false);
-    var thisDay = Provider.of<ExerciseDay>(context, listen: false);
-    var thisMax = Provider.of<LiftMaxes>(context, listen: false);
-    var thisWeights = Provider.of<LifterWeights>(context, listen: false);
-    int trainingMax = 100;
-    switch (exercise.title.toLowerCase()) {
-      case "deadlift":
-        trainingMax =
-            (thisMax.deadliftMax.toDouble() * thisDay.trainingMax).toInt();
-        break;
-      case "bench":
-        trainingMax =
-            (thisMax.benchMax.toDouble() * thisDay.trainingMax).toInt();
-        break;
-      case "press":
-        trainingMax =
-            (thisMax.pressMax.toDouble() * thisDay.trainingMax).toInt();
-        break;
-      case "squat":
-        trainingMax =
-            (thisMax.squatMax.toDouble() * thisDay.trainingMax).toInt();
-        break;
-    }
-    double targetWeight =
-        ((thisDay.percentages[thisDay.currentSet]) * trainingMax);
+  void updateExercise({BuildContext context}) {
+    ExerciseController exerciseController = ExerciseController();
+    exerciseController.updateExercise(context: context);
+    displayInExerciseInfo(context: context);
+  }
 
-    exercise.updateExercise(
-      // reps is a straight pull
-      reps: thisDay.reps[thisDay.currentSet],
-      // weight is percentage * trainingMax - for now just 100 lb.
-      weight: targetWeight.toInt(),
-      description: "Weight each side: " +
-          (thisWeights.pickPlates(targetWeight: targetWeight)[0])
-              .round()
-              .toString(),
-    );
-    //formControllerTitle
+  void displayInExerciseInfo({BuildContext context}) {
+    var exercise = Provider.of<ExerciseSet>(context, listen: false);
+    formControllerTitle.text = exercise.title;
     formControllerDescription.text = exercise.description;
     formControllerReps.text = exercise.reps.toString();
     formControllerWeight.text = exercise.weight.toString();
-
-    // then push to the next set
-    // this is a hack for now.
-    if (!nextExercise(context)) {
-      formControllerDescription.text += "- Last set!";
-    }
-  }
-
-  void getExercises(BuildContext context, String program) async {
-    // would update the exercise model here so pass in context...
-    // this needs to be a model.
-    DocumentSnapshot pctAndReps;
-
-    /*var percentAndReps = await Firestore.instance
-        .collection('PROGRAMS')
-        .where("id", isEqualTo: "bbbWeek1")
-        .getDocuments();*/
-    // pull these from a .xml file
-    pctAndReps =
-        await Firestore.instance.collection('PROGRAMS').document(program).get();
-    List<int> reps = new List<int>.from(pctAndReps.data["reps"]);
-    List<double> percentages =
-        new List<double>.from(pctAndReps.data["percentages"]);
-
-    //var exercise = Provider.of<ExerciseDay>(context, listen: false);
-    exerciseDayController.updateDay(
-      program: program,
-      context: context,
-      reps: reps,
-      percentages: percentages,
-      trainingMaxPct: pctAndReps.data["trainingMaxPct"],
-      assistanceCore: new List<String>.from(pctAndReps.data["assistance_core"]),
-      assistanceCoreReps: pctAndReps.data["assistance_core_reps"],
-      assistancePull: new List<String>.from(pctAndReps.data["assistance_pull"]),
-      assistancePullReps: pctAndReps.data["assistance_pull_reps"],
-      assistancePush: new List<String>.from(pctAndReps.data["assistance_push"]),
-      assistancePushReps: pctAndReps.data["assistance_push_reps"],
-    );
-  }
-
-  bool nextExercise(BuildContext context) {
-    return exerciseDayController.nextSet(context);
   }
 
 // see about this ---> pass in the next exercise? concatenate JSON...
@@ -145,7 +74,7 @@ class HomeController {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
     String thisExercise = json.encode(exercise.toJson());
-    updateExercise(context);
+    updateExercise(context: context);
     String nextExercise = json.encode(exercise.toJson());
     String thisDayJSON = json.encode(thisDay.toJson());
 

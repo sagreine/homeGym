@@ -1,6 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:home_gym/controllers/cloud.dart';
+import 'package:home_gym/controllers/controllers.dart';
+import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
+import 'package:provider/provider.dart';
 
 class PickDayController {
   // this is an obviously bad idea
@@ -9,6 +13,8 @@ class PickDayController {
   bool readyToGo = false;
   String selectedProgram;
   TextEditingController programController = TextEditingController();
+
+  ExerciseDayController exerciseDayController = ExerciseDayController();
 
   void updateReadyToGo() {
     if (selectedProgram != null && selectedExercise.any((element) => element)) {
@@ -42,9 +48,19 @@ class PickDayController {
     updateReadyToGo();
   }
 
+  Future<void> getExercises(BuildContext context, String program) async {
+    await getExercisesCloud(context, program);
+  }
+
   // launch the day, which is program and exercise
   // not sure we care about context here?
-  void launchDay(BuildContext context) {
+  void launchDay(BuildContext context) async {
+    await getExercises(context, selectedProgram);
+    ExerciseController exerciseController = ExerciseController();
+    exerciseController.updateExercise(
+        context: context,
+        exerciseTitle:
+            exercises[selectedExercise.indexWhere((element) => element)]);
     Navigator.push(
         context,
         MaterialPageRoute(

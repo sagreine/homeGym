@@ -33,7 +33,7 @@ class _HomeState extends State<Home> {
   @override
   void initState() {
     super.initState();
-    homeController.formControllerTitle.text = widget.exercise;
+    homeController.displayInExerciseInfo(context: context);
     _selectedTitle = widget.exercise;
     fling = FlutterFling();
   }
@@ -273,16 +273,6 @@ class _HomeState extends State<Home> {
                       ],
                     ),
                   ),
-                ),
-                Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    RaisedButton(
-                        child: Text('Get Exercises'),
-                        onPressed: () {
-                          homeController.getExercises(context, widget.program);
-                        }),
-                  ],
                 ),
               ],
             ),
