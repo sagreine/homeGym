@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_fling/flutter_fling.dart';
 import 'package:flutter_fling/remote_media_player.dart';
@@ -39,7 +38,7 @@ class HomeController {
     return url;
   }
 
-  // update our model.
+  // update our model with changes manually input on the form, if any.
   void updateThisExercise(BuildContext context) {
     var thisSet = Provider.of<ExerciseSet>(context, listen: false);
     thisSet.updateExercise(

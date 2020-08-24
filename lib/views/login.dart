@@ -69,7 +69,7 @@ class _LoginState extends State<Login> {
       AuthProvider.google(),
       //AuthProvider.facebook(),
       //AuthProvider.twitter(),
-      AuthProvider.phone(),
+      AuthProvider.phone(), // kind of silly on a phone though?
     ]).then((firebaseUser) {
       user.firebaseUser = firebaseUser;
       loginController.getMaxes(context);

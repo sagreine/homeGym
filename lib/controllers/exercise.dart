@@ -51,10 +51,10 @@ class ExerciseController {
     //formControllerReps.text = exercise.reps.toString();
     //formControllerWeight.text = exercise.weight.toString();
 
-    // then push to the next set
     // this is a hack for now.
   }
 
+// this is gross. don't advance and return frippery
   String nextExercise(BuildContext context) {
     if (!exerciseDayController.nextSet(context)) {
       return " - Last Set";
