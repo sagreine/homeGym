@@ -30,18 +30,29 @@ class _HomeState extends State<Home> {
   FlutterFling fling;
   String _selectedTitle;
 
+  // temporary. and should be in controller.
+  bool doVideo;
+
   @override
   void initState() {
     super.initState();
     homeController.displayInExerciseInfo(context: context);
     _selectedTitle = widget.exercise;
     fling = FlutterFling();
+    doVideo = false;
   }
 
   @override
   void dispose() async {
     super.dispose();
     await FlutterFling.stopDiscoveryController();
+  }
+
+  bool readyToSubmit() {
+    if (_formkey.currentState != null) {
+      return _formkey.currentState.validate();
+    }
+    return false;
   }
 
   @override
@@ -68,6 +79,7 @@ class _HomeState extends State<Home> {
       ),
       body: Consumer<FlingMediaModel>(
         builder: (context, flingy, child) {
+          readyToSubmit();
           return SafeArea(
             child: Column(
               children: <Widget>[
@@ -95,6 +107,7 @@ class _HomeState extends State<Home> {
                                     },
                                   ),
                                 ),
+                          //might want to force them back insead of allowing this...
                           items: <String>['Squat', 'Press', 'Deadlift', 'Bench']
                               .map((String value) {
                             return new DropdownMenuItem<String>(
@@ -111,7 +124,6 @@ class _HomeState extends State<Home> {
                           },
                         ),
                         SizedBox(height: 8.0),
-
                         SizedBox(height: 8.0),
                         TextFormField(
                           decoration: new InputDecoration(
@@ -227,52 +239,74 @@ class _HomeState extends State<Home> {
                                 controller:
                                     homeController.formControllerRestInterval,
                                 validator: (value) {
-                                  //homeController.formController.validator()
+                                  if (value.isEmpty) {
+                                    return "Rest Period can't be blank";
+                                  }
                                   return null;
                                 },
                               ),
                             ),
                           ],
                         ),
-                        // we don't use the data here so it is wasteful to build a widget...
-                        Consumer<ExerciseDay>(
-                          builder: (context, thisDay, child) {
-                            return RaisedButton(
-                              onPressed: () async {
-                                if (_formkey.currentState.validate()) {
-                                  print("valid form");
-                                  // make any updates that are necessary, check we have a fling device, then cast
-                                  if (flingy.selectedPlayer != null) {
-                                    // do it so it goes -> update exercise, getNextExercise(this updates what you see though?),
-                                    // cast (them both)
-                                    homeController.updateThisExercise(
-                                      context,
-                                    );
-                                    // then get the next exercise's info into the form (not fully implemented of course)
-                                    //homeController.updateExercise(context);
-                                    // may need to await this, if it is updating our exercise that we're sending....
-                                    await homeController.castMediaTo(
-                                        flingy.selectedPlayer, context);
-                                    // TODO: this routing should be done through controller
-                                    // but need to have context...
-                                  } else {
-                                    print(
-                                        "form is valid but no fling player selected. launching settings");
-                                    Navigator.of(context).push(
-                                      MaterialPageRoute<void>(
-                                          builder: (BuildContext context) =>
-                                              Settings()),
-                                    );
-                                  }
-                                }
-                              },
-                              child: Text("Record and cast"),
-                            );
-                          },
-                        ),
                       ],
                     ),
                   ),
+                ),
+                CheckboxListTile(
+                  title: Text("Record Video"),
+                  value: doVideo,
+                  onChanged: (newValue) {
+                    setState(() {
+                      doVideo = newValue;
+                    });
+                  },
+                  controlAffinity:
+                      ListTileControlAffinity.leading, //  <-- leading Checkbox
+                ),
+                // we don't use the data here so it is wasteful to build a widget...
+                //Consumer<ExerciseDay>(
+                //builder: (context, thisDay, child) {
+                //return
+                RaisedButton(
+                  onPressed: readyToSubmit()
+                      ? null
+                      : () async => {
+                            //if (_formkey.currentState.validate()) {
+                            //print("valid form");
+                            if (doVideo && flingy.selectedPlayer == null)
+                              {
+                                // TODO: this routing should be done through controller
+                                // but need to have context...
+                                print(
+                                    "form is valid but no fling player selected. launching settings"),
+                                Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                      builder: (BuildContext context) =>
+                                          Settings()),
+                                )
+                              }
+                            // if user manually updated this set, save that
+                            else
+                              {
+                                homeController.updateThisExercise(
+                                  context,
+                                ),
+                                // right now we also update to next video as part of casting video, part and participle
+                                // probably shouldn't since that's multiple things being done............
+                                if (doVideo)
+                                  {
+                                    await homeController.castMediaTo(
+                                        flingy.selectedPlayer, context)
+                                  }
+                                // if they didn't cast it, just update to the next set.
+                                else
+                                  {
+                                    homeController.updateExercise(
+                                        context: context)
+                                  }
+                              }
+                          },
+                  child: Text("Record and cast"),
                 ),
               ],
             ),
