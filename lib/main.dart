@@ -1,3 +1,4 @@
+import 'package:firebase_auth_ui/firebase_auth_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart'
@@ -29,11 +30,15 @@ import 'package:firebase_core/firebase_core.dart';
 
 //flutter pub run build_runner watch
 
-void main() async{
+void main() async {
   //Bloc.observer = SimpleBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
+    ChangeNotifierProvider(
+      create: (context) => User(),
+    ),
+    // most of these can move down now...
     ChangeNotifierProvider(create: (context) => LifterWeights()),
     ChangeNotifierProvider(create: (context) => LiftMaxes()),
     ChangeNotifierProvider(
