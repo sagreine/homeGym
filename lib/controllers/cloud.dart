@@ -11,7 +11,7 @@ import 'package:video_compress/video_compress.dart';
 
 void createDatabaseRecord(ExerciseSet exercise) async {
   // would put everyone in their own bucket and manage that via IAM
-  final databaseReference = Firestore.instance;
+  final databaseReference = FirebaseFirestore.instance;
   await databaseReference.collection("VIDEOS").add(
         Map<String, dynamic>.from((exercise.toJson())),
       );
@@ -28,31 +28,28 @@ Future getPrograms() async {
   });
 */
   QuerySnapshot programs =
-      await Firestore.instance.collection('PROGRAMS').getDocuments();
+      await FirebaseFirestore.instance.collection('PROGRAMS').get();
   return programs;
 }
 
 //TODO untested
 void updateBarWeightCloud(double newWeight) async {
-  final databaseReference = Firestore.instance;
+  final databaseReference = FirebaseFirestore.instance;
   Map data = Map<String, dynamic>();
   data["weight"] = newWeight;
 
-  await databaseReference
-      .collection("AVAILABLE_WEIGHTS")
-      .document("bar")
-      .setData(data);
+  await databaseReference.collection("AVAILABLE_WEIGHTS").doc("bar").set(data);
 }
 
 //TODO untested
 void updatePlateCloud(double _plate, int _plateCount) async {
-  final databaseReference = Firestore.instance;
+  final databaseReference = FirebaseFirestore.instance;
   Map data = Map<String, dynamic>();
   data["count"] = _plateCount;
   await databaseReference
       .collection("AVAILABLE_WEIGHTS")
-      .document(_plate.toString() + "_POUNDS")
-      .setData(data);
+      .doc(_plate.toString() + "_POUNDS")
+      .set(data);
 }
 
 //TODO: implement, test
@@ -86,11 +83,11 @@ Future<String> uploadToCloudStorage(File fileToUpload) async {
 }
 
 Future<double> getBarWeightCloud() async {
-  DocumentSnapshot barWeight = await Firestore.instance
+  DocumentSnapshot barWeight = await FirebaseFirestore.instance
       .collection('AVAILABLE_WEIGHTS')
-      .document("bar")
+      .doc("bar")
       .get();
-  return barWeight.data["weight"];
+  return barWeight.data()["weight"];
 }
 
 // should make this lazier
@@ -99,35 +96,35 @@ Future<double> getBarWeightCloud() async {
 void getMaxesCloud(context) async {
   LiftMaxController liftMaxController = new LiftMaxController();
   QuerySnapshot maxes;
-  maxes = await Firestore.instance.collection('MAXES').getDocuments();
+  maxes = await FirebaseFirestore.instance.collection('MAXES').get();
   liftMaxController.updateMax(
       context: context,
       lift: "bench",
-      newMax: maxes.documents
-          .elementAt(maxes.documents
-              .indexWhere((document) => document.documentID == "bench"))
-          .data["currentMax"]);
+      newMax: maxes.docs
+          .elementAt(
+              maxes.docs.indexWhere((document) => document.id == "bench"))
+          .data()["currentMax"]);
   liftMaxController.updateMax(
       context: context,
       lift: "deadlift",
-      newMax: maxes.documents
-          .elementAt(maxes.documents
-              .indexWhere((document) => document.documentID == "deadlift"))
-          .data["currentMax"]);
+      newMax: maxes.docs
+          .elementAt(
+              maxes.docs.indexWhere((document) => document.id == "deadlift"))
+          .data()["currentMax"]);
   liftMaxController.updateMax(
       context: context,
       lift: "squat",
-      newMax: maxes.documents
-          .elementAt(maxes.documents
-              .indexWhere((document) => document.documentID == "squat"))
-          .data["currentMax"]);
+      newMax: maxes.docs
+          .elementAt(
+              maxes.docs.indexWhere((document) => document.id == "squat"))
+          .data()["currentMax"]);
   liftMaxController.updateMax(
       context: context,
       lift: "press",
-      newMax: maxes.documents
-          .elementAt(maxes.documents
-              .indexWhere((document) => document.documentID == "press"))
-          .data["currentMax"]);
+      newMax: maxes.docs
+          .elementAt(
+              maxes.docs.indexWhere((document) => document.id == "press"))
+          .data()["currentMax"]);
 }
 
 void getPlatesCloud(context) async {
@@ -135,16 +132,15 @@ void getPlatesCloud(context) async {
       new LifterWeightsController();
   QuerySnapshot plates;
   plates =
-      await Firestore.instance.collection("AVAILABLE_WEIGHTS").getDocuments();
+      await FirebaseFirestore.instance.collection("AVAILABLE_WEIGHTS").get();
 
-  plates.documents.forEach((result) {
-    if (result.documentID != "bar") {
-      print(result.data["count"]);
+  plates.docs.forEach((result) {
+    if (result.id != "bar") {
+      print(result.data()["count"]);
       lifterWeightsController.updatePlate(
           context,
-          double.parse(
-              result.documentID.substring(0, result.documentID.indexOf("_"))),
-          result.data["count"]);
+          double.parse(result.id.substring(0, result.id.indexOf("_"))),
+          result.data()["count"]);
     }
   });
 }
@@ -160,23 +156,25 @@ Future<void> getExercisesCloud(context, String program) async {
         .where("id", isEqualTo: "bbbWeek1")
         .getDocuments();*/
   // pull these from a .xml file
-  pctAndReps =
-      await Firestore.instance.collection('PROGRAMS').document(program).get();
-  List<int> reps = new List<int>.from(pctAndReps.data["reps"]);
+  pctAndReps = await FirebaseFirestore.instance
+      .collection('PROGRAMS')
+      .doc(program)
+      .get();
+  List<int> reps = new List<int>.from(pctAndReps.data()["reps"]);
   List<double> percentages =
-      new List<double>.from(pctAndReps.data["percentages"]);
+      new List<double>.from(pctAndReps.data()["percentages"]);
   //var exercise = Provider.of<ExerciseDay>(context, listen: false);
   await exerciseDayController.updateDay(
     program: program,
     context: context,
     reps: reps,
     percentages: percentages,
-    trainingMaxPct: pctAndReps.data["trainingMaxPct"],
-    assistanceCore: new List<String>.from(pctAndReps.data["assistance_core"]),
-    assistanceCoreReps: pctAndReps.data["assistance_core_reps"],
-    assistancePull: new List<String>.from(pctAndReps.data["assistance_pull"]),
-    assistancePullReps: pctAndReps.data["assistance_pull_reps"],
-    assistancePush: new List<String>.from(pctAndReps.data["assistance_push"]),
-    assistancePushReps: pctAndReps.data["assistance_push_reps"],
+    trainingMaxPct: pctAndReps.data()["trainingMaxPct"],
+    assistanceCore: new List<String>.from(pctAndReps.data()["assistance_core"]),
+    assistanceCoreReps: pctAndReps.data()["assistance_core_reps"],
+    assistancePull: new List<String>.from(pctAndReps.data()["assistance_pull"]),
+    assistancePullReps: pctAndReps.data()["assistance_pull_reps"],
+    assistancePush: new List<String>.from(pctAndReps.data()["assistance_push"]),
+    assistancePushReps: pctAndReps.data()["assistance_push_reps"],
   );
 }

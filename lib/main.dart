@@ -9,6 +9,7 @@ import 'package:provider/provider.dart';
 //import 'package:home_gym/simple_bloc_delegate.dart';
 //import 'package:bloc/bloc.dart';
 //import 'package:flutter_fling/flutter_fling.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 // BLoC for each page
 // complex page-children should have their own block, parent subscribes to state changes
@@ -28,8 +29,10 @@ import 'package:provider/provider.dart';
 
 //flutter pub run build_runner watch
 
-void main() {
+void main() async{
   //Bloc.observer = SimpleBlocObserver();
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(create: (context) => LifterWeights()),
     ChangeNotifierProvider(create: (context) => LiftMaxes()),
