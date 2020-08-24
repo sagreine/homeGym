@@ -13,20 +13,27 @@ class Login extends StatefulWidget {
   _LoginState createState() => _LoginState();
 }
 
+// maybe we can cover this stuff with a splash screen in the end, for those logged in already?
+
 class _LoginState extends State<Login> {
   LoginController loginController = LoginController();
 
   //FirebaseUser _firebaseUser;
   //User _user;
-  String _error = '';
   var _user;
-  //FutureBuilder fb;
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
+    _user = Provider.of<Muser>(context, listen: false);
     //fb = FutureBuilder()
+  }
+
+  Scaffold buildNextPage() {
+    return Scaffold(
+      body: Container(child: PickDay()),
+    );
   }
 
   @override
@@ -36,82 +43,55 @@ class _LoginState extends State<Login> {
     //
 
     //  return Scaffold(body: Container(child: PickDay()));
-    _user = Provider.of<User>(context, listen: false);
 
-    return new FutureBuilder(
-        future: _onActionTapped(context: context, user: _user),
-        builder: (BuildContext context, AsyncSnapshot text) {
-          if (text.connectionState == ConnectionState.done) {
-            return Scaffold(
-              body: Container(child: PickDay()),
+    // if already logged in. this handles e.g. the phone falling asleep on next page (guh)
+    // does require that we null out on logout, but that looks standard
+    if (_user.firebaseUser != null) {
+      return buildNextPage();
+    } else {
+      return new FutureBuilder(
+          future: _onActionTapped(context: context, user: _user),
+          builder: (BuildContext context, AsyncSnapshot text) {
+            if (text.connectionState == ConnectionState.done) {
+              return buildNextPage();
+            }
+            return SizedBox(
+              height: 200,
+              width: 200,
             );
-          }
-          return SizedBox(
-              height: 200, width: 200, child: CircularProgressIndicator());
+          });
+    }
+  }
+
+  Future<void> _onActionTapped({BuildContext context, Muser user}) async {
+    await FirebaseAuthUi.instance().launchAuth([
+      AuthProvider.email(),
+      AuthProvider.google(),
+      //AuthProvider.facebook(),
+      //AuthProvider.twitter(),
+      AuthProvider.phone(),
+    ]).then((firebaseUser) {
+      user.firebaseUser = firebaseUser;
+      loginController.getMaxes(context);
+      loginController.getBarWeight(context);
+      loginController.getPlates(context);
+    }).catchError((error) {
+      if (error is PlatformException) {
+        setState(() {
+          if (error.code == FirebaseAuthUi.kUserCancelledError) {}
         });
+      }
+    });
   }
-
-  /*Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            _getMessage(),
-            Container(
-              margin: EdgeInsets.only(top: 10, bottom: 10),
-              child: RaisedButton(
-                child: Text(_user != null ? 'Logout' : 'Login'),
-                onPressed: _onActionTapped,
-              ),
-            ),
-            _getErrorText(),
-            _user != null
-                ? FlatButton(
-                    child: Text('Delete Account'),
-                    textColor: Colors.red,
-                    onPressed: () => _deleteUser(),
-                  )
-                : Container()
-          ],
-        ),
-      ),*/
-
 /*
-  Widget _getMessage() {
-    if (_user != null) {
-      return Text(
-        'Logged in user is: ${_user.firebaseUser.displayName ?? ''}',
-        style: TextStyle(
-          fontSize: 16,
-        ),
-      );
-    } else {
-      return Text(
-        'Tap the below button to Login',
-        style: TextStyle(
-          fontSize: 16,
-        ),
-      );
-    }
+  void _logout() async {
+    await FirebaseAuthUi.instance().logout();
+    setState(() {
+      _user = null;
+    });
   }
   */
-
-/*
-  Widget _getErrorText() {
-    if (_error?.isNotEmpty == true) {
-      return Text(
-        _error,
-        style: TextStyle(
-          color: Colors.redAccent,
-          fontSize: 16,
-        ),
-      );
-    } else {
-      return Container();
-    }
-  }
-  */
-
-/*
+  /*
   // would delete all other associated data first...
   void _deleteUser() async {
     final result = await FirebaseAuthUi.instance().delete();
@@ -122,53 +102,4 @@ class _LoginState extends State<Login> {
     }
   }
 */
-
-  Future<void> _onActionTapped({BuildContext context, User user}) async {
-    //if (_user == null) {
-    // User is null, initiate auth
-    await FirebaseAuthUi.instance().launchAuth([
-      AuthProvider.email(),
-      // Google ,facebook, twitter and phone auth providers are commented because this example
-      // isn't configured to enable them. Please follow the README and uncomment
-      // them if you want to integrate them in your project.
-
-      AuthProvider.google(),
-      //AuthProvider.facebook(),
-      //AuthProvider.twitter(),
-      AuthProvider.phone(),
-    ]).then((firebaseUser) {
-      //setState(() {
-      _error = "";
-      user.firebaseUser = firebaseUser;
-      loginController.getMaxes(context);
-      loginController.getBarWeight(context);
-      loginController.getPlates(context);
-      /*Navigator.of(context).push(MaterialPageRoute<void>(
-              builder: (BuildContext context) => PickDay()));*/
-      //});
-    }).catchError((error) {
-      if (error is PlatformException) {
-        setState(() {
-          if (error.code == FirebaseAuthUi.kUserCancelledError) {
-            _error = "User cancelled login";
-          } else {
-            _error = error.message ?? "Unknown error!";
-          }
-        });
-      }
-    });
-    //}
-    //else {
-    // User is already logged in, logout!
-    //_logout();
-    //}
-  }
-/*
-  void _logout() async {
-    await FirebaseAuthUi.instance().logout();
-    setState(() {
-      _user = null;
-    });
-  }
-  */
 }

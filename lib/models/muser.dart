@@ -1,10 +1,10 @@
 import 'package:firebase_auth_ui/firebase_auth_ui.dart';
 import 'package:flutter/material.dart';
 
-class User extends ChangeNotifier {
+class Muser extends ChangeNotifier {
   FirebaseUser firebaseUser;
 
-  User({
+  Muser({
     this.firebaseUser,
   });
 

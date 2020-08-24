@@ -36,7 +36,7 @@ void main() async {
   await Firebase.initializeApp();
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
-      create: (context) => User(),
+      create: (context) => Muser(),
     ),
     // most of these can move down now...
     ChangeNotifierProvider(create: (context) => LifterWeights()),
