@@ -20,6 +20,7 @@ class _LoginState extends State<Login> {
   //FirebaseUser _firebaseUser;
   //User _user;
   var _user;
+  String error;
 
   @override
   void initState() {
@@ -51,12 +52,14 @@ class _LoginState extends State<Login> {
       return new FutureBuilder(
           future: _onActionTapped(context: context, user: _user),
           builder: (BuildContext context, AsyncSnapshot text) {
-            if (text.connectionState == ConnectionState.done) {
+            if (text.connectionState == ConnectionState.done &&
+                text.hasError == false) {
               return buildNextPage();
             }
             return SizedBox(
               height: 200,
               width: 200,
+              child: Text(!text.hasError ? "" : text.error.toString()),
             );
           });
     }

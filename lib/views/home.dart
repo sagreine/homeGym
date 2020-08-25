@@ -272,7 +272,7 @@ class _HomeState extends State<Home> {
                       await homeController.castMediaTo(
                           player: flingy.selectedPlayer,
                           context: context,
-                          castGenericVideo: doVideo);
+                          recordNewVideo: doVideo);
                     } else {
                       print(
                           "form is valid but no fling player selected. launching settings");
