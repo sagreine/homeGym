@@ -67,7 +67,6 @@ class _LoginState extends State<Login> {
     await FirebaseAuthUi.instance().launchAuth([
       AuthProvider.email(),
       AuthProvider.google(),
-      //AuthProvider.facebook(),
       //AuthProvider.twitter(),
       AuthProvider.phone(), // kind of silly on a phone though?
     ]).then((firebaseUser) {
