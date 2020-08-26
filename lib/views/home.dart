@@ -53,23 +53,47 @@ class _HomeState extends State<Home> {
     return Scaffold(
       appBar: AppBar(
         title: Text("Home Gym TV"),
-        leading: Padding(
-          padding: EdgeInsets.all(3),
-          child: Image.asset("assets/images/pos_icon.png"),
-        ),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(Icons.settings),
-            tooltip: 'Settings',
-            onPressed: () {
-              Navigator.of(context).push(
-                MaterialPageRoute<void>(
-                    builder: (BuildContext context) => Settings()),
-              );
-            },
-          ),
-        ],
       ),
+      drawer: Consumer<Muser>(builder: (context, user, child) {
+        return Drawer(
+          child: Column(children: [
+            DrawerHeader(
+              child: Column(
+                children: [
+                  /*
+                  Padding(
+                    padding: EdgeInsets.all(3),
+                    child: Image.asset("assets/images/pos_icon.png"),
+                  ),
+*/
+                  Text(user.firebaseUser.displayName),
+                  Image.network(user.firebaseUser.photoUri),
+                  Text(user.firebaseUser.email),
+                ],
+              ),
+              decoration: BoxDecoration(
+                color: Colors.blue,
+              ),
+            ),
+            Text("Pick Lift"),
+            Text("Do Lift"),
+            Text("Help"),
+            Text("Send feedback"),
+            Text("Features Coming soon"),
+            IconButton(
+              icon: const Icon(Icons.settings),
+              tooltip: 'Settings',
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                      builder: (BuildContext context) => Settings()),
+                );
+              },
+            ),
+            Text("Settings"),
+          ]),
+        );
+      }),
       body: Consumer<FlingMediaModel>(
         builder: (context, flingy, child) {
           return SafeArea(

@@ -68,7 +68,7 @@ class _LoginState extends State<Login> {
   Future<void> _onActionTapped({BuildContext context, Muser user}) async {
     await FirebaseAuthUi.instance().launchAuth([
       AuthProvider.email(),
-      AuthProvider.google(),
+      //AuthProvider.google(),
       //AuthProvider.twitter(),
       AuthProvider.phone(), // kind of silly on a phone though?
     ]).then((firebaseUser) {
