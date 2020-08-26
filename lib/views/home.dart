@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/flutter_fling.dart';
@@ -48,6 +49,41 @@ class _HomeState extends State<Home> {
     await FlutterFling.stopDiscoveryController();
   }
 
+  String getDisplayName() {
+    String displayName = FirebaseAuth.instance.currentUser.displayName;
+
+    //user.firebaseUser.user.getDisplayName();
+    if (displayName != null && displayName != "") {
+      return displayName;
+    }
+
+    for (UserInfo userInfo in FirebaseAuth.instance.currentUser.providerData) {
+      if (userInfo.displayName != null && userInfo.displayName != "") {
+        return userInfo.displayName;
+      }
+    }
+
+    return "Unnamed User";
+  }
+
+  // careful, URL vs Uri
+  String getPhotoURL() {
+    String getPhotoURL = FirebaseAuth.instance.currentUser.photoURL;
+
+    //user.firebaseUser.user.getDisplayName();
+    if (getPhotoURL != null && getPhotoURL != "") {
+      return getPhotoURL;
+    }
+
+    for (UserInfo userInfo in FirebaseAuth.instance.currentUser.providerData) {
+      if (userInfo.photoURL != null && userInfo.photoURL != "") {
+        return userInfo.photoURL;
+      }
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -66,9 +102,33 @@ class _HomeState extends State<Home> {
                     child: Image.asset("assets/images/pos_icon.png"),
                   ),
 */
-                  Text(user.firebaseUser.displayName),
-                  Image.network(user.firebaseUser.photoUri),
-                  Text(user.firebaseUser.email),
+                  //SizedBox(
+//                    height: 200,
+                  //                  child:
+                  Row(
+                    //dense: true,
+                    //isThreeLine: true,
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundColor: Colors.brown.shade800,
+                        backgroundImage: user.firebaseUser.photoUri.isEmpty
+                            ? AssetImage("assets/images/pos_icon.png")
+                            : NetworkImage(getPhotoURL()),
+                      ),
+                      SizedBox(width: 10),
+                      Column(
+                        children: [
+                          //Image.asset("assets/images/pos_icon.png"),
+                          Text(getDisplayName()),
+                          SizedBox(height: 10),
+                          Text(user.firebaseUser.email),
+                        ],
+                      ),
+                    ],
+                    //trailing: ,
+                  ),
+                  // ),
                 ],
               ),
               decoration: BoxDecoration(

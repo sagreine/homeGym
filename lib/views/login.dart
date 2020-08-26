@@ -5,6 +5,7 @@ import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/pick_day.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:firebase_auth_ui/firebase_auth_ui.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {
@@ -24,10 +25,8 @@ class _LoginState extends State<Login> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _user = Provider.of<Muser>(context, listen: false);
-    //fb = FutureBuilder()
   }
 
   Scaffold buildNextPage() {
@@ -65,10 +64,12 @@ class _LoginState extends State<Login> {
     }
   }
 
+//consider... https://stackoverflow.com/questions/50885891/one-time-login-in-app-firebaseauth
+
   Future<void> _onActionTapped({BuildContext context, Muser user}) async {
     await FirebaseAuthUi.instance().launchAuth([
       AuthProvider.email(),
-      //AuthProvider.google(),
+      AuthProvider.google(),
       //AuthProvider.twitter(),
       AuthProvider.phone(), // kind of silly on a phone though?
     ]).then((firebaseUser) {
