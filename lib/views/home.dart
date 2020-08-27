@@ -147,8 +147,12 @@ class _HomeState extends State<Home> {
                 ListTile(
                     title: Text("Pick Lift"),
                     leading: Icon(Icons.fitness_center),
+                    // TODO: Not tested at all.
                     onTap: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                            builder: (BuildContext context) => PickDay()),
+                      );
                     }),
                 ListTile(
                     title: Text("Do Lift"),
@@ -161,14 +165,20 @@ class _HomeState extends State<Home> {
                     title: Text("My Weights"),
                     leading: Icon(Icons.filter_list),
                     onTap: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                            builder: (BuildContext context) => Settings()),
+                      );
                     }),
                 ListTile(
                     title: Text("My Maxes"),
                     //leading: Icon(Icons.description),
                     leading: Icon(Icons.format_list_bulleted),
                     onTap: () {
-                      Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                            builder: (BuildContext context) => Settings()),
+                      );
                     }),
                 ListTile(
                     title: Text("Help"),
