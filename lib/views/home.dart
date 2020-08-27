@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/flutter_fling.dart';
@@ -96,61 +97,97 @@ class _HomeState extends State<Home> {
             DrawerHeader(
               child: Column(
                 children: [
-                  /*
-                  Padding(
-                    padding: EdgeInsets.all(3),
-                    child: Image.asset("assets/images/pos_icon.png"),
-                  ),
-*/
-                  //SizedBox(
-//                    height: 200,
-                  //                  child:
-                  Row(
-                    //dense: true,
-                    //isThreeLine: true,
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.brown.shade800,
-                        backgroundImage: user.firebaseUser.photoUri.isEmpty
-                            ? AssetImage("assets/images/pos_icon.png")
-                            : NetworkImage(getPhotoURL()),
-                      ),
-                      SizedBox(width: 10),
-                      Column(
-                        children: [
-                          //Image.asset("assets/images/pos_icon.png"),
-                          Text(getDisplayName()),
-                          SizedBox(height: 10),
-                          Text(user.firebaseUser.email),
-                        ],
-                      ),
-                    ],
-                    //trailing: ,
+                  Expanded(
+                    flex: 1,
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.brown.shade800,
+                          backgroundImage: user.firebaseUser.photoUri.isEmpty
+                              ? AssetImage("assets/images/pos_icon.png")
+                              : NetworkImage(getPhotoURL()),
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          children: [
+                            SizedBox(height: 35),
+                            //Image.asset("assets/images/pos_icon.png"),
+                            Text(getDisplayName()),
+                            SizedBox(height: 10),
+                            Text(user.firebaseUser.email),
+                            SizedBox(height: 10),
+                            InkWell(
+                              child: Text(
+                                "View Profile",
+                                style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                              onTap: () {
+                                Navigator.of(context).pop();
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                      //trailing: ,
+                    ),
                   ),
                   // ),
                 ],
               ),
               decoration: BoxDecoration(
-                color: Colors.blue,
+                color: Colors.blueGrey,
               ),
             ),
-            Text("Pick Lift"),
-            Text("Do Lift"),
-            Text("Help"),
-            Text("Send feedback"),
-            Text("Features Coming soon"),
-            IconButton(
-              icon: const Icon(Icons.settings),
-              tooltip: 'Settings',
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                      builder: (BuildContext context) => Settings()),
-                );
-              },
+            Expanded(
+              flex: 2,
+              child: ListView(children: [
+                ListTile(
+                    title: Text("Pick Lift"),
+                    leading: Icon(Icons.fitness_center),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                    title: Text("Do Lift"),
+                    leading: Icon(Icons.directions_run),
+                    //leading: Image.asset("assets/images/pos_icon.png"),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                    title: Text("My Weights"),
+                    leading: Icon(Icons.filter_list),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                    title: Text("My Maxes"),
+                    //leading: Icon(Icons.description),
+                    leading: Icon(Icons.format_list_bulleted),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                    title: Text("Help"),
+                    leading: Icon(Icons.help),
+                    onTap: () {
+                      Navigator.of(context).pop();
+                    }),
+                ListTile(
+                  title: Text("Settings"),
+                  leading: Icon(Icons.settings),
+                  onTap: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                          builder: (BuildContext context) => Settings()),
+                    );
+                  },
+                ),
+              ]),
             ),
-            Text("Settings"),
           ]),
         );
       }),
@@ -340,35 +377,38 @@ class _HomeState extends State<Home> {
               ),
               // could make thid disabled when not valid, but headache to setState everywhere
               RaisedButton(
-                onPressed: () async {
-                  if (_formkey.currentState.validate()) {
-                    print("valid form");
-                    // make any updates that are necessary, check we have a fling device, then cast
-                    if (flingy.selectedPlayer != null) {
-                      // do it so it goes -> update exercise, getNextExercise(this updates what you see though?),
-                      // cast (them both)
-                      homeController.updateThisExercise(
-                        context,
-                      );
-                      // then get the next exercise's info into the form (not fully implemented of course)
-                      //homeController.updateExercise(context);
-                      // may need to await this, if it is updating our exercise that we're sending....
-                      await homeController.castMediaTo(
-                          player: flingy.selectedPlayer,
-                          context: context,
-                          recordNewVideo: doVideo);
-                    } else {
-                      print(
-                          "form is valid but no fling player selected. launching settings");
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                            builder: (BuildContext context) => Settings()),
-                      );
+                  onPressed: () async {
+                    if (_formkey.currentState.validate()) {
+                      print("valid form");
+                      // make any updates that are necessary, check we have a fling device, then cast
+                      if (flingy.selectedPlayer != null) {
+                        // do it so it goes -> update exercise, getNextExercise(this updates what you see though?),
+                        // cast (them both)
+                        homeController.updateThisExercise(
+                          context,
+                        );
+                        // then get the next exercise's info into the form (not fully implemented of course)
+                        //homeController.updateExercise(context);
+                        // may need to await this, if it is updating our exercise that we're sending....
+                        await homeController.castMediaTo(
+                            player: flingy.selectedPlayer,
+                            context: context,
+                            recordNewVideo: doVideo);
+                      } else {
+                        print(
+                            "form is valid but no fling player selected. launching settings");
+                        Navigator.of(context).push(
+                          MaterialPageRoute<void>(
+                              builder: (BuildContext context) => Settings()),
+                        );
+                      }
                     }
-                  }
-                },
-                child: Text("Record and cast"),
-              ),
+                  },
+                  // TODO: cast v cast selected = do we have a cast device selected...
+                  child: ListTile(
+                    leading: Icon(Icons.cast),
+                    title: Text("Record and cast"),
+                  )),
             ]),
           );
         },
