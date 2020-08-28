@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_gym/controllers/settings.dart';
@@ -16,8 +18,40 @@ class SettingsState extends State<Settings> {
 
   @override
   void dispose() {
-    // TODO: implement dispose for controllers?
+    // TODO: implement dispose for controllers
     super.dispose();
+  }
+
+  String numberValidator(String value) {
+    if (value == null) {
+      return null;
+    }
+    final n = num.tryParse(value);
+    if (n == null) {
+      return '"$value" is not a valid number';
+    }
+    return null;
+  }
+
+  DataCell _buildMaxValues(String initialMax, String lift) {
+    return DataCell(
+        TextFormField(
+          initialValue: initialMax,
+          style: TextStyle(fontSize: 14),
+          keyboardType: TextInputType.numberWithOptions(
+            signed: false,
+            decimal: false,
+          ),
+          validator: numberValidator,
+          inputFormatters: <TextInputFormatter>[
+            WhitelistingTextInputFormatter.digitsOnly
+          ],
+          onFieldSubmitted: (val) {
+            settingsController.update1RepMax(
+                context: context, lift: lift, newMax: int.parse(val));
+          },
+        ),
+        showEditIcon: true);
   }
 
   @override
@@ -86,6 +120,7 @@ class SettingsState extends State<Settings> {
                       style:
                           TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                     ),
+                    // this is unnecessary since it is already done above...
                     Consumer<LifterWeights>(
                       builder: (context, lifterweights, child) {
                         List<double> platesAsList;
@@ -107,6 +142,8 @@ class SettingsState extends State<Settings> {
                                       label: Text('# Plates'), numeric: true),
                                 ],
                                 // will build rows dynamically here, so no error checking up front.
+                                // will deprecate this for now in favor of hardcoded plates (customizable counts).
+                                // don't have to let them add new, don't have to let them customize the weight..
                                 rows: lifterweights.plates == null
                                     ? [
                                         DataRow(cells: [
@@ -117,20 +154,49 @@ class SettingsState extends State<Settings> {
                                       ]
                                     : platesAsList
                                         .map((
-                                          e,
+                                          plate,
                                         ) =>
-                                            DataRow(cells: [
-                                              DataCell(Text("$e",
-                                                  style:
-                                                      TextStyle(fontSize: 14))),
-                                              DataCell(
-                                                  Text(
-                                                      lifterweights.plates[e]
-                                                          .toString(),
+                                            DataRow(
+                                              cells: [
+                                                // the weight of the plate (double)
+                                                DataCell(Text("$plate",
+                                                    style: TextStyle(
+                                                        fontSize: 14))),
+                                                // the count of how many we have of that plate
+                                                DataCell(
+                                                    TextFormField(
+                                                      initialValue:
+                                                          lifterweights
+                                                              .plates[plate]
+                                                              .toString(),
                                                       style: TextStyle(
-                                                          fontSize: 14)),
-                                                  showEditIcon: true),
-                                            ]))
+                                                          fontSize: 14),
+                                                      keyboardType: TextInputType
+                                                          .numberWithOptions(
+                                                        signed: false,
+                                                        decimal: false,
+                                                      ),
+                                                      validator:
+                                                          numberValidator,
+                                                      inputFormatters: <
+                                                          TextInputFormatter>[
+                                                        WhitelistingTextInputFormatter
+                                                            .digitsOnly
+                                                      ],
+                                                      onFieldSubmitted: (val) {
+                                                        settingsController
+                                                            .updatePlateCount(
+                                                                context:
+                                                                    context,
+                                                                plate: plate,
+                                                                newCount:
+                                                                    int.parse(
+                                                                        val));
+                                                      },
+                                                    ),
+                                                    showEditIcon: true),
+                                              ],
+                                            ))
                                         .toList());
                       },
                     ),
@@ -153,37 +219,29 @@ class SettingsState extends State<Settings> {
                             DataRow(selected: true, cells: [
                               DataCell(Text('Deadlift',
                                   style: TextStyle(fontSize: 14))),
-                              DataCell(
-                                  Text(liftMaxes.deadliftMax.toString(),
-                                      style: TextStyle(fontSize: 14)),
-                                  showEditIcon: true),
+                              _buildMaxValues(
+                                  liftMaxes.deadliftMax.toString(), "deadlift"),
                             ]),
                             DataRow(cells: [
                               DataCell(
                                 Text('Bench', style: TextStyle(fontSize: 14)),
                               ),
-                              DataCell(
-                                  Text(liftMaxes.benchMax.toString(),
-                                      style: TextStyle(fontSize: 14)),
-                                  showEditIcon: true),
+                              _buildMaxValues(
+                                  liftMaxes.benchMax.toString(), "bench"),
                             ]),
                             DataRow(cells: [
                               DataCell(
                                 Text('Squat', style: TextStyle(fontSize: 14)),
                               ),
-                              DataCell(
-                                  Text(liftMaxes.squatMax.toString(),
-                                      style: TextStyle(fontSize: 14)),
-                                  showEditIcon: true),
+                              _buildMaxValues(
+                                  liftMaxes.squatMax.toString(), "squat"),
                             ]),
                             DataRow(cells: [
                               DataCell(
                                 Text('Press', style: TextStyle(fontSize: 14)),
                               ),
-                              DataCell(
-                                  Text(liftMaxes.pressMax.toString(),
-                                      style: TextStyle(fontSize: 14)),
-                                  showEditIcon: true),
+                              _buildMaxValues(
+                                  liftMaxes.pressMax.toString(), "press"),
                             ]),
                           ],
                         );

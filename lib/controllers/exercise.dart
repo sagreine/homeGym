@@ -17,6 +17,7 @@ class ExerciseController {
     }
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
     var thisMax = Provider.of<LiftMaxes>(context, listen: false);
+    // would, when needed, listen because if we update the bar weight we want this update. look into more though.
     var thisWeights = Provider.of<LifterWeights>(context, listen: false);
     double trainingMax;
     switch (exercise.title.toLowerCase()) {

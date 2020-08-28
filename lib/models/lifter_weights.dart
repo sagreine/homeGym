@@ -30,6 +30,7 @@ class LifterWeights extends ChangeNotifier {
         return false;
       }
     }
+    // otherwise update the plate
     plates[_plate] = _plateCount;
     notifyListeners();
     return true;
@@ -148,6 +149,25 @@ class LiftMaxes extends ChangeNotifier {
     this.benchMax,
     this.pressMax,
   });
+
+  void updateMax(String string, int newValue) {
+    switch (string.toLowerCase()) {
+      case "deadlift":
+        deadliftMax = newValue;
+        break;
+      case "bench":
+        benchMax = newValue;
+        break;
+      case "squat":
+        squatMax = newValue;
+        break;
+      case "press":
+        pressMax = newValue;
+        break;
+    }
+    notifyListeners();
+  }
+
   List<Object> get props => [
         deadliftMax,
         squatMax,

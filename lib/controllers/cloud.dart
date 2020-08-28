@@ -53,7 +53,12 @@ void updatePlateCloud(double _plate, int _plateCount) async {
 }
 
 //TODO: implement, test
-void updateTrainingMaxCloud(String lift, double newMax) async {}
+void update1RepMaxCloud(String lift, int newMax) async {
+  final databaseReference = FirebaseFirestore.instance;
+  Map data = Map<String, dynamic>();
+  data["currentMax"] = newMax;
+  await databaseReference.collection("MAXES").doc(lift.toLowerCase()).set(data);
+}
 
 Future<String> uploadToCloudStorage(File fileToUpload) async {
   print("File size: " + fileToUpload.lengthSync().toString());
