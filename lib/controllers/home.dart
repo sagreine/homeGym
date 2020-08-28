@@ -29,9 +29,21 @@ class HomeController {
       final picker = ImagePicker();
       // TODO: doesn't handle if they press back
       final pickedFile = await picker.getVideo(source: ImageSource.camera);
-      url = await uploadToCloudStorage(File(pickedFile.path));
-      exercise.videoPath = url;
-      createDatabaseRecord(exercise);
+
+      // restrict to videos under a certain size for a given set - this is ~6 min video on my camera
+      // but obviously we need to be careful here.
+      print(File(File(pickedFile.path).resolveSymbolicLinksSync())
+          .lengthSync()
+          .toString());
+      if (File(File(pickedFile.path).resolveSymbolicLinksSync()).lengthSync() <
+          983977033) {
+        url = await uploadToCloudStorage(File(pickedFile.path));
+        exercise.videoPath = url;
+        createDatabaseRecord(exercise);
+      } else {
+        print(
+            "SAGREHOMEGYM: You elected to record a video, but it is too large");
+      }
     } else {
       url = "https://i.imgur.com/ACgwkoh.mp4";
     }
