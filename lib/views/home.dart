@@ -45,6 +45,8 @@ class _HomeState extends State<Home> {
     fling = FlutterFling();
     doVideo = false;
     doCast = false;
+    // this is bad, but whatever.
+    homeController.formControllerRestInterval.text = "90";
   }
 
   @override

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_gym/controllers/settings.dart';
@@ -22,6 +20,7 @@ class SettingsState extends State<Settings> {
     super.dispose();
   }
 
+// untested
   String numberValidator(String value) {
     if (value == null) {
       return null;
