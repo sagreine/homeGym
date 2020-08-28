@@ -72,7 +72,8 @@ class HomeController {
   castMediaTo(
       {RemoteMediaPlayer player,
       BuildContext context,
-      @required bool recordNewVideo}) async {
+      @required bool doCast,
+      @required bool doVideo}) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
     String thisExercise = json.encode(exercise.toJson());
@@ -82,21 +83,22 @@ class HomeController {
 
     // TODO: do we want to delay at all if not recording?
     // that is, give them time to do the actual exercise?
-
-    await FlutterFling.play(
-      (state, condition, position) {
-        // not sure we need this
-        print(state.toString());
-        if (state.toString() == "MediaState.Finished") {
-          print("context has finished");
-          FlutterFling.stopPlayer();
-        }
-      },
-      player: player,
-      mediaUri: await getVideo(recordNewVideo, context), // url,
-      mediaTitle: thisExercise +
-          nextExercise +
-          thisDayJSON, //json.encode(exercise.toJson()),
-    );
+    if (doCast) {
+      await FlutterFling.play(
+        (state, condition, position) {
+          // not sure we need this
+          print(state.toString());
+          if (state.toString() == "MediaState.Finished") {
+            print("context has finished");
+            FlutterFling.stopPlayer();
+          }
+        },
+        player: player,
+        mediaUri: await getVideo(doVideo, context), // url,
+        mediaTitle: thisExercise +
+            nextExercise +
+            thisDayJSON, //json.encode(exercise.toJson()),
+      );
+    }
   }
 }

@@ -34,6 +34,8 @@ class _HomeState extends State<Home> {
 
   // temporary. and should be in controller.
   bool doVideo;
+// temporary. and should be in controller.
+  bool doCast;
 
   @override
   void initState() {
@@ -42,6 +44,7 @@ class _HomeState extends State<Home> {
     _selectedTitle = widget.exercise;
     fling = FlutterFling();
     doVideo = false;
+    doCast = false;
   }
 
   @override
@@ -375,12 +378,31 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
+              // this should be in a controller
               CheckboxListTile(
-                title: Text("Record Video"),
-                value: doVideo,
+                title: Text("Cast to TV"),
+                secondary:
+                    doCast ? Icon(Icons.cast_connected) : Icon(Icons.cast),
+                value: doCast,
                 onChanged: (newValue) {
                   setState(() {
-                    doVideo = newValue;
+                    doCast = newValue;
+                    if (newValue == false) {
+                      doVideo = false;
+                    }
+                  });
+                },
+              ),
+              CheckboxListTile(
+                title: Text("With Video"),
+                secondary:
+                    doVideo ? Icon(Icons.videocam) : Icon(Icons.videocam_off),
+                value: doCast ? doVideo : false,
+                onChanged: (newValue) {
+                  setState(() {
+                    if (doCast) {
+                      doVideo = newValue;
+                    }
                   });
                 },
                 controlAffinity: ListTileControlAffinity.platform,
@@ -403,7 +425,8 @@ class _HomeState extends State<Home> {
                         await homeController.castMediaTo(
                             player: flingy.selectedPlayer,
                             context: context,
-                            recordNewVideo: doVideo);
+                            doCast: doCast,
+                            doVideo: doVideo);
                       } else {
                         print(
                             "form is valid but no fling player selected. launching settings");
@@ -416,7 +439,9 @@ class _HomeState extends State<Home> {
                   },
                   // TODO: cast v cast selected = do we have a cast device selected...
                   child: ListTile(
-                    leading: Icon(Icons.cast),
+                    leading: doCast
+                        ? Icon(Icons.cast_connected)
+                        : SizedBox(width: 5),
                     title: Text("Record and cast"),
                   )),
             ]),
