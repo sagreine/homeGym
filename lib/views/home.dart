@@ -154,6 +154,7 @@ class _HomeState extends State<Home> {
                     leading: Icon(Icons.fitness_center),
                     // TODO: Not tested at all.
                     onTap: () {
+                      Navigator.of(context).pop();
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
                             builder: (BuildContext context) => PickDay()),
@@ -162,17 +163,23 @@ class _HomeState extends State<Home> {
                 ListTile(
                     title: Text("Do Lift"),
                     leading: Icon(Icons.directions_run),
+                    // typical is icons, and need a similar iimage for all (image is bigger than icon) but to think about
                     //leading: Image.asset("assets/images/pos_icon.png"),
                     onTap: () {
+                      //TODO: popAndPushNamed once ready for that
                       Navigator.of(context).pop();
+                      Navigator.of(context).push(MaterialPageRoute<void>(
+                          builder: (BuildContext context) => Home()));
                     }),
                 ListTile(
                     title: Text("My Weights"),
                     leading: Icon(Icons.filter_list),
                     onTap: () {
+                      Navigator.of(context).pop();
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
-                            builder: (BuildContext context) => Settings()),
+                            builder: (BuildContext context) =>
+                                LifterWeightsView()),
                       );
                     }),
                 ListTile(
@@ -180,9 +187,11 @@ class _HomeState extends State<Home> {
                     //leading: Icon(Icons.description),
                     leading: Icon(Icons.format_list_bulleted),
                     onTap: () {
+                      Navigator.of(context).pop();
                       Navigator.of(context).push(
                         MaterialPageRoute<void>(
-                            builder: (BuildContext context) => Settings()),
+                            builder: (BuildContext context) =>
+                                LifterMaxesView()),
                       );
                     }),
                 ListTile(
@@ -190,11 +199,16 @@ class _HomeState extends State<Home> {
                     leading: Icon(Icons.help),
                     onTap: () {
                       Navigator.of(context).pop();
+                      Navigator.of(context).push(
+                        MaterialPageRoute<void>(
+                            builder: (BuildContext context) => HelpView()),
+                      );
                     }),
                 ListTile(
                   title: Text("Settings"),
                   leading: Icon(Icons.settings),
                   onTap: () {
+                    Navigator.of(context).pop();
                     Navigator.of(context).push(
                       MaterialPageRoute<void>(
                           builder: (BuildContext context) => Settings()),

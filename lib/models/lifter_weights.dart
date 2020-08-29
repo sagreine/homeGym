@@ -1,6 +1,6 @@
 // may want this to be a changeNotifier just to simplify things..
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'lifter_weights.g.dart';
 
@@ -21,17 +21,17 @@ class LifterWeights extends ChangeNotifier {
   }
 
 // the bool part of this is hanlded automatically by widgets. probably cloud too but just to be safe for now
-  bool updatePlate(double _plate, int _plateCount) {
+  bool updatePlate({double plate, int plateCount}) {
     if (plates == null) {
       plates = new Map<double, int>();
-    } else if (plates.containsKey(_plate)) {
-      // if we already have this plate and it's plateCount is equal to what we passed in, return false
-      if (plates[_plate] == _plateCount) {
+    } else if (plates.containsKey(plate)) {
+      // if we already have this plate and it's plateCount is equal to what we passed in, return false <probably antipatter>
+      if (plates[plate] == plateCount) {
         return false;
       }
     }
-    // otherwise update the plate
-    plates[_plate] = _plateCount;
+    // otherwise upsert the plate
+    plates[plate] = plateCount;
     notifyListeners();
     return true;
   }
@@ -135,47 +135,3 @@ class CustomDoubleConverter implements JsonConverter<Map<double,int>, String> {
   @override
   String toJson(double object) => object.toString();
 }*/
-
-@JsonSerializable()
-class LiftMaxes extends ChangeNotifier {
-  int deadliftMax;
-  int squatMax;
-  int benchMax;
-  int pressMax;
-
-  LiftMaxes({
-    this.deadliftMax,
-    this.squatMax,
-    this.benchMax,
-    this.pressMax,
-  });
-
-  void updateMax(String string, int newValue) {
-    switch (string.toLowerCase()) {
-      case "deadlift":
-        deadliftMax = newValue;
-        break;
-      case "bench":
-        benchMax = newValue;
-        break;
-      case "squat":
-        squatMax = newValue;
-        break;
-      case "press":
-        pressMax = newValue;
-        break;
-    }
-    notifyListeners();
-  }
-
-  List<Object> get props => [
-        deadliftMax,
-        squatMax,
-        benchMax,
-        pressMax,
-      ];
-  factory LiftMaxes.fromJson(Map<String, dynamic> json) =>
-      _$LiftMaxesFromJson(json);
-
-  Map<String, dynamic> toJson() => _$LiftMaxesToJson(this);
-}

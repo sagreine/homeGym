@@ -99,7 +99,7 @@ Future<double> getBarWeightCloud() async {
 // not liking having the controller in here? would rather return a
 // list to the page that then uses the controller or something..
 void getMaxesCloud(context) async {
-  LiftMaxController liftMaxController = new LiftMaxController();
+  LifterMaxesController liftMaxController = new LifterMaxesController();
   QuerySnapshot maxes;
   maxes = await FirebaseFirestore.instance.collection('MAXES').get();
   liftMaxController.updateMax(
@@ -143,9 +143,9 @@ void getPlatesCloud(context) async {
     if (result.id != "bar") {
       print(result.data()["count"]);
       lifterWeightsController.updatePlate(
-          context,
-          double.parse(result.id.substring(0, result.id.indexOf("_"))),
-          result.data()["count"]);
+          context: context,
+          plate: double.parse(result.id.substring(0, result.id.indexOf("_"))),
+          plateCount: result.data()["count"]);
     }
   });
 }

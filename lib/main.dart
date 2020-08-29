@@ -40,7 +40,7 @@ void main() async {
     ),
     // most of these can move down now...
     ChangeNotifierProvider(create: (context) => LifterWeights()),
-    ChangeNotifierProvider(create: (context) => LiftMaxes()),
+    ChangeNotifierProvider(create: (context) => LifterMaxes()),
     ChangeNotifierProvider(
       create: (context) => ExerciseSet(),
     ),

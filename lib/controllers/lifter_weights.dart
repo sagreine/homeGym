@@ -6,10 +6,12 @@ import 'package:home_gym/controllers/controllers.dart';
 
 //TODO: implement dispose
 class LifterWeightsController {
-  void updatePlate(BuildContext context, double plate, int _plateCount) {
+  TextEditingController barWeightTextController = new TextEditingController();
+
+  void updatePlate({BuildContext context, double plate, int plateCount}) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
-    if (liftweights.updatePlate(plate, _plateCount)) {
-      updatePlateCloud(plate, _plateCount);
+    if (liftweights.updatePlate(plate: plate, plateCount: plateCount)) {
+      updatePlateCloud(plate, plateCount);
     }
   }
 
@@ -22,27 +24,5 @@ class LifterWeightsController {
   List<double> pickPlates({BuildContext context, double targetWeight}) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
     return liftweights.pickPlates(targetWeight: targetWeight);
-  }
-}
-
-class LiftMaxController {
-  //TODO: you'd update the database not just set the local val....
-  updateMax({BuildContext context, String lift, int newMax}) {
-    var liftMaxes = Provider.of<LiftMaxes>(context, listen: false);
-    switch (lift) {
-      case "deadlift":
-        liftMaxes.deadliftMax = newMax;
-        break;
-      case "bench":
-        liftMaxes.benchMax = newMax;
-        break;
-      case "press":
-        liftMaxes.pressMax = newMax;
-        break;
-      case "squat":
-        liftMaxes.squatMax = newMax;
-        break;
-    }
-    // call (perhaps not implemented yet) cloud update liftMax function - that'd be if the max both wasn't null and is now different.
   }
 }

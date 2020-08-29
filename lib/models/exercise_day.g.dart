@@ -8,6 +8,7 @@ part of 'exercise_day.dart';
 
 ExerciseDay _$ExerciseDayFromJson(Map<String, dynamic> json) {
   return ExerciseDay(
+    program: json['program'] as String,
     sets: json['sets'] as int,
     reps: (json['reps'] as List)?.map((e) => e as int)?.toList(),
     currentSet: json['currentSet'] as int,
@@ -29,6 +30,7 @@ ExerciseDay _$ExerciseDayFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$ExerciseDayToJson(ExerciseDay instance) =>
     <String, dynamic>{
+      'program': instance.program,
       'sets': instance.sets,
       'trainingMax': instance.trainingMax,
       'currentSet': instance.currentSet,
