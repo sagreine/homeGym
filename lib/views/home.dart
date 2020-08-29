@@ -55,41 +55,6 @@ class _HomeState extends State<Home> {
     await FlutterFling.stopDiscoveryController();
   }
 
-  String getDisplayName() {
-    String displayName = FirebaseAuth.instance.currentUser.displayName;
-
-    //user.firebaseUser.user.getDisplayName();
-    if (displayName != null && displayName != "") {
-      return displayName;
-    }
-
-    for (UserInfo userInfo in FirebaseAuth.instance.currentUser.providerData) {
-      if (userInfo.displayName != null && userInfo.displayName != "") {
-        return userInfo.displayName;
-      }
-    }
-
-    return "Unnamed User";
-  }
-
-  // careful, URL vs Uri
-  String getPhotoURL() {
-    String getPhotoURL = FirebaseAuth.instance.currentUser.photoURL;
-
-    //user.firebaseUser.user.getDisplayName();
-    if (getPhotoURL != null && getPhotoURL != "") {
-      return getPhotoURL;
-    }
-
-    for (UserInfo userInfo in FirebaseAuth.instance.currentUser.providerData) {
-      if (userInfo.photoURL != null && userInfo.photoURL != "") {
-        return userInfo.photoURL;
-      }
-    }
-
-    return null;
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,14 +76,14 @@ class _HomeState extends State<Home> {
                           backgroundColor: Colors.brown.shade800,
                           backgroundImage: user.firebaseUser.photoUri.isEmpty
                               ? AssetImage("assets/images/pos_icon.png")
-                              : NetworkImage(getPhotoURL()),
+                              : NetworkImage(user.getPhotoURL()),
                         ),
                         SizedBox(width: 10),
                         Column(
                           children: [
                             SizedBox(height: 35),
                             //Image.asset("assets/images/pos_icon.png"),
-                            Text(getDisplayName()),
+                            Text(user.getDisplayName()),
                             SizedBox(height: 10),
                             Text(user.firebaseUser.email),
                             SizedBox(height: 10),
@@ -131,6 +96,11 @@ class _HomeState extends State<Home> {
                               ),
                               onTap: () {
                                 Navigator.of(context).pop();
+                                Navigator.of(context).push(
+                                  MaterialPageRoute<void>(
+                                      builder: (BuildContext context) =>
+                                          ProfileView()),
+                                );
                               },
                             ),
                           ],

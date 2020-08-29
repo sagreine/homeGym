@@ -18,6 +18,43 @@ class Muser extends ChangeNotifier {
     return result;
   }
 
+  String getDisplayName() {
+    String displayName = fauth.FirebaseAuth.instance.currentUser.displayName;
+
+    //user.firebaseUser.user.getDisplayName();
+    if (displayName != null && displayName != "") {
+      return displayName;
+    }
+
+    for (fauth.UserInfo userInfo
+        in fauth.FirebaseAuth.instance.currentUser.providerData) {
+      if (userInfo.displayName != null && userInfo.displayName != "") {
+        return userInfo.displayName;
+      }
+    }
+
+    return "Unnamed User";
+  }
+
+  // careful, URL vs Uri
+  String getPhotoURL() {
+    String getPhotoURL = fauth.FirebaseAuth.instance.currentUser.photoURL;
+
+    //user.firebaseUser.user.getDisplayName();
+    if (getPhotoURL != null && getPhotoURL != "") {
+      return getPhotoURL;
+    }
+
+    for (fauth.UserInfo userInfo
+        in fauth.FirebaseAuth.instance.currentUser.providerData) {
+      if (userInfo.photoURL != null && userInfo.photoURL != "") {
+        return userInfo.photoURL;
+      }
+    }
+
+    return null;
+  }
+
   //@override
   List<Object> get props => [firebaseUser, fAuthUser];
 }
