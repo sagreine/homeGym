@@ -215,6 +215,18 @@ class _HomeState extends State<Home> {
                     );
                   },
                 ),
+                ListTile(
+                  title: Text("Log Out"),
+                  leading: Icon(Icons.exit_to_app),
+                  onTap: () async {
+                    Navigator.of(context).pop();
+                    await homeController.logout(context);
+                    Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                          builder: (BuildContext context) => Login()),
+                    );
+                  },
+                ),
               ]),
             ),
           ]),

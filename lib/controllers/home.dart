@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:io';
 
+import 'package:firebase_auth_ui/firebase_auth_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_fling/flutter_fling.dart';
 import 'package:flutter_fling/remote_media_player.dart';
@@ -48,6 +49,11 @@ class HomeController {
       url = "https://i.imgur.com/ACgwkoh.mp4";
     }
     return url;
+  }
+
+  Future<bool> logout(BuildContext context) async {
+    var result = await Provider.of<Muser>(context, listen: false).logout();
+    return result;
   }
 
   // update our model with changes manually input on the form, if any.

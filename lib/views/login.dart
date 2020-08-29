@@ -5,7 +5,7 @@ import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/pick_day.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:firebase_auth_ui/firebase_auth_ui.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 class Login extends StatefulWidget {

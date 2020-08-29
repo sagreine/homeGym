@@ -11,6 +11,13 @@ class Muser extends ChangeNotifier {
     this.firebaseUser,
   });
 
+  Future<bool> logout() async {
+    final result = await FirebaseAuthUi.instance().logout();
+    this.firebaseUser = null;
+    this.fAuthUser = null;
+    return result;
+  }
+
   //@override
   List<Object> get props => [firebaseUser, fAuthUser];
 }
