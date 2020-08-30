@@ -6,7 +6,7 @@ import 'package:provider/provider.dart';
 class ProgramController {
   // if programs would actually change, would use a stream. for now, just so we can load during app initialization
   // but not lose the code for pulling in later if need be.
-  Future updateProgramList(BuildContext context) async {
+  Future<List<String>> updateProgramList(BuildContext context) async {
     var model = Provider.of<Programs>(context, listen: false);
     //if (model.programs == null || model.programs.length == 0) {
     print("model.programs was null or empty, re-pulling");

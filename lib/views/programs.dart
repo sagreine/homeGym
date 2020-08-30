@@ -38,15 +38,14 @@ class _ProgramsState extends State<ProgramsView> {
         }
         // once we have data put it in.
         return ListView.builder(
-            itemCount: programSnap.data.documents.length * 2,
+            itemCount: programSnap.data.length * 2,
             padding: EdgeInsets.all(16.0),
             itemBuilder: (context, i) {
               if (i.isOdd) return Divider();
               final index = i ~/ 2;
               return ListTile(
-                  onTap: () => Navigator.pop(
-                      context, programSnap.data.documents[index].documentID),
-                  title: Text(programSnap.data.documents[index].documentID));
+                  onTap: () => Navigator.pop(context, programSnap.data[index]),
+                  title: Text(programSnap.data[index]));
             });
       },
       future: programsController.updateProgramList(context),

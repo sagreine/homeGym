@@ -17,19 +17,16 @@ void createDatabaseRecord(ExerciseSet exercise) async {
       );
 }
 
-Future<QuerySnapshot> getPrograms() async {
-  //List<String> programs = new List<String>();
-/*
-  await Firestore.instance.collection('PROGRAMS').getDocuments().then((value) {
-    value.documents.forEach((element) {
-      programs.add(element.documentID);
-    });
-    return programs;
-  });
-*/
-  QuerySnapshot programs =
+Future<List<String>> getPrograms() async {
+  QuerySnapshot querySnapshot =
       await FirebaseFirestore.instance.collection('PROGRAMS').get();
-  return programs;
+  List<QueryDocumentSnapshot> list = new List.from(querySnapshot.docs.toList());
+  List<String> rtr = list.map((QueryDocumentSnapshot docSnapshot) {
+    return docSnapshot.id.toString();
+    // this is a first step towards how to get a step further for if/when we're not (stupidly) using the ID and want e.g. a display name.
+    //return docSnapshot.data().entries.toString();
+  }).toList();
+  return rtr;
 }
 
 //TODO untested

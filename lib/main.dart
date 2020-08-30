@@ -58,7 +58,7 @@ void main() async {
     ),
   ], child: MyApp()));
 }
-
+/*
 void getInitialPull(BuildContext context) async {
   var programs = Provider.of<Programs>(context, listen: false);
   List<QueryDocumentSnapshot> list =
@@ -70,6 +70,13 @@ void getInitialPull(BuildContext context) async {
     // this is a first step towards how to get a step further for if/when we're not (stupidly) using the ID and want e.g. a display name.
     //return docSnapshot.data().entries.toString();
   }).toList());
+}
+*/
+
+void getInitialPull(BuildContext context) async {
+  var programs = Provider.of<Programs>(context, listen: false);
+  programs.setProgram(programs: await getPrograms());
+  print("this is the programs: ${programs.programs}");
 }
 
 class MyApp extends StatelessWidget {
