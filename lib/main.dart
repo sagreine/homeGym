@@ -1,4 +1,5 @@
 //import 'package:firebase_auth_ui/firebase_auth_ui.dart';
+import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart'
@@ -64,8 +65,17 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       title: 'Home Gym',
-      home: Login(),
-      //Home(),
+      home: Container(
+        color: Colors.grey[850],
+        child: SplashScreen.navigate(
+          name: 'assets/flares/logo1.flr',
+          next: (context) => Login(),
+          until: () => Future.delayed(Duration(seconds: 2)),
+          startAnimation: 'Untitled',
+        ),
+      ),
+      //Login(),
+      //Splash(),
 
       /*BlocProvider(
         create: (context) => VideoBloc(),
