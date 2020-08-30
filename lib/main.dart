@@ -1,6 +1,8 @@
 //import 'package:firebase_auth_ui/firebase_auth_ui.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart'
 //import 'package:home_gym/blocs/blocs.dart';
@@ -49,14 +51,34 @@ void main() async {
       create: (context) => ExerciseDay(),
     ),
     ChangeNotifierProvider(
+      create: (context) => Programs(),
+    ),
+    ChangeNotifierProvider(
       create: (context) => FlingMediaModel(),
     ),
   ], child: MyApp()));
 }
 
+void getInitialPull(BuildContext context) async {
+  var programs = Provider.of<Programs>(context, listen: false);
+  List<QueryDocumentSnapshot> list =
+      new List.from((await getPrograms()).docs.toList());
+
+  programs.setProgram(
+      programs: list.map((QueryDocumentSnapshot docSnapshot) {
+    return docSnapshot.id.toString();
+    // this is a first step towards how to get a step further for if/when we're not (stupidly) using the ID and want e.g. a display name.
+    //return docSnapshot.data().entries.toString();
+  }).toList());
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // load all non-user-specific things async (not waiting for them) during the splash.
+    // okay to be here because this is only to be built once --- if the screen goes black during splash though?
+    getInitialPull(context);
+    // maybe check if the user is already authorized here, and go to login if not?
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       theme: ThemeData(

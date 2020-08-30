@@ -17,7 +17,7 @@ void createDatabaseRecord(ExerciseSet exercise) async {
       );
 }
 
-Future getPrograms() async {
+Future<QuerySnapshot> getPrograms() async {
   //List<String> programs = new List<String>();
 /*
   await Firestore.instance.collection('PROGRAMS').getDocuments().then((value) {

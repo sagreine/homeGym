@@ -1,4 +1,10 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
 part of 'lifter_maxes.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
 
 LifterMaxes _$LifterMaxesFromJson(Map<String, dynamic> json) {
   return LifterMaxes(

@@ -39,7 +39,7 @@ class PickDayController {
     // launch the page to pick them, return it when done
     /// - do this more safely obviously. if they OS-back button this goes badly.
     String temp = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => Programs()));
+        context, MaterialPageRoute(builder: (context) => ProgramsView()));
     // update the page we're on now
     if (temp != null) {
       selectedProgram = temp;

@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
 
-class Programs extends StatefulWidget {
+class ProgramsView extends StatefulWidget {
   @override
   _ProgramsState createState() => _ProgramsState();
 }
 
-class _ProgramsState extends State<Programs> {
+class _ProgramsState extends State<ProgramsView> {
   ProgramController programsController = ProgramController();
 
   @override
@@ -49,7 +49,7 @@ class _ProgramsState extends State<Programs> {
                   title: Text(programSnap.data.documents[index].documentID));
             });
       },
-      future: programsController.updateProgramList(),
+      future: programsController.updateProgramList(context),
     );
   }
 }

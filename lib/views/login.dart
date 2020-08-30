@@ -74,6 +74,7 @@ class _LoginState extends State<Login> {
       AuthProvider.phone(), // kind of silly on a phone though?
     ]).then((firebaseUser) {
       user.firebaseUser = firebaseUser;
+      // pull in this users' information
       loginController.getMaxes(context);
       loginController.getBarWeight(context);
       loginController.getPlates(context);
