@@ -1,7 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
 
-import 'package:firebase_auth_ui/firebase_auth_ui.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_fling/flutter_fling.dart';
 import 'package:flutter_fling/remote_media_player.dart';
@@ -11,7 +10,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
 //TODO: implement dispose
-//TODO: put raw querying in cloud layer...
 //TODO: this is all kind of just thrown in here for now. some is from startup that isn't created yet.
 class HomeController {
   TextEditingController formControllerTitle = new TextEditingController();
