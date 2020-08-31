@@ -73,6 +73,7 @@ void getInitialPull(BuildContext context) async {
 }
 */
 
+// TODO: also pull in fling/cast devices? will still need to pull in elsewhere of course, cuz that changes over time.
 void getInitialPull(BuildContext context) async {
   var programs = Provider.of<Programs>(context, listen: false);
   programs.setProgram(programs: await getPrograms());

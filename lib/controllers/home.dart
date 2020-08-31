@@ -25,6 +25,7 @@ class HomeController {
       new TextEditingController();
 
   ExerciseDayController exerciseDayController = new ExerciseDayController();
+  LifterMaxesController lifterMaxesController = new LifterMaxesController();
 
   ConfettiController confettiController =
       ConfettiController(duration: const Duration(seconds: 2));
@@ -99,9 +100,33 @@ class HomeController {
       @required bool doVideo}) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
+    //var thisMaxes = Provider.of<LifterMaxes>(context, listen: false);
     String thisExercise = json.encode(exercise.toJson());
     // make the firestore record for this exercise. (dangerous, they can still back out of video.....)
     String origExerciseID = await createDatabaseRecord(exercise);
+
+    /////// dangerous, for sure. make a copy of the next exercise don't do this.
+    ///e.g. below we try to reference values of the current exercise and it breaks everything.
+    ///
+    /// should flow like:
+    /// 1) form has the current exercise (E1)
+    /// 2) if casting, need to cast the next exercise (E2) too, so how to get it?
+    /// 3) After the lift is performed, need to check reps for E1 and populate form with E2 info
+    ///
+    /// So, considerations
+    /// 1) Business-side, I can live with the form being already-populated
+    ///     a) not casting, no video -> doesn't care at all, just feels like you hit button when done
+    ///     b) not casting, video -> video hides it aside from a brief splash, so weights already set up. back button on video though, which is a very reasonable thing....
+    ///     c) casting, video -> same as above
+    ///     d) casting, no video -> this is annoying, but the cast will have it correct
+    /// 2) Implementation-side the 'issue' is safety within this function call
+    ///    a) the ShowDialog needs to know which set this is, and it is looking at the next one already
+    ///       which is problematic since we'd need to peek into member variables we shouldn't be able to see
+    ///     ...could get around this one by storing it before updating..., but easy to forget that.
+    ///    b) if they hit the back button during video, we've already advanced....
+    ///    b) we keep the URL safe with careful ordering, but easy to forget that
+    ///
+    ///
     updateExercise(context: context);
     String nextExercise = json.encode(exercise.toJson());
     String thisDayJSON = json.encode(thisDay.toJson());
@@ -112,7 +137,7 @@ class HomeController {
     //....so could check for the garbage (default) URLs before updating this..
     updateDatabaseRecordWithURL(id: origExerciseID, url: url);
 
-    // TODO: do we want to delay at all if not recording?
+    // TODO: do we want to delay cast at all if not recording?
     // that is, give them time to do the actual exercise?
     // do we need to await?
     if (doCast) {
@@ -144,6 +169,17 @@ class HomeController {
                   child: Text("Yes"),
                   onPressed: () => {
                     Navigator.pop(context),
+                    if (thisDay.updateMaxIfGetReps &&
+                        //thisDay.areWeOnLastSet()
+                        thisDay.currentSet == thisDay.progressSet)
+                      {
+                        lifterMaxesController.update1RepMax(
+                            context: context,
+                            // TODO: be careful with this, since we're updating/progressing to the next exercise above this point.
+                            lift: exercise.title,
+                            progression: true,
+                            updateCloud: true)
+                      },
 
                     // should only confetti if it is the last set of a week that tests/progresses?
                     confettiController.play()

@@ -35,7 +35,11 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
           ],
           onFieldSubmitted: (val) {
             lifterMaxesController.update1RepMax(
-                context: context, lift: lift, newMax: int.parse(val));
+                progression: false,
+                context: context,
+                lift: lift,
+                newMax: int.parse(val),
+                updateCloud: true);
           },
         ),
         showEditIcon: true);

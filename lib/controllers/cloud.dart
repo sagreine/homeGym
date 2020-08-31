@@ -62,7 +62,7 @@ void updatePlateCloud(double _plate, int _plateCount) async {
 }
 
 //TODO: implement, test
-void update1RepMaxCloud(String lift, int newMax) async {
+void update1RepMaxCloud({String lift, int newMax}) async {
   final databaseReference = FirebaseFirestore.instance;
   Map data = Map<String, dynamic>();
   data["currentMax"] = newMax;
@@ -111,28 +111,32 @@ void getMaxesCloud(context) async {
   LifterMaxesController liftMaxController = new LifterMaxesController();
   QuerySnapshot maxes;
   maxes = await FirebaseFirestore.instance.collection('MAXES').get();
-  liftMaxController.updateMax(
+  liftMaxController.update1RepMax(
+      progression: false,
       context: context,
       lift: "bench",
       newMax: maxes.docs
           .elementAt(
               maxes.docs.indexWhere((document) => document.id == "bench"))
           .data()["currentMax"]);
-  liftMaxController.updateMax(
+  liftMaxController.update1RepMax(
+      progression: false,
       context: context,
       lift: "deadlift",
       newMax: maxes.docs
           .elementAt(
               maxes.docs.indexWhere((document) => document.id == "deadlift"))
           .data()["currentMax"]);
-  liftMaxController.updateMax(
+  liftMaxController.update1RepMax(
+      progression: false,
       context: context,
       lift: "squat",
       newMax: maxes.docs
           .elementAt(
               maxes.docs.indexWhere((document) => document.id == "squat"))
           .data()["currentMax"]);
-  liftMaxController.updateMax(
+  liftMaxController.update1RepMax(
+      progression: false,
       context: context,
       lift: "press",
       newMax: maxes.docs
@@ -179,10 +183,12 @@ Future<void> getExercisesCloud(context, String program) async {
       new List<double>.from(pctAndReps.data()["percentages"]);
   //var exercise = Provider.of<ExerciseDay>(context, listen: false);
   await exerciseDayController.updateDay(
+    updateMaxIfGetReps: pctAndReps.data()["update_max_if_get_reps"],
     program: program,
     context: context,
     reps: reps,
     percentages: percentages,
+    progressSet: pctAndReps.data()["progressSet"],
     trainingMaxPct: pctAndReps.data()["trainingMaxPct"],
     assistanceCore: new List<String>.from(pctAndReps.data()["assistance_core"]),
     assistanceCoreReps: pctAndReps.data()["assistance_core_reps"],

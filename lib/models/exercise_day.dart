@@ -19,6 +19,8 @@ class ExerciseDay extends ChangeNotifier {
   List<String> assistancePull;
   List<String> assistanceCore;
   List<String> assistancePush;
+  bool updateMaxIfGetReps;
+  int progressSet;
 
   ExerciseDay({
     this.program,
@@ -33,6 +35,8 @@ class ExerciseDay extends ChangeNotifier {
     this.assistanceCore,
     this.assistancePull,
     this.assistancePush,
+    this.updateMaxIfGetReps,
+    this.progressSet,
   });
 
   void buildDay({
@@ -48,6 +52,8 @@ class ExerciseDay extends ChangeNotifier {
     List<String> assistancePull,
     List<String> assistanceCore,
     List<String> assistancePush,
+    bool updateMaxIfGetReps,
+    int progressSet,
   }) {
     this.program = program;
     this.sets = sets;
@@ -61,6 +67,8 @@ class ExerciseDay extends ChangeNotifier {
     this.assistanceCore = assistanceCore;
     this.assistancePull = assistancePull;
     this.assistancePush = assistancePush;
+    this.updateMaxIfGetReps = updateMaxIfGetReps;
+    this.progressSet = progressSet;
     notifyListeners();
   }
 
@@ -69,7 +77,7 @@ class ExerciseDay extends ChangeNotifier {
   bool nextSet() {
     bool returnval;
     print("old current set: " + currentSet.toString());
-    if (currentSet + 1 < sets) {
+    if (!areWeOnLastSet()) {
       currentSet++;
       returnval = true;
     } else {
@@ -79,6 +87,10 @@ class ExerciseDay extends ChangeNotifier {
     print("new current set: " + currentSet.toString());
     notifyListeners();
     return returnval;
+  }
+
+  bool areWeOnLastSet() {
+    return (currentSet == sets - 1);
   }
 
   // update currentSet here .... check it is < sets - 1 etc.
@@ -102,5 +114,7 @@ class ExerciseDay extends ChangeNotifier {
         assistanceCore,
         assistancePull,
         assistancePush,
+        updateMaxIfGetReps,
+        progressSet,
       ];
 }
