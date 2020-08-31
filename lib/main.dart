@@ -1,5 +1,5 @@
 //import 'package:firebase_auth_ui/firebase_auth_ui.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+//import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
@@ -84,6 +84,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     // load all non-user-specific things async (not waiting for them) during the splash.
     // okay to be here because this is only to be built once --- if the screen goes black during splash though?
+    // but this is running over and over again....? just on hot reload though actually.
     getInitialPull(context);
     // maybe check if the user is already authorized here, and go to login if not?
     return MaterialApp(

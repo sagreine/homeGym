@@ -9,12 +9,24 @@ import 'package:video_compress/video_compress.dart';
 //TODO: this should be a class?
 //TODO: implement dispose
 
-void createDatabaseRecord(ExerciseSet exercise) async {
+Future<String> createDatabaseRecord(ExerciseSet exercise) async {
   // would put everyone in their own bucket and manage that via IAM
   final databaseReference = FirebaseFirestore.instance;
-  await databaseReference.collection("VIDEOS").add(
-        Map<String, dynamic>.from((exercise.toJson())),
-      );
+  DocumentReference documentReference =
+      await databaseReference.collection("VIDEOS").add(
+            Map<String, dynamic>.from((exercise.toJson())),
+          );
+  return documentReference.id;
+}
+
+updateDatabaseRecordWithURL({String id, String url}) {
+  var db = FirebaseFirestore.instance;
+  db.collection("VIDEOS").doc(id).update({"videoPath": url});
+}
+
+updateDatabaseRecordWithReps({String id, int reps}) {
+  var db = FirebaseFirestore.instance;
+  db.collection("VIDEOS").doc(id).update({"reps": reps});
 }
 
 Future<List<String>> getPrograms() async {

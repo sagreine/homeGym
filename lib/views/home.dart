@@ -1,5 +1,7 @@
 //import 'package:firebase_auth/firebase_auth.dart';
 //import 'package:flutter/gestures.dart';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/flutter_fling.dart';
@@ -7,6 +9,7 @@ import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 import 'package:home_gym/controllers/controllers.dart';
+import 'package:confetti/confetti.dart';
 
 //sagre.HomeGymTV.player
 
@@ -47,6 +50,7 @@ class _HomeState extends State<Home> {
     doCast = false;
     // this is bad, but whatever.
     homeController.formControllerRestInterval.text = "90";
+    //confettiController
   }
 
   @override
@@ -205,244 +209,351 @@ class _HomeState extends State<Home> {
       body: Consumer<FlingMediaModel>(
         builder: (context, flingy, child) {
           return SafeArea(
-            child: Column(children: <Widget>[
-              Text(
-                  "Pick a cast in Settings, Enter set info, and record! Auto cloud backup and fling to TV from there"),
-              Expanded(
-                child: Form(
-                  autovalidate: true,
-                  key: _formkey,
-                  // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...
-                  child: ListView(
-                    children: <Widget>[
-                      new DropdownButton<String>(
-                        hint: _selectedTitle == null
-                            ? Text('Main exercise for the day')
-                            : SizedBox(
-                                width: 50,
+            child: (Stack(
+              children: <Widget>[
+                Align(
+                  alignment: Alignment.topCenter,
+                  child: ConfettiWidget(
+                    confettiController: homeController.confettiController,
+                    blastDirection:
+                        pi / 2, // don't specify a direction, blast randomly
+                    shouldLoop: false,
+                    maxBlastForce: 3, // set a lower max blast force
+                    minBlastForce: 1, // set a lower min blast force
+                    emissionFrequency: 0.9,
+                    numberOfParticles: 10, // a lot of particles at once
+                    gravity: .7,
+                  ),
+                ),
+                Column(children: <Widget>[
+                  Text("Do the lift!"),
+                  Expanded(
+                    child: Form(
+                      autovalidate: true,
+                      key: _formkey,
+                      // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...
+                      child: ListView(
+                        children: <Widget>[
+                          new DropdownButton<String>(
+                            hint: _selectedTitle == null
+                                ? Text('Main exercise for the day')
+                                : SizedBox(
+                                    width: 50,
+                                    child: TextFormField(
+                                      controller:
+                                          homeController.formControllerTitle,
+                                      validator: (value) {
+                                        if (value.isEmpty) {
+                                          return "Title can't be blank";
+                                        }
+                                        return null;
+                                      },
+                                    ),
+                                  ),
+                            //might want to force them back insead of allowing this...
+                            items: <String>[
+                              'Squat',
+                              'Press',
+                              'Deadlift',
+                              'Bench'
+                            ].map((String value) {
+                              return new DropdownMenuItem<String>(
+                                value: value,
+                                child: new Text(value),
+                              );
+                            }).toList(),
+                            value: _selectedTitle,
+                            onChanged: (_) {
+                              setState(() {
+                                homeController.formControllerTitle.text = _;
+                                _selectedTitle = _;
+                              });
+                            },
+                          ),
+                          SizedBox(height: 16),
+                          TextFormField(
+                            decoration: new InputDecoration(
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                  color: Colors.greenAccent,
+                                  width: 1.0,
+                                  style: BorderStyle.solid,
+                                ),
+                              ),
+                              enabledBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Colors.blueGrey, width: 1.0),
+                              ),
+                              labelText: "Description for this set",
+                            ),
+                            autocorrect: true,
+                            enableSuggestions: true,
+                            controller:
+                                homeController.formControllerDescription,
+                            validator: (value) {
+                              //homeController.formController.validator()
+                              return null;
+                            },
+                          ),
+                          SizedBox(height: 8.0),
+                          Row(
+                            children: <Widget>[
+                              Expanded(
                                 child: TextFormField(
+                                  decoration: new InputDecoration(
+                                      focusedBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                          color: Colors.greenAccent,
+                                          width: 1.0,
+                                          style: BorderStyle.solid,
+                                        ),
+                                      ),
+                                      enabledBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(
+                                            color: Colors.blueGrey, width: 1.0),
+                                      ),
+                                      labelText: "Reps"),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    WhitelistingTextInputFormatter.digitsOnly,
+                                  ],
+                                  enableSuggestions: true,
+                                  controller: homeController.formControllerReps,
+                                  validator: (value) {
+                                    //homeController.formController.validator()
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              SizedBox(
+                                width: 2,
+                              ),
+                              Expanded(
+                                child: TextFormField(
+                                  decoration: new InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.greenAccent,
+                                        width: 1.0,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.blueGrey, width: 1.0),
+                                    ),
+                                    labelText: "Weight",
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    WhitelistingTextInputFormatter.digitsOnly,
+                                  ],
+                                  enableSuggestions: true,
                                   controller:
-                                      homeController.formControllerTitle,
+                                      homeController.formControllerWeight,
+                                  validator: (value) {
+                                    //homeController.formController.validator()
+                                    return null;
+                                  },
+                                ),
+                              ),
+                              SizedBox(
+                                width: 2,
+                              ),
+                              Expanded(
+                                child: TextFormField(
+                                  decoration: new InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.greenAccent,
+                                        width: 1.0,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.blueGrey, width: 1.0),
+                                    ),
+                                    labelText: "Rest after",
+                                  ),
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: <TextInputFormatter>[
+                                    WhitelistingTextInputFormatter.digitsOnly,
+                                  ],
+                                  autocorrect: true,
+                                  enableSuggestions: true,
+                                  controller:
+                                      homeController.formControllerRestInterval,
                                   validator: (value) {
                                     if (value.isEmpty) {
-                                      return "Title can't be blank";
+                                      return "Can't be blank";
                                     }
                                     return null;
                                   },
                                 ),
                               ),
-                        //might want to force them back insead of allowing this...
-                        items: <String>['Squat', 'Press', 'Deadlift', 'Bench']
-                            .map((String value) {
-                          return new DropdownMenuItem<String>(
-                            value: value,
-                            child: new Text(value),
-                          );
-                        }).toList(),
-                        value: _selectedTitle,
-                        onChanged: (_) {
-                          setState(() {
-                            homeController.formControllerTitle.text = _;
-                            _selectedTitle = _;
-                          });
-                        },
-                      ),
-                      SizedBox(height: 8.0),
-                      SizedBox(height: 8.0),
-                      TextFormField(
-                        decoration: new InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.greenAccent,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.blueGrey, width: 1.0),
-                          ),
-                          labelText: "Description for this set",
-                        ),
-                        autocorrect: true,
-                        enableSuggestions: true,
-                        controller: homeController.formControllerDescription,
-                        validator: (value) {
-                          //homeController.formController.validator()
-                          return null;
-                        },
-                      ),
-                      SizedBox(height: 8.0),
-                      Row(
-                        children: <Widget>[
-                          Expanded(
-                            child: TextFormField(
-                              decoration: new InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.greenAccent,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.blueGrey, width: 1.0),
-                                  ),
-                                  labelText: "Reps"),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                WhitelistingTextInputFormatter.digitsOnly,
-                              ],
-                              autocorrect: true,
-                              enableSuggestions: true,
-                              controller: homeController.formControllerReps,
-                              validator: (value) {
-                                //homeController.formController.validator()
-                                return null;
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            width: 2,
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              decoration: new InputDecoration(
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.greenAccent,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.blueGrey, width: 1.0),
-                                ),
-                                labelText: "Weight",
-                              ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                WhitelistingTextInputFormatter.digitsOnly,
-                              ],
-                              autocorrect: true,
-                              enableSuggestions: true,
-                              controller: homeController.formControllerWeight,
-                              validator: (value) {
-                                //homeController.formController.validator()
-                                return null;
-                              },
-                            ),
-                          ),
-                          SizedBox(
-                            width: 2,
-                          ),
-                          Expanded(
-                            child: TextFormField(
-                              decoration: new InputDecoration(
-                                focusedBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.greenAccent,
-                                    width: 1.0,
-                                    style: BorderStyle.solid,
-                                  ),
-                                ),
-                                enabledBorder: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                      color: Colors.blueGrey, width: 1.0),
-                                ),
-                                labelText: "Rest after",
-                              ),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                WhitelistingTextInputFormatter.digitsOnly,
-                              ],
-                              autocorrect: true,
-                              enableSuggestions: true,
-                              controller:
-                                  homeController.formControllerRestInterval,
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  return "Can't be blank";
-                                }
-                                return null;
-                              },
-                            ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ),
-              // this should be in a controller
-              CheckboxListTile(
-                title: Text("Cast to TV"),
-                secondary:
-                    doCast ? Icon(Icons.cast_connected) : Icon(Icons.cast),
-                value: doCast,
-                onChanged: (newValue) {
-                  setState(() {
-                    doCast = newValue;
-                    if (newValue == false) {
-                      doVideo = false;
-                    }
-                  });
-                },
-              ),
-              CheckboxListTile(
-                title: Text("With Video"),
-                secondary:
-                    doVideo ? Icon(Icons.videocam) : Icon(Icons.videocam_off),
-                value: doCast ? doVideo : false,
-                onChanged: (newValue) {
-                  setState(() {
-                    if (doCast) {
-                      doVideo = newValue;
-                    }
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.platform,
-              ),
-              // could make thid disabled when not valid, but headache to setState everywhere
-              RaisedButton(
-                  onPressed: () async {
-                    if (_formkey.currentState.validate()) {
-                      print("valid form");
-                      // make any updates that are necessary, check we have a fling device, then cast
-                      if (flingy.selectedPlayer != null) {
-                        // do it so it goes -> update exercise, getNextExercise(this updates what you see though?),
-                        // cast (them both)
-                        homeController.updateThisExercise(
-                          context,
-                        );
-                        // then get the next exercise's info into the form (not fully implemented of course)
-                        //homeController.updateExercise(context);
-                        // may need to await this, if it is updating our exercise that we're sending....
-                        await homeController.castMediaTo(
-                            player: flingy.selectedPlayer,
-                            context: context,
-                            doCast: doCast,
-                            doVideo: doVideo);
-                      } else {
-                        print(
-                            "form is valid but no fling player selected. launching settings");
-                        Navigator.of(context).push(
-                          MaterialPageRoute<void>(
-                              builder: (BuildContext context) => Settings()),
-                        );
-                      }
-                    }
-                  },
-                  // TODO: cast v cast selected = do we have a cast device selected...
-                  child: ListTile(
-                    leading: doCast
-                        ? Icon(Icons.cast_connected)
-                        : SizedBox(width: 5),
-                    title: Text("Record and cast"),
-                  )),
-            ]),
+                  // this should be in a controller
+                  CheckboxListTile(
+                    title: Text("Cast to TV"),
+                    secondary:
+                        doCast ? Icon(Icons.cast_connected) : Icon(Icons.cast),
+                    value: doCast,
+                    onChanged: (newValue) {
+                      setState(() {
+                        doCast = newValue;
+                        if (newValue == false) {
+                          doVideo = false;
+                        }
+                      });
+                    },
+                  ),
+                  CheckboxListTile(
+                    title: Text("With Video"),
+                    secondary: doVideo
+                        ? Icon(Icons.videocam)
+                        : Icon(Icons.videocam_off),
+                    value: doCast ? doVideo : false,
+                    onChanged: (newValue) {
+                      setState(() {
+                        if (doCast) {
+                          doVideo = newValue;
+                        }
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.platform,
+                  ),
+                  // could make thid disabled when not valid, but headache to setState everywhere
+                  RaisedButton(
+                      onPressed: () async {
+                        if (_formkey.currentState.validate()) {
+                          print("valid form");
+                          // make any updates that are necessary, check we have a fling device, then cast
+                          if (flingy.selectedPlayer != null) {
+                            // do it so it goes -> update exercise, getNextExercise(this updates what you see though?),
+                            // cast (them both)
+                            homeController.updateThisExercise(
+                              context,
+                            );
+                            // then get the next exercise's info into the form (not fully implemented of course)
+                            //homeController.updateExercise(context);
+                            // may need to await this, if it is updating our exercise that we're sending....
+                            await homeController.castMediaTo(
+                                player: flingy.selectedPlayer,
+                                context: context,
+                                doCast: doCast,
+                                doVideo: doVideo);
+                            /*
+                            showDialog(
+                                context: context,
+                                barrierDismissible: false,
+                                builder: (_) => AlertDialog(
+                                      title: Text("Previous set"),
+                                      content: Text("Did you get the reps?"),
+                                      actions: [
+                                        FlatButton(
+                                          child: Text("Yes"),
+                                          onPressed: () => {
+                                            Navigator.pop(context),
+                                            confettiController.play()
+                                          },
+                                        ),
+                                        FlatButton(
+                                          child: Text("No"),
+                                          onPressed: () => {
+                                            Navigator.pop(context),
+                                            showDialog(
+                                                context: context,
+                                                barrierDismissible: false,
+                                                builder: (_) => AlertDialog(
+                                                        title: Text(
+                                                            "Reps you got"),
+                                                        content: TextFormField(
+                                                          decoration:
+                                                              new InputDecoration(
+                                                                  focusedBorder:
+                                                                      OutlineInputBorder(
+                                                                    borderSide:
+                                                                        BorderSide(
+                                                                      color: Colors
+                                                                          .greenAccent,
+                                                                      width:
+                                                                          1.0,
+                                                                      style: BorderStyle
+                                                                          .solid,
+                                                                    ),
+                                                                  ),
+                                                                  enabledBorder:
+                                                                      OutlineInputBorder(
+                                                                    borderSide: BorderSide(
+                                                                        color: Colors
+                                                                            .blueGrey,
+                                                                        width:
+                                                                            1.0),
+                                                                  ),
+                                                                  labelText:
+                                                                      "Reps"),
+                                                          keyboardType:
+                                                              TextInputType
+                                                                  .number,
+                                                          inputFormatters: <
+                                                              TextInputFormatter>[
+                                                            WhitelistingTextInputFormatter
+                                                                .digitsOnly,
+                                                          ],
+                                                          enableSuggestions:
+                                                              true,
+                                                          controller: homeController
+                                                              .formControllerRepsCorrection,
+                                                          validator: (value) {
+                                                            //homeController.formController.validator()
+                                                            return null;
+                                                          },
+                                                        ),
+                                                        actions: [
+                                                          IconButton(
+                                                            icon: Icon(
+                                                                Icons.done),
+                                                            onPressed: () => {
+                                                              Navigator.pop(
+                                                                  context),
+
+                                                              // TODO: update the cloud record here or pop the result back to do so.
+                                                            },
+                                                          ),
+                                                        ]))
+                                          },
+                                        )
+                                      ],
+                                      elevation: 24,
+                                      //shape: CircleBorder(),
+                                    ));*/
+                          } else {
+                            print(
+                                "form is valid but no fling player selected. launching settings");
+                            Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                  builder: (BuildContext context) =>
+                                      Settings()),
+                            );
+                          }
+                        }
+                      },
+                      // TODO: cast v cast selected = do we have a cast device selected...
+                      child: ListTile(
+                        leading: doCast
+                            ? Icon(Icons.cast_connected)
+                            : SizedBox(width: 5),
+                        title: Text("Record and cast"),
+                      )),
+                ]),
+              ],
+            )),
           );
         },
       ),

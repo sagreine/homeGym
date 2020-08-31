@@ -8,14 +8,14 @@ class ProgramController {
   // but not lose the code for pulling in later if need be.
   Future<List<String>> updateProgramList(BuildContext context) async {
     var model = Provider.of<Programs>(context, listen: false);
-    //if (model.programs == null || model.programs.length == 0) {
-    print("model.programs was null or empty, re-pulling");
-    var programs = await getPrograms();
-    return programs;
-    // this works but breaks the view.
-    /*} else {
+    if (model.programs == null || model.programs.length == 0) {
+      print("model.programs was null or empty, re-pulling");
+      var programs = await getPrograms();
+      return programs;
+      // this works but breaks the view.
+    } else {
       print("model.programs already populated, just use that");
       return model.programs;
-    }*/
+    }
   }
 }
