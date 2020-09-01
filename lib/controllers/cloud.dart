@@ -152,7 +152,8 @@ Future<int> getBarWeightCloud({@required String userID}) async {
 
 // should make this lazier
 // not liking having the controller in here? would rather return a
-// list to the page that then uses the controller or something..
+// list to the page that then uses the controller or something.. also because if we delete that controller this function fails which is ... bad.
+// TODO: if this returns nothing, we need to handle that.
 void getMaxesCloud({@required context, @required String userID}) async {
   LifterMaxesController liftMaxController = new LifterMaxesController();
   QuerySnapshot maxes;
@@ -166,38 +167,59 @@ void getMaxesCloud({@required context, @required String userID}) async {
         "Could not retrieve user's Max for lifts. ask them to generate them?");
     return;
   });
+  if (maxes.docs.length != 4) {
+    print("There werent' 4 values in Maxes, there were ${maxes.docs.length}. This might mean we just forgot to update how many to expect" +
+        " (each is individually checked, so it shouldn't be broken) or it means one of these is using a default value)");
+  }
   liftMaxController.update1RepMax(
       progression: false,
       context: context,
       lift: "bench",
-      newMax: maxes.docs
-          .elementAt(
-              maxes.docs.indexWhere((document) => document.id == "bench"))
-          .data()["currentMax"]);
+      // if this vqalue doesn't exist, use a default value
+      newMax: (maxes.docs.singleWhere((element) => element.id == "bench",
+                  orElse: () => null)) !=
+              null
+          ? maxes.docs
+              .elementAt(
+                  maxes.docs.indexWhere((document) => document.id == "bench"))
+              .data()["currentMax"]
+          : 100);
   liftMaxController.update1RepMax(
       progression: false,
       context: context,
       lift: "deadlift",
-      newMax: maxes.docs
-          .elementAt(
-              maxes.docs.indexWhere((document) => document.id == "deadlift"))
-          .data()["currentMax"]);
+      newMax: (maxes.docs.singleWhere((element) => element.id == "deadlift",
+                  orElse: () => null)) !=
+              null
+          ? maxes.docs
+              .elementAt(maxes.docs
+                  .indexWhere((document) => document.id == "deadlift"))
+              .data()["currentMax"]
+          : 150);
   liftMaxController.update1RepMax(
       progression: false,
       context: context,
       lift: "squat",
-      newMax: maxes.docs
-          .elementAt(
-              maxes.docs.indexWhere((document) => document.id == "squat"))
-          .data()["currentMax"]);
+      newMax: (maxes.docs.singleWhere((element) => element.id == "squat",
+                  orElse: () => null)) !=
+              null
+          ? maxes.docs
+              .elementAt(
+                  maxes.docs.indexWhere((document) => document.id == "squat"))
+              .data()["currentMax"]
+          : 135);
   liftMaxController.update1RepMax(
       progression: false,
       context: context,
       lift: "press",
-      newMax: maxes.docs
-          .elementAt(
-              maxes.docs.indexWhere((document) => document.id == "press"))
-          .data()["currentMax"]);
+      newMax: (maxes.docs.singleWhere((element) => element.id == "press",
+                  orElse: () => null)) !=
+              null
+          ? maxes.docs
+              .elementAt(
+                  maxes.docs.indexWhere((document) => document.id == "press"))
+              .data()["currentMax"]
+          : 90);
 }
 
 void getPlatesCloud({@required context, @required String userID}) async {
