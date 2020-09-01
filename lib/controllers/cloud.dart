@@ -137,8 +137,17 @@ Future<int> getBarWeightCloud({@required String userID}) async {
       .doc(userID)
       .collection('AVAILABLE_WEIGHTS')
       .doc("bar")
-      .get();
-  return barWeight.data()["weight"];
+      .get()
+      .catchError((onError) {
+    print("Could not retrieve users' bar weight. Returning 45 by default");
+    return 45;
+  });
+  if (barWeight.exists) {
+    return barWeight.data()["weight"];
+  } else {
+    print("Could not retrieve users' bar weight. Returning 45 by default");
+    return 45;
+  }
 }
 
 // should make this lazier
@@ -151,7 +160,12 @@ void getMaxesCloud({@required context, @required String userID}) async {
       .collection("USERDATA")
       .doc(userID)
       .collection('MAXES')
-      .get();
+      .get()
+      .catchError((onError) {
+    print(
+        "Could not retrieve user's Max for lifts. ask them to generate them?");
+    return;
+  });
   liftMaxController.update1RepMax(
       progression: false,
       context: context,

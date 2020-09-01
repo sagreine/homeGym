@@ -8,8 +8,8 @@ class LoginController {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
 
-    liftweights.barWeight =
-        await getBarWeightCloud(userID: user.firebaseUser.uid);
+    liftweights.updateBarWeight(
+        await getBarWeightCloud(userID: user.firebaseUser.uid));
     print("new bar weight: $liftweights.barWeight");
   }
 
