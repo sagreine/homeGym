@@ -9,24 +9,40 @@ import 'package:video_compress/video_compress.dart';
 //TODO: this should be a class?
 //TODO: implement dispose
 
-Future<String> createDatabaseRecord(ExerciseSet exercise) async {
+Future<String> createDatabaseRecord(
+    {@required ExerciseSet exercise, @required String userID}) async {
   // would put everyone in their own bucket and manage that via IAM
   final databaseReference = FirebaseFirestore.instance;
-  DocumentReference documentReference =
-      await databaseReference.collection("VIDEOS").add(
-            Map<String, dynamic>.from((exercise.toJson())),
-          );
+  DocumentReference documentReference = await databaseReference
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("LIFTS")
+      .add(
+        Map<String, dynamic>.from((exercise.toJson())),
+      );
   return documentReference.id;
 }
 
-updateDatabaseRecordWithURL({String id, String url}) {
+updateDatabaseRecordWithURL(
+    {@required String dbDocID, @required String url, @required String userID}) {
   var db = FirebaseFirestore.instance;
-  db.collection("VIDEOS").doc(id).update({"videoPath": url});
+  db
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("LIFTS")
+      .doc(dbDocID)
+      .update({"videoPath": url});
 }
 
-updateDatabaseRecordWithReps({String id, int reps}) {
+updateDatabaseRecordWithReps(
+    {@required String dbDocID, @required int reps, @required String userID}) {
   var db = FirebaseFirestore.instance;
-  db.collection("VIDEOS").doc(id).update({"reps": reps});
+  db
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("LIFTS")
+      .doc(dbDocID)
+      .update({"reps": reps});
 }
 
 Future<List<String>> getPrograms() async {
@@ -42,31 +58,50 @@ Future<List<String>> getPrograms() async {
 }
 
 //TODO untested
-void updateBarWeightCloud(double newWeight) async {
+void updateBarWeightCloud(
+    {@required int newWeight, @required String userID}) async {
   final databaseReference = FirebaseFirestore.instance;
   Map data = Map<String, dynamic>();
   data["weight"] = newWeight;
 
-  await databaseReference.collection("AVAILABLE_WEIGHTS").doc("bar").set(data);
+  await databaseReference
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("AVAILABLE_WEIGHTS")
+      .doc("bar")
+      .set(data);
 }
 
 //TODO untested
-void updatePlateCloud(double _plate, int _plateCount) async {
+void updatePlateCloud(
+    {@required double plate,
+    @required int plateCount,
+    @required String userID}) async {
   final databaseReference = FirebaseFirestore.instance;
   Map data = Map<String, dynamic>();
-  data["count"] = _plateCount;
+  data["count"] = plateCount;
   await databaseReference
+      .collection("USERDATA")
+      .doc(userID)
       .collection("AVAILABLE_WEIGHTS")
-      .doc(_plate.toString() + "_POUNDS")
+      .doc(plate.toString() + "_POUNDS")
       .set(data);
 }
 
 //TODO: implement, test
-void update1RepMaxCloud({String lift, int newMax}) async {
+void update1RepMaxCloud(
+    {@required String lift,
+    @required int newMax,
+    @required String userID}) async {
   final databaseReference = FirebaseFirestore.instance;
   Map data = Map<String, dynamic>();
   data["currentMax"] = newMax;
-  await databaseReference.collection("MAXES").doc(lift.toLowerCase()).set(data);
+  await databaseReference
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("MAXES")
+      .doc(lift.toLowerCase())
+      .set(data);
 }
 
 Future<String> uploadToCloudStorage(File fileToUpload) async {
@@ -96,8 +131,10 @@ Future<String> uploadToCloudStorage(File fileToUpload) async {
   return null;
 }
 
-Future<double> getBarWeightCloud() async {
+Future<int> getBarWeightCloud({@required String userID}) async {
   DocumentSnapshot barWeight = await FirebaseFirestore.instance
+      .collection("USERDATA")
+      .doc(userID)
       .collection('AVAILABLE_WEIGHTS')
       .doc("bar")
       .get();
@@ -107,10 +144,14 @@ Future<double> getBarWeightCloud() async {
 // should make this lazier
 // not liking having the controller in here? would rather return a
 // list to the page that then uses the controller or something..
-void getMaxesCloud(context) async {
+void getMaxesCloud({@required context, @required String userID}) async {
   LifterMaxesController liftMaxController = new LifterMaxesController();
   QuerySnapshot maxes;
-  maxes = await FirebaseFirestore.instance.collection('MAXES').get();
+  maxes = await FirebaseFirestore.instance
+      .collection("USERDATA")
+      .doc(userID)
+      .collection('MAXES')
+      .get();
   liftMaxController.update1RepMax(
       progression: false,
       context: context,
@@ -145,12 +186,15 @@ void getMaxesCloud(context) async {
           .data()["currentMax"]);
 }
 
-void getPlatesCloud(context) async {
+void getPlatesCloud({@required context, @required String userID}) async {
   LifterWeightsController lifterWeightsController =
       new LifterWeightsController();
   QuerySnapshot plates;
-  plates =
-      await FirebaseFirestore.instance.collection("AVAILABLE_WEIGHTS").get();
+  plates = await FirebaseFirestore.instance
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("AVAILABLE_WEIGHTS")
+      .get();
 
   plates.docs.forEach((result) {
     if (result.id != "bar") {
@@ -163,7 +207,10 @@ void getPlatesCloud(context) async {
   });
 }
 
-Future<void> getExercisesCloud(context, String program) async {
+Future<void> getExercisesCloud(
+    {@required context,
+    @required String program,
+    @required String userID}) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
   // would update the exercise model here so pass in context...
   // this needs to be a model.

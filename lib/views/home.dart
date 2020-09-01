@@ -54,6 +54,13 @@ class _HomeState extends State<Home> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    var user = Provider.of<Muser>(context, listen: false);
+    precacheImage(new NetworkImage(user.getPhotoURL()), context);
+  }
+
+  @override
   void dispose() async {
     super.dispose();
     await FlutterFling.stopDiscoveryController();
@@ -407,23 +414,18 @@ class _HomeState extends State<Home> {
                     onChanged: (newValue) {
                       setState(() {
                         doCast = newValue;
-                        if (newValue == false) {
-                          doVideo = false;
-                        }
                       });
                     },
                   ),
                   CheckboxListTile(
-                    title: Text("With Video"),
+                    title: Text("Record Video"),
                     secondary: doVideo
                         ? Icon(Icons.videocam)
                         : Icon(Icons.videocam_off),
-                    value: doCast ? doVideo : false,
+                    value: doVideo,
                     onChanged: (newValue) {
                       setState(() {
-                        if (doCast) {
-                          doVideo = newValue;
-                        }
+                        doVideo = newValue;
                       });
                     },
                     controlAffinity: ListTileControlAffinity.platform,

@@ -7,7 +7,7 @@ part 'lifter_weights.g.dart';
 @JsonSerializable()
 //@CustomDoubleConverter()
 class LifterWeights extends ChangeNotifier {
-  double barWeight;
+  int barWeight;
   Map<dynamic, int> plates;
 
   LifterWeights({
@@ -15,7 +15,7 @@ class LifterWeights extends ChangeNotifier {
     this.plates,
   });
 
-  void updateBarWeight(double newWeight) {
+  void updateBarWeight(int newWeight) {
     barWeight = newWeight;
     notifyListeners();
   }

@@ -2,7 +2,9 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/cloud.dart';
 import 'package:home_gym/controllers/controllers.dart';
+import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
+import 'package:provider/provider.dart';
 
 class PickDayController {
   // this is an obviously bad idea
@@ -50,7 +52,9 @@ class PickDayController {
   }
 
   Future<void> getExercises(BuildContext context, String program) async {
-    await getExercisesCloud(context, program);
+    var user = Provider.of<Muser>(context, listen: false);
+    await getExercisesCloud(
+        context: context, program: program, userID: user.firebaseUser.uid);
   }
 
   // launch the day, which is program and exercise

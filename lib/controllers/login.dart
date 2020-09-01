@@ -6,16 +6,21 @@ import 'package:provider/provider.dart';
 class LoginController {
   void getBarWeight(BuildContext context) async {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
-    liftweights.barWeight = await getBarWeightCloud();
+    var user = Provider.of<Muser>(context, listen: false);
+
+    liftweights.barWeight =
+        await getBarWeightCloud(userID: user.firebaseUser.uid);
     print("new bar weight: $liftweights.barWeight");
   }
 
   void getMaxes(BuildContext context) async {
-    getMaxesCloud(context);
+    var user = Provider.of<Muser>(context, listen: false);
+    getMaxesCloud(context: context, userID: user.firebaseUser.uid);
   }
 
   // very stupid. rearrange db organization instead of doing this.
   void getPlates(BuildContext context) async {
-    getPlatesCloud(context);
+    var user = Provider.of<Muser>(context, listen: false);
+    getPlatesCloud(context: context, userID: user.firebaseUser.uid);
   }
 }

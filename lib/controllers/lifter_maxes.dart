@@ -21,6 +21,7 @@ class LifterMaxesController {
     }*/
 // get this so we can read from and update the local
     var liftMaxes = Provider.of<LifterMaxes>(context, listen: false);
+    var user = Provider.of<Muser>(context, listen: false);
 
     // check if this is indeed a new max. if so, update it and the cloud copy.
 // business rules dictate maximum increases by exercise type under progression circumstance
@@ -120,7 +121,8 @@ class LifterMaxesController {
         break;
     }
     if (updateCloud) {
-      update1RepMaxCloud(lift: lift, newMax: newMax);
+      update1RepMaxCloud(
+          lift: lift, newMax: newMax, userID: user.firebaseUser.uid);
     }
     // call (perhaps not implemented yet) cloud update liftMax function - that'd be if the max both wasn't null and is now different.
   }

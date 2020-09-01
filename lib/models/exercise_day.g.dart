@@ -25,6 +25,8 @@ ExerciseDay _$ExerciseDayFromJson(Map<String, dynamic> json) {
         (json['assistancePull'] as List)?.map((e) => e as String)?.toList(),
     assistancePush:
         (json['assistancePush'] as List)?.map((e) => e as String)?.toList(),
+    updateMaxIfGetReps: json['updateMaxIfGetReps'] as bool,
+    progressSet: json['progressSet'] as int,
   );
 }
 
@@ -42,4 +44,6 @@ Map<String, dynamic> _$ExerciseDayToJson(ExerciseDay instance) =>
       'assistancePull': instance.assistancePull,
       'assistanceCore': instance.assistanceCore,
       'assistancePush': instance.assistancePush,
+      'updateMaxIfGetReps': instance.updateMaxIfGetReps,
+      'progressSet': instance.progressSet,
     };

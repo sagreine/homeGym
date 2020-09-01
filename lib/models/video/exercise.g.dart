@@ -15,6 +15,9 @@ ExerciseSet _$ExerciseSetFromJson(Map<String, dynamic> json) {
     type: json['type'] as String,
     weight: json['weight'] as int,
     reps: json['reps'] as int,
+    dateTime: json['dateTime'] == null
+        ? null
+        : DateTime.parse(json['dateTime'] as String),
   );
 }
 
@@ -27,4 +30,5 @@ Map<String, dynamic> _$ExerciseSetToJson(ExerciseSet instance) =>
       'restPeriodAfter': instance.restPeriodAfter,
       'weight': instance.weight,
       'reps': instance.reps,
+      'dateTime': instance.dateTime?.toIso8601String(),
     };

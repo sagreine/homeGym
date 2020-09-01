@@ -18,6 +18,7 @@ class ExerciseSet extends ChangeNotifier {
   int restPeriodAfter;
   int weight;
   int reps;
+  DateTime dateTime;
 
   ExerciseSet({
     this.videoPath,
@@ -27,14 +28,18 @@ class ExerciseSet extends ChangeNotifier {
     this.type,
     this.weight,
     this.reps,
-  });
+    this.dateTime,
+  }) {
+    this.dateTime = DateTime.now();
+  }
 
-  void updateExercise(
-      {String title,
-      String description,
-      int restPeriodAfter,
-      int weight,
-      int reps}) {
+  void updateExercise({
+    String title,
+    String description,
+    int restPeriodAfter,
+    int weight,
+    int reps,
+  }) {
     // should hanlde this another way probably -> controller if nothing else.
     if (title != null) {
       this.title = title;
@@ -48,6 +53,7 @@ class ExerciseSet extends ChangeNotifier {
     this.weight = weight;
     this.reps = reps;
     this.type = "video/";
+    this.dateTime = DateTime.now();
     notifyListeners();
   }
 
@@ -65,5 +71,6 @@ class ExerciseSet extends ChangeNotifier {
         restPeriodAfter,
         reps,
         weight,
+        dateTime,
       ];
 }

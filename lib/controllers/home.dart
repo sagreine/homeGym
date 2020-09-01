@@ -28,7 +28,7 @@ class HomeController {
   LifterMaxesController lifterMaxesController = new LifterMaxesController();
 
   ConfettiController confettiController =
-      ConfettiController(duration: const Duration(seconds: 2));
+      ConfettiController(duration: const Duration(seconds: 1));
 
   Future<String> getVideo(bool recordNewVideo, BuildContext context) async {
     var url;
@@ -100,10 +100,14 @@ class HomeController {
       @required bool doVideo}) async {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
+    var user = Provider.of<Muser>(context, listen: false);
     //var thisMaxes = Provider.of<LifterMaxes>(context, listen: false);
     String thisExercise = json.encode(exercise.toJson());
     // make the firestore record for this exercise. (dangerous, they can still back out of video.....)
-    String origExerciseID = await createDatabaseRecord(exercise);
+    String origExerciseID = await createDatabaseRecord(
+        exercise: exercise, userID: user.firebaseUser.uid);
+
+    bool progressAfter = false;
 
     /////// dangerous, for sure. make a copy of the next exercise don't do this.
     ///e.g. below we try to reference values of the current exercise and it breaks everything.
@@ -131,11 +135,13 @@ class HomeController {
     String nextExercise = json.encode(exercise.toJson());
     String thisDayJSON = json.encode(thisDay.toJson());
 
+    // TODO: pull do video out of here? either way is kind of stupid...
     String url = await getVideo(doVideo, context);
 
     // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information
     //....so could check for the garbage (default) URLs before updating this..
-    updateDatabaseRecordWithURL(id: origExerciseID, url: url);
+    updateDatabaseRecordWithURL(
+        dbDocID: origExerciseID, url: url, userID: user.firebaseUser.uid);
 
     // TODO: do we want to delay cast at all if not recording?
     // that is, give them time to do the actual exercise?
@@ -173,12 +179,7 @@ class HomeController {
                         //thisDay.areWeOnLastSet()
                         thisDay.currentSet == thisDay.progressSet)
                       {
-                        lifterMaxesController.update1RepMax(
-                            context: context,
-                            // TODO: be careful with this, since we're updating/progressing to the next exercise above this point.
-                            lift: exercise.title,
-                            progression: true,
-                            updateCloud: true)
+                        progressAfter = true,
                       },
 
                     // should only confetti if it is the last set of a week that tests/progresses?
@@ -192,6 +193,8 @@ class HomeController {
                     showDialog(
                         context: context,
                         barrierDismissible: false,
+
+                        /// UI should ... be in the UI
                         builder: (_) => AlertDialog(
                                 title: Text("Reps you got"),
                                 content: TextFormField(
@@ -215,6 +218,10 @@ class HomeController {
                                   enableSuggestions: true,
                                   controller: formControllerRepsCorrection,
                                   validator: (value) {
+                                    if (value.isEmpty) {
+                                      formControllerRepsCorrection.text = "0";
+                                      return "Reps cannot be empty";
+                                    }
                                     //homeController.formController.validator()
                                     return null;
                                   },
@@ -225,7 +232,8 @@ class HomeController {
                                     onPressed: () => {
                                       Navigator.pop(context),
                                       updateDatabaseRecordWithReps(
-                                          id: origExerciseID,
+                                          userID: user.firebaseUser.uid,
+                                          dbDocID: origExerciseID,
                                           reps: int.parse(
                                               formControllerRepsCorrection
                                                   .text)),
@@ -237,5 +245,16 @@ class HomeController {
               ],
               elevation: 24,
             ));
+
+    // if we passed on the week that we were told to pass on, progress at the end.
+    // TODO: this is also broken when the last set is the test set AND might update twice (second to last set and actual last set)
+    if (progressAfter && thisDay.currentSet + 1 == thisDay.sets) {
+      lifterMaxesController.update1RepMax(
+          context: context,
+          // TODO: be careful with this, since we're updating/progressing to the next exercise above this point.
+          lift: exercise.title,
+          progression: true,
+          updateCloud: true);
+    }
   }
 }

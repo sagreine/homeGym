@@ -10,15 +10,19 @@ class LifterWeightsController {
 
   void updatePlate({BuildContext context, double plate, int plateCount}) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
+    var user = Provider.of<Muser>(context, listen: false);
     if (liftweights.updatePlate(plate: plate, plateCount: plateCount)) {
-      updatePlateCloud(plate, plateCount);
+      updatePlateCloud(
+          plate: plate, plateCount: plateCount, userID: user.firebaseUser.uid);
     }
   }
 
-  void updateBarWeight(BuildContext context, double newBarWeight) {
+  void updateBarWeight(BuildContext context, int newBarWeight) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
+    var user = Provider.of<Muser>(context, listen: false);
     liftweights.updateBarWeight(newBarWeight);
-    updateBarWeightCloud(newBarWeight);
+    updateBarWeightCloud(
+        newWeight: newBarWeight, userID: user.firebaseUser.uid);
   }
 
   List<double> pickPlates({BuildContext context, double targetWeight}) {

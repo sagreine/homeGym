@@ -92,7 +92,7 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                             lifterWeightsController.barWeightTextController,
                         onSubmitted: (String value) {
                           lifterWeightsController.updateBarWeight(
-                              context, double.parse(value));
+                              context, int.parse(value));
                         },
                       ),
                       Text(
