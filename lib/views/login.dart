@@ -20,7 +20,7 @@ class _LoginState extends State<Login> {
 
   //FirebaseUser _firebaseUser;
   //User _user;
-  var _user;
+  Muser _user;
   String error;
 
   @override
@@ -53,6 +53,8 @@ class _LoginState extends State<Login> {
           builder: (BuildContext context, AsyncSnapshot text) {
             if (text.connectionState == ConnectionState.done &&
                 text.hasError == false) {
+              print(
+                  "User auth done, without error. user is: ${_user.firebaseUser.displayName}");
               return buildNextPage();
             }
             return SizedBox(

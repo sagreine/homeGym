@@ -234,7 +234,8 @@ void getPlatesCloud({@required context, @required String userID}) async {
 
   plates.docs.forEach((result) {
     if (result.id != "bar") {
-      print(result.data()["count"]);
+      print("Plate pulled: ${result.id}" +
+          "Count of plates: ${result.data()["count"]}");
       lifterWeightsController.updatePlate(
           context: context,
           plate: double.parse(result.id.substring(0, result.id.indexOf("_"))),

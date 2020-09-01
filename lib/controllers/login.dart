@@ -10,7 +10,7 @@ class LoginController {
 
     liftweights.updateBarWeight(
         await getBarWeightCloud(userID: user.firebaseUser.uid));
-    print("new bar weight: $liftweights.barWeight");
+    print("new bar weight: $liftweights.barWeight.toString()");
   }
 
   void getMaxes(BuildContext context) async {

@@ -15,7 +15,6 @@ class _PickDayState extends State<PickDay> {
   @override
   Widget build(BuildContext context) {
     var _user = Provider.of<Muser>(context, listen: false);
-    print(_user.firebaseUser.displayName);
 
     //print(user.firebaseUser.displayName);
     return Scaffold(
@@ -123,7 +122,7 @@ class _PickDayState extends State<PickDay> {
                   height: 10,
                 ),
                 SizedBox(
-                  height: 80,
+                  height: 120,
                   width: 380,
                   child: TextFormField(
                     controller: pickDayController.programController,

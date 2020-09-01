@@ -77,7 +77,7 @@ void getInitialPull(BuildContext context) async {
 void getInitialPull(BuildContext context) async {
   var programs = Provider.of<Programs>(context, listen: false);
   programs.setProgram(programs: await getPrograms());
-  print("this is the programs: ${programs.programs}");
+  print("Initial pull of programss: ${programs.programs}");
 }
 
 class MyApp extends StatelessWidget {

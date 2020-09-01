@@ -14,7 +14,7 @@ class ProgramController {
       return programs;
       // this works but breaks the view.
     } else {
-      print("model.programs already populated, just use that");
+      print("model.programs already populated, using that");
       return model.programs;
     }
   }

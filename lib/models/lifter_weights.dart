@@ -17,6 +17,7 @@ class LifterWeights extends ChangeNotifier {
 
   void updateBarWeight(int newWeight) {
     barWeight = newWeight;
+    print("new bar weight: $barWeight.toString()");
     notifyListeners();
   }
 
