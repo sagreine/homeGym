@@ -40,8 +40,7 @@ class PickDayController {
   Future<void> pickProgram(BuildContext context) async {
     // launch the page to pick them, return it when done
     /// - do this more safely obviously. if they OS-back button this goes badly.
-    String temp = await Navigator.push(
-        context, MaterialPageRoute(builder: (context) => ProgramsView()));
+    var temp = await Navigator.pushNamed(context, '/programs');
     // update the page we're on now
     if (temp != null) {
       selectedProgram = temp;
@@ -66,13 +65,6 @@ class PickDayController {
         context: context,
         exerciseTitle:
             exercises[selectedExercise.indexWhere((element) => element)]);
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => DoLiftView(
-                //program: selectedProgram,
-                //exercise: exercises[
-                //  selectedExercise.indexWhere((element) => element)]
-                )));
+    Navigator.pushNamed(context, '/do_lift');
   }
 }

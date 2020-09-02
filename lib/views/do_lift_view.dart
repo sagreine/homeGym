@@ -312,17 +312,13 @@ class _DoLiftViewState extends State<DoLiftView> {
                                 context: context,
                                 doCast: doCast,
                                 doVideo: doVideo);
-                            /*
+                            /* TODO:
                             showDialog(
                               */
                           } else {
                             print(
                                 "form is valid but no fling player selected. launching settings");
-                            Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                  builder: (BuildContext context) =>
-                                      SettingsView()),
-                            );
+                            Navigator.pushNamed(context, '/settings');
                           }
                         }
                       },
