@@ -12,8 +12,7 @@ class ReusableWidgets {
 
   static getDrawer(BuildContext context) {
     bool isNewRouteSameAsCurrent = false;
-    final newRouteName = "/NewRoute";
-    final currentRoutename = ModalRoute.of(context)?.settings?.name;
+    String newRouteName;
 
     return Consumer<Muser>(builder: (context, user, child) {
       return Drawer(
@@ -49,24 +48,24 @@ class ReusableWidgets {
                               ),
                             ),
                             onTap: () {
+                              newRouteName = "/profile";
+                              // if the current route is the exact location we're at (first on the stack), mark that
                               Navigator.popUntil(context, (route) {
                                 if (route.settings.name == newRouteName) {
                                   isNewRouteSameAsCurrent = true;
+                                } else {
+                                  isNewRouteSameAsCurrent = false;
                                 }
                                 return true;
                               });
-
+                              // if it isn't, go to the new route
                               if (!isNewRouteSameAsCurrent) {
                                 Navigator.pushNamed(context, newRouteName);
                               }
-
-/*
-                              Navigator.of(context).pop();
-                              Navigator.of(context).push(
-                                MaterialPageRoute<void>(
-                                    builder: (BuildContext context) =>
-                                        ProfileView()),
-                              );*/
+                              // again if it is, just pop the drawer away
+                              else {
+                                Navigator.pop(context);
+                              }
                             },
                           ),
                         ],
@@ -90,11 +89,24 @@ class ReusableWidgets {
                   leading: Icon(Icons.fitness_center),
                   // TODO: Not tested at all.
                   onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                          builder: (BuildContext context) => PickDayView()),
-                    );
+                    newRouteName = "/pick_day";
+                    // if the current route is the exact location we're at (first on the stack), mark that
+                    Navigator.popUntil(context, (route) {
+                      if (route.settings.name == newRouteName) {
+                        isNewRouteSameAsCurrent = true;
+                      } else {
+                        isNewRouteSameAsCurrent = false;
+                      }
+                      return true;
+                    });
+                    // if it isn't, go to the new route
+                    if (!isNewRouteSameAsCurrent) {
+                      Navigator.pushNamed(context, newRouteName);
+                    }
+                    // again if it is, just pop the drawer away
+                    else {
+                      Navigator.pop(context);
+                    }
                   }),
               ListTile(
                   title: Text("Do Lift"),
@@ -102,64 +114,128 @@ class ReusableWidgets {
                   // typical is icons, and need a similar iimage for all (image is bigger than icon) but to think about
                   //leading: Image.asset("assets/images/pos_icon.png"),
                   onTap: () {
-                    //TODO: popAndPushNamed once ready for that
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(MaterialPageRoute<void>(
-                        builder: (BuildContext context) => DoLiftView()));
+                    newRouteName = "/do_lift";
+                    // if the current route is the exact location we're at (first on the stack), mark that
+                    Navigator.popUntil(context, (route) {
+                      if (route.settings.name == newRouteName) {
+                        isNewRouteSameAsCurrent = true;
+                      } else {
+                        isNewRouteSameAsCurrent = false;
+                      }
+                      return true;
+                    });
+                    // if it isn't, go to the new route
+                    if (!isNewRouteSameAsCurrent) {
+                      Navigator.pushNamed(context, newRouteName);
+                    }
+                    // again if it is, just pop the drawer away
+                    else {
+                      Navigator.pop(context);
+                    }
                   }),
               ListTile(
                   title: Text("My Weights"),
                   leading: Icon(Icons.filter_list),
                   onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                          builder: (BuildContext context) =>
-                              LifterWeightsView()),
-                    );
+                    newRouteName = "/lifter_weights";
+                    // if the current route is the exact location we're at (first on the stack), mark that
+                    Navigator.popUntil(context, (route) {
+                      if (route.settings.name == newRouteName) {
+                        isNewRouteSameAsCurrent = true;
+                      } else {
+                        isNewRouteSameAsCurrent = false;
+                      }
+                      return true;
+                    });
+                    // if it isn't, go to the new route
+                    if (!isNewRouteSameAsCurrent) {
+                      Navigator.pushNamed(context, newRouteName);
+                    }
+                    // again if it is, just pop the drawer away
+                    else {
+                      Navigator.pop(context);
+                    }
                   }),
               ListTile(
                   title: Text("My Maxes"),
                   //leading: Icon(Icons.description),
                   leading: Icon(Icons.format_list_bulleted),
                   onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                          builder: (BuildContext context) => LifterMaxesView()),
-                    );
+                    newRouteName = "/lifter_maxes";
+                    // if the current route is the exact location we're at (first on the stack), mark that
+                    Navigator.popUntil(context, (route) {
+                      if (route.settings.name == newRouteName) {
+                        isNewRouteSameAsCurrent = true;
+                      } else {
+                        isNewRouteSameAsCurrent = false;
+                      }
+                      return true;
+                    });
+                    // if it isn't, go to the new route
+                    if (!isNewRouteSameAsCurrent) {
+                      Navigator.pushNamed(context, newRouteName);
+                    }
+                    // again if it is, just pop the drawer away
+                    else {
+                      Navigator.pop(context);
+                    }
                   }),
               ListTile(
                   title: Text("Help"),
                   leading: Icon(Icons.help),
                   onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                          builder: (BuildContext context) => HelpView()),
-                    );
+                    newRouteName = "/help";
+                    // if the current route is the exact location we're at (first on the stack), mark that
+                    Navigator.popUntil(context, (route) {
+                      if (route.settings.name == newRouteName) {
+                        isNewRouteSameAsCurrent = true;
+                      } else {
+                        isNewRouteSameAsCurrent = false;
+                      }
+                      return true;
+                    });
+                    // if it isn't, go to the new route
+                    if (!isNewRouteSameAsCurrent) {
+                      Navigator.pushNamed(context, newRouteName);
+                    }
+                    // again if it is, just pop the drawer away
+                    else {
+                      Navigator.pop(context);
+                    }
                   }),
               ListTile(
                 title: Text("Settings"),
                 leading: Icon(Icons.settings),
                 onTap: () {
-                  Navigator.of(context).pop();
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                        builder: (BuildContext context) => SettingsView()),
-                  );
+                  newRouteName = "/settings";
+                  // if the current route is the exact location we're at (first on the stack), mark that
+                  Navigator.popUntil(context, (route) {
+                    if (route.settings.name == newRouteName) {
+                      isNewRouteSameAsCurrent = true;
+                    } else {
+                      isNewRouteSameAsCurrent = false;
+                    }
+                    return true;
+                  });
+                  // if it isn't, go to the new route
+                  if (!isNewRouteSameAsCurrent) {
+                    Navigator.pushNamed(context, newRouteName);
+                  }
+                  // again if it is, just pop the drawer away
+                  else {
+                    Navigator.pop(context);
+                  }
                 },
               ),
               ListTile(
                 title: Text("Log Out"),
                 leading: Icon(Icons.exit_to_app),
                 onTap: () async {
-                  Navigator.of(context).pop();
+                  //Navigator.of(context).pop();
+                  // wait while we log the user out.
                   await user.logout();
-                  Navigator.of(context).push(
-                    MaterialPageRoute<void>(
-                        builder: (BuildContext context) => LoginView()),
-                  );
+                  // pop until we get to the login page
+                  Navigator.popUntil(context, ModalRoute.withName("/login"));
                 },
               ),
             ]),
