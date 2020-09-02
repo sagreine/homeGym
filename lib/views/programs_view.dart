@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
+import 'package:home_gym/views/views.dart';
 
 class ProgramsView extends StatefulWidget {
   @override
@@ -18,9 +19,8 @@ class _ProgramsState extends State<ProgramsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Select Program'),
-      ),
+      appBar: ReusableWidgets.getAppBar(),
+      drawer: ReusableWidgets.getDrawer(context),
       body: _buildSuggestions(),
     );
   }

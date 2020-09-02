@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/flutter_fling.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/appbar.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 import 'package:home_gym/controllers/controllers.dart';
@@ -15,15 +16,14 @@ import 'package:confetti/confetti.dart';
 
 // more of this should go in controller functions
 
-class Home extends StatefulWidget {
-  final String program;
-  final String exercise;
-  Home({Key key, this.program, this.exercise});
+class DoLiftView extends StatefulWidget {
+  //final String exercise;
+  //DoLiftView({Key key, @required this.program,});
   @override
-  _HomeState createState() => _HomeState();
+  _DoLiftViewState createState() => _DoLiftViewState();
 }
 
-class _HomeState extends State<Home> {
+class _DoLiftViewState extends State<DoLiftView> {
   /*static const TextStyle timerTextStyle = TextStyle(
     fontSize: 60,
     fontWeight: FontWeight.bold,
@@ -44,7 +44,7 @@ class _HomeState extends State<Home> {
   void initState() {
     super.initState();
     homeController.displayInExerciseInfo(context: context);
-    _selectedTitle = widget.exercise;
+    //_selectedTitle = widget.exercise;
     fling = FlutterFling();
     doVideo = false;
     doCast = false;
@@ -57,7 +57,8 @@ class _HomeState extends State<Home> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     var user = Provider.of<Muser>(context, listen: false);
-    precacheImage(new NetworkImage(user.getPhotoURL()), context);
+    var exercise = Provider.of<ExerciseSet>(context, listen: false);
+    _selectedTitle = exercise.title;
   }
 
   @override
@@ -69,150 +70,8 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("Home Gym TV"),
-      ),
-      drawer: Consumer<Muser>(builder: (context, user, child) {
-        return Drawer(
-          child: Column(children: [
-            DrawerHeader(
-              child: Column(
-                children: [
-                  Expanded(
-                    flex: 1,
-                    child: Row(
-                      children: [
-                        CircleAvatar(
-                          radius: 50,
-                          backgroundColor: Colors.brown.shade800,
-                          backgroundImage: user.firebaseUser.photoUri.isEmpty
-                              ? AssetImage("assets/images/pos_icon.png")
-                              : NetworkImage(user.getPhotoURL()),
-                        ),
-                        SizedBox(width: 10),
-                        Column(
-                          children: [
-                            SizedBox(height: 35),
-                            //Image.asset("assets/images/pos_icon.png"),
-                            Text(user.getDisplayName()),
-                            SizedBox(height: 10),
-                            Text(user.firebaseUser.email),
-                            SizedBox(height: 10),
-                            InkWell(
-                              child: Text(
-                                "View Profile",
-                                style: TextStyle(
-                                  decoration: TextDecoration.underline,
-                                ),
-                              ),
-                              onTap: () {
-                                Navigator.of(context).pop();
-                                Navigator.of(context).push(
-                                  MaterialPageRoute<void>(
-                                      builder: (BuildContext context) =>
-                                          ProfileView()),
-                                );
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                      //trailing: ,
-                    ),
-                  ),
-                  // ),
-                ],
-              ),
-              decoration: BoxDecoration(
-                color: Colors.blueGrey,
-              ),
-            ),
-            Expanded(
-              flex: 2,
-              child: ListView(children: [
-                ListTile(
-                    title: Text("Pick Lift"),
-                    leading: Icon(Icons.fitness_center),
-                    // TODO: Not tested at all.
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                            builder: (BuildContext context) => PickDay()),
-                      );
-                    }),
-                ListTile(
-                    title: Text("Do Lift"),
-                    leading: Icon(Icons.directions_run),
-                    // typical is icons, and need a similar iimage for all (image is bigger than icon) but to think about
-                    //leading: Image.asset("assets/images/pos_icon.png"),
-                    onTap: () {
-                      //TODO: popAndPushNamed once ready for that
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(MaterialPageRoute<void>(
-                          builder: (BuildContext context) => Home()));
-                    }),
-                ListTile(
-                    title: Text("My Weights"),
-                    leading: Icon(Icons.filter_list),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                            builder: (BuildContext context) =>
-                                LifterWeightsView()),
-                      );
-                    }),
-                ListTile(
-                    title: Text("My Maxes"),
-                    //leading: Icon(Icons.description),
-                    leading: Icon(Icons.format_list_bulleted),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                            builder: (BuildContext context) =>
-                                LifterMaxesView()),
-                      );
-                    }),
-                ListTile(
-                    title: Text("Help"),
-                    leading: Icon(Icons.help),
-                    onTap: () {
-                      Navigator.of(context).pop();
-                      Navigator.of(context).push(
-                        MaterialPageRoute<void>(
-                            builder: (BuildContext context) => HelpView()),
-                      );
-                    }),
-                ListTile(
-                  title: Text("Settings"),
-                  leading: Icon(Icons.settings),
-                  onTap: () {
-                    Navigator.of(context).pop();
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                          builder: (BuildContext context) => Settings()),
-                    );
-                  },
-                ),
-                ListTile(
-                  title: Text("Log Out"),
-                  leading: Icon(Icons.exit_to_app),
-                  onTap: () async {
-                    Navigator.of(context).pop();
-                    await homeController.logout(context);
-                    Navigator.of(context).push(
-                      MaterialPageRoute<void>(
-                          builder: (BuildContext context) => Login()),
-                    );
-                  },
-                ),
-              ]),
-            ),
-          ]),
-        );
-      }),
+      appBar: ReusableWidgets.getAppBar(),
+      drawer: ReusableWidgets.getDrawer(context),
       body: Consumer<FlingMediaModel>(
         builder: (context, flingy, child) {
           return SafeArea(
@@ -299,6 +158,9 @@ class _HomeState extends State<Home> {
                                 homeController.formControllerDescription,
                             validator: (value) {
                               //homeController.formController.validator()
+                              if (value.isEmpty) {
+                                return "Title can't be blank";
+                              }
                               return null;
                             },
                           ),
@@ -459,7 +321,7 @@ class _HomeState extends State<Home> {
                             Navigator.of(context).push(
                               MaterialPageRoute<void>(
                                   builder: (BuildContext context) =>
-                                      Settings()),
+                                      SettingsView()),
                             );
                           }
                         }

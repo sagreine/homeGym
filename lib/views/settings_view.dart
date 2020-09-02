@@ -2,14 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/settings.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/controllers/controllers.dart';
+import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 
-class Settings extends StatefulWidget {
+class SettingsView extends StatefulWidget {
   @override
-  SettingsState createState() => SettingsState();
+  SettingsViewState createState() => SettingsViewState();
 }
 
-class SettingsState extends State<Settings> {
+class SettingsViewState extends State<SettingsView> {
   SettingsController settingsController = SettingsController();
   // should these go in the Settingscontroller probably then...
 
@@ -22,7 +23,8 @@ class SettingsState extends State<Settings> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home Gym TV')),
+      appBar: ReusableWidgets.getAppBar(),
+      drawer: ReusableWidgets.getDrawer(context),
       body: ListView(
         children: <Widget>[
           Column(

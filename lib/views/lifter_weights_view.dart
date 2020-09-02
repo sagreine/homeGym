@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/controllers/controllers.dart';
+import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 
 class LifterWeightsView extends StatefulWidget {
@@ -28,7 +29,8 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Home Gym TV')),
+      appBar: ReusableWidgets.getAppBar(),
+      drawer: ReusableWidgets.getDrawer(context),
       body: ListView(
         children: <Widget>[
           Column(

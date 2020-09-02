@@ -2,20 +2,20 @@ import 'package:firebase_auth_ui/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_gym/models/models.dart';
-import 'package:home_gym/views/pick_day.dart';
+import 'package:home_gym/views/pick_day_view.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:firebase_auth_ui/firebase_auth_ui.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
-class Login extends StatefulWidget {
+class LoginView extends StatefulWidget {
   @override
-  _LoginState createState() => _LoginState();
+  _LoginViewState createState() => _LoginViewState();
 }
 
 // maybe we can cover this stuff with a splash screen in the end, for those logged in already?
 
-class _LoginState extends State<Login> {
+class _LoginViewState extends State<LoginView> {
   LoginController loginController = LoginController();
 
   //FirebaseUser _firebaseUser;
@@ -31,7 +31,7 @@ class _LoginState extends State<Login> {
 
   Scaffold buildNextPage() {
     return Scaffold(
-      body: Container(child: PickDay()),
+      body: Container(child: PickDayView()),
     );
   }
 
@@ -55,6 +55,9 @@ class _LoginState extends State<Login> {
                 text.hasError == false) {
               print(
                   "User auth done, without error. user is: ${_user.firebaseUser.displayName}");
+              if (_user.getPhotoURL().isNotEmpty) {
+                precacheImage(new NetworkImage(_user.getPhotoURL()), context);
+              }
               return buildNextPage();
             }
             return SizedBox(

@@ -51,7 +51,6 @@ class Muser extends ChangeNotifier {
         return userInfo.photoURL;
       }
     }
-
     return null;
   }
 

@@ -69,9 +69,10 @@ class PickDayController {
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => Home(
-                program: selectedProgram,
-                exercise: exercises[
-                    selectedExercise.indexWhere((element) => element)])));
+            builder: (context) => DoLiftView(
+                //program: selectedProgram,
+                //exercise: exercises[
+                //  selectedExercise.indexWhere((element) => element)]
+                )));
   }
 }

@@ -96,25 +96,27 @@ class MyApp extends StatelessWidget {
         brightness: Brightness.dark,
       ),
       title: 'Home Gym',
-      home: Container(
-        color: Colors.grey[850],
-        child: SplashScreen.navigate(
-          name: 'assets/flares/logo1.flr',
-          next: (context) => Login(),
-          until: () => Future.delayed(Duration(seconds: 2)),
-          startAnimation: 'Untitled',
-        ),
-      ),
-      //Login(),
-      //Splash(),
-
-      /*BlocProvider(
-        create: (context) => VideoBloc(),
-        child: Timer(),*/
-      /*BlocProvider(
-        create: (context) => TimerBloc(ticker: Ticker()),
-        child: Timer(),*/
-      //),
+      initialRoute: '/',
+      routes: {
+        // When navigating to the "/" route, build the FirstScreen widget.
+        '/': (context) => SplashScreen.navigate(
+              backgroundColor: Colors.grey[850],
+              name: 'assets/flares/logo1.flr',
+              next: (context) => LoginView(),
+              until: () => Future.delayed(Duration(seconds: 2)),
+              startAnimation: 'Untitled',
+            ),
+        // When navigating to the "/second" route, build the SecondScreen widget.
+        '/login': (context) => LoginView(),
+        '/do_lift': (context) => DoLiftView(),
+        '/help': (context) => HelpView(),
+        '/lifter_maxes': (context) => LifterMaxesView(),
+        '/lifter_weights': (context) => LifterWeightsView(),
+        '/pick_day': (context) => PickDayView(),
+        '/profile': (context) => ProfileView(),
+        '/programs': (context) => ProgramsView(),
+        '/settings': (context) => SettingsView(),
+      },
     );
   }
 }

@@ -4,12 +4,12 @@ import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 
-class PickDay extends StatefulWidget {
+class PickDayView extends StatefulWidget {
   @override
-  _PickDayState createState() => _PickDayState();
+  _PickDayViewState createState() => _PickDayViewState();
 }
 
-class _PickDayState extends State<PickDay> {
+class _PickDayViewState extends State<PickDayView> {
   PickDayController pickDayController = PickDayController();
 
   @override
@@ -18,25 +18,8 @@ class _PickDayState extends State<PickDay> {
 
     //print(user.firebaseUser.displayName);
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Home Gym TV"),
-          leading: Padding(
-            padding: EdgeInsets.all(3),
-            child: Image.asset("assets/images/pos_icon.png"),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.settings),
-              tooltip: 'Settings',
-              onPressed: () {
-                Navigator.of(context).push(
-                  MaterialPageRoute<void>(
-                      builder: (BuildContext context) => Settings()),
-                );
-              },
-            ),
-          ],
-        ),
+        appBar: ReusableWidgets.getAppBar(),
+        drawer: ReusableWidgets.getDrawer(context),
         body: ListView(
           children: [
             //TODO: this breaks the listview, even if it conveniently centers everything in just one line.
