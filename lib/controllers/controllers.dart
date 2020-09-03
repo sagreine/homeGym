@@ -6,7 +6,7 @@ export 'package:home_gym/controllers/lifter_weights.dart';
 export 'package:home_gym/controllers/lifter_maxes.dart';
 
 // views
-export 'package:home_gym/controllers/home.dart';
+export 'package:home_gym/controllers/do_lift.dart';
 export 'package:home_gym/controllers/settings.dart';
 export 'package:home_gym/controllers/pick_day.dart';
 export 'package:home_gym/controllers/programs.dart';

@@ -56,7 +56,7 @@ class SettingsViewState extends State<SettingsView> {
                     RaisedButton(
                         child: Text('Search'),
                         onPressed: () async {
-                          await settingsController.flingController
+                          settingsController.flingController
                               .getCastDevices(context);
                         }),
                     RaisedButton(
@@ -67,6 +67,7 @@ class SettingsViewState extends State<SettingsView> {
                         // should be in controller - imagine using Cast instead of fling...
                       },
                     ),
+                    // future builder though?
                     ListView.builder(
                       shrinkWrap: true,
                       itemCount: flingy.flingDevices == null

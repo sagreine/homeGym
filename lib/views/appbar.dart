@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
@@ -22,56 +23,57 @@ class ReusableWidgets {
               children: [
                 Expanded(
                   flex: 1,
-                  child: Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundColor: Colors.brown.shade800,
-                        backgroundImage: user.firebaseUser.photoUri.isEmpty
-                            ? AssetImage("assets/images/pos_icon.png")
-                            : NetworkImage(user.getPhotoURL()),
-                      ),
-                      SizedBox(width: 10),
-                      Column(
-                        children: [
-                          SizedBox(height: 35),
-                          //Image.asset("assets/images/pos_icon.png"),
-                          Text(user.getDisplayName()),
-                          SizedBox(height: 10),
-                          Text(user.firebaseUser.email),
-                          SizedBox(height: 10),
-                          InkWell(
-                            child: Text(
-                              "View Profile",
-                              style: TextStyle(
-                                decoration: TextDecoration.underline,
+                  child: Container(
+                    //color: Colors.blueGrey[200],
+                    child: Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 50,
+                          backgroundColor: Colors.brown.shade800,
+                          backgroundImage: user.firebaseUser.photoUri.isEmpty
+                              ? AssetImage("assets/images/pos_icon.png")
+                              : NetworkImage(user.getPhotoURL()),
+                        ),
+                        SizedBox(width: 10),
+                        Column(
+                          children: [
+                            SizedBox(height: 35),
+                            //Image.asset("assets/images/pos_icon.png"),
+                            Text(user.getDisplayName()),
+                            SizedBox(height: 10),
+                            InkWell(
+                              child: Text(
+                                "View Profile",
+                                style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                ),
                               ),
-                            ),
-                            onTap: () {
-                              newRouteName = "/profile";
-                              // if the current route is the exact location we're at (first on the stack), mark that
-                              Navigator.popUntil(context, (route) {
-                                if (route.settings.name == newRouteName) {
-                                  isNewRouteSameAsCurrent = true;
-                                } else {
-                                  isNewRouteSameAsCurrent = false;
+                              onTap: () {
+                                newRouteName = "/profile";
+                                // if the current route is the exact location we're at (first on the stack), mark that
+                                Navigator.popUntil(context, (route) {
+                                  if (route.settings.name == newRouteName) {
+                                    isNewRouteSameAsCurrent = true;
+                                  } else {
+                                    isNewRouteSameAsCurrent = false;
+                                  }
+                                  return true;
+                                });
+                                // if it isn't, go to the new route
+                                if (!isNewRouteSameAsCurrent) {
+                                  Navigator.pushNamed(context, newRouteName);
                                 }
-                                return true;
-                              });
-                              // if it isn't, go to the new route
-                              if (!isNewRouteSameAsCurrent) {
-                                Navigator.pushNamed(context, newRouteName);
-                              }
-                              // again if it is, just pop the drawer away
-                              else {
-                                Navigator.pop(context);
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                    //trailing: ,
+                                // again if it is, just pop the drawer away
+                                else {
+                                  Navigator.pop(context);
+                                }
+                              },
+                            ),
+                          ],
+                        ),
+                      ],
+                      //trailing: ,
+                    ),
                   ),
                 ),
                 // ),

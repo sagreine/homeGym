@@ -66,14 +66,7 @@ class HelpViewState extends State<HelpView> {
                 ),
                 onPressed: () {
                   print("pressed for help!");
-                  /*Navigator.of(context).push(
-                              MaterialPageRoute<void>(
-                                builder: (BuildContext context) {
-                                  return Scaffold(
-                                      body: Container(child: IntroScreen()));
-                                },
-                              ),
-                            );*/
+                  Navigator.pushNamed(context, '/intro_screen');
                 },
               ),
               SizedBox(

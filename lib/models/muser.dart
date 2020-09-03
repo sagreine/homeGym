@@ -33,7 +33,7 @@ class Muser extends ChangeNotifier {
       }
     }
 
-    return "Unnamed User";
+    return "Home Gym TV";
   }
 
   // careful, URL vs Uri

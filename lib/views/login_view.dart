@@ -2,9 +2,9 @@ import 'package:firebase_auth_ui/providers.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_gym/models/models.dart';
-import 'package:home_gym/views/pick_day_view.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:firebase_auth_ui/firebase_auth_ui.dart';
+import 'package:home_gym/views/views.dart';
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
@@ -29,10 +29,22 @@ class _LoginViewState extends State<LoginView> {
     _user = Provider.of<Muser>(context, listen: false);
   }
 
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _user = Provider.of<Muser>(context, listen: false);
+  }
+
   Scaffold buildNextPage() {
-    return Scaffold(
-      body: Container(child: PickDayView()),
-    );
+    if (_user.firebaseUser.isNewUser) {
+      return Scaffold(
+        body: Container(child: IntroScreenView()),
+      );
+    } else {
+      return Scaffold(
+        body: Container(child: PickDayView()),
+      );
+    }
   }
 
   @override
@@ -55,7 +67,8 @@ class _LoginViewState extends State<LoginView> {
                 text.hasError == false) {
               print(
                   "User auth done, without error. user is: ${_user.firebaseUser.displayName}");
-              if (_user.getPhotoURL().isNotEmpty) {
+              if (_user.getPhotoURL() != null &&
+                  _user.getPhotoURL().isNotEmpty) {
                 precacheImage(new NetworkImage(_user.getPhotoURL()), context);
               }
               return buildNextPage();

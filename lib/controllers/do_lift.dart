@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/flutter_fling.dart';
 import 'package:flutter_fling/remote_media_player.dart';
+import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:image_picker/image_picker.dart';
@@ -145,7 +146,7 @@ class HomeController {
 
     // TODO: do we want to delay cast at all if not recording?
     // that is, give them time to do the actual exercise?
-    // do we need to await?
+    // do we need to await? think rest period...
     if (doCast) {
       await FlutterFling.play(
         (state, condition, position) {
@@ -165,85 +166,86 @@ class HomeController {
     }
 // move the UI components to....the UI
     showDialog(
-        context: context,
         barrierDismissible: false,
-        builder: (_) => AlertDialog(
-              title: Text("Previous set"),
-              content: Text("Did you get the reps?"),
-              actions: [
-                FlatButton(
-                  child: Text("Yes"),
-                  onPressed: () => {
-                    Navigator.pop(context),
-                    if (thisDay.updateMaxIfGetReps &&
-                        //thisDay.areWeOnLastSet()
-                        thisDay.currentSet == thisDay.progressSet)
-                      {
-                        progressAfter = true,
-                      },
-
-                    // should only confetti if it is the last set of a week that tests/progresses?
-                    confettiController.play()
-                  },
-                ),
-                FlatButton(
-                  child: Text("No"),
-                  onPressed: () => {
-                    Navigator.pop(context),
-                    showDialog(
-                        context: context,
-                        barrierDismissible: false,
-
-                        /// UI should ... be in the UI
-                        builder: (_) => AlertDialog(
-                                title: Text("Reps you got"),
-                                content: TextFormField(
-                                  decoration: new InputDecoration(
-                                      focusedBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                          color: Colors.greenAccent,
-                                          width: 1.0,
-                                          style: BorderStyle.solid,
-                                        ),
-                                      ),
-                                      enabledBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(
-                                            color: Colors.blueGrey, width: 1.0),
-                                      ),
-                                      labelText: "Reps"),
-                                  keyboardType: TextInputType.number,
-                                  inputFormatters: <TextInputFormatter>[
-                                    WhitelistingTextInputFormatter.digitsOnly,
-                                  ],
-                                  enableSuggestions: true,
-                                  controller: formControllerRepsCorrection,
-                                  validator: (value) {
-                                    if (value.isEmpty) {
-                                      formControllerRepsCorrection.text = "0";
-                                      return "Reps cannot be empty";
-                                    }
-                                    //homeController.formController.validator()
-                                    return null;
-                                  },
-                                ),
-                                actions: [
-                                  IconButton(
-                                    icon: Icon(Icons.done),
-                                    onPressed: () => {
-                                      Navigator.pop(context),
-                                      updateDatabaseRecordWithReps(
-                                          userID: user.firebaseUser.uid,
-                                          dbDocID: origExerciseID,
-                                          reps: int.parse(
-                                              formControllerRepsCorrection
-                                                  .text)),
-                                    },
+        context: context,
+        builder: (_) => AssetGiffyDialog(
+              buttonCancelText: Text("Yes"),
+              buttonOkText: Text("No"),
+              buttonOkColor: Colors.grey[700],
+              buttonCancelColor: Colors.green[500],
+              image: Image.asset('assets/images/animation_1.gif'),
+              title: Text(
+                'Did you get the reps?',
+                style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
+              ),
+              description: Text(
+                'If no, hit no and enter how many you got',
+                textAlign: TextAlign.center,
+                style: TextStyle(),
+              ),
+              entryAnimation: EntryAnimation.DEFAULT,
+              onOkButtonPressed: () => {
+                Navigator.pop(context),
+                showDialog(
+                    context: context,
+                    barrierDismissible: false,
+                    builder: (_) => AlertDialog(
+                            title: Text("Reps you got"),
+                            content: TextFormField(
+                              decoration: new InputDecoration(
+                                  focusedBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                      color: Colors.greenAccent,
+                                      width: 1.0,
+                                      style: BorderStyle.solid,
+                                    ),
                                   ),
-                                ]))
+                                  enabledBorder: OutlineInputBorder(
+                                    borderSide: BorderSide(
+                                        color: Colors.blueGrey, width: 1.0),
+                                  ),
+                                  labelText: "Reps"),
+                              keyboardType: TextInputType.number,
+                              inputFormatters: <TextInputFormatter>[
+                                WhitelistingTextInputFormatter.digitsOnly,
+                              ],
+                              enableSuggestions: true,
+                              controller: formControllerRepsCorrection,
+                              validator: (value) {
+                                if (value.isEmpty) {
+                                  formControllerRepsCorrection.text = "0";
+                                  return "Reps cannot be empty";
+                                }
+                                //homeController.formController.validator()
+                                return null;
+                              },
+                            ),
+                            actions: [
+                              IconButton(
+                                icon: Icon(Icons.done),
+                                onPressed: () => {
+                                  Navigator.pop(context),
+                                  updateDatabaseRecordWithReps(
+                                      userID: user.firebaseUser.uid,
+                                      dbDocID: origExerciseID,
+                                      reps: int.parse(
+                                          formControllerRepsCorrection.text)),
+                                },
+                              ),
+                            ]))
+              },
+              onCancelButtonPressed: () => {
+                Navigator.pop(context),
+                if (thisDay.updateMaxIfGetReps &&
+                    //thisDay.areWeOnLastSet()
+                    thisDay.currentSet == thisDay.progressSet)
+                  {
+                    progressAfter = true,
                   },
-                )
-              ],
-              elevation: 24,
+
+                // should only confetti if it is the last set of a week that tests/progresses?
+                confettiController.play()
+              },
             ));
 
     // if we passed on the week that we were told to pass on, progress at the end.

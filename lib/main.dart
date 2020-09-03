@@ -78,6 +78,8 @@ void getInitialPull(BuildContext context) async {
   var programs = Provider.of<Programs>(context, listen: false);
   programs.setProgram(programs: await getPrograms());
   print("Initial pull of programss: ${programs.programs}");
+  FlingController flingController = FlingController();
+  flingController.getCastDevices(context);
 }
 
 class MyApp extends StatelessWidget {
@@ -116,6 +118,7 @@ class MyApp extends StatelessWidget {
         '/profile': (context) => ProfileView(),
         '/programs': (context) => ProgramsView(),
         '/settings': (context) => SettingsView(),
+        '/intro_screen': (context) => IntroScreenView(),
       },
     );
   }

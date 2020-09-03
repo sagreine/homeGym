@@ -33,6 +33,7 @@ class _DoLiftViewState extends State<DoLiftView> {
 
   // i don't know if we need these? shouldn't, ideally..
   FlutterFling fling;
+  FlingController flingController = FlingController();
   String _selectedTitle;
 
   // temporary. and should be in controller.
@@ -65,6 +66,59 @@ class _DoLiftViewState extends State<DoLiftView> {
   void dispose() async {
     super.dispose();
     await FlutterFling.stopDiscoveryController();
+  }
+
+  Future showCastDevicePickerDialog() {
+    return showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return Consumer<FlingMediaModel>(builder: (context, flingy, child) {
+            return WillPopScope(
+                onWillPop: () {
+                  setState(() {
+                    doCast = false;
+                  });
+                  Navigator.of(context).pop();
+                }, // async => false,
+                child: AlertDialog(
+                    scrollable: true,
+                    title: Text("Cast to"),
+                    content: Container(
+                        width: double.maxFinite,
+                        height: 60,
+                        child: ListView.builder(
+                          //shrinkWrap: true,
+                          itemCount: flingy.flingDevices == null
+                              ? 0
+                              : flingy.flingDevices.length,
+                          itemBuilder: (context, index) {
+                            return ListTile(
+                              leading: Icon(Icons.tv),
+                              title: Text(
+                                  flingy.flingDevices.elementAt(index).name),
+                              onTap: () => {
+                                flingController.selectPlayer(context,
+                                    flingy.flingDevices.elementAt(index)),
+                                doCast = true,
+                                Navigator.of(context).pop()
+                              },
+                            );
+                          },
+                        )),
+                    actions: [
+                      FlatButton(
+                        child: Text("Don't cast"),
+                        onPressed: () {
+                          setState(() {
+                            doCast = false;
+                          });
+                          Navigator.of(context).pop();
+                        },
+                      )
+                    ]));
+          });
+        });
   }
 
   @override
@@ -273,10 +327,14 @@ class _DoLiftViewState extends State<DoLiftView> {
                     secondary:
                         doCast ? Icon(Icons.cast_connected) : Icon(Icons.cast),
                     value: doCast,
-                    onChanged: (newValue) {
-                      setState(() {
-                        doCast = newValue;
-                      });
+                    onChanged: (newValue) async {
+                      if (newValue && flingy.selectedPlayer == null) {
+                        await showCastDevicePickerDialog();
+                      } else {
+                        setState(() {
+                          doCast = newValue;
+                        });
+                      }
                     },
                   ),
                   CheckboxListTile(
@@ -298,28 +356,24 @@ class _DoLiftViewState extends State<DoLiftView> {
                         if (_formkey.currentState.validate()) {
                           print("valid form");
                           // make any updates that are necessary, check we have a fling device, then cast
-                          if (flingy.selectedPlayer != null) {
-                            // do it so it goes -> update exercise, getNextExercise(this updates what you see though?),
-                            // cast (them both)
-                            homeController.updateThisExercise(
-                              context,
-                            );
-                            // then get the next exercise's info into the form (not fully implemented of course)
-                            //homeController.updateExercise(context);
-                            // may need to await this, if it is updating our exercise that we're sending....
-                            await homeController.castMediaTo(
-                                player: flingy.selectedPlayer,
-                                context: context,
-                                doCast: doCast,
-                                doVideo: doVideo);
-                            /* TODO:
-                            showDialog(
-                              */
-                          } else {
-                            print(
-                                "form is valid but no fling player selected. launching settings");
-                            Navigator.pushNamed(context, '/settings');
+
+                          if (doCast && flingy.selectedPlayer == null) {
+                            await showCastDevicePickerDialog();
                           }
+
+                          // do it so it goes -> update exercise, getNextExercise(this updates what you see though?),
+                          // cast (them both)
+                          homeController.updateThisExercise(
+                            context,
+                          );
+                          // then get the next exercise's info into the form (not fully implemented of course)
+                          //homeController.updateExercise(context);
+                          // may need to await this, if it is updating our exercise that we're sending....
+                          await homeController.castMediaTo(
+                              player: flingy.selectedPlayer,
+                              context: context,
+                              doCast: doCast,
+                              doVideo: doVideo);
                         }
                       },
                       // TODO: cast v cast selected = do we have a cast device selected...
