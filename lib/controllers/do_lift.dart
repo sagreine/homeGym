@@ -37,6 +37,9 @@ class HomeController {
       final picker = ImagePicker();
       // TODO: doesn't handle if they press back
       final pickedFile = await picker.getVideo(source: ImageSource.camera);
+      if (pickedFile == null) {
+        return null;
+      }
 
       // restrict to videos under a certain size for a given set - this is ~6 min video on my camera
       // but obviously we need to be careful here.
@@ -102,11 +105,26 @@ class HomeController {
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
-    //var thisMaxes = Provider.of<LifterMaxes>(context, listen: false);
-    String thisExercise = json.encode(exercise.toJson());
+
+    // TODO: pull do video out of here? either way is kind of stupid...
+    String url = await getVideo(doVideo, context);
+    // if they hit the back button we need to stop in our tracks.
+    if (url == null) {
+      return;
+    } else {
+      exercise.videoPath = url;
+    }
+
+    // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information
+    //....so could check for the garbage (default) URLs before updating this..
     // make the firestore record for this exercise. (dangerous, they can still back out of video.....)
     String origExerciseID = await createDatabaseRecord(
         exercise: exercise, userID: user.firebaseUser.uid);
+    //updateDatabaseRecordWithURL(
+    //dbDocID: origExerciseID, url: url, userID: user.firebaseUser.uid);
+
+    //var thisMaxes = Provider.of<LifterMaxes>(context, listen: false);
+    String thisExercise = json.encode(exercise.toJson());
 
     bool progressAfter = false;
 
@@ -135,14 +153,6 @@ class HomeController {
     updateExercise(context: context);
     String nextExercise = json.encode(exercise.toJson());
     String thisDayJSON = json.encode(thisDay.toJson());
-
-    // TODO: pull do video out of here? either way is kind of stupid...
-    String url = await getVideo(doVideo, context);
-
-    // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information
-    //....so could check for the garbage (default) URLs before updating this..
-    updateDatabaseRecordWithURL(
-        dbDocID: origExerciseID, url: url, userID: user.firebaseUser.uid);
 
     // TODO: do we want to delay cast at all if not recording?
     // that is, give them time to do the actual exercise?

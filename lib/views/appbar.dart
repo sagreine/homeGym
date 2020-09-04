@@ -236,8 +236,10 @@ class ReusableWidgets {
                   //Navigator.of(context).pop();
                   // wait while we log the user out.
                   await user.logout();
+                  print("successfully logged out");
                   // pop until we get to the login page
-                  Navigator.popUntil(context, ModalRoute.withName("/login"));
+                  Navigator.of(context).pushNamedAndRemoveUntil(
+                      '/login', (Route<dynamic> route) => false);
                 },
               ),
             ]),

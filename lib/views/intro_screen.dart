@@ -21,9 +21,9 @@ class IntroScreenViewState extends State<IntroScreenView> {
         iconImageAssetPath: 'assets/images/pos_icon.png',
         bubbleBackgroundColor: Colors.blueGrey[400],
         body: Text(
-          "Log your workouts, record them, cast to a TV so you don't stare at your phone",
+          "Automated creation and logging your workouts, recording them, casting them to a TV",
         ),
-        title: Text('Cabs'),
+        title: Text('Home Gym TV'),
         mainImage: Image.asset(
           'assets/images/animation_1.gif',
           height: 285.0,
@@ -37,8 +37,25 @@ class IntroScreenViewState extends State<IntroScreenView> {
         pageColor: Colors.greenAccent[700],
         iconImageAssetPath: 'assets/images/pos_icon.png',
         bubbleBackgroundColor: Colors.greenAccent[400],
-        body: Text("You can focus on lifting, not thinking, not your phone"),
-        title: Text('Cabs'),
+        body: Text(
+            "You can focus on lifting, not on thinking or starting at your phone"),
+        title: Text('Casting to TV'),
+        mainImage: Image.asset(
+          'assets/images/pos_icon.png',
+          height: 285.0,
+          width: 285.0,
+          alignment: Alignment.center,
+        ),
+        titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
+        bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
+      ),
+      PageViewModel(
+        pageColor: Colors.greenAccent[700],
+        iconImageAssetPath: 'assets/images/pos_icon.png',
+        bubbleBackgroundColor: Colors.greenAccent[400],
+        body: Text(
+            "Enter the weights you own, then maxes to start. We'll automatically update them as you progress"),
+        title: Text('Make it happen'),
         mainImage: Image.asset(
           'assets/images/pos_icon.png',
           height: 285.0,
@@ -56,9 +73,7 @@ class IntroScreenViewState extends State<IntroScreenView> {
     final Widget introViews = new IntroViewsFlutter(
       listPagesViewModel(),
       onTapDoneButton: () {
-// TODO: would be putting the pre-load stuff here too, then?
-
-        Navigator.pushReplacementNamed(context, '/pick_day');
+        Navigator.pushReplacementNamed(context, '/lifter_maxes');
       },
       showSkipButton: true,
       pageButtonTextStyles: new TextStyle(

@@ -19,6 +19,7 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
   void dispose() {
     // TODO: implement dispose for controllers
     super.dispose();
+    //lifterMaxesController.dispose();
   }
 
   DataCell _buildMaxValues(String initialMax, String lift) {
@@ -101,6 +102,22 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
                         ]),
                       ],
                     );
+                  },
+                ),
+                SizedBox(
+                  height: 15,
+                ),
+                Consumer<Muser>(
+                  builder: (context, user, child) {
+                    return Visibility(
+                        visible: user.firebaseUser.isNewUser,
+                        child: RaisedButton(
+                            splashColor: Colors.green[600],
+                            elevation: 4,
+                            color: Colors.green[800],
+                            onPressed: () =>
+                                Navigator.pushNamed(context, "/lifter_weights"),
+                            child: Text("Now set the weights you own")));
                   },
                 ),
               ]),

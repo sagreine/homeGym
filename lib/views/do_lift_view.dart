@@ -75,6 +75,7 @@ class _DoLiftViewState extends State<DoLiftView> {
         builder: (BuildContext context) {
           return Consumer<FlingMediaModel>(builder: (context, flingy, child) {
             return WillPopScope(
+                // I think you just return true, not pop yourself....
                 onWillPop: () {
                   setState(() {
                     doCast = false;
