@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:confetti/confetti.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/flutter_fling.dart';
@@ -35,7 +34,6 @@ class HomeController {
     var url;
     if (recordNewVideo) {
       final picker = ImagePicker();
-      // TODO: doesn't handle if they press back
       final pickedFile = await picker.getVideo(source: ImageSource.camera);
       if (pickedFile == null) {
         return null;
@@ -67,8 +65,8 @@ class HomeController {
   }
 
   // update our model with changes manually input on the form, if any.
-  void updateThisExercise(BuildContext context) {
-    var thisSet = Provider.of<ExerciseSet>(context, listen: false);
+  void updateThisExercise({@required ExerciseSet thisSet}) {
+    //var thisSet = Provider.of<ExerciseSet>(context, listen: false);
     thisSet.updateExercise(
         title: formControllerTitle.text,
         description: formControllerDescription.text,
@@ -79,14 +77,27 @@ class HomeController {
 
   // may eventually move to ExerciseDay is a collection of ExerciseSet objects...
   // but for now staying away from relational stuff.
-  void updateExercise({BuildContext context}) {
-    ExerciseController exerciseController = ExerciseController();
-    exerciseController.updateExercise(context: context);
-    displayInExerciseInfo(context: context);
+  ExerciseSet getNextExercise({@required BuildContext context}) {
+    ExerciseDayController exerciseDayController = new ExerciseDayController();
+    ExerciseSet toReturn;
+    // if this was the last set, set it so in the description
+    if (exerciseDayController.areWeOnLastSet(context)) {
+      toReturn = new ExerciseSet(
+          title: "That was the last set",
+          description: "No description",
+          reps: 0,
+          weight: 0,
+          restPeriodAfter: 100);
+    }
+    //otherwise advance to the next set and display it
+    else {
+      toReturn = exerciseDayController.nextSet(context);
+    }
+    return toReturn;
   }
 
-  void displayInExerciseInfo({BuildContext context}) {
-    var exercise = Provider.of<ExerciseSet>(context, listen: false);
+  void displayInExerciseInfo({ExerciseSet exercise}) {
+    //var exercise = Provider.of<ExerciseSet>(context, listen: false);
     formControllerTitle.text = exercise.title;
     formControllerDescription.text = exercise.description;
     formControllerReps.text = exercise.reps.toString();
@@ -97,12 +108,14 @@ class HomeController {
 
   // or just don't wait? once we send the video there's nothing
   // stoppping us from retrieving and updating the app right?
-  castMediaTo(
-      {RemoteMediaPlayer player,
-      BuildContext context,
-      @required bool doCast,
-      @required bool doVideo}) async {
-    var exercise = Provider.of<ExerciseSet>(context, listen: false);
+  castMediaTo({
+    RemoteMediaPlayer player,
+    BuildContext context,
+    @required bool doCast,
+    @required bool doVideo,
+    @required ExerciseSet exercise,
+  }) async {
+    //var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
 
@@ -150,8 +163,9 @@ class HomeController {
     ///    b) we keep the URL safe with careful ordering, but easy to forget that
     ///
     ///
-    updateExercise(context: context);
-    String nextExercise = json.encode(exercise.toJson());
+    ExerciseSet nextSet = getNextExercise(context: context);
+    String nextExercise = json.encode(nextSet.toJson());
+    // below is needed for dispalying assistance on screen - remove if not doing anymore
     String thisDayJSON = json.encode(thisDay.toJson());
 
     // TODO: do we want to delay cast at all if not recording?
@@ -175,7 +189,7 @@ class HomeController {
       );
     }
 // move the UI components to....the UI
-    showDialog(
+    await showDialog(
         barrierDismissible: false,
         context: context,
         builder: (_) => AssetGiffyDialog(
@@ -185,7 +199,7 @@ class HomeController {
               buttonCancelColor: Colors.green[500],
               image: Image.asset('assets/images/animation_1.gif'),
               title: Text(
-                'Did you get the reps?',
+                'Did you get ${exercise.reps} reps?',
                 style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
               ),
               description: Text(
@@ -257,10 +271,10 @@ class HomeController {
                 confettiController.play()
               },
             ));
-
+    displayInExerciseInfo(exercise: nextSet);
     // if we passed on the week that we were told to pass on, progress at the end.
     // TODO: this is also broken when the last set is the test set AND might update twice (second to last set and actual last set)
-    if (progressAfter && thisDay.currentSet + 1 == thisDay.sets) {
+    if (progressAfter && exerciseDayController.areWeOnLastSet(context)) {
       lifterMaxesController.update1RepMax(
           context: context,
           // TODO: be careful with this, since we're updating/progressing to the next exercise above this point.

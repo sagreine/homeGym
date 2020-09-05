@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -24,6 +25,7 @@ class ExerciseDay extends ChangeNotifier {
   int progressSet;
 
   List<ExerciseSet> exercises;
+  ExerciseController exerciseController = new ExerciseController();
 
   ExerciseDay({
     this.program,
@@ -58,7 +60,7 @@ class ExerciseDay extends ChangeNotifier {
     List<String> assistancePush,
     bool updateMaxIfGetReps,
     int progressSet,
-    List<ExerciseSet> exercises,
+    BuildContext context,
   }) {
     this.program = program;
     this.sets = sets;
@@ -74,8 +76,30 @@ class ExerciseDay extends ChangeNotifier {
     this.assistancePush = assistancePush;
     this.updateMaxIfGetReps = updateMaxIfGetReps;
     this.progressSet = progressSet;
-    this.exercises = exercises;
-
+    this.exercises = new List<ExerciseSet>();
+    List<String> allAssistance =
+        assistanceCore + assistancePull + assistancePush;
+    for (int i = 0; i < sets; ++i) {
+      ExerciseSet tmp = new ExerciseSet();
+      // add the main items to the list
+      if (i < reps.length) {
+        // this function depends on the current set of the day, but we need to reset that at the end.
+        tmp.updateExerciseFull(context: context, exerciseTitle: "deadlift");
+        this.exercises.add(tmp);
+        // updating it here for whatever reason instead of passing it in as a parameter.........
+        this.currentSet++;
+      } else {
+        this.exercises.add(ExerciseSet(
+            restPeriodAfter: 90,
+            title: allAssistance[i - reps.length],
+            description: "Do the assistance activity",
+            weight: 0,
+            // TODO obviously this is not right as-is..
+            reps: assistanceCoreReps));
+      }
+    }
+    // reset this to the very first set.
+    this.currentSet = 0;
     notifyListeners();
   }
 

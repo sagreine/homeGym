@@ -244,10 +244,10 @@ void getPlatesCloud({@required context, @required String userID}) async {
   });
 }
 
-Future<void> getExercisesCloud(
-    {@required context,
-    @required String program,
-    @required String userID}) async {
+Future<void> getExercisesCloud({
+  @required context,
+  @required String program,
+}) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
   // would update the exercise model here so pass in context...
   // this needs to be a model.

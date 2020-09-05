@@ -18,6 +18,7 @@ class ExerciseDayController {
     int assistancePushReps,
     bool updateMaxIfGetReps,
     int progressSet,
+    List<ExerciseSet> exercises,
   }) {
     var day = Provider.of<ExerciseDay>(context, listen: false);
     day.buildDay(
@@ -26,7 +27,10 @@ class ExerciseDayController {
       currentSet: 0,
       reps: reps,
       percentages: percentages,
-      sets: reps.length,
+      sets: reps.length +
+          assistanceCore.length +
+          assistancePull.length +
+          assistancePush.length,
       progressSet: progressSet,
       trainingMax: trainingMaxPct,
       assistanceCore: assistanceCore,
@@ -35,11 +39,18 @@ class ExerciseDayController {
       assistancePullReps: assistancePullReps,
       assistancePush: assistancePush,
       assistancePushReps: assistancePushReps,
+      context: context,
     );
   }
 
-  bool nextSet(BuildContext context) {
+  ExerciseSet nextSet(BuildContext context) {
     var day = Provider.of<ExerciseDay>(context, listen: false);
-    return day.nextSet();
+    day.nextSet();
+    return day.exercises[day.currentSet];
+  }
+
+  bool areWeOnLastSet(BuildContext context) {
+    var day = Provider.of<ExerciseDay>(context, listen: false);
+    return day.areWeOnLastSet();
   }
 }

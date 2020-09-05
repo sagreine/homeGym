@@ -87,7 +87,7 @@ class ReusableWidgets {
               ListTile(
                   title: Text("Pick Lift"),
                   leading: Icon(Icons.fitness_center),
-                  // TODO: Not tested at all.
+                  // TODO: this is yet messed up because login doesn't route to pick_day it builds it's own.... so breaks if we do this the first time through.
                   onTap: () {
                     newRouteName = "/pick_day";
                     // if the current route is the exact location we're at (first on the stack), mark that

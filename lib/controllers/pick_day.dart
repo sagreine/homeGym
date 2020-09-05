@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/cloud.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
-import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 
 class PickDayController {
@@ -36,7 +35,6 @@ class PickDayController {
     updateReadyToGo();
   }
 
-// TODO: review this, async is messing up if you pick exercise then pick program, or Go button isn't being refreshed at least on the first itme thorugh
   Future<void> pickProgram(BuildContext context) async {
     // launch the page to pick them, return it when done
     /// - do this more safely obviously. if they OS-back button this goes badly.
@@ -51,9 +49,7 @@ class PickDayController {
   }
 
   Future<void> getExercises(BuildContext context, String program) async {
-    var user = Provider.of<Muser>(context, listen: false);
-    await getExercisesCloud(
-        context: context, program: program, userID: user.firebaseUser.uid);
+    await getExercisesCloud(context: context, program: program);
   }
 
   // launch the day, which is program and exercise
@@ -61,10 +57,13 @@ class PickDayController {
   void launchDay(BuildContext context) async {
     await getExercises(context, selectedProgram);
     ExerciseController exerciseController = ExerciseController();
+    /*
     exerciseController.updateExercise(
         context: context,
         exerciseTitle:
             exercises[selectedExercise.indexWhere((element) => element)]);
-    Navigator.pushNamed(context, '/do_lift');
+            */
+    //Navigator.pushNamed(context, '/do_lift');
+    Navigator.pushNamed(context, 'excerciseday');
   }
 }

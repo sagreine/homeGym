@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart';
+import 'package:home_gym/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:provider/provider.dart';
 
 part 'exercise.g.dart';
 
@@ -19,18 +21,69 @@ class ExerciseSet extends ChangeNotifier {
   int weight;
   int reps;
   DateTime dateTime;
+  //BuildContext context;
 
   ExerciseSet({
+    //this.context,
     this.videoPath,
     this.title,
     this.description,
     this.restPeriodAfter,
-    this.type,
     this.weight,
     this.reps,
-    this.dateTime,
   }) {
+    //var day = Provider.of<LifterWeights>(context, listen: false);
+    //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
     this.dateTime = DateTime.now();
+    this.type = "/video";
+  }
+
+  void updateExerciseFull({@required context, String exerciseTitle}) {
+    // should be using the controller here instead of doing this...
+    // if we passed a title in and there wasn't already a title (that equals this one)
+    if (exerciseTitle != null &&
+        (this.title == null || this.title != exerciseTitle)) {
+      this.title = exerciseTitle;
+    }
+    var thisDay = Provider.of<ExerciseDay>(context, listen: false);
+    var thisMax = Provider.of<LifterMaxes>(context, listen: false);
+    // would, when needed, listen because if we update the bar weight we want this update. look into more though.
+    var thisWeights = Provider.of<LifterWeights>(context, listen: false);
+    // default to 0
+    double trainingMax = 0;
+    switch (this.title.toLowerCase()) {
+      case "deadlift":
+        trainingMax = (thisMax.deadliftMax.toDouble() * thisDay.trainingMax);
+        break;
+      case "bench":
+        trainingMax = (thisMax.benchMax.toDouble() * thisDay.trainingMax);
+        break;
+      case "press":
+        trainingMax = (thisMax.pressMax.toDouble() * thisDay.trainingMax);
+        break;
+      case "squat":
+        trainingMax = (thisMax.squatMax.toDouble() * thisDay.trainingMax);
+        break;
+    }
+    double targetWeight =
+        ((thisDay.percentages[thisDay.currentSet]) * trainingMax);
+
+    this.updateExercise(
+        // reps is a straight pull
+        reps: thisDay.reps[thisDay.currentSet],
+        weight: targetWeight.toInt(),
+        description: "Weight each side: " +
+            (thisWeights.pickPlates(targetWeight: targetWeight)[0])
+                .round()
+                .toString()
+        // + nextExercise(context),
+        );
+    //formControllerTitle
+    //formControllerDescription.text = exercise.description;
+    //formControllerReps.text = exercise.reps.toString();
+    //formControllerWeight.text = exercise.weight.toString();
+
+    // this is a hack for now.
   }
 
   void updateExercise({

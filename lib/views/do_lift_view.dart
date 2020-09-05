@@ -17,8 +17,11 @@ import 'package:confetti/confetti.dart';
 // more of this should go in controller functions
 
 class DoLiftView extends StatefulWidget {
-  //final String exercise;
-  //DoLiftView({Key key, @required this.program,});
+  final ExerciseSet exercise;
+  DoLiftView({
+    Key key,
+    @required this.exercise,
+  });
   @override
   _DoLiftViewState createState() => _DoLiftViewState();
 }
@@ -44,21 +47,22 @@ class _DoLiftViewState extends State<DoLiftView> {
   @override
   void initState() {
     super.initState();
-    homeController.displayInExerciseInfo(context: context);
+    homeController.displayInExerciseInfo(exercise: widget.exercise);
     //_selectedTitle = widget.exercise;
     fling = FlutterFling();
     doVideo = false;
     doCast = false;
     // this is bad, but whatever.
     homeController.formControllerRestInterval.text = "90";
+
     //confettiController
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    var exercise = Provider.of<ExerciseSet>(context, listen: false);
-    _selectedTitle = exercise.title;
+
+    _selectedTitle = widget.exercise.title;
   }
 
   @override
@@ -123,6 +127,7 @@ class _DoLiftViewState extends State<DoLiftView> {
 
   @override
   Widget build(BuildContext context) {
+    //final DoLiftView args = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       appBar: ReusableWidgets.getAppBar(),
       drawer: ReusableWidgets.getDrawer(context),
@@ -154,42 +159,7 @@ class _DoLiftViewState extends State<DoLiftView> {
                       // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...
                       child: ListView(
                         children: <Widget>[
-                          new DropdownButton<String>(
-                            hint: _selectedTitle == null
-                                ? Text('Main exercise for the day')
-                                : SizedBox(
-                                    width: 50,
-                                    child: TextFormField(
-                                      controller:
-                                          homeController.formControllerTitle,
-                                      validator: (value) {
-                                        if (value.isEmpty) {
-                                          return "Title can't be blank";
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ),
-                            //might want to force them back insead of allowing this...
-                            items: <String>[
-                              'Squat',
-                              'Press',
-                              'Deadlift',
-                              'Bench'
-                            ].map((String value) {
-                              return new DropdownMenuItem<String>(
-                                value: value,
-                                child: new Text(value),
-                              );
-                            }).toList(),
-                            value: _selectedTitle,
-                            onChanged: (_) {
-                              setState(() {
-                                homeController.formControllerTitle.text = _;
-                                _selectedTitle = _;
-                              });
-                            },
-                          ),
+                          Text(widget.exercise.title),
                           SizedBox(height: 16),
                           TextFormField(
                             decoration: new InputDecoration(
@@ -364,7 +334,7 @@ class _DoLiftViewState extends State<DoLiftView> {
                           // do it so it goes -> update exercise, getNextExercise(this updates what you see though?),
                           // cast (them both)
                           homeController.updateThisExercise(
-                            context,
+                            thisSet: widget.exercise,
                           );
                           // then get the next exercise's info into the form (not fully implemented of course)
                           //homeController.updateExercise(context);
@@ -373,7 +343,8 @@ class _DoLiftViewState extends State<DoLiftView> {
                               player: flingy.selectedPlayer,
                               context: context,
                               doCast: doCast,
-                              doVideo: doVideo);
+                              doVideo: doVideo,
+                              exercise: widget.exercise);
                         }
                       },
                       // TODO: cast v cast selected = do we have a cast device selected...

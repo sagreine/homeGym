@@ -45,7 +45,7 @@ void main() async {
     ChangeNotifierProvider(create: (context) => LifterWeights()),
     ChangeNotifierProvider(create: (context) => LifterMaxes()),
     ChangeNotifierProvider(
-      create: (context) => ExerciseSet(),
+      create: (context) => ExerciseSet(), //context: context),
     ),
     ChangeNotifierProvider(
       create: (context) => ExerciseDay(),
@@ -85,6 +85,7 @@ void getInitialPull(BuildContext context) async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    var day = Provider.of<ExerciseDay>(context, listen: false);
     // load all non-user-specific things async (not waiting for them) during the splash.
     // okay to be here because this is only to be built once --- if the screen goes black during splash though?
     // but this is running over and over again....? just on hot reload though actually.
@@ -110,7 +111,8 @@ class MyApp extends StatelessWidget {
             ),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/login': (context) => LoginView(),
-        '/do_lift': (context) => DoLiftView(),
+        '/do_lift': (context) =>
+            DoLiftView(exercise: day.exercises[day.currentSet]),
         '/help': (context) => HelpView(),
         '/lifter_maxes': (context) => LifterMaxesView(),
         '/lifter_weights': (context) => LifterWeightsView(),
@@ -119,6 +121,7 @@ class MyApp extends StatelessWidget {
         '/programs': (context) => ProgramsView(),
         '/settings': (context) => SettingsView(),
         '/intro_screen': (context) => IntroScreenView(),
+        'excerciseday': (context) => ExcerciseDayView(),
       },
     );
   }
