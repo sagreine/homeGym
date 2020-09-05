@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
-import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
-import 'package:provider/provider.dart';
 
 class PickDayView extends StatefulWidget {
   @override
@@ -14,8 +12,6 @@ class _PickDayViewState extends State<PickDayView> {
 
   @override
   Widget build(BuildContext context) {
-    var _user = Provider.of<Muser>(context, listen: false);
-
     //print(user.firebaseUser.displayName);
     return Scaffold(
         appBar: ReusableWidgets.getAppBar(),

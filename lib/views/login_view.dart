@@ -24,7 +24,7 @@ class _LoginViewState extends State<LoginView> {
   //this part we could do in gcp functions instead of code
   LifterMaxesController lifterMaxesController = LifterMaxesController();
   LifterWeightsController lifterWeightsController = LifterWeightsController();
-  
+
   Stream<DataConnectionStatus> listener;
 
   //FirebaseUser _firebaseUser;
@@ -118,30 +118,30 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Future<bool> _activeConnection() async {
-    return await DataConnectionChecker().hasConnection;;
+    return await DataConnectionChecker().hasConnection;
   }
 
   @override
   Widget build(BuildContext context) {
-
-/// this is stupid and dangerous - susceptible to a blip
-/// but also, why did we do this at all?
-/// Theory: DataConnectionStatus is a singleton. once it is set to Connected
-/// it isn't going to change state. i try to reassing a listener in hopes it would 
-/// restart, but no dice - maybe just me not knowing how streams work, but tried new and func generated ones
-/// maybe there's a way to do it better though ('var abc;' and then abc func=>Stream() in init or something?)
-/// in any event i'm doing this for fun and it more or less works sooo....
+    /// this is stupid and dangerous - susceptible to a blip
+    /// but also, why did we do this at all?
+    /// Theory: DataConnectionStatus is a singleton. once it is set to Connected
+    /// it isn't going to change state. i try to reassing a listener in hopes it would
+    /// restart, but no dice - maybe just me not knowing how streams work, but tried new and func generated ones
+    /// maybe there's a way to do it better though ('var abc;' and then abc func=>Stream() in init or something?)
+    /// in any event i'm doing this for fun and it more or less works sooo....
     // check to see if we have an immediately active connection
     return new FutureBuilder(
         future: _activeConnection(),
         builder: (BuildContext context, AsyncSnapshot text) {
           // if we're done asking and the result is that we don't, open the stream to get it
           if (text.connectionState == ConnectionState.done &&
-              text.hasError == false &&
-              text.data == false) {
+              text.hasError == false) {
             return new StreamBuilder(
                 stream: listener,
-                initialData: DataConnectionStatus.disconnected,
+                initialData: text.data == true
+                    ? DataConnectionStatus.connected
+                    : DataConnectionStatus.disconnected,
                 builder: (context, snapshot) {
                   // if we don't have data yet, say we're waiting
                   if (!snapshot.hasData) {
@@ -149,7 +149,7 @@ class _LoginViewState extends State<LoginView> {
                     return CircularProgressIndicator();
                   }
                   // if we have data and that is that we're connected, we now have internet access! get login
-                  else if (snapshot.data == DataConnectionStatus.connected) {
+                  else if (snapshot.data != DataConnectionStatus.disconnected) {
                     print("you have access to the internet!");
                     // may be able to get rid of this? and just keep this going? yield?
                     if (_user.firebaseUser != null) {
@@ -185,7 +185,7 @@ class _LoginViewState extends State<LoginView> {
           }
           // otherwise we know we have an active connection and don't need the stream to tell us, so go ahead
           // need to do error handling on original FutureBuilder though, and 'what about until we have our answer?'
-          else if (text.connectionState == ConnectionState.done && text.data == true){
+          /*else if (text.connectionState == ConnectionState.done && text.data == true){
             if (_user.firebaseUser != null) {
               return buildNextPage();
             } else {
@@ -205,12 +205,12 @@ class _LoginViewState extends State<LoginView> {
                     );
                   });
             }
-          }
+          }*/
           return SizedBox(
-                      height: 200,
-                      width: 200,
-                      child: Text(!text.hasError ? "" : text.error.toString()),
-                    );
+            height: 200,
+            width: 200,
+            child: Text(!text.hasError ? "" : text.error.toString()),
+          );
         });
   }
   //_user = Provider.of<Muser>(context, listen: false);

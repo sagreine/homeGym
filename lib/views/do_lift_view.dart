@@ -57,7 +57,6 @@ class _DoLiftViewState extends State<DoLiftView> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    var user = Provider.of<Muser>(context, listen: false);
     var exercise = Provider.of<ExerciseSet>(context, listen: false);
     _selectedTitle = exercise.title;
   }
@@ -76,11 +75,11 @@ class _DoLiftViewState extends State<DoLiftView> {
           return Consumer<FlingMediaModel>(builder: (context, flingy, child) {
             return WillPopScope(
                 // I think you just return true, not pop yourself....
-                onWillPop: () {
+                onWillPop: () async {
                   setState(() {
                     doCast = false;
                   });
-                  Navigator.of(context).pop();
+                  return true;
                 }, // async => false,
                 child: AlertDialog(
                     scrollable: true,
@@ -102,7 +101,7 @@ class _DoLiftViewState extends State<DoLiftView> {
                                 flingController.selectPlayer(context,
                                     flingy.flingDevices.elementAt(index)),
                                 doCast = true,
-                                Navigator.of(context).pop()
+                                true
                               },
                             );
                           },

@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:home_gym/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'exercise_day.g.dart';
@@ -22,6 +23,8 @@ class ExerciseDay extends ChangeNotifier {
   bool updateMaxIfGetReps;
   int progressSet;
 
+  List<ExerciseSet> exercises;
+
   ExerciseDay({
     this.program,
     this.sets,
@@ -37,6 +40,7 @@ class ExerciseDay extends ChangeNotifier {
     this.assistancePush,
     this.updateMaxIfGetReps,
     this.progressSet,
+    this.exercises,
   });
 
   void buildDay({
@@ -54,6 +58,7 @@ class ExerciseDay extends ChangeNotifier {
     List<String> assistancePush,
     bool updateMaxIfGetReps,
     int progressSet,
+    List<ExerciseSet> exercises,
   }) {
     this.program = program;
     this.sets = sets;
@@ -69,6 +74,7 @@ class ExerciseDay extends ChangeNotifier {
     this.assistancePush = assistancePush;
     this.updateMaxIfGetReps = updateMaxIfGetReps;
     this.progressSet = progressSet;
+    this.exercises = exercises;
 
     notifyListeners();
   }
@@ -117,5 +123,6 @@ class ExerciseDay extends ChangeNotifier {
         assistancePush,
         updateMaxIfGetReps,
         progressSet,
+        exercises,
       ];
 }
