@@ -1,5 +1,7 @@
 // may want this to be a changeNotifier just to simplify things..
 
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'lifter_weights.g.dart';
@@ -43,6 +45,7 @@ class LifterWeights extends ChangeNotifier {
      acc + (plate * 2)
   }, 0)
 };*/
+
 /*
    get_plate_picking_matrix(Map<dynamic, int> plates, int targetWeight){
     var m = 
@@ -84,34 +87,6 @@ class LifterWeights extends ChangeNotifier {
 
   List<double> pickPlates({double targetWeight}) {
     return [(targetWeight - barWeight) / 2];
-    /*
-    double weightEachSide = (targetWeight - barWeight) / 2;
-var sortedPlates;
-var rackedPlates;
-    List<double> tempPlates = new List.from(plates.keys.toList());                        
-    List<int> tempPlateCount = new List.from(plates.values.toList()); 
-    tempPlates.sort((b, a) => a.compareTo(b));
-
- var rack = (targetWeight) => {    
-    rackedPlates = tempPlates.reduce((acc, plate) => {
-    if ((barWeight + (plate * 2) + sumPlates(acc)) > targetWeight) {
-      // Calculate here the closest possible rack weight
-      return acc;
-    }
-
-    acc.push(plate);
-
-    return acc;
-  }, []);
-
-  return {
-    targetWeight,
-    barbellWeight: BAR + sumPlates(rackedPlates),
-    plates: rackedPlates,
-  };
-};
-
-*/
   }
 
   List<Object> get props => [
@@ -125,14 +100,99 @@ var rackedPlates;
   Map<String, dynamic> toJson() => _$LifterWeightsToJson(this);
 }
 
-/*
-class CustomDoubleConverter implements JsonConverter<Map<double,int>, String> {
-  const CustomDoubleConverter();
+// stolen shamelessly from https://stackoverflow.com/questions/22128759/atm-algorithm-of-giving-money-with-limited-amount-of-bank-notes
+// TODO: discard ones taking more plates than we need along the way for efficiency
+// TODO: if we can't make exact change, get as close as possible without going over.
+// TODO: return the minimum # of plates - not thinking about future/previous sets at this point...
+class CoinChangeLimitedCoins {
+  //List<int> values = [10, 20, 50, 100, 200];
+  List<int> _closestYet = new List<int>();
+  int _closestTotalYet = 0;
+  int _platesUsed = 1000;
 
-  @override
-  Map<double,int> fromJson(Map<double,int> map, String json) =>
-      json == null ? null : double.parse(json[]);
+  void doit() {
+    // available plates
+    //List<int> values = [5, 10, 25, 35, 45];
+    List<int> values = [10, 20, 50, 100, 200];
+    // how many plates you have
+    //List<int> ammounts = [4, 2, 2, 2, 2];
+    List<int> ammounts = [4, 2, 2, 2, 2];
+    // always 0s
+    List<int> tmpVariation = [0, 0, 0, 0, 0];
+    // weight (excluding weight of the bar)
+    int targetWeight = 140;
+    // start at 0 ALWAYS
+    List<List<int>> results =
+        solutions(values, ammounts, tmpVariation, targetWeight, 0);
+    for (List<int> result in results) {
+      print(result);
+    }
+    print(_closestTotalYet.toString());
+    print(_closestYet);
+    print(_platesUsed);
+  }
 
-  @override
-  String toJson(double object) => object.toString();
-}*/
+  List<List<int>> solutions(
+    List<int> values,
+    List<int> ammounts,
+    List<int> variation,
+    int price,
+    int position,
+  ) {
+    List<List<int>> list = new List<List<int>>();
+
+    int value = compute(values, variation);
+    if (value < price) {
+      for (int i = position; i < values.length; i++) {
+        if (ammounts[i] > variation[i]) {
+          List<int> newvariation = new List.from(variation);
+          newvariation[i]++;
+          // in case we can't make a value that is exactly equal to our target value, track along the way
+          // for which one is closest so far without going over, and (to break ties) uses the fewest plates
+          if (value > this._closestTotalYet ||
+              (value == this._closestTotalYet &&
+                  variation.fold(0, (previous, current) => previous + current) <
+                      this._platesUsed)) {
+            _closestTotalYet = value;
+            _closestYet = new List.from(variation);
+            _platesUsed =
+                variation.fold(0, (previous, current) => previous + current);
+          }
+          List<List<int>> newList =
+              solutions(values, ammounts, newvariation, price, i);
+          if (newList != null) {
+            list.addAll(newList);
+          }
+        }
+      }
+    } else if (value == price) {
+      // so we'll never track the closest yet anymore, since we have an exact solution
+      _closestTotalYet = value;
+      // if we haven't added any lists yet or this one uses fewer plates than any list we have so far, add it.
+      if (list == null ||
+          variation.fold(0, (previous, current) => previous + current) <
+              this._platesUsed) {
+        this._platesUsed =
+            variation.fold(0, (previous, current) => previous + current);
+        list.add(myCopy(variation));
+      }
+    }
+    return list;
+  }
+
+  static int compute(List<int> values, List<int> variation) {
+    int ret = 0;
+    for (int i = 0; i < variation.length; i++) {
+      ret += values[i] * variation[i];
+    }
+    return ret;
+  }
+
+  static List<int> myCopy(List<int> ar) {
+    List<int> ret = new List<int>(ar.length);
+    for (int i = 0; i < ar.length; i++) {
+      ret[i] = ar[i];
+    }
+    return ret;
+  }
+}

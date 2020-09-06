@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
+import 'package:home_gym/models/lifter_weights.dart';
 import 'package:home_gym/views/views.dart';
 
 class PickDayView extends StatefulWidget {
@@ -12,6 +13,59 @@ class _PickDayViewState extends State<PickDayView> {
 
   @override
   Widget build(BuildContext context) {
+    CoinChangeLimitedCoins changeLimitedCoins = new CoinChangeLimitedCoins();
+    changeLimitedCoins.doit();
+    /*List<int> items = [2, 3, 5];
+    List<int> itemscount = [2, 2, 2];
+    print("for value 1");
+    print(changeLimitedCoins.knapsack(items, itemscount, 1));
+    print("for value 2");
+    print(changeLimitedCoins.knapsack(items, itemscount, 2));
+    print("for value 3");
+    print(changeLimitedCoins.knapsack(items, itemscount, 3));
+    print("for value 4");
+    print(changeLimitedCoins.knapsack(items, itemscount, 4));
+    print("for value 5");
+    print(changeLimitedCoins.knapsack(items, itemscount, 5));
+    print("for value 6");
+    print(changeLimitedCoins.knapsack(items, itemscount, 6));
+    print("for value 7");
+    print(changeLimitedCoins.knapsack(items, itemscount, 7));
+    print("for value 8");
+    print(changeLimitedCoins.knapsack(items, itemscount, 8));
+    print("for value 9");
+    print(changeLimitedCoins.knapsack(items, itemscount, 9));
+    print("for value 10");
+    print(changeLimitedCoins.knapsack(items, itemscount, 10));
+    print("for value 11");
+    print(changeLimitedCoins.knapsack(items, itemscount, 11));
+    print("for value 12");
+    print(changeLimitedCoins.knapsack(items, itemscount, 12));
+    print("for value 13");
+    print(changeLimitedCoins.knapsack(items, itemscount, 13));
+    print("for value 14");
+    print(changeLimitedCoins.knapsack(items, itemscount, 14));
+    print("for value 15");
+    print(changeLimitedCoins.knapsack(items, itemscount, 15));
+    print("for value 16");
+    print(changeLimitedCoins.knapsack(items, itemscount, 16));
+    print("for value 17");
+    print(changeLimitedCoins.knapsack(items, itemscount, 17));
+    print("for value 18");
+    print(changeLimitedCoins.knapsack(items, itemscount, 18));
+    print("for value 19");
+    print(changeLimitedCoins.knapsack(items, itemscount, 19));
+    print("for value 20");
+    print(changeLimitedCoins.knapsack(items, itemscount, 20));
+    print("for value 21");
+    print(changeLimitedCoins.knapsack(items, itemscount, 21));
+    print("for value 22");
+    print(changeLimitedCoins.knapsack(items, itemscount, 22));
+    print("for value 23");
+    print(changeLimitedCoins.knapsack(items, itemscount, 23));
+    print("for value 24");
+    print(changeLimitedCoins.knapsack(items, itemscount, 24));*/
+
     //print(user.firebaseUser.displayName);
     return Scaffold(
         appBar: ReusableWidgets.getAppBar(),
