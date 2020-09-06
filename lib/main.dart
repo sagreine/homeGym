@@ -111,8 +111,7 @@ class MyApp extends StatelessWidget {
             ),
         // When navigating to the "/second" route, build the SecondScreen widget.
         '/login': (context) => LoginView(),
-        '/do_lift': (context) =>
-            DoLiftView(exercise: day.exercises[day.currentSet]),
+        '/do_lift': (context) => DoLiftView(),
         '/help': (context) => HelpView(),
         '/lifter_maxes': (context) => LifterMaxesView(),
         '/lifter_weights': (context) => LifterWeightsView(),

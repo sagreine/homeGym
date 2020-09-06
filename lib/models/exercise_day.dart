@@ -97,13 +97,12 @@ class ExerciseDay extends ChangeNotifier {
       // updating it here for whatever reason instead of passing it in as a parameter.........
     }
     for (int i = 0; i < allAssistance.length; ++i) {
-      this.exercises.add(ExerciseSet(
+      this.exercises.add(new ExerciseSet(
           restPeriodAfter: 90,
           // the first rep.length are the main lift, non-assistance.
           title: allAssistance[i],
           description: "Do the assistance activity",
-          weight: 0,
-          // TODO obviously this is not right as-is..
+          weight: 0, // TODO: could do ternary?
           reps: allAssistanceReps[i]));
     }
     // reset this to the very first set.

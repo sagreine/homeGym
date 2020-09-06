@@ -30,6 +30,8 @@ class HomeController {
   ConfettiController confettiController =
       ConfettiController(duration: const Duration(seconds: 1));
 
+  bool justDidLastSet = false;
+
   Future<String> getVideo(bool recordNewVideo, BuildContext context) async {
     var url;
     if (recordNewVideo) {
@@ -88,6 +90,7 @@ class HomeController {
           reps: 0,
           weight: 0,
           restPeriodAfter: 100);
+      justDidLastSet = true;
     }
     //otherwise advance to the next set and display it
     else {

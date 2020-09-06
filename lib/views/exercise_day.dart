@@ -17,10 +17,12 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
           if (i.isOdd) return Divider();
           final index = i ~/ 2;
           return ListTile(
-              leading: Text(day.exercises[index].weight.toString()),
-              //onTap: () => Navigator.pop(context, programSnap.data[index]),
-              title: Text(day.exercises[index].title),
-              subtitle: Text(day.exercises[index].reps.toString()));
+            leading: Text(day.exercises[index].weight.toString()),
+            //onTap: () => Navigator.pop(context, programSnap.data[index]),
+            title: Text(day.exercises[index].title),
+            subtitle: Text(day.exercises[index].reps.toString()),
+            trailing: Text("currentSet = ${day.currentSet}"),
+          );
         },
       );
     });

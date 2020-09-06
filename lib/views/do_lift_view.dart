@@ -15,11 +15,6 @@ import 'package:confetti/confetti.dart';
 // more of this should go in controller functions
 
 class DoLiftView extends StatefulWidget {
-  final ExerciseSet exercise;
-  DoLiftView({
-    Key key,
-    @required this.exercise,
-  });
   @override
   _DoLiftViewState createState() => _DoLiftViewState();
 }
@@ -32,6 +27,7 @@ class _DoLiftViewState extends State<DoLiftView> {
   // put this in the parent class and pass through, now that there is a parent class....
   // and/or etc. to have the state tracked.
   HomeController homeController = HomeController();
+  ExerciseSet exercise;
 
   final _formkey = GlobalKey<FormState>();
 
@@ -39,7 +35,7 @@ class _DoLiftViewState extends State<DoLiftView> {
   FlutterFling fling;
   FlingController flingController = FlingController();
 
-  // temporary. and should be in controller.
+  // temporary. and should be in MODEL for this page so we can save state via provider.. controller.
   bool doVideo;
 // temporary. and should be in controller.
   bool doCast;
@@ -47,7 +43,7 @@ class _DoLiftViewState extends State<DoLiftView> {
   @override
   void initState() {
     super.initState();
-    homeController.displayInExerciseInfo(exercise: widget.exercise);
+
     fling = FlutterFling();
     doVideo = false;
     doCast = false;
@@ -60,6 +56,9 @@ class _DoLiftViewState extends State<DoLiftView> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
+    exercise = exerciseDay.exercises[exerciseDay.currentSet];
+    homeController.displayInExerciseInfo(exercise: exercise);
   }
 
   @override
@@ -124,6 +123,7 @@ class _DoLiftViewState extends State<DoLiftView> {
 
   @override
   Widget build(BuildContext context) {
+    //var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     //final DoLiftView args = ModalRoute.of(context).settings.arguments;
     return Consumer<FlingMediaModel>(builder: (context, flingy, child) {
       return SafeArea(
@@ -144,7 +144,29 @@ class _DoLiftViewState extends State<DoLiftView> {
               ),
             ),
             Column(children: <Widget>[
-              Text("Do the lift!"),
+              Row(
+                //crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  //SizedBox(
+//                    width: 200,
+                  // this is dumb, but a way to get a controller on this.
+                  Container(
+                    width: 200, //MediaQuery.of(context).size.width * 0.5,
+                    child: TextField(
+                      textAlign: TextAlign.center,
+                      enabled: false,
+                      // remove border and center
+                      decoration: InputDecoration(
+                        border: InputBorder.none,
+                      ),
+                      controller: homeController.formControllerTitle,
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 16),
+
               Expanded(
                 child: Form(
                   autovalidate: true,
@@ -152,8 +174,6 @@ class _DoLiftViewState extends State<DoLiftView> {
                   // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...
                   child: ListView(
                     children: <Widget>[
-                      Text(widget.exercise.title),
-                      SizedBox(height: 16),
                       TextFormField(
                         decoration: new InputDecoration(
                           focusedBorder: OutlineInputBorder(
@@ -313,39 +333,54 @@ class _DoLiftViewState extends State<DoLiftView> {
                 },
                 controlAffinity: ListTileControlAffinity.platform,
               ),
-              // could make thid disabled when not valid, but headache to setState everywhere
+              //Consumer<ExerciseDay>(
+              //builder: (context, exerciseDay, child) {
+              // use model & provider to do this, doesn't work right now!
               RaisedButton(
-                  onPressed: () async {
-                    if (_formkey.currentState.validate()) {
-                      print("valid form");
-                      // make any updates that are necessary, check we have a fling device, then cast
+                onPressed: homeController
+                        .justDidLastSet //exerciseDay.areWeOnLastSet()
+                    ? null
+                    : () async {
+                        if (_formkey.currentState.validate()) {
+                          print("valid form");
+                          // make any updates that are necessary, check we have a fling device, then cast
 
-                      if (doCast && flingy.selectedPlayer == null) {
-                        await showCastDevicePickerDialog();
-                      }
+                          if (doCast && flingy.selectedPlayer == null) {
+                            await showCastDevicePickerDialog();
+                          }
 
-                      // if we made manual updates via the form, put them in!
-                      homeController.updateThisExercise(
-                        thisSet: widget.exercise,
-                      );
-                      // then get the next exercise's info into the form (not fully implemented of course)
-                      //homeController.updateExercise(context);
-                      // may need to await this, if it is updating our exercise that we're sending....
-                      await homeController.castMediaTo(
-                          player: flingy.selectedPlayer,
-                          context: context,
-                          doCast: doCast,
-                          doVideo: doVideo,
-                          exercise: widget.exercise);
-                    }
-                  },
-                  // TODO: cast v cast selected = do we have a cast device selected...
-                  child: ListTile(
-                    leading: doCast
-                        ? Icon(Icons.cast_connected)
-                        : SizedBox(width: 5),
-                    title: Text("Record and cast"),
-                  )),
+                          // if we made manual updates via the form, put them in!
+                          homeController.updateThisExercise(
+                            thisSet: exercise,
+                          );
+                          // then get the next exercise's info into the form (not fully implemented of course)
+                          //homeController.updateExercise(context);
+                          // may need to await this, if it is updating our exercise that we're sending....
+                          await homeController.castMediaTo(
+                              player: flingy.selectedPlayer,
+                              context: context,
+                              doCast: doCast,
+                              doVideo: doVideo,
+                              exercise: exercise);
+
+                          // TODO: this is a consequence of not using a model. the controller progresses but nobody told the UI's data
+                          // so we have to tell it too. that's pretty stupid, eh? do it right instead and you won't have to worry about it.
+                          var exerciseDay =
+                              Provider.of<ExerciseDay>(context, listen: false);
+                          exercise =
+                              exerciseDay.exercises[exerciseDay.currentSet];
+                        }
+                      },
+
+                // TODO: cast v cast selected = do we have a cast device selected...
+                child: ListTile(
+                  leading:
+                      doCast ? Icon(Icons.cast_connected) : SizedBox(width: 5),
+                  title: Text("Record and cast"),
+                ),
+                //);
+                //},
+              ),
             ]),
           ],
         )),

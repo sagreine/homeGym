@@ -40,9 +40,7 @@ class TodayViewState extends State<TodayView>
       body: TabBarView(
         controller: defaultTabController,
         children: [
-          DoLiftView(
-            exercise: exercises.exercises[exercises.currentSet],
-          ),
+          DoLiftView(),
           ExcerciseDayView(),
         ],
       ),
