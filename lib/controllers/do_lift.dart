@@ -249,6 +249,9 @@ class HomeController {
                                 icon: Icon(Icons.done),
                                 onPressed: () => {
                                   Navigator.pop(context),
+                                  // need to use controller here...
+                                  exercise.reps = int.parse(
+                                      formControllerRepsCorrection.text),
                                   updateDatabaseRecordWithReps(
                                       userID: user.firebaseUser.uid,
                                       dbDocID: origExerciseID,
