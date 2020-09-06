@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 //TODO: implement dispose
 class ExerciseDayController {
   updateDay({
+    String lift,
     BuildContext context,
     String program,
     List<int> reps,
@@ -22,6 +23,7 @@ class ExerciseDayController {
   }) {
     var day = Provider.of<ExerciseDay>(context, listen: false);
     day.buildDay(
+      lift: lift == null ? day.lift : lift,
       updateMaxIfGetReps: updateMaxIfGetReps,
       program: program,
       currentSet: 0,

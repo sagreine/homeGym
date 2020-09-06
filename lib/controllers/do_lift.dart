@@ -250,17 +250,36 @@ class HomeController {
                                 onPressed: () => {
                                   Navigator.pop(context),
                                   // need to use controller here...
-                                  exercise.reps = int.parse(
-                                      formControllerRepsCorrection.text),
+
                                   updateDatabaseRecordWithReps(
                                       userID: user.firebaseUser.uid,
                                       dbDocID: origExerciseID,
                                       reps: int.parse(
                                           formControllerRepsCorrection.text)),
+                                  // if we are updating because we got >= the target, say so
+                                  if (int.parse(
+                                          formControllerRepsCorrection.text) >=
+                                      exercise.reps)
+                                    {
+                                      if (thisDay.updateMaxIfGetReps &&
+                                          //thisDay.areWeOnLastSet()
+                                          thisDay.currentSet ==
+                                              thisDay.progressSet)
+                                        {
+                                          progressAfter = true,
+                                        },
+
+                                      // should only confetti if it is the last set of a week that tests/progresses?
+                                      confettiController.play(),
+                                    },
+                                  // update the reps for this exercise? for the timeline i guess is the thought, but not sure
+                                  // if that's what we'd want from the biz side or not really...
+                                  // i say no actaully, just keep the target there (which do update).
                                 },
                               ),
                             ]))
               },
+              //on 'Yes i got the reps'
               onCancelButtonPressed: () => {
                 Navigator.pop(context),
                 if (thisDay.updateMaxIfGetReps &&

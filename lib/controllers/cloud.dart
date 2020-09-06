@@ -244,6 +244,8 @@ void getPlatesCloud({@required context, @required String userID}) async {
   });
 }
 
+// this is very stupid to do this here. separate layers, return stuff to the non-cloud place to do this.
+// like this defeats the whole purpose of having this layer almost.
 Future<void> getExercisesCloud({
   @required context,
   @required String program,

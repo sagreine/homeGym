@@ -9,6 +9,7 @@ part 'exercise_day.g.dart';
 class ExerciseDay extends ChangeNotifier {
   // sets is derivable no?
   String program;
+  String lift;
   int sets;
   double trainingMax;
   int currentSet;
@@ -28,6 +29,7 @@ class ExerciseDay extends ChangeNotifier {
   ExerciseController exerciseController = new ExerciseController();
 
   ExerciseDay({
+    this.lift,
     this.program,
     this.sets,
     this.reps,
@@ -46,6 +48,7 @@ class ExerciseDay extends ChangeNotifier {
   });
 
   void buildDay({
+    String lift,
     String program,
     int sets,
     List<int> reps,
@@ -62,6 +65,7 @@ class ExerciseDay extends ChangeNotifier {
     int progressSet,
     BuildContext context,
   }) {
+    this.lift = lift;
     this.program = program;
     this.sets = sets;
     this.reps = reps;
@@ -76,19 +80,22 @@ class ExerciseDay extends ChangeNotifier {
     this.assistancePush = assistancePush;
     this.updateMaxIfGetReps = updateMaxIfGetReps;
     this.progressSet = progressSet;
+    // build and populate the list of exercises to do.
     this.exercises = new List<ExerciseSet>();
     List<String> allAssistance =
         assistanceCore + assistancePull + assistancePush;
+    List<int> allreps =
+        reps + assistanceCoreReps + assistancePullReps + assistancePullReps;
     for (int i = 0; i < sets; ++i) {
       ExerciseSet tmp = new ExerciseSet();
       // add the main items to the list
       if (i < reps.length) {
         // this function depends on the current set of the day, but we need to reset that at the end.
-        tmp.updateExerciseFull(context: context, exerciseTitle: "deadlift");
+        tmp.updateExerciseFull(context: context, exerciseTitle: lift);
         this.exercises.add(tmp);
         // updating it here for whatever reason instead of passing it in as a parameter.........
         this.currentSet++;
-      } else {
+      } else if (i < reps.length + assistanceCore.length) {
         this.exercises.add(ExerciseSet(
             restPeriodAfter: 90,
             title: allAssistance[i - reps.length],
@@ -133,6 +140,7 @@ class ExerciseDay extends ChangeNotifier {
 
   //@override
   List<Object> get props => [
+        lift,
         program,
         sets,
         reps,

@@ -1,11 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 
 class ReusableWidgets {
-  static getAppBar() {
+  static getAppBar({TabController tabController, List<Tab> tabs}) {
     return AppBar(
       title: Text("Home Gym TV"),
+      bottom: tabController == null
+          ? null
+          : new TabBar(
+              controller: tabController,
+              tabs: tabs,
+            ),
     );
   }
 
@@ -114,7 +121,7 @@ class ReusableWidgets {
                   // typical is icons, and need a similar iimage for all (image is bigger than icon) but to think about
                   //leading: Image.asset("assets/images/pos_icon.png"),
                   onTap: () {
-                    newRouteName = "/do_lift";
+                    newRouteName = "/today";
                     // if the current route is the exact location we're at (first on the stack), mark that
                     Navigator.popUntil(context, (route) {
                       if (route.settings.name == newRouteName) {

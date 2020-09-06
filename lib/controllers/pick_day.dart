@@ -55,8 +55,15 @@ class PickDayController {
   // launch the day, which is program and exercise
   // not sure we care about context here?
   void launchDay(BuildContext context) async {
+    // update our exercise to the selected day.
+    // this should be done only by the controller.
+    // also the order of this matters and it must run before the query below (which is very dumb)
+    var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
+    exerciseDay.lift =
+        exercises[selectedExercise.indexWhere((element) => element)];
+
     await getExercises(context, selectedProgram);
-    ExerciseController exerciseController = ExerciseController();
+
     /*
     exerciseController.updateExercise(
         context: context,
@@ -64,6 +71,7 @@ class PickDayController {
             exercises[selectedExercise.indexWhere((element) => element)]);
             */
     //Navigator.pushNamed(context, '/do_lift');
-    Navigator.pushNamed(context, 'excerciseday');
+    //Navigator.pushNamed(context, '/excerciseday');
+    Navigator.pushNamed(context, '/today');
   }
 }
