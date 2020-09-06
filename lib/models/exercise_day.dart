@@ -16,9 +16,9 @@ class ExerciseDay extends ChangeNotifier {
   // 2d list? or, list of Exercises? probably ultimately a list of exericses will be what we want to use.
   List<int> reps;
   List<double> percentages;
-  int assistancePullReps;
-  int assistanceCoreReps;
-  int assistancePushReps;
+  List<int> assistancePullReps;
+  List<int> assistanceCoreReps;
+  List<int> assistancePushReps;
   List<String> assistancePull;
   List<String> assistanceCore;
   List<String> assistancePush;
@@ -55,9 +55,9 @@ class ExerciseDay extends ChangeNotifier {
     List<double> percentages,
     int currentSet,
     double trainingMax,
-    int assistanceCoreReps,
-    int assistancePullReps,
-    int assistancePushReps,
+    List<int> assistanceCoreReps,
+    List<int> assistancePullReps,
+    List<int> assistancePushReps,
     List<String> assistancePull,
     List<String> assistanceCore,
     List<String> assistancePush,
@@ -84,29 +84,30 @@ class ExerciseDay extends ChangeNotifier {
     this.exercises = new List<ExerciseSet>();
     List<String> allAssistance =
         assistanceCore + assistancePull + assistancePush;
-    List<int> allreps =
-        reps + assistanceCoreReps + assistancePullReps + assistancePullReps;
-    for (int i = 0; i < sets; ++i) {
+    List<int> allAssistanceReps =
+        assistanceCoreReps + assistancePullReps + assistancePushReps;
+    for (int i = 0; i < reps.length; ++i) {
       ExerciseSet tmp = new ExerciseSet();
       // add the main items to the list
-      if (i < reps.length) {
-        // this function depends on the current set of the day, but we need to reset that at the end.
-        tmp.updateExerciseFull(context: context, exerciseTitle: lift);
-        this.exercises.add(tmp);
-        // updating it here for whatever reason instead of passing it in as a parameter.........
-        this.currentSet++;
-      } else if (i < reps.length + assistanceCore.length) {
-        this.exercises.add(ExerciseSet(
-            restPeriodAfter: 90,
-            title: allAssistance[i - reps.length],
-            description: "Do the assistance activity",
-            weight: 0,
-            // TODO obviously this is not right as-is..
-            reps: assistanceCoreReps));
-      }
+
+      // this function depends on the current set of the day, but we need to reset that at the end.
+      tmp.updateExerciseFull(
+          context: context, exerciseTitle: lift, setPct: this.percentages[i]);
+      this.exercises.add(tmp);
+      // updating it here for whatever reason instead of passing it in as a parameter.........
+    }
+    for (int i = 0; i < allAssistance.length; ++i) {
+      this.exercises.add(ExerciseSet(
+          restPeriodAfter: 90,
+          // the first rep.length are the main lift, non-assistance.
+          title: allAssistance[i],
+          description: "Do the assistance activity",
+          weight: 0,
+          // TODO obviously this is not right as-is..
+          reps: allAssistanceReps[i]));
     }
     // reset this to the very first set.
-    this.currentSet = 0;
+    //this.currentSet = 0;
     notifyListeners();
   }
 

@@ -277,10 +277,13 @@ Future<void> getExercisesCloud({
     progressSet: pctAndReps.data()["progressSet"],
     trainingMaxPct: pctAndReps.data()["trainingMaxPct"],
     assistanceCore: new List<String>.from(pctAndReps.data()["assistance_core"]),
-    assistanceCoreReps: pctAndReps.data()["assistance_core_reps"],
+    assistanceCoreReps:
+        new List<int>.from(pctAndReps.data()["assistance_core_reps"]),
     assistancePull: new List<String>.from(pctAndReps.data()["assistance_pull"]),
-    assistancePullReps: pctAndReps.data()["assistance_pull_reps"],
+    assistancePullReps:
+        new List<int>.from(pctAndReps.data()["assistance_pull_reps"]),
     assistancePush: new List<String>.from(pctAndReps.data()["assistance_push"]),
-    assistancePushReps: pctAndReps.data()["assistance_push_reps"],
+    assistancePushReps:
+        new List<int>.from(pctAndReps.data()["assistance_push_reps"]),
   );
 }

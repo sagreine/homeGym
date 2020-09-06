@@ -38,7 +38,8 @@ class ExerciseSet extends ChangeNotifier {
     this.type = "/video";
   }
 
-  void updateExerciseFull({@required context, String exerciseTitle}) {
+  void updateExerciseFull(
+      {@required context, String exerciseTitle, @required double setPct}) {
     // should be using the controller here instead of doing this...
     // if we passed a title in and there wasn't already a title (that equals this one)
     if (exerciseTitle != null &&
@@ -65,8 +66,7 @@ class ExerciseSet extends ChangeNotifier {
         trainingMax = (thisMax.squatMax.toDouble() * thisDay.trainingMax);
         break;
     }
-    double targetWeight =
-        ((thisDay.percentages[thisDay.currentSet]) * trainingMax);
+    double targetWeight = (setPct * trainingMax);
 
     this.updateExercise(
         // reps is a straight pull

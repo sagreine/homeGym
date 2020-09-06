@@ -175,7 +175,7 @@ class _DoLiftViewState extends State<DoLiftView> {
                         validator: (value) {
                           //homeController.formController.validator()
                           if (value.isEmpty) {
-                            return "Title can't be blank";
+                            return "Description can't be blank";
                           }
                           return null;
                         },
