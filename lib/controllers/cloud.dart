@@ -6,7 +6,7 @@ import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:video_compress/video_compress.dart';
 
-//TODO: this should be a class?
+//
 //TODO: implement dispose
 
 Future<String> createDatabaseRecord(
@@ -57,7 +57,6 @@ Future<List<String>> getPrograms() async {
   return rtr;
 }
 
-//TODO untested
 void updateBarWeightCloud(
     {@required int newWeight, @required String userID}) async {
   final databaseReference = FirebaseFirestore.instance;
@@ -72,7 +71,6 @@ void updateBarWeightCloud(
       .set(data);
 }
 
-//TODO untested
 void updatePlateCloud(
     {@required double plate,
     @required int plateCount,
@@ -88,7 +86,6 @@ void updatePlateCloud(
       .set(data);
 }
 
-//TODO: implement, test
 void update1RepMaxCloud(
     {@required String lift,
     @required int newMax,

@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 
 class Muser extends ChangeNotifier {
   FirebaseUser firebaseUser;
-  // TODO: this is not tested
   fauth.User fAuthUser = fauth.FirebaseAuth.instance.currentUser;
 
   Muser({

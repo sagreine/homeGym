@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
-import 'package:provider/provider.dart';
 
 class TodayView extends StatefulWidget {
   @override
@@ -31,8 +29,6 @@ class TodayViewState extends State<TodayView>
 
   @override
   Widget build(BuildContext context) {
-    var exercises = Provider.of<ExerciseDay>(context, listen: false);
-
     return Scaffold(
       drawer: ReusableWidgets.getDrawer(context),
       appBar: ReusableWidgets.getAppBar(

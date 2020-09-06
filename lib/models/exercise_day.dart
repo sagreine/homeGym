@@ -102,7 +102,8 @@ class ExerciseDay extends ChangeNotifier {
           // the first rep.length are the main lift, non-assistance.
           title: allAssistance[i],
           description: "Do the assistance activity",
-          weight: 0, // TODO: could do ternary?
+          weight:
+              0, // TODO: could do ternary? if there is a weight set in db, use it.
           reps: allAssistanceReps[i]));
     }
     // reset this to the very first set.

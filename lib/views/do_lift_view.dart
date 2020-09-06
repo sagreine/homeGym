@@ -148,11 +148,8 @@ class _DoLiftViewState extends State<DoLiftView> {
                 //crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  //SizedBox(
-//                    width: 200,
-                  // this is dumb, but a way to get a controller on this.
                   Container(
-                    width: 200, //MediaQuery.of(context).size.width * 0.5,
+                    width: 200,
                     child: TextField(
                       textAlign: TextAlign.center,
                       enabled: false,
@@ -166,7 +163,6 @@ class _DoLiftViewState extends State<DoLiftView> {
                 ],
               ),
               SizedBox(height: 16),
-
               Expanded(
                 child: Form(
                   autovalidate: true,
@@ -225,7 +221,9 @@ class _DoLiftViewState extends State<DoLiftView> {
                               enableSuggestions: true,
                               controller: homeController.formControllerReps,
                               validator: (value) {
-                                //homeController.formController.validator()
+                                if (value.isEmpty) {
+                                  return "Reps can't be blank";
+                                }
                                 return null;
                               },
                             ),
@@ -256,7 +254,9 @@ class _DoLiftViewState extends State<DoLiftView> {
                               enableSuggestions: true,
                               controller: homeController.formControllerWeight,
                               validator: (value) {
-                                //homeController.formController.validator()
+                                if (value.isEmpty) {
+                                  return "Weight can't be blank";
+                                }
                                 return null;
                               },
                             ),
@@ -371,8 +371,6 @@ class _DoLiftViewState extends State<DoLiftView> {
                               exerciseDay.exercises[exerciseDay.currentSet];
                         }
                       },
-
-                // TODO: cast v cast selected = do we have a cast device selected...
                 child: ListTile(
                   leading:
                       doCast ? Icon(Icons.cast_connected) : SizedBox(width: 5),
