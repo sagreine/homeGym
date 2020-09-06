@@ -25,7 +25,6 @@ class _ProgramsState extends State<ProgramsView> {
     );
   }
 
-  //TODO: this works, but a) depenent on GCP (couldn't immediately get the future parsing to return List to behave given async)
   // b) will likely not want to use documentID in reality, but rather a display name..
   Widget _buildSuggestions() {
     return FutureBuilder(

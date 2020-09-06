@@ -12,12 +12,8 @@ ExerciseSet _$ExerciseSetFromJson(Map<String, dynamic> json) {
     title: json['title'] as String,
     description: json['description'] as String,
     restPeriodAfter: json['restPeriodAfter'] as int,
-    type: json['type'] as String,
     weight: json['weight'] as int,
     reps: json['reps'] as int,
-    dateTime: json['dateTime'] == null
-        ? null
-        : DateTime.parse(json['dateTime'] as String),
   );
 }
 

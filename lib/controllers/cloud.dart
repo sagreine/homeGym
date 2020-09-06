@@ -6,7 +6,7 @@ import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:video_compress/video_compress.dart';
 
-//TODO: this should be a class?
+//
 //TODO: implement dispose
 
 Future<String> createDatabaseRecord(
@@ -57,7 +57,6 @@ Future<List<String>> getPrograms() async {
   return rtr;
 }
 
-//TODO untested
 void updateBarWeightCloud(
     {@required int newWeight, @required String userID}) async {
   final databaseReference = FirebaseFirestore.instance;
@@ -72,7 +71,6 @@ void updateBarWeightCloud(
       .set(data);
 }
 
-//TODO untested
 void updatePlateCloud(
     {@required double plate,
     @required int plateCount,
@@ -88,7 +86,6 @@ void updatePlateCloud(
       .set(data);
 }
 
-//TODO: implement, test
 void update1RepMaxCloud(
     {@required String lift,
     @required int newMax,
@@ -244,10 +241,12 @@ void getPlatesCloud({@required context, @required String userID}) async {
   });
 }
 
-Future<void> getExercisesCloud(
-    {@required context,
-    @required String program,
-    @required String userID}) async {
+// this is very stupid to do this here. separate layers, return stuff to the non-cloud place to do this.
+// like this defeats the whole purpose of having this layer almost.
+Future<void> getExercisesCloud({
+  @required context,
+  @required String program,
+}) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
   // would update the exercise model here so pass in context...
   // this needs to be a model.
@@ -275,10 +274,13 @@ Future<void> getExercisesCloud(
     progressSet: pctAndReps.data()["progressSet"],
     trainingMaxPct: pctAndReps.data()["trainingMaxPct"],
     assistanceCore: new List<String>.from(pctAndReps.data()["assistance_core"]),
-    assistanceCoreReps: pctAndReps.data()["assistance_core_reps"],
+    assistanceCoreReps:
+        new List<int>.from(pctAndReps.data()["assistance_core_reps"]),
     assistancePull: new List<String>.from(pctAndReps.data()["assistance_pull"]),
-    assistancePullReps: pctAndReps.data()["assistance_pull_reps"],
+    assistancePullReps:
+        new List<int>.from(pctAndReps.data()["assistance_pull_reps"]),
     assistancePush: new List<String>.from(pctAndReps.data()["assistance_push"]),
-    assistancePushReps: pctAndReps.data()["assistance_push_reps"],
+    assistancePushReps:
+        new List<int>.from(pctAndReps.data()["assistance_push_reps"]),
   );
 }

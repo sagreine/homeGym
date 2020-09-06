@@ -136,12 +136,11 @@ class _LoginViewState extends State<LoginView> {
         builder: (BuildContext context, AsyncSnapshot text) {
           // if we're done asking and the result is that we don't, open the stream to get it
           if (text.connectionState == ConnectionState.done &&
-              text.hasError == false) {
+              text.hasError == false &&
+              text.data == false) {
             return new StreamBuilder(
                 stream: listener,
-                initialData: text.data == true
-                    ? DataConnectionStatus.connected
-                    : DataConnectionStatus.disconnected,
+                initialData: DataConnectionStatus.disconnected,
                 builder: (context, snapshot) {
                   // if we don't have data yet, say we're waiting
                   if (!snapshot.hasData) {
@@ -149,7 +148,7 @@ class _LoginViewState extends State<LoginView> {
                     return CircularProgressIndicator();
                   }
                   // if we have data and that is that we're connected, we now have internet access! get login
-                  else if (snapshot.data != DataConnectionStatus.disconnected) {
+                  else if (snapshot.data == DataConnectionStatus.connected) {
                     print("you have access to the internet!");
                     // may be able to get rid of this? and just keep this going? yield?
                     if (_user.firebaseUser != null) {
@@ -185,7 +184,8 @@ class _LoginViewState extends State<LoginView> {
           }
           // otherwise we know we have an active connection and don't need the stream to tell us, so go ahead
           // need to do error handling on original FutureBuilder though, and 'what about until we have our answer?'
-          /*else if (text.connectionState == ConnectionState.done && text.data == true){
+          else if (text.connectionState == ConnectionState.done &&
+              text.data == true) {
             if (_user.firebaseUser != null) {
               return buildNextPage();
             } else {
@@ -205,7 +205,7 @@ class _LoginViewState extends State<LoginView> {
                     );
                   });
             }
-          }*/
+          }
           return SizedBox(
             height: 200,
             width: 200,

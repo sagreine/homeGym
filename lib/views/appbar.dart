@@ -3,9 +3,15 @@ import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 
 class ReusableWidgets {
-  static getAppBar() {
+  static getAppBar({TabController tabController, List<Tab> tabs}) {
     return AppBar(
       title: Text("Home Gym TV"),
+      bottom: tabController == null
+          ? null
+          : new TabBar(
+              controller: tabController,
+              tabs: tabs,
+            ),
     );
   }
 
@@ -87,7 +93,7 @@ class ReusableWidgets {
               ListTile(
                   title: Text("Pick Lift"),
                   leading: Icon(Icons.fitness_center),
-                  // TODO: Not tested at all.
+                  // TODO: this is yet messed up because login doesn't route to pick_day it builds it's own.... so breaks if we do this the first time through.
                   onTap: () {
                     newRouteName = "/pick_day";
                     // if the current route is the exact location we're at (first on the stack), mark that
@@ -114,7 +120,7 @@ class ReusableWidgets {
                   // typical is icons, and need a similar iimage for all (image is bigger than icon) but to think about
                   //leading: Image.asset("assets/images/pos_icon.png"),
                   onTap: () {
-                    newRouteName = "/do_lift";
+                    newRouteName = "/today";
                     // if the current route is the exact location we're at (first on the stack), mark that
                     Navigator.popUntil(context, (route) {
                       if (route.settings.name == newRouteName) {

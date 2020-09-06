@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 
@@ -8,15 +9,16 @@ part 'exercise_day.g.dart';
 class ExerciseDay extends ChangeNotifier {
   // sets is derivable no?
   String program;
+  String lift;
   int sets;
   double trainingMax;
   int currentSet;
   // 2d list? or, list of Exercises? probably ultimately a list of exericses will be what we want to use.
   List<int> reps;
   List<double> percentages;
-  int assistancePullReps;
-  int assistanceCoreReps;
-  int assistancePushReps;
+  List<int> assistancePullReps;
+  List<int> assistanceCoreReps;
+  List<int> assistancePushReps;
   List<String> assistancePull;
   List<String> assistanceCore;
   List<String> assistancePush;
@@ -24,8 +26,10 @@ class ExerciseDay extends ChangeNotifier {
   int progressSet;
 
   List<ExerciseSet> exercises;
+  ExerciseController exerciseController = new ExerciseController();
 
   ExerciseDay({
+    this.lift,
     this.program,
     this.sets,
     this.reps,
@@ -44,22 +48,24 @@ class ExerciseDay extends ChangeNotifier {
   });
 
   void buildDay({
+    String lift,
     String program,
     int sets,
     List<int> reps,
     List<double> percentages,
     int currentSet,
     double trainingMax,
-    int assistanceCoreReps,
-    int assistancePullReps,
-    int assistancePushReps,
+    List<int> assistanceCoreReps,
+    List<int> assistancePullReps,
+    List<int> assistancePushReps,
     List<String> assistancePull,
     List<String> assistanceCore,
     List<String> assistancePush,
     bool updateMaxIfGetReps,
     int progressSet,
-    List<ExerciseSet> exercises,
+    BuildContext context,
   }) {
+    this.lift = lift;
     this.program = program;
     this.sets = sets;
     this.reps = reps;
@@ -74,8 +80,34 @@ class ExerciseDay extends ChangeNotifier {
     this.assistancePush = assistancePush;
     this.updateMaxIfGetReps = updateMaxIfGetReps;
     this.progressSet = progressSet;
-    this.exercises = exercises;
+    // build and populate the list of exercises to do.
+    this.exercises = new List<ExerciseSet>();
+    List<String> allAssistance =
+        assistanceCore + assistancePull + assistancePush;
+    List<int> allAssistanceReps =
+        assistanceCoreReps + assistancePullReps + assistancePushReps;
+    for (int i = 0; i < reps.length; ++i) {
+      ExerciseSet tmp = new ExerciseSet();
+      // add the main items to the list
 
+      // this function depends on the current set of the day, but we need to reset that at the end.
+      tmp.updateExerciseFull(
+          context: context, exerciseTitle: lift, setPct: this.percentages[i]);
+      this.exercises.add(tmp);
+      // updating it here for whatever reason instead of passing it in as a parameter.........
+    }
+    for (int i = 0; i < allAssistance.length; ++i) {
+      this.exercises.add(new ExerciseSet(
+          restPeriodAfter: 90,
+          // the first rep.length are the main lift, non-assistance.
+          title: allAssistance[i],
+          description: "Do the assistance activity",
+          weight:
+              0, // TODO: could do ternary? if there is a weight set in db, use it.
+          reps: allAssistanceReps[i]));
+    }
+    // reset this to the very first set.
+    //this.currentSet = 0;
     notifyListeners();
   }
 
@@ -109,6 +141,7 @@ class ExerciseDay extends ChangeNotifier {
 
   //@override
   List<Object> get props => [
+        lift,
         program,
         sets,
         reps,

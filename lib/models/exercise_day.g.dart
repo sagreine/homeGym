@@ -16,9 +16,12 @@ ExerciseDay _$ExerciseDayFromJson(Map<String, dynamic> json) {
         ?.map((e) => (e as num)?.toDouble())
         ?.toList(),
     trainingMax: (json['trainingMax'] as num)?.toDouble(),
-    assistancePullReps: json['assistancePullReps'] as int,
-    assistanceCoreReps: json['assistanceCoreReps'] as int,
-    assistancePushReps: json['assistancePushReps'] as int,
+    assistancePullReps:
+        (json['assistancePullReps'] as List)?.map((e) => e as int)?.toList(),
+    assistanceCoreReps:
+        (json['assistanceCoreReps'] as List)?.map((e) => e as int)?.toList(),
+    assistancePushReps:
+        (json['assistancePushReps'] as List)?.map((e) => e as int)?.toList(),
     assistanceCore:
         (json['assistanceCore'] as List)?.map((e) => e as String)?.toList(),
     assistancePull:
