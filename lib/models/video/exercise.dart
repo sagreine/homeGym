@@ -66,16 +66,15 @@ class ExerciseSet extends ChangeNotifier {
         trainingMax = (thisMax.squatMax.toDouble() * thisDay.trainingMax);
         break;
     }
-    double targetWeight = (setPct * trainingMax);
+    int targetWeight = (setPct * trainingMax).floor();
 
     this.updateExercise(
         // reps is a straight pull
         reps: thisDay.reps[thisDay.currentSet],
         weight: targetWeight.toInt(),
         description: "Weight each side: " +
-            (thisWeights.pickPlates(targetWeight: targetWeight)[0])
-                .round()
-                .toString()
+            (thisWeights.pickPlates(targetWeight: targetWeight))
+
         // + nextExercise(context),
         );
     //formControllerTitle

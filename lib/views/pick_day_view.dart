@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
-import 'package:home_gym/models/lifter_weights.dart';
 import 'package:home_gym/views/views.dart';
 
 class PickDayView extends StatefulWidget {
@@ -13,8 +12,6 @@ class _PickDayViewState extends State<PickDayView> {
 
   @override
   Widget build(BuildContext context) {
-    CoinChangeLimitedCoins changeLimitedCoins = new CoinChangeLimitedCoins();
-    changeLimitedCoins.doit();
     /*List<int> items = [2, 3, 5];
     List<int> itemscount = [2, 2, 2];
     print("for value 1");

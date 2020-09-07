@@ -20,6 +20,9 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
     if (n == null) {
       return '"$value" is not a valid number';
     }
+    if (!n.toInt().isEven) {
+      return "$value is not even and you have to have even number of plates";
+    }
     return null;
   }
 

@@ -1,5 +1,4 @@
 // may want this to be a changeNotifier just to simplify things..
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
@@ -39,54 +38,14 @@ class LifterWeights extends ChangeNotifier {
     return true;
   }
 
-/*
-  Set<dynamic> sumPlates = (plates) => {
-   plates.reduce((acc, plate) => {
-     acc + (plate * 2)
-  }, 0)
-};*/
+// we're given a target weight but we know we need to subtract the bar weigth!
+  String pickPlates({int targetWeight}) {
+    CoinChangeLimitedCoins changeLimitedCoins = new CoinChangeLimitedCoins();
 
-/*
-   get_plate_picking_matrix(Map<dynamic, int> plates, int targetWeight){
-    var m = 
-    
-    [[0 for _ in range(targetWeight + 1)] for _ in range(len(plates) + 1)]
-
-
-    for i in range(1, targetWeight + 1):
-        m[0][i] = float('inf')  // By default there is no way of making change
-    return m;
-   }
-   
-   def change_making(coins, n: int):
-    """This function assumes that all coins are available infinitely.
-    n is the number to obtain with the fewest coins.
-    coins is a list or tuple with the available denominations.
-    """
-    m = _get_change_making_matrix(coins, n)
-    for c in range(1, len(coins) + 1):
-        for r in range(1, n + 1):
-            # Just use the coin coins[c - 1].
-            if coins[c - 1] == r:
-                m[c][r] = 1
-            # coins[c - 1] cannot be included.
-            # Use the previous solution for making r,
-            # excluding coins[c - 1].
-            elif coins[c - 1] > r:
-                m[c][r] = m[c - 1][r]
-            # coins[c - 1] can be used.
-            # Decide which one of the following solutions is the best:
-            # 1. Using the previous solution for making r (without using coins[c - 1]).
-            # 2. Using the previous solution for making r - coins[c - 1] (without
-            #      using coins[c - 1]) plus this 1 extra coin.
-            else:
-                m[c][r] = min(m[c - 1][r], 1 + m[c][r - coins[c - 1]])
-    return m[-1][-1]
-   
-   */
-
-  List<double> pickPlates({double targetWeight}) {
-    return [(targetWeight - barWeight) / 2];
+    String toReturn = changeLimitedCoins.platesAsStrings(
+        plates: this.plates, targetWeight: (targetWeight - barWeight) / 2);
+    return toReturn;
+    //return [(targetWeight - barWeight) / 2];
   }
 
   List<Object> get props => [
@@ -101,47 +60,108 @@ class LifterWeights extends ChangeNotifier {
 }
 
 // stolen shamelessly from https://stackoverflow.com/questions/22128759/atm-algorithm-of-giving-money-with-limited-amount-of-bank-notes
-// TODO: discard ones taking more plates than we need along the way for efficiency
-// TODO: if we can't make exact change, get as close as possible without going over.
 // TODO: return the minimum # of plates - not thinking about future/previous sets at this point...
+// TODO: Issue has extensive discussion on optimization over the day
+// TODO: plates is a map so there is a lot of VERY DANGEROUS assuming going on here. instead of converting back and forth from
+// TODO: we don't want to expose just a string here, because we will need to return 'actual value' if we don't have an exact match
+// with the person's current plates. that is, if the closest you can get is X-3 we need to tell the user it is X-3....
+// map to uncoupled 'trust me' lists, do it right.
+// TODO: this sure feels like UI here in our friendly model code.......
 class CoinChangeLimitedCoins {
   //List<int> values = [10, 20, 50, 100, 200];
   List<int> _closestYet = new List<int>();
-  int _closestTotalYet = 0;
+  double _closestTotalYet = 0;
   int _platesUsed = 1000;
+  Map<dynamic, int> closestYetMap = new Map<dynamic, int>();
+  List<Map<dynamic, int>> _exactMatches;
 
-  void doit() {
+  String platesAsStrings(
+      {@required Map<dynamic, int> plates, @required double targetWeight}) {
+    Map<dynamic, int> tmp =
+        _endSolution(plates: plates, targetWeight: targetWeight);
+    String toReturn = "";
+    // sort so we get the heaviest weights first
+    List<double> sorted = (new List.from(tmp.keys))
+      ..sort((a, b) => b.compareTo(a));
+    // then put how many of each weight we're to add. e.g. "2 45s 1 35 4 10s"
+    sorted.forEach((element) {
+      print(tmp[element].toString());
+      if (tmp[element] > 0) {
+        toReturn += "${tmp[element]} $element${tmp[element] > 1 ? "'s" : ""}  ";
+      }
+    });
+    toReturn = toReturn.trim();
+    toReturn = toReturn.replaceAll("  ", ",");
+
+    print(toReturn);
+    return toReturn;
+  }
+
+  // this is the solution we're returning. right now of course this is only considering current set.
+  Map<dynamic, int> _endSolution(
+      {@required Map<dynamic, int> plates, @required double targetWeight}) {
+    _exactMatches = _doit(plates: plates, targetWeight: targetWeight);
+    // if we have an exact match, let's use it. if we don't, use the closest one we have.
+    if (_exactMatches != null && _exactMatches.isNotEmpty) {
+      return _exactMatches.last;
+    } else {
+      return closestYetMap;
+    }
+  }
+
+  // a better way is to not make lists like this...
+  List<Map<dynamic, int>> _doit(
+      {@required Map<dynamic, int> plates, @required double targetWeight}) {
     // available plates
     //List<int> values = [5, 10, 25, 35, 45];
-    List<int> values = [10, 20, 50, 100, 200];
+    List<double> _plates = new List.from(plates.keys); //[10, 20, 50, 100, 200];
     // how many plates you have
     //List<int> ammounts = [4, 2, 2, 2, 2];
-    List<int> ammounts = [4, 2, 2, 2, 2];
+    List<int> _plateCounts = new List.from(plates.values); //[4, 2, 2, 2, 2];
+    _plateCounts.forEach((element) {
+      element = (element / 2).floor();
+    });
+
     // always 0s
-    List<int> tmpVariation = [0, 0, 0, 0, 0];
+    List<int> tmpVariation = List<int>.filled(_plates.length, 0);
     // weight (excluding weight of the bar)
-    int targetWeight = 140;
     // start at 0 ALWAYS
+    List<Map<dynamic, int>> toReturn = new List<Map<dynamic, int>>();
+
     List<List<int>> results =
-        solutions(values, ammounts, tmpVariation, targetWeight, 0);
+        _solutions(_plates, _plateCounts, tmpVariation, targetWeight, 0);
+    // platecounts is the way in, results is the way out.
     for (List<int> result in results) {
       print(result);
+      Map<dynamic, int> mapToReturn = new Map<dynamic, int>();
+      for (int i = 0; i < _plates.length; ++i) {
+        mapToReturn[_plates[i]] = result[i];
+      }
+      //Map.from(result);
+
+      toReturn.add(mapToReturn);
     }
     print(_closestTotalYet.toString());
     print(_closestYet);
     print(_platesUsed);
+
+    for (int i = 0; i < _plates.length; ++i) {
+      closestYetMap[_plates[i]] = _closestYet[i];
+    }
+    //return results;
+    return toReturn;
   }
 
-  List<List<int>> solutions(
-    List<int> values,
+  List<List<int>> _solutions(
+    List<double> values,
     List<int> ammounts,
     List<int> variation,
-    int price,
+    double price,
     int position,
   ) {
     List<List<int>> list = new List<List<int>>();
 
-    int value = compute(values, variation);
+    double value = compute(values, variation);
     if (value < price) {
       for (int i = position; i < values.length; i++) {
         if (ammounts[i] > variation[i]) {
@@ -159,7 +179,7 @@ class CoinChangeLimitedCoins {
                 variation.fold(0, (previous, current) => previous + current);
           }
           List<List<int>> newList =
-              solutions(values, ammounts, newvariation, price, i);
+              _solutions(values, ammounts, newvariation, price, i);
           if (newList != null) {
             list.addAll(newList);
           }
@@ -170,6 +190,8 @@ class CoinChangeLimitedCoins {
       _closestTotalYet = value;
       // if we haven't added any lists yet or this one uses fewer plates than any list we have so far, add it.
       if (list == null ||
+          // Remove this to not limit to small # of plates. for instance if we want to care about what was on the bar
+          // immediately before this....
           variation.fold(0, (previous, current) => previous + current) <
               this._platesUsed) {
         this._platesUsed =
@@ -180,8 +202,8 @@ class CoinChangeLimitedCoins {
     return list;
   }
 
-  static int compute(List<int> values, List<int> variation) {
-    int ret = 0;
+  static double compute(List<double> values, List<int> variation) {
+    double ret = 0;
     for (int i = 0; i < variation.length; i++) {
       ret += values[i] * variation[i];
     }
