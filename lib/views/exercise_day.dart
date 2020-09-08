@@ -89,8 +89,8 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                 if (_newIndex > _oldIndex) {
                                   _newIndex -= 1;
                                 }
-                                thisDay.exercises.insert(_newIndex,
-                                    thisDay.exercises.removeAt(_oldIndex));
+                                thisDay.exercises.insert(_newIndex ~/ 2,
+                                    thisDay.exercises.removeAt(_oldIndex ~/ 2));
                               });
                             },
                             children: <Widget>[
@@ -125,8 +125,10 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                             if (direction ==
                                                 DismissDirection.endToStart) {
                                               setState(() {
-                                                thisDay.exercises.removeAt(i);
-                                                // show snakcbar
+                                                // sugar for toInt()
+                                                thisDay.exercises
+                                                    .removeAt((i ~/ 2));
+                                                // show snakcbar?
                                               });
                                               // this would be after it already dismisses, so stop that!
                                               // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
