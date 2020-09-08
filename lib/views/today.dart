@@ -18,7 +18,8 @@ class TodayViewState extends State<TodayView>
   @override
   void initState() {
     super.initState();
-    defaultTabController = new TabController(length: 2, vsync: this);
+    defaultTabController =
+        TabController(initialIndex: 0, length: 2, vsync: this);
   }
 
   @override
@@ -32,9 +33,9 @@ class TodayViewState extends State<TodayView>
     return Scaffold(
       drawer: ReusableWidgets.getDrawer(context),
       appBar: ReusableWidgets.getAppBar(
-          tabController: defaultTabController, tabs: myTabs),
+          tabController: this.defaultTabController, tabs: myTabs),
       body: TabBarView(
-        controller: defaultTabController,
+        controller: this.defaultTabController,
         children: [
           DoLiftView(),
           ExcerciseDayView(),

@@ -81,6 +81,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                     child: Column(
                       children: <Widget>[
                         //_Header(),
+                        Text("Current Set: ${thisDay.currentSet}"),
                         Expanded(
                           child: ReorderableListView(
                             onReorder: (_oldIndex, _newIndex) {
@@ -93,60 +94,75 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                               });
                             },
                             children: <Widget>[
-                              for (int i = 0; i < thisDay.exercises.length; i++)
-                                Container(
-                                  height: 75,
-                                  key: UniqueKey(),
-                                  child: Dismissible(
-                                    direction: DismissDirection.endToStart,
-                                    // Each Dismissible must contain a Key. Keys allow Flutter to
-                                    // uniquely identify widgets.
-                                    // this isn't unique though... UniqueKey()
-                                    key: UniqueKey(),
-                                    // Provide a function that tells the app
-                                    // what to do after an item has been swiped away.
-                                    onDismissed: (direction) {
-                                      // Remove the item from the data source.
+                              for (int i = 0;
+                                  i < thisDay.exercises.length * 2;
+                                  i++)
+                                // put each item and a divider -> the only visible divider is the one that shows
+                                // which set we're currently on.
+                                i.isOdd
+                                    ? Divider(
+                                        key: UniqueKey(),
+                                        thickness: 2,
+                                        height: 1,
+                                        color: i == thisDay.currentSet * 2 - 1
+                                            ? Colors.blueGrey
+                                            : Colors.transparent,
+                                      )
+                                    : Container(
+                                        height: 75,
+                                        key: UniqueKey(),
+                                        child: Dismissible(
+                                          direction:
+                                              DismissDirection.endToStart,
+                                          // Each Dismissible must contain a Key. Keys allow Flutter to
+                                          // uniquely identify widgets.
+                                          key: UniqueKey(),
+                                          // Provide a function that tells the app
+                                          // what to do after an item has been swiped away.
+                                          onDismissed: (direction) {
+                                            // Remove the item from the data source.
 
-                                      if (direction ==
-                                          DismissDirection.endToStart) {
-                                        setState(() {
-                                          thisDay.exercises.removeAt(i);
-                                          // show snakcbar
-                                        });
-                                        // this would be after it already dismisses, so stop that!
-                                        // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
-                                      }
-                                      //else {
-                                      //widget.callback();
-                                      //}
-                                    },
-                                    // Show a red background as the item is swiped away.
-                                    background: Container(color: Colors.red),
+                                            if (direction ==
+                                                DismissDirection.endToStart) {
+                                              setState(() {
+                                                thisDay.exercises.removeAt(i);
+                                                // show snakcbar
+                                              });
+                                              // this would be after it already dismisses, so stop that!
+                                              // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
+                                            }
+                                            //else {
+                                            //widget.callback();
+                                            //}
+                                          },
+                                          // Show a red background as the item is swiped away.
+                                          background:
+                                              Container(color: Colors.red),
 
-                                    child: Row(
-                                      mainAxisSize: MainAxisSize.min,
-                                      children: <Widget>[
-                                        Expanded(
-                                          child: _pickChild(i),
-                                        ),
-                                        InkWell(
-                                          child: Icon(
-                                            Icons.delete_sweep,
-                                            color: Colors.red,
-                                            size: 35,
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: <Widget>[
+                                              Expanded(
+                                                child:
+                                                    _pickChild((i / 2).toInt()),
+                                              ),
+                                              InkWell(
+                                                child: Icon(
+                                                  Icons.delete_sweep,
+                                                  color: Colors.red,
+                                                  size: 35,
+                                                ),
+                                                //onTap: () {
+                                                //setState(() {
+                                                //thisDay.activities.removeAt(i);
+                                                // snackbar show..
+                                                //});
+                                                //},
+                                              ),
+                                            ],
                                           ),
-                                          //onTap: () {
-                                          //setState(() {
-                                          //thisDay.activities.removeAt(i);
-                                          // snackbar show..
-                                          //});
-                                          //},
                                         ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
+                                      ),
                             ],
                           ),
                         ),

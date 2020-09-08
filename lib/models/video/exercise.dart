@@ -39,7 +39,10 @@ class ExerciseSet extends ChangeNotifier {
   }
 
   void updateExerciseFull(
-      {@required context, String exerciseTitle, @required double setPct}) {
+      {@required context,
+      String exerciseTitle,
+      @required int reps,
+      @required double setPct}) {
     // should be using the controller here instead of doing this...
     // if we passed a title in and there wasn't already a title (that equals this one)
     if (exerciseTitle != null &&
@@ -67,13 +70,23 @@ class ExerciseSet extends ChangeNotifier {
         break;
     }
     int targetWeight = (setPct * trainingMax).floor();
+    // Now though, we can only lift based on what weights we actually own.
+    // so, calculate that based on our weight and updated accordingly
+    // TODO: this higlights the absurdity of using ints vs doubles....
+    int calculatedWeight =
+        thisWeights.getPickedOverallTotal(targetWeight: targetWeight).toInt();
+
+    if (calculatedWeight < targetWeight) {
+      print(
+          "Note, we had to pick a lower weight. Targetweight: $targetWeight and picked weight: $calculatedWeight");
+    }
 
     this.updateExercise(
         // reps is a straight pull
-        reps: thisDay.reps[thisDay.currentSet],
-        weight: targetWeight.toInt(),
+        reps: reps,
+        weight: calculatedWeight,
         description: "Weight each side: " +
-            (thisWeights.pickPlates(targetWeight: targetWeight))
+            (thisWeights.getPickedPlatesAsString(targetWeight: targetWeight))
 
         // + nextExercise(context),
         );

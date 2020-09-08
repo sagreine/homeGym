@@ -25,8 +25,8 @@ class LifterWeightsController {
         newWeight: newBarWeight, userID: user.firebaseUser.uid);
   }
 
-  String pickPlates({BuildContext context, int targetWeight}) {
-    var liftweights = Provider.of<LifterWeights>(context, listen: false);
-    return liftweights.pickPlates(targetWeight: targetWeight);
-  }
+  //String pickPlates({BuildContext context, int targetWeight}) {
+  //var liftweights = Provider.of<LifterWeights>(context, listen: false);
+  //return liftweights.pickPlates(targetWeight: targetWeight).platesAsStrings();
+  //}
 }

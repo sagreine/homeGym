@@ -51,7 +51,8 @@ class ProfileViewState extends State<ProfileView> {
                       Column(
                         children: [
                           Text(
-                              "Here is all the information we have about your identity, granted to us by how you logged in: "),
+                              "Here is all the information we have about your identity, granted to us by how you logged in. We don't keep or use anything else"
+                              " aside from your workout logs and videos, which we only share with you."),
                           SizedBox(height: 35),
                           //Image.asset("assets/images/pos_icon.png"),
                           Text("Name: ${user.getDisplayName()}"),
@@ -69,11 +70,15 @@ class ProfileViewState extends State<ProfileView> {
                           Text(
                               "Are you an anonymous user: ${user.firebaseUser.isAnonymous.toString()}"),
                           SizedBox(height: 10),
-                          Text(
-                              "Account creation date: ${user.firebaseUser.metaData.creationTimestamp.toString()}"),
+                          Text("Account creation date: "
+                              "${user.fAuthUser.metadata.creationTime.month.toString()}"
+                              "/${user.fAuthUser.metadata.creationTime.day.toString()}"
+                              ", ${user.fAuthUser.metadata.creationTime.year.toString()}"),
                           SizedBox(height: 10),
-                          Text(
-                              "Last sign in date: ${user.firebaseUser.metaData.lastSignInTimestamp.toString()}"),
+                          Text("Last sign in date: "
+                              "${user.fAuthUser.metadata.lastSignInTime.month.toString()}"
+                              "/${user.fAuthUser.metadata.lastSignInTime.day.toString()}"
+                              ", ${user.fAuthUser.metadata.lastSignInTime.year.toString()}"),
                         ],
                       ),
                     ],

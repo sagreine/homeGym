@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
@@ -33,13 +35,15 @@ class ReusableWidgets {
                       children: [
                         CircleAvatar(
                           radius: 50,
-                          backgroundColor: Colors.brown.shade800,
+                          backgroundColor:
+                              Color(0xFFCB8421), //Colors.brown.shade800,
                           backgroundImage: user.firebaseUser.photoUri.isEmpty
                               ? AssetImage("assets/images/pos_icon.png")
                               : NetworkImage(user.getPhotoURL()),
                         ),
                         SizedBox(width: 10),
                         Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             SizedBox(height: 35),
                             //Image.asset("assets/images/pos_icon.png"),
@@ -141,7 +145,12 @@ class ReusableWidgets {
                   }),
               ListTile(
                   title: Text("My Weights"),
-                  leading: Icon(Icons.filter_list),
+                  // rotate this icon
+                  leading: RotatedBox(
+                      //alignment: Alignment.center,
+                      //transform: Matrix4.rotationX(pi),
+                      quarterTurns: 3,
+                      child: Icon(Icons.filter_list)),
                   onTap: () {
                     newRouteName = "/lifter_weights";
                     // if the current route is the exact location we're at (first on the stack), mark that

@@ -10,6 +10,7 @@ part 'lifter_weights.g.dart';
 class LifterWeights extends ChangeNotifier {
   int barWeight;
   Map<dynamic, int> plates;
+  PlateFinder _plateFinder;
 
   LifterWeights({
     this.barWeight,
@@ -39,13 +40,30 @@ class LifterWeights extends ChangeNotifier {
   }
 
 // we're given a target weight but we know we need to subtract the bar weigth!
-  String pickPlates({int targetWeight}) {
-    CoinChangeLimitedCoins changeLimitedCoins = new CoinChangeLimitedCoins();
+// cached, but this is dangerous for maintenance.
+  void _calculatePlates({int targetWeight}) {
+    double tempweight = (targetWeight - barWeight) / 2;
+    // if not initiated or initiated with a different weight
+    if (_plateFinder == null ||
+        _plateFinder.targetWeight.toInt() != tempweight.toInt()) {
+      _plateFinder = PlateFinder(plates: plates, targetWeight: tempweight);
+    }
+  }
 
-    String toReturn = changeLimitedCoins.platesAsStrings(
-        plates: this.plates, targetWeight: (targetWeight - barWeight) / 2);
-    return toReturn;
-    //return [(targetWeight - barWeight) / 2];
+  String getPickedPlatesAsString({int targetWeight}) {
+    _calculatePlates(targetWeight: targetWeight);
+
+    return _plateFinder.platesAsStrings();
+  }
+
+  double getPickedPlatesTotal({int targetWeight}) {
+    _calculatePlates(targetWeight: targetWeight);
+    return _plateFinder.valueOfFoundPlates;
+  }
+
+  double getPickedOverallTotal({int targetWeight}) {
+    _calculatePlates(targetWeight: targetWeight);
+    return getPickedPlatesTotal(targetWeight: targetWeight) * 2 + barWeight;
   }
 
   List<Object> get props => [
@@ -66,30 +84,60 @@ class LifterWeights extends ChangeNotifier {
 // TODO: we don't want to expose just a string here, because we will need to return 'actual value' if we don't have an exact match
 // with the person's current plates. that is, if the closest you can get is X-3 we need to tell the user it is X-3....
 // map to uncoupled 'trust me' lists, do it right.
-// TODO: this sure feels like UI here in our friendly model code.......
-class CoinChangeLimitedCoins {
+// TODO: there's some strange bleed in here. why am i calculating and returning deep within instead of just at the end? i guess we have to calc along the way
+// to go faster (performance) but it makes the code harder to read...
+class PlateFinder {
+  final double targetWeight;
+  final Map<dynamic, int> plates;
+
+  PlateFinder({@required this.targetWeight, @required this.plates});
   //List<int> values = [10, 20, 50, 100, 200];
-  List<int> _closestYet = new List<int>();
-  double _closestTotalYet = 0;
-  int _platesUsed = 1000;
-  Map<dynamic, int> closestYetMap = new Map<dynamic, int>();
+  List<int> _closestYet = List<int>();
+  int _platesUsed = 9999; // max.
+  Map<dynamic, int> _closestYetMap = Map<dynamic, int>();
   List<Map<dynamic, int>> _exactMatches;
 
-  String platesAsStrings(
-      {@required Map<dynamic, int> plates, @required double targetWeight}) {
-    Map<dynamic, int> tmp =
-        _endSolution(plates: plates, targetWeight: targetWeight);
+  double _closestTotalYet = 0;
+  Map<dynamic, int> _foundPlates;
+
+//caching. // this gets scary - highlights that we're subject to change in plates
+  Map<dynamic, int> get foundPlates {
+    if (_foundPlates == null) {
+      _foundPlates = _endSolution();
+    }
+    return _foundPlates;
+  }
+
+  double get valueOfFoundPlates {
+    if (_closestTotalYet != 0) {
+      return _closestTotalYet;
+    } else {
+      _foundPlates = _endSolution();
+      return _closestTotalYet;
+    }
+  }
+
+  String platesAsStrings() {
+    // initialize this to 0, necessary for calculation.
+    // perform calculation
+    if (_foundPlates == null) {
+      _closestTotalYet = 0;
+      _foundPlates = _endSolution();
+    }
     String toReturn = "";
     // sort so we get the heaviest weights first
-    List<double> sorted = (new List.from(tmp.keys))
+    // TODO: use toList() not List.from()
+    List<double> sorted = (new List.from(_foundPlates.keys))
       ..sort((a, b) => b.compareTo(a));
     // then put how many of each weight we're to add. e.g. "2 45s 1 35 4 10s"
     sorted.forEach((element) {
-      print(tmp[element].toString());
-      if (tmp[element] > 0) {
-        toReturn += "${tmp[element]} $element${tmp[element] > 1 ? "'s" : ""}  ";
+      print(_foundPlates[element].toString());
+      if (_foundPlates[element] > 0) {
+        toReturn +=
+            "${_foundPlates[element]} $element${_foundPlates[element] > 1 ? "'s" : ""}  ";
       }
     });
+    // obvioulsy refactor this, but this says to replace spaces with commas after removing the trailing space.
     toReturn = toReturn.trim();
     toReturn = toReturn.replaceAll("  ", ",");
 
@@ -98,32 +146,34 @@ class CoinChangeLimitedCoins {
   }
 
   // this is the solution we're returning. right now of course this is only considering current set.
-  Map<dynamic, int> _endSolution(
-      {@required Map<dynamic, int> plates, @required double targetWeight}) {
-    _exactMatches = _doit(plates: plates, targetWeight: targetWeight);
+  Map<dynamic, int> _endSolution() {
+    _exactMatches = _doit();
     // if we have an exact match, let's use it. if we don't, use the closest one we have.
     if (_exactMatches != null && _exactMatches.isNotEmpty) {
       return _exactMatches.last;
     } else {
-      return closestYetMap;
+      return _closestYetMap;
     }
   }
 
   // a better way is to not make lists like this...
-  List<Map<dynamic, int>> _doit(
-      {@required Map<dynamic, int> plates, @required double targetWeight}) {
+  List<Map<dynamic, int>> _doit() {
     // available plates
     //List<int> values = [5, 10, 25, 35, 45];
     List<double> _plates = new List.from(plates.keys); //[10, 20, 50, 100, 200];
     // how many plates you have
     //List<int> ammounts = [4, 2, 2, 2, 2];
     List<int> _plateCounts = new List.from(plates.values); //[4, 2, 2, 2, 2];
-    _plateCounts.forEach((element) {
-      element = (element / 2).floor();
-    });
+    // because we only need to calculate what goes on 1/2 the barbell, we can
+    // pass in a collection of plates (that has only even numbers) and divide in half, since we'll need the same on the
+    // other side of the barbell
+    // (this cuts down on the size of our solution via DP., as opposed to dividing by two at the end)
+    _plateCounts.asMap().forEach((index, element) =>
+        _plateCounts[index] = (element / 2).floor()); // [2, 1, 1, 1, 1]
 
     // always 0s
     List<int> tmpVariation = List<int>.filled(_plates.length, 0);
+    _closestYet = List<int>.filled(_plates.length, 0);
     // weight (excluding weight of the bar)
     // start at 0 ALWAYS
     List<Map<dynamic, int>> toReturn = new List<Map<dynamic, int>>();
@@ -146,7 +196,7 @@ class CoinChangeLimitedCoins {
     print(_platesUsed);
 
     for (int i = 0; i < _plates.length; ++i) {
-      closestYetMap[_plates[i]] = _closestYet[i];
+      _closestYetMap[_plates[i]] = _closestYet[i];
     }
     //return results;
     return toReturn;
@@ -169,10 +219,10 @@ class CoinChangeLimitedCoins {
           newvariation[i]++;
           // in case we can't make a value that is exactly equal to our target value, track along the way
           // for which one is closest so far without going over, and (to break ties) uses the fewest plates
-          if (value > this._closestTotalYet ||
-              (value == this._closestTotalYet &&
+          if (value > _closestTotalYet ||
+              (value == _closestTotalYet &&
                   variation.fold(0, (previous, current) => previous + current) <
-                      this._platesUsed)) {
+                      _platesUsed)) {
             _closestTotalYet = value;
             _closestYet = new List.from(variation);
             _platesUsed =
@@ -193,8 +243,8 @@ class CoinChangeLimitedCoins {
           // Remove this to not limit to small # of plates. for instance if we want to care about what was on the bar
           // immediately before this....
           variation.fold(0, (previous, current) => previous + current) <
-              this._platesUsed) {
-        this._platesUsed =
+              _platesUsed) {
+        _platesUsed =
             variation.fold(0, (previous, current) => previous + current);
         list.add(myCopy(variation));
       }

@@ -92,7 +92,10 @@ class ExerciseDay extends ChangeNotifier {
 
       // this function depends on the current set of the day, but we need to reset that at the end.
       tmp.updateExerciseFull(
-          context: context, exerciseTitle: lift, setPct: this.percentages[i]);
+          context: context,
+          exerciseTitle: lift,
+          reps: this.reps[i],
+          setPct: this.percentages[i]);
       this.exercises.add(tmp);
       // updating it here for whatever reason instead of passing it in as a parameter.........
     }
