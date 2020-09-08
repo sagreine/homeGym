@@ -48,6 +48,7 @@ class _LoginViewState extends State<LoginView> {
     result = await DataConnectionChecker().hasConnection;
   }
 
+  //TODO: well this sure isn't UI..
   void buildDefaultUser() {
     lifterMaxesController.update1RepMax(
         progression: false,
@@ -226,12 +227,17 @@ class _LoginViewState extends State<LoginView> {
 //consider... https://stackoverflow.com/questions/50885891/one-time-login-in-app-firebaseauth
 
   Future<void> _onActionTapped({BuildContext context, Muser user}) async {
-    await FirebaseAuthUi.instance().launchAuth([
-      AuthProvider.email(),
-      AuthProvider.google(),
-      //AuthProvider.twitter(),
-      AuthProvider.phone(), // kind of silly on a phone though?
-    ]).then((firebaseUser) {
+    await FirebaseAuthUi.instance().launchAuth(
+      [
+        AuthProvider.email(),
+        AuthProvider.google(),
+        //AuthProvider.twitter(),
+        AuthProvider.phone(), // kind of silly on a phone though?
+      ],
+      //TODO: actual links.
+      tosUrl: "https://my-terms-url",
+      privacyPolicyUrl: "https://my-privacy-policy",
+    ).then((firebaseUser) {
       user.firebaseUser = firebaseUser;
       // pull in this users' information
       if (user.firebaseUser.isNewUser) {

@@ -74,6 +74,21 @@ class HelpViewState extends State<HelpView> {
               ),
               Text(
                   "Refer to www.example.com for user manual with further instructions"),
+              RaisedButton(
+                onPressed: () {
+                  showAboutDialog(
+                      context: context,
+                      children: [
+                        Text("Please don't sue me"),
+                      ],
+                      applicationVersion: "Version 0.1",
+                      applicationName: "Home Gym TV",
+                      applicationLegalese: "",
+                      applicationIcon:
+                          ImageIcon(AssetImage("assets/images/pos_icon.png")));
+                },
+                child: Text("About, and Legalese for masochists"),
+              )
             ],
           ),
         ],
