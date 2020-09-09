@@ -40,7 +40,7 @@ class HomeController {
       if (pickedFile == null) {
         return null;
       }
-
+      var user = Provider.of<Muser>(context, listen: false);
       // restrict to videos under a certain size for a given set - this is ~6 min video on my camera
       // but obviously we need to be careful here.
       print(File(File(pickedFile.path).resolveSymbolicLinksSync())
@@ -48,7 +48,8 @@ class HomeController {
           .toString());
       if (File(File(pickedFile.path).resolveSymbolicLinksSync()).lengthSync() <
           983977033) {
-        url = await uploadToCloudStorage(File(pickedFile.path));
+        url = await uploadToCloudStorage(
+            userID: user.fAuthUser.uid, fileToUpload: File(pickedFile.path));
       } else {
         url = "https://i.imgur.com/ACgwkoh.mp4";
         print(
