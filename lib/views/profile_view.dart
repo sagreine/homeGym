@@ -70,15 +70,19 @@ class ProfileViewState extends State<ProfileView> {
                           Text(
                               "Are you an anonymous user: ${user.firebaseUser.isAnonymous.toString()}"),
                           SizedBox(height: 10),
-                          Text("Account creation date: "
-                              "${user.fAuthUser.metadata.creationTime.month.toString()}"
-                              "/${user.fAuthUser.metadata.creationTime.day.toString()}"
-                              ", ${user.fAuthUser.metadata.creationTime.year.toString()}"),
+                          Text(user.fAuthUser == null
+                              ? "Not sure when you created your account!"
+                              : "Account creation date: "
+                                  "${user.fAuthUser.metadata.creationTime.month.toString()}"
+                                  "/${user.fAuthUser.metadata.creationTime.day.toString()}"
+                                  ", ${user.fAuthUser.metadata.creationTime.year.toString()}"),
                           SizedBox(height: 10),
-                          Text("Last sign in date: "
-                              "${user.fAuthUser.metadata.lastSignInTime.month.toString()}"
-                              "/${user.fAuthUser.metadata.lastSignInTime.day.toString()}"
-                              ", ${user.fAuthUser.metadata.lastSignInTime.year.toString()}"),
+                          Text(user.fAuthUser == null
+                              ? "Not sure when you last signed in!"
+                              : "Last sign in date: "
+                                  "${user.fAuthUser.metadata.lastSignInTime.month.toString()}"
+                                  "/${user.fAuthUser.metadata.lastSignInTime.day.toString()}"
+                                  ", ${user.fAuthUser.metadata.lastSignInTime.year.toString()}"),
                         ],
                       ),
                     ],

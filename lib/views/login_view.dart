@@ -25,6 +25,7 @@ class _LoginViewState extends State<LoginView> {
   LifterMaxesController lifterMaxesController = LifterMaxesController();
   LifterWeightsController lifterWeightsController = LifterWeightsController();
 
+  // stream wifi. could implement throughout app via mixin... spotify does this with a helper to turn on wifi/data
   Stream<DataConnectionStatus> listener;
 
   //FirebaseUser _firebaseUser;
