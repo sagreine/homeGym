@@ -236,8 +236,8 @@ class _LoginViewState extends State<LoginView> {
         AuthProvider.phone(), // kind of silly on a phone though?
       ],
       //TODO: actual links.
-      tosUrl: "https://my-terms-url",
-      privacyPolicyUrl: "https://my-privacy-policy",
+      tosUrl: "https://sagrehomegym.web.app/",
+      privacyPolicyUrl: "https://sagrehomegym.web.app/",
     ).then((firebaseUser) {
       user.firebaseUser = firebaseUser;
       // pull in this users' information

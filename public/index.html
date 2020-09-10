@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>HomeGymTV</title>
+
+    <!-- update the version number as needed -->
+    <script defer src="/__/firebase/7.19.1/firebase-app.js"></script>
+    <!-- include only the Firebase features as you need -->
+    <script defer src="/__/firebase/7.19.1/firebase-auth.js"></script>
+    <script defer src="/__/firebase/7.19.1/firebase-database.js"></script>
+    <script defer src="/__/firebase/7.19.1/firebase-messaging.js"></script>
+    <script defer src="/__/firebase/7.19.1/firebase-storage.js"></script>
+    <!-- initialize the SDK after all desired features are loaded -->
+    <script defer src="/__/firebase/init.js"></script>
+
+    <style media="screen">
+      body { background: #ECEFF1; color: rgba(0,0,0,0.87); font-family: Roboto, Helvetica, Arial, sans-serif; margin: 0; padding: 0; }
+      #message { background: white; max-width: 360px; margin: 100px auto 16px; padding: 32px 24px; border-radius: 3px; }
+      #message h2 { color: #ffa100; font-weight: bold; font-size: 16px; margin: 0 0 8px; }
+      #message h1 { font-size: 22px; font-weight: 300; color: rgba(0,0,0,0.6); margin: 0 0 16px;}
+      #message p { line-height: 140%; margin: 16px 0 24px; font-size: 14px; }
+      #message a { display: block; text-align: center; background: #039be5; text-transform: uppercase; text-decoration: none; color: white; padding: 16px; border-radius: 4px; }
+      #message, #message a { box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24); }
+      #load { color: rgba(0,0,0,0.4); text-align: center; font-size: 13px; }
+      @media (max-width: 600px) {
+        body, #message { margin-top: 0; background: white; box-shadow: none; }
+        body { border-top: 16px solid #ffa100; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="message">
+      <h2>Welcome</h2>
+      <h1>This app is a fun time</h1>
+      <p>Here are some terms and conditions and a privacy notice</p>
+      <p>HomeGym TERMS OF SERVICE
+        Last Updated: November 9, 2020
+        
+        These terms of service ("Terms") apply to your access and use of HomeGym (the "Service"). Please read them carefully.
+        
+        Accepting these Terms
+        If you access or use the Service, it means you agree to be bound by all of the terms below. 
+        So, before you use the Service, please read all of the terms. 
+        If you don't agree to all of the terms below, please do not use the Service. 
+        Also, if a term does not make sense to you, please let us know by e-mailing HomeGymtvapp@gmail.com.
+        
+        Changes to these Terms
+        We reserve the right to modify these Terms at any time. For instance, we may need to change these Terms if we come out with a new feature or for some other reason.
+        
+        Whenever we make changes to these Terms, the changes are effective 7 days after we post such revised Terms (indicated by revising the date at the top of these Terms) or upon your acceptance if we provide a mechanism for your immediate acceptance of the revised Terms (such as a click-through confirmation or acceptance button). 
+        It is your responsibility to check HomeGym's website or mobile application for changes to these Terms.
+        
+        If you continue to use the Service after the revised Terms go into effect, then you have accepted the changes to these Terms.
+        
+        Privacy Policy
+        For information about how we collect and use information about users of the Service, please check out our privacy policy available below.
+        
+        Third-Party Services
+        From time to time, we may provide you with links to third party websites or services that we do not own or control. 
+        Your use of the Service may also include the use of applications that are developed or owned by a third party. 
+        Your use of such third party applications, websites, and services is governed by that party's own terms of service or privacy policies. We encourage you to read the terms and conditions and privacy policy of any third party application, website or service that you visit or use.
+        
+        Creating Accounts
+        When you create an account or use another service to log in to the Service, you agree to maintain the security of your password and accept all risks of unauthorized access to any data or other information you provide to the Service.
+        
+        If you discover or suspect any Service security breaches, please let us know as soon as possible.
+        
+        Your Content & Conduct
+                
+        Our Service allows you and other users to post, link and otherwise make available content, including video. 
+        You are responsible for the content that you make available to the Service, including its legality, reliability, and appropriateness.
+        
+        When you post, link or otherwise make available content to the Service, you grant us the right and license to use, reproduce, modify, publicly perform, publicly display and distribute your content on or through the Service. 
+        We may format your content for display throughout the Service, but we will not edit or revise the substance of your content itself.
+        
+        Aside from our limited right to your content, you retain all of your rights to the content you post, link and otherwise make available on or through the Service.
+        
+        [CUSTOMIZE THE FOLLOWING SECTION BASED ON YOUR DATA RETENTION PRACTICES.]
+        
+        You can remove the content that you posted by deleting it. 
+        Once you delete your content, it will not appear on the Service, but copies of your deleted content may remain in our system or backups for some period of time. 
+        We will retain web server access logs for a maximum of 180 days and then delete them.
+        
+        You may not post, link and otherwise make available on or through the Service any of the following:                
+        
+        Content that is libelous, defamatory, bigoted, obscene, fraudulent or deceptive;
+        Content that is illegal or unlawful, that would otherwise create liability;
+        Content that may infringe or violate any patent, trademark, trade secret, copyright, right of privacy, right of publicity or other intellectual or other right of any party;
+        Mass or repeated promotions, political campaigning or commercial messages directed at users who do not follow you (SPAM);
+        Private information of any third party (e.g., addresses, phone numbers, email addresses, Social Security numbers and credit card numbers); and
+        Viruses, corrupted data or other harmful, disruptive or destructive files or code.
+        Also, you agree that you will not do any of the following in connection with the Service or other users:
+        
+        Use the Service in any manner that could interfere with, disrupt, negatively affect or inhibit other users from fully enjoying the Service or that could damage, disable, overburden or impair the functioning of the Service;
+        Impersonate or post on behalf of any person or entity or otherwise misrepresent your affiliation with a person or entity;
+        Collect any personal information about other users, or intimidate, threaten, stalk or otherwise harass other users of the Service;
+        Create an account or post any content if you are not over 13 years of age years of age; and
+        Circumvent or attempt to circumvent any filtering, security measures, rate limits or other features designed to protect the Service, users of the Service, or third parties.
+        HomeGym Materials
+        We put a lot of effort into creating the Service including, the logo and all designs, text, graphics, pictures, information and other content (excluding your content). 
+        This property is owned by us or our licensors and it is protected by U.S. and international copyright laws. We grant you the right to use it.
+        
+        However, unless we expressly state otherwise, your rights do not include: 
+        (i) publicly performing or publicly displaying the Service; 
+        (ii) modifying or otherwise making any derivative uses of the Service or any portion thereof; 
+        (iii) using any data mining, robots or similar data gathering or extraction methods; (iv) downloading (other than page caching) of any portion of the Service or any information contained therein; 
+        (v) reverse engineering or accessing the Service in order to build a competitive product or service; or 
+        (vi) using the Service other than for its intended purposes. If you do any of this stuff, we may terminate your use of the Service.
+        
+        Hyperlinks and Third Party Content
+        You may create a hyperlink to the Service. But, you may not use, frame or utilize framing techniques to enclose any of our trademarks, logos or other proprietary information without our express written consent.
+        
+        HomeGym makes no claim or representation regarding, and accepts no responsibility for third party websites accessible by hyperlink from the Service or websites linking to the Service. 
+        When you leave the Service, you should be aware that these Terms and our policies no longer govern.
+        
+        If there is any content on the Service from you and others, we don't review, verify or authenticate it, and it may include inaccuracies or false information. 
+        We make no representations, warranties, or guarantees relating to the quality, suitability, truth, accuracy or completeness of any content contained in the Service. 
+        You acknowledge sole responsibility for and assume all risk arising from your use of or reliance on any content.
+        
+        Unavoidable Legal Stuff
+        THE SERVICE AND ANY OTHER SERVICE AND CONTENT INCLUDED ON OR OTHERWISE MADE AVAILABLE TO YOU THROUGH THE SERVICE ARE PROVIDED TO YOU ON AN AS IS OR AS AVAILABLE BASIS WITHOUT ANY REPRESENTATIONS OR WARRANTIES OF ANY KIND. 
+        WE DISCLAIM ANY AND ALL WARRANTIES AND REPRESENTATIONS (EXPRESS OR IMPLIED, ORAL OR WRITTEN) WITH RESPECT TO THE SERVICE AND CONTENT INCLUDED ON OR OTHERWISE MADE AVAILABLE TO YOU THROUGH THE SERVICE WHETHER ALLEGED TO ARISE BY OPERATION OF LAW, BY REASON OF CUSTOM OR USAGE IN THE TRADE, BY COURSE OF DEALING OR OTHERWISE.
+        
+        IN NO EVENT WILL HomeGym BE LIABLE TO YOU OR ANY THIRD PARTY FOR ANY SPECIAL, INDIRECT, INCIDENTAL, EXEMPLARY OR CONSEQUENTIAL DAMAGES OF ANY KIND ARISING OUT OF OR IN CONNECTION WITH THE SERVICE OR ANY OTHER SERVICE AND/OR CONTENT INCLUDED ON OR OTHERWISE MADE AVAILABLE TO YOU THROUGH THE SERVICE, REGARDLESS OF THE FORM OF ACTION, WHETHER IN CONTRACT, TORT, STRICT LIABILITY OR OTHERWISE, EVEN IF WE HAVE BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES OR ARE AWARE OF THE POSSIBILITY OF SUCH DAMAGES. OUR TOTAL LIABILITY FOR ALL CAUSES OF ACTION AND UNDER ALL THEORIES OF LIABILITY WILL BE LIMITED TO THE AMOUNT YOU PAID TO HomeGym. THIS SECTION WILL BE GIVEN FULL EFFECT EVEN IF ANY REMEDY SPECIFIED IN THIS AGREEMENT IS DEEMED TO HAVE FAILED OF ITS ESSENTIAL PURPOSE.
+        
+        You agree to defend, indemnify and hold us harmless from and against any and all costs, damages, liabilities, and expenses (including attorneys' fees, costs, penalties, interest and disbursements) we incur in relation to, arising from, or for the purpose of avoiding, any claim or demand from a third party relating to your use of the Service or the use of the Service by any person using your account, including any claim that your use of the Service violates any applicable law or regulation, or the rights of any third party, and/or your violation of these Terms.
+        
+        Before starting an exercise program confer with a medical professional.
+
+        Copyright Complaints        
+        
+        We take intellectual property rights seriously. In accordance with the Digital Millennium Copyright Act ("DMCA") and other applicable law, we have adopted a policy of terminating, in appropriate circumstances and, at our sole discretion, access to the service for users who are deemed to be repeat infringers.         
+        
+        Governing Law        
+        
+        The validity of these Terms and the rights, obligations, and relations of the parties under these Terms will be construed and determined under and in accordance with the laws of Michigan, without regard to conflicts of law principles.
+        
+        Jurisdiction
+        You expressly agree that exclusive jurisdiction for any dispute with the Service or relating to your use of it, resides in the courts of Michigan and you further agree and expressly consent to the exercise of personal jurisdiction in the courts of the Michigan located in Ann Arbor, Michigan in connection with any such dispute including any claim involving Service. 
+        You further agree that you and Service will not commence against the other a class action, class arbitration or other representative action or proceeding.
+        
+        Termination
+        If you breach any of these Terms, we have the right to suspend or disable your access to or use of the Service.
+        
+        Entire Agreement
+        These Terms constitute the entire agreement between you and HomeGym regarding the use of the Service, superseding any prior agreements between you and HomeGym relating to your use of the Service.
+        
+        Feedback
+        Please let us know what you think of the Service, these Terms and, in general, HomeGym. 
+        When you provide us with any feedback, comments or suggestions about the Service, these Terms and, in general, HomeGym, you irrevocably assign to us all of your right, title and interest in and to your feedback, comments and suggestions.
+        
+        Questions & Contact Information
+        Questions or comments about the Service may be directed to us at the email address HomeGymtvapp@gmail.com.                
+
+      <p>Privacy Notice. Effective Date: November 9, 2020
+
+        A lot of companies say they care about your privacy — we say it and mean it!
+        
+        This document is our Privacy Policy, which describes what information we collect from you and how we use it. It is part of the HomeGym Terms of Service (available below). 
+        Our Privacy Policy applies to our websites, our mobile application, and all other HomeGym Services (as that term is defined in our Terms of Service). 
+        It covers personal information, which is information we can link to you personally. 
+        Personal Information (“PI”) includes data like your name, email address, phone number, or mobile device’s unique identifier, among other things.
+        
+        
+        HomeGym reserves the right to change this Privacy Policy to reflect changes in the law, our data collection and use practices, the features of our services, or advances in technology. 
+        Please check this page periodically for changes. 
+        By continuing to use our services, you accept those changes and agree to be bound by the updated policy. 
+        Please contact us at homegymtvapp@gmail.com if you have any questions about this Privacy Policy.
+        
+        We Collect Information From You to Provide You with a Service
+        Information HomeGym Collects
+        What You Should Know About Specific Products
+        Cookie Policy
+        How We Use the Information We Collect
+        Your Choices
+        Data Retention Policy
+        Information Posted to Our Blog and Community Forum Is Public
+        We Take Security Seriously
+        You Are Responsible for Maintaining the Accuracy and Confidentiality of Your Email Address and Password
+        Notice to California Users
+        International Visitors and the Privacy Shield
+        Users Under 13
+        We Are Not Responsible for Content on Third-Party Websites
+        This Privacy Policy Will Apply Upon Change in Control
+        We Post Updates on Our Website Whenever This Policy Changes
+        Contact Us if You Have Any Questions or Concerns
+        1. We Collect Information to Provide You with HomeGym Services
+        We are committed to only collecting the information necessary to provide and improve HomeGym Services. 
+        When we do collect your information, we store it and associate it with your account unless otherwise noted. 
+        We take your privacy very seriously and will only use and disclose this information as described in this Privacy Policy.
+        
+        Note that some of our products are standalone products, collect only limited information or no information at all. Not every section of this Privacy Policy will apply to these products.
+        
+        2. Information HomeGym Collects
+        a. Registration Information
+        
+        To create an account, you must provide your email address and a password. This may be created within the application or may be obtained through a federated provider, for example Google, if you choose.
+        If you register through a federated provider HomeGym may use additional infomation provided by that provider, such as your profile picture, nickname, or phone number, only
+        to display such information, and only to you while logged in to your account. HomeGym will not separately store this information. In most cases, though HomeGym is not responsible for this, 
+        you can interact with that federated provider to limit what information is shared to applications such as HomeGym. Because HomeGym does not store this information, changes you make in your 
+        federated account provider account should propogate to HomeGym as soon as it is made available to HomeGym, subject to any on-device caching handled at the manufacture level.
+        You may also enter your mobile phone number on our website to initiate a text message with directions on how to download the app and register.
+        
+        b. Credit Card Information
+        
+        If you purchase a HomeGym Service subscription directly from us, we collect your credit card number, expiration date, security code and other applicable billing information. 
+        We use this information to bill you for services. HomeGym uses third-party payment processors and therefore has only limited information about your payment transactions.
+        
+        c. Device Information
+        
+        When you use HomeGym Services, our servers automatically record certain information about your mobile device. 
+        This information may include an equipment identifier (e.g., IMEI, UDID), subscriber identifier (e.g., IMSI), device name, mobile phone number, device type and manufacturer, 
+        operating system type and version, wireless carrier/operator, network type, country of origin, Internet Protocol (“IP”) address, 
+        and the dates and times of your requests. We use this information to provide our services, and support if needed, and to create de-identified or aggregate information about our users. 
+        For example, collecting your device’s phone number allows the service to contact your phone via SMS when you locate your phone from the HomeGym web application.
+        
+        d. Employment Application Information
+        
+        If you wish to fill out our employment application form, we will ask for information, including your name, email address, phone number, and allow you to upload your resume and cover letter. 
+        We use this information to determine if you are an eligible candidate for an available position, to contact you to set up an interview if appropriate and to follow up with you about your application experience.
+        
+        e. Social Media Features
+        
+        Our website includes social media Features (“Features”), like the Facebook recommend button or interactive mini-programs that run on our site. 
+        If you use these Features, they will collect your IP address, which page you are visiting on our site, and set a cookie to enable the Feature to function properly. 
+        Features may be hosted by a third party or hosted directly on our site. 
+        Your interactions with these Features are governed by the privacy policy of the company providing the Feature, not by HomeGym’s Privacy Policy.
+        
+        f. Information About Your Use of HomeGym Services on Your Phone
+        
+        We may use analytics software so that we can improve the features and usability of our products. 
+        This software may analyze information such as how often you use the application, the events that occur within the application, and where the application was downloaded. 
+        We may also use such information to show you relevant content and suggest new features, products and services that can enhance your use of the HomeGym Service. 
+        We do not link the information we store within the analytics software to any personally identifiable information you submit within the mobile app.
+        
+        g. Information About Your Use of HomeGym's Websites (including Mobile Websites) and Emails
+        
+        We use analytics services to measure how people use our website and emails so that we can improve our products and services and provide more relevant content to you. 
+        Analytics services may work by embedding invisible images that are associated with unique identifiers on our site, by using cookies or other local device storage or by using web beacons, web bugs, clear gifs, and similar tracking technologies.
+        
+        h. Premium Content & Promotions
+        
+        We may ask for your email address and other contact information in order to access various HomeGym content, such as whitepapers, videos, or other research materials, to participate in surveys, contests, promotions, or sweepstakes, or to obtain additional information about HomeGym services and products. 
+        This information will be used to provide you with additional information on products and services from HomeGym or our business partners, which might be of interest to you. 
+        You can choose not to receive such marketing communications by clicking on the unsubscribe link in our emails, as further described below.
+        
+        i. Location Information
+        
+        Some features we offer work better if we know what area you are in. HomeGym may collect location information in two ways. 
+        We may receive it directly from your mobile device, or, in some situations, we may receive location data from cell tower or Wi-Fi hotspot information. 
+        We may use third-party service providers to translate that information into usable location information.
+        
+        j. Other Information You Provide to Us
+        
+        To the extent you use our products or services to voluntarily provide us with any other information, we may collect such information and use it for the purposes for which you provided such information, or as otherwise provided in this Privacy Policy. 
+        We also collect information described in the following section.
+        
+        3. What You Should Know About Specific Products
+        This section provides additional information about specific services and features that are part of the HomeGym Services. 
+        The information is used as described in this section and in the section entitled “How We Use the Information We Collect” below.
+        
+        a. HomeGymTV App
+        
+        HomeGym Backup stores copies of data that you choose to back up from your phone.
+        
+        What types of information Backup collects:
+        
+        Backup Data.
+        HomeGym Backup transmits a copy of the data you choose to back up to on your device to Google Cloud storage. 
+        The data may include your exercise history, videos you record in the application, and other data from within the application (e.g. the weight plates you own).   
+        Access to this data is limited to authorized users and the developer of HomeGym. The developer will only access this data in the case of troubleshooting issues.
+        HomeGym will never ask you for your password.      
+        How the information that Backup collects is used:
+        
+        If you use HomeGymTV mobile application, we will use the data you provide to deliver the HomeGym Backup service.         
+           
+        4. Cookie Policy
+        Types of Cookies
+        
+        Like many online services, we use cookies and other tools to collect and analyze information about you and your usage of our products and services. 
+        We also use these technologies to deliver content for relevant HomeGym products and services. Cookies are small data files that we store on your computers or device. For details, see aboutcookies.org.
+        
+        How We Use Cookies
+        
+        We may use “session” cookies to keep you logged in while you use our services, to better understand how you interact with our services, and to monitor aggregate usage and web traffic information on our services. 
+        Session cookies disappear when you log out and close your browser. 
+        We also use “persistent” cookies to recognize you when you return to our services. 
+        Persistent cookies can stay on your computer for a longer period of time than session cookies do. 
+        We also use “analytical” cookies. They allow us to recognize and count the number of visitors and to see how visitors move around our services and how they’re using them. 
+        This helps us to improve the way our website works, for example by making sure users are finding what they need easily. 
+        Finally, we may use other standard technologies, such as web beacons, web bugs, clear gifs, and local storage, to analyze, collect and aggregate data about your use of our products and services.
+        
+        Cookies From Third-Parties
+        
+        We believe it is important for you to know exactly what third-party cookies we use on our website and services. We do not currently use any third-party cookies. 
+        As we develop and improve our services, we may use other third parties that are not listed and will update this list at that time.
+        
+        5. How We Use the Information We Collect
+        In addition to the specific uses described above, we also use your information in the following manner:
+        
+        a. We Use Your Information to Provide, Improve, and Promote our Services.
+        
+        We use your information to provide you with a better service, to improve our products and services, to promote our services and to develop new services. For example:
+        
+        If you fill out a survey or email HomeGym for support, we may retain that information in order to provide you with support and to improve our services.        
+        We may send text messages to your phone to communicate with your device.
+        We may use your email address or mobile number to send privacy or security related notices and notify you of major HomeGym services changes.
+        We may use your email address or mobile phone number to communicate about product announcements and special promotions from HomeGym or our business partners, or to administer participation in special events, surveys, contests and sweepstakes.
+        We may use your information to conduct market research and engage in joint promotional activities with companies that have products that can add value to HomeGym products or services (for example, with supplement companies).
+        b. We May Disclose Your Information in Accordance with the Law.
+        
+        Like other companies, we may disclose your information consistent with the law to, for example: (i) comply with a law, regulation, or legal process (including to meet national security or law enforcement requirements); (ii) protect the safety or security of any person, entity or facility; (iii) address potential violations of our Privacy Policy or Terms of Service; (iv) investigate fraud, security, or technical issues; or (v) protect HomeGym’s or a third party's rights or property, our employees, users and the public.
+        
+        We strongly believe that you have a right to know if we are required by law to disclose your information. 
+        As such, before we disclose your Information in response to a law enforcement request (for example, a subpoena or court order), we will notify you at the email listed in your account, unless (a) we are prohibited from doing so or (b) in emergency cases where notice could create a risk of injury or death, or the case involves potential harm to minors. 
+        Furthermore, nothing in this Privacy Policy is meant to limit any legal defenses or objections that you may have to a third party’s, including the government’s, request to disclose your information.
+        
+        c. We Share Your Information to Provide or Improve Our Services
+        
+        We do not currently share your information with third parties to provide or improve our services with the exception of Google Firebase tools for function and improvement of the application. 
+        In the future we may perform additional sharing. For example:
+        
+        We may share your information with third party service providers of products and services integrated with our software that need to know your information to fulfill your product or service requests (for example, to map your location, send you an SMS or provide you with identity protection services), support our products and services, or analyze data for product performance and product improvement purposes.        
+        We may share your information to perform accounting, auditing, billing reconciliation, and collection activities.
+        We may share your information with our affiliates, resellers or other third party service providers that are working with HomeGym (for example, supplement companies) to ensure proper delivery of your purchase and related support services, perform business-related functions, and provide you with information about products and services.
+        d. We Share Your Information to Avoid Unnecessary Marketing
+        
+        In order to prevent you from receiving duplicate or unnecessary marketing about HomeGym products or service, we may share your information or your status as a current HomeGym customer with our partners or service providers.
+        
+        e. We Share Data That is Aggregated and De-Identified
+        
+        We share de-identified or aggregated data publicly and with our partners and other third-parties. For example, we may share the number of devices that have ever encountered a particular piece of malware in our security reports.
+        
+        f. We May Disclose Your Information With Your Consent
+        
+        We may also share your personal information with third parties when we have your consent to do so.
+        
+        6. Your Choices
+        a. You Can Access and Update Your Settings
+        
+        Your HomeGym Account on our website and/or the HomeGym ‘Settings’ page on our mobile application allow you to update or modify certain settings that affect what data is shared with us (for example, by disabling backups of certain types of data). To protect your privacy and security, we require your username and password in order to verify your identity before granting you account access or making changes. If you wish to correct or delete inaccuracies within your personal information, or to request access to any personal information we obtain about you, please contact us at homegymtvapp@gmail.com. We will respond to your request to access within 30 days. 
+        In certain situations, however, HomeGym may not be able to provide access to or delete all of the personal information that it holds about you.
+        
+        b. Email Opt-Outs
+        
+        You may opt out of receiving promotional communications from HomeGym by using the unsubscribe link within each email. 
+        Although opt-out requests are usually processed immediately, please allow ten (10) business days for a removal request to be processed.
+        Even after you opt out from receiving promotional messages from us, you will continue to receive transactional and product-related messages from us regarding HomeGym Services. 
+        You can opt-out of some of these notification messages in your account settings.        
+        
+        c. Personalized Advertisements
+        
+        You may be able to opt out of receiving certain personalized advertisements. Please visit the Network Advertising Initiative Consumer Opt-Out Page or the Digital Advertising Alliance Opt-Out Page to opt out directly from providers who participate in those programs. 
+        HomeGym does not control or operate these tools or the choices that advertisers and others provide through these tools.
+        
+        d. Cookies
+        
+        Most Internet browsers automatically accept cookies, but some browsers may permit you to change your settings or use third-party tools to disable cookies or to prompt you before accepting cookies from the websites you visit. 
+        These browsers or other third party tools may also permit you to delete cookies you already have. 
+        Please be aware that some parts of our services may not work for you if you delete or disable cookies. For other options regarding cookies, please visit our Cookie Policy.
+        
+        e. Location
+        
+        When you delete location data through your account dashboard on HomeGym.com, it is no longer linked to your account and is de-identified on our application production systems.
+        
+        7. Data Retention Policy
+        Our policy is to retain personally identifiable information only as long as reasonably necessary to provide our products and services to you and others or as otherwise required for legal compliance purposes. 
+        We may delete your data if your account is inactive and as otherwise provided in our Terms of Service. 
+        Currently for HomeGym Backup, our policy is to delete: (i) all Backup Data if you have not accessed our services for 90 consecutive days, or (ii) videos from your Backup Data if you have not upgraded to a Premium Subscription within 90-days after your Premium trial or if you have discontinued your Premium Subscription for 90 consecutive days. 
+        We will generally notify you via the email address associated with your account before deleting your Backup Data. We may change that policy from time to time.
+        
+        8. Information Posted to Our Blog and Community Forum Is Public
+        If you comment on our blog or other public forums, you should be aware that any information you submit there can be read, collected, or used by other users of those blogs, and could be used to send you unsolicited messages. 
+        We are not responsible for the information you choose to submit in these blogs or for any content you receive as a result of sharing such information.
+        
+        To request removal of your personal information from our blog or community forum, contact us at homegymtvapp@gmail.com. If we are not able to remove your personal information, we will let you know why.
+        
+        9. We Take Security Seriously
+        Securing your data is important to us. HomeGym uses commercially reasonable physical, managerial, and technical safeguards. 
+        For example, we use a combination of firewalls, authentication, physical security, and other safeguards to protect your account and your data. 
+        We do not process any payment data directly and will never ask you for payment information.         
+        
+        Because no method of transmission over the Internet or method of electronic storage is 100% secure, we cannot ensure or warrant the security of any information, data or content that HomeGym receives on your behalf to operate the HomeGym services, or that you transmit to HomeGym. 
+        All such receipt or transmission of your information is at your own risk. 
+        We cannot guarantee that such information will not be accessed, disclosed, altered, or destroyed by breach of any of our physical, technical, or managerial safeguards.
+        
+        If HomeGym learns of a security breach, we may attempt to notify you electronically so that you can take appropriate protective steps. 
+        HomeGym may also post a notice on the HomeGym services if a security breach occurs. Depending on where you live, you may have a legal right to receive notice of a security breach in writing.
+
+        Note that a core, but optional, feature of HomeGym involves casting or flinging from your local device to a custom Android TV, FireStick, Chromecast, Roku, or similar application.
+        This process involves communication between the application and your phone over your local network. HomeGym cannot guarantee that your personal network is secure, and thus cannot guarantee
+        that this process is secure. For instance, if someone is snooping on your network and intercepts the call, they may have access to download or play the relevant video. However,
+        all other access to HomeGym application data that is stored within Google Cloud Storage and related storage capabilities require access from an authorized user request (or the applciation owner account).
+        
+        10. You Are Responsible for Maintaining the Accuracy and Confidentiality of Your Email Address and Password
+        You are responsible for maintaining the secrecy of your password at all times. 
+        We recommend a strong password that you do not use with other services. 
+        If you believe your password has been compromised, please change your password immediately via the HomeGym application, or contact us at homegymtvapp@gmail.com for assistance. 
+        You are responsible for ensuring that the email address associated with your account is accurate. 
+        We use that email to contact you about service updates, changes to our policies, and account activities such as requests for your information or locate attempts on your device. 
+        HomeGym is not responsible for personal data transmitted to a third party as a result of a user’s providing an incorrect email address.
+        
+        11. Notice to California Users
+        Do Not Track
+        
+        Do Not Track is a privacy preference that users can set in their web browsers. 
+        When a user turns on the Do Not Track signal, the browser sends a message to websites requesting them not to track the user. 
+        For information about Do Not Track, visit www.allaboutdnt.org. 
+        At this time, we do not respond to Do Not Track browser settings or signals. 
+        In addition, some of our third-party services providers may use standard technology, such as cookies, pixel tags and web beacons, to collect information about your internet activities. 
+        You may be able to disable certain third-party cross-site tracking as described in the “Your Choices” section above.
+        
+        12. International Visitors and the Privacy Shield
+        HomeGym is a Michigan-based company with servers housed in the United States. Personal information collected from users outside the United States is transferred to the United States. 
+        HomeGym has not certified with the U.S. – Swiss Safe Harbor framework as set forth by the U.S. Department of Commerce regarding the collection, use, and retention of personal data from Switzerland. 
+        HomeGym may process some personal data from individuals or companies in Switzerland via other compliance mechanisms, including data processing agreements based on the EU Standard Contractual Clauses.
+        To learn more about the U.S.-Swiss Safe Harbor program, please visit http://export.gov/safeharbor.
+        
+        HomeGym has not certified with the Privacy Shield as set forth by the U.S. Department of Commerce regarding the collection, use, and retention of “personal data” (as defined under the Privacy Shield principles) from applicable European Union member countries. 
+        HomeGym has not certified that it adheres to the Privacy Shield Principles of notice, choice, onward transfer, security, data integrity, access, and enforcement for such personal data. 
+        To learn more about the Privacy Shield, view a list of entities who have current certifications under Privacy Shield, or view HomeGym’s certification, please visit http://www.privacyshield.gov. 
+        As required under the principles, when HomeGym receives information under the Privacy Shield and then transfers it to a third-party service provider acting as an agent on HomeGym’s behalf, HomeGym has certain liability under the Privacy Shield if both
+        (i) the agent processes the information in a manner inconsistent with the Privacy Shield and 
+        (ii) HomeGym is responsible for the event giving rise to the damage.
+        
+        If you have any questions or complaints about HomeGym’s privacy practices, including questions related to the Privacy Shield, you may contact us at the email address or mailing address set forth under “Contact Us if You Have Any Questions or Concerns.” 
+        We will work with you to resolve your issue.
+        
+        If you are a resident of the European Union and are dissatisfied with the manner in which we have addressed your concerns about our privacy practices, you may seek further assistance, at no cost to you, from our designated Privacy Shield independent recourse mechanism once it is created, which you can learn more about by visiting https://www.jamsadr.com/eu-us-privacy-shield.
+        
+        Residents of the European Union may elect to arbitrate unresolved complaints but prior to initiating such arbitration, you must: 
+        (1) contact HomeGym and afford us the opportunity to resolve the issue; 
+        (2) seek assistance from HomeGym’s designated independent recourse mechanism above; and 
+        (3) contact the U.S. Department of Commerce (either directly or through a European Data Protection Authority) and afford the Department of Commerce time to attempt to resolve the issue. 
+        Each party shall be responsible for its own attorney’s fees. 
+        Please be advised that, pursuant to the Privacy Shield, the arbitrator(s) may only impose individual-specific, non-monetary, equitable relief necessary to remedy any violation of the Privacy Shield Principles with respect to the individual. 
+        HomeGym is subject to the investigatory and enforcement powers of the U.S. Federal Trade Commission (FTC).
+        
+        In addition to the rights granted under the section above entitled, “You Can Access and Update Your Privacy Settings,” some international users (including those whose information we collect under the Privacy Shield) have certain legal rights to access certain information we hold about them and to obtain its deletion. 
+        To exercise those rights, these users may contact us at homegymtvapp@gmail.com with their request.
+        
+        13. Users Under 13
+        HomeGym does not knowingly collect or store any personal information about children under the age of 13. 
+        If you believe a child is using this service without parental consent, please contact us at homegymtvapp@gmail.com.
+        
+        14. We Are Not Responsible for Content on Third-Party Websites
+        Our site may links to other websites. When you click on one of these links, you leave HomeGym’s website and go elsewhere. 
+        HomeGym does not accept liability for misuse of any information by any website controller to which we may link. 
+        We encourage you to read the privacy statements of these linked sites, which may differ from ours. 
+        In addition, if you take advantage of an offer from one of our partners, you may be providing information directly to that partner. We encourage you to review the privacy statements of these partners, as we are not responsible for the privacy practices of any partners or linked sites.
+        
+        15. This Privacy Policy Will Apply Upon Change in Control
+        In the event that HomeGym is involved in a bankruptcy, merger, acquisition, reorganization, or sale of assets, your information may be sold or transferred as part of that transaction.
+        
+        16. We Post Updates on Our Website Whenever This Policy Changes
+        This Privacy Policy may be revised to keep pace with changes in our products and services and laws applicable to HomeGym and you. 
+        If we make material changes to this policy, then we will notify you in our application, here on this website, by email, or by means of a notice on the HomeGym home page. 
+        Please note that your continued use of our services means that you agree with, and consent to be bound by, the new Privacy Policy. 
+        If you do not wish your information to be subject to the revised Privacy Policy, you will need to close your account.
+        
+        17. Contact Us if You Have Any Questions or Concerns
+        Please contact our privacy manager at homegymtvapp@gmail.com, with any questions or comments about this privacy policy.
+        </p>
+
+        <p>HomeGym COPYRIGHT POLICY
+          Last Revised: November 9, 2020
+          
+          HomeGym respects the intellectual property rights of others and expects its users to do the same.
+          
+          In accordance with the Digital Millennium Copyright Act of 1998 ("DMCA"), the text of which may be found on the U.S. Copyright Office website at http://www.copyright.gov/legislation/pl105-304.pdf, and other applicable laws, HomeGym has adopted a policy of terminating, in appropriate circumstances and at our sole discretion, the accounts of users who are deemed to be repeat infringers.
+          HomeGym may also, at its sole discretion, limit access to HomeGym's website, mobile applications, and services (collectively, "Service") and/or terminate the accounts of any users who infringe any intellectual property rights of others, whether or not there is any repeat infringement. 
+          HomeGym will respond to claims of copyright infringement committed on the HomeGym website or mobile application that are reported to HomeGym's Designated Copyright Agent, identified in the sample notice below.
+          
+          If you knowingly misrepresent in your notification that the material or activity is infringing, you will be liable for any damages, including costs and attorneys' fees, incurred by us or the alleged infringer as the result of our relying upon such misrepresentation in removing or disabling access to the material or activity claimed to be infringing.
+          
+          If you are a copyright owner, or are authorized to act on behalf of one, or authorized to act under any exclusive right under copyright, please report alleged copyright infringements taking place on or through the Services by completing the following DMCA Notice of Alleged Infringement and delivering it to HomeGym's Designated Copyright Agent. Upon receipt of the Notice as described below, HomeGym will take whatever action, in its sole discretion, it deems appropriate, including removal of the challenged material from the Services.
+          
+          DMCA Notice of Alleged Infringement ("Notice"):
+          Identify the copyrighted work that you claim has been infringed, or if multiple copyrighted works are covered by this Notice you may provide a representative list of the copyrighted works that you claim have been infringed.
+          
+          Identify the material that you claim is infringing (or to be the subject of infringing activity) and that is to be removed or access to which is to be disabled, and information reasonably sufficient to permit us to locate the material, including at a minimum, if applicable, the URL of the link shown on the Services where such material may be found.
+          
+          Provide your mailing address, telephone number, and, if available, email address.
+          
+          Include both of the following statements in the body of the Notice: (i) "I hereby state that I have a good faith belief that the disputed use of the copyrighted material is not authorized by the copyright owner, its agent, or the law (e.g., as a fair use)"; and (ii) "I hereby state that the information in this Notice is accurate and, under penalty of perjury, that I am the owner, or authorized to act on behalf of the owner, of the copyright or of an exclusive right under the copyright that is allegedly infringed."
+          
+          Provide your full legal name and your electronic or physical signature.
+          
+          Deliver this Notice, with all items completed, to HomeGym's Designated Copyright Agent:
+          
+          homegymtvapp@gmail.com</p>
+      <a target="_blank" href="https://firebase.google.com/docs/hosting/">Open Hosting Documentation</a>
+    </div>
+    <p id="load">Firebase SDK Loading&hellip;</p>
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+        // // The Firebase SDK is initialized and available here!
+        //
+        // firebase.auth().onAuthStateChanged(user => { });
+        // firebase.database().ref('/path/to/ref').on('value', snapshot => { });
+        // firebase.messaging().requestPermission().then(() => { });
+        // firebase.storage().ref('/path/to/ref').getDownloadURL().then(() => { });
+        //
+        // // 🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥🔥
+
+        try {
+          let app = firebase.app();
+          let features = ['auth', 'database', 'messaging', 'storage'].filter(feature => typeof app[feature] === 'function');
+          document.getElementById('load').innerHTML = `Firebase SDK loaded with ${features.join(', ')}`;
+        } catch (e) {
+          console.error(e);
+          document.getElementById('load').innerHTML = 'Error loading the Firebase SDK, check the console.';
+        }
+      });
+    </script>
+  </body>
+</html>
