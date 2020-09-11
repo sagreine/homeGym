@@ -1,10 +1,17 @@
+import 'dart:convert';
+
+import 'package:flutter/foundation.dart';
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:home_gym/views/views.dart';
 //import 'package:flutter/services.dart';
 
 //import 'package:home_gym/models/models.dart';
 //import 'package:home_gym/controllers/controllers.dart';
 //import 'package:provider/provider.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+//import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 
 class HelpView extends StatefulWidget {
   @override
@@ -14,6 +21,14 @@ class HelpView extends StatefulWidget {
 class HelpViewState extends State<HelpView> {
   //SettingsController settingsController = SettingsController();
   // should these go in the Settingscontroller probably then...
+  Future<void> loadHtmlFromAssets(String filename, controller) async {
+    String fileText = await rootBundle.loadString(filename);
+    controller.loadUrl(Uri.dataFromString(fileText,
+            mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
+        .toString());
+  }
+
+  WebViewController _controller;
 
   @override
   void dispose() {
@@ -79,7 +94,46 @@ class HelpViewState extends State<HelpView> {
                   showAboutDialog(
                       context: context,
                       children: [
-                        Text("Please don't sue me"),
+                        Column(mainAxisSize: MainAxisSize.min, children: [
+                          Text("Please don't sue me"),
+                          Container(
+                            height: 160,
+                            child: SingleChildScrollView(
+                              child: Container(
+                                height: 180,
+
+                                /*
+                                child: WebviewScaffold(
+                                  url: 'public/index.html',
+                                  
+                                  appBar: AppBar(
+                                    title: const Text('Widget'),
+                                  ),
+                                  withZoom: true,
+                                  withLocalStorage: true,
+                                  withLocalUrl: true,
+                                  hidden: true,
+                                ),*/
+
+                                child: WebView(
+                                  initialUrl: "",
+                                  javascriptMode: JavascriptMode.unrestricted,
+                                  gestureRecognizers: [
+                                    Factory(() =>
+                                        PlatformViewVerticalGestureRecognizer()),
+                                  ].toSet(),
+                                  //"file:///android_asset/flutter_assets/assets/index.html",
+                                  onWebViewCreated: (WebViewController
+                                      webViewController) async {
+                                    _controller = webViewController;
+                                    await loadHtmlFromAssets(
+                                        'public/index.html', _controller);
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+                        ]),
                       ],
                       applicationVersion: "Version 0.1",
                       applicationName: "Home Gym TV",
@@ -95,4 +149,42 @@ class HelpViewState extends State<HelpView> {
       ),
     );
   }
+}
+
+class PlatformViewVerticalGestureRecognizer
+    extends VerticalDragGestureRecognizer {
+  PlatformViewVerticalGestureRecognizer({PointerDeviceKind kind})
+      : super(kind: kind);
+
+  Offset _dragDistance = Offset.zero;
+
+  @override
+  void addPointer(PointerEvent event) {
+    startTrackingPointer(event.pointer);
+  }
+
+  @override
+  void handleEvent(PointerEvent event) {
+    _dragDistance = _dragDistance + event.delta;
+    if (event is PointerMoveEvent) {
+      final double dy = _dragDistance.dy.abs();
+      final double dx = _dragDistance.dx.abs();
+
+      if (dy > dx && dy > kTouchSlop) {
+        // vertical drag - accept
+        resolve(GestureDisposition.accepted);
+        _dragDistance = Offset.zero;
+      } else if (dx > kTouchSlop && dx > dy) {
+        // horizontal drag - stop tracking
+        stopTrackingPointer(event.pointer);
+        _dragDistance = Offset.zero;
+      }
+    }
+  }
+
+  @override
+  String get debugDescription => 'horizontal drag (platform view)';
+
+  @override
+  void didStopTrackingLastPointer(int pointer) {}
 }
