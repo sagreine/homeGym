@@ -75,6 +75,7 @@ flutter:
      - assets/images/
      - assets/videos/
      - assets/flares/
+     - public/index.html
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 
