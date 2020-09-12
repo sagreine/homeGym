@@ -11,6 +11,123 @@ import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:get_ip/get_ip.dart';
+import 'package:http_server/http_server.dart';
+import 'package:webview_flutter/webview_flutter.dart';
+
+//http://10.0.0.76:8080/
+
+//NetworkAssetBundle
+
+Future<String> _server() async {
+  //final StreamController<String> onCode = new StreamController();
+  //HttpServer server = await HttpServer.bind('10.0.0.148', 8080);
+  HttpServer server = await HttpServer.bind('0.0.0.0', 8080);
+  //HttpServer server = await HttpServer.bind(InternetAddress.loopbackIPv4, 8080);
+  print("listening to ${server.address} on port: ${server.port}");
+  server.listen((HttpRequest request) async {
+    print("request received");
+    //final String code = request.uri.queryParameters["code"];
+    request.response
+      ..statusCode = 200
+      ..headers.set("Content-Type", ContentType.html.mimeType)
+      ..write("<html><h1>You can now close this window</h1></html>");
+
+    await request.response.close();
+    await server.close(force: true);
+    //onCode.add(code);
+    //await onCode.close();
+  });
+  //return onCode.stream;
+  return await GetIp.ipAddress;
+}
+
+WebViewController webViewController;
+Future<void> loadHtmlFromAssets(
+    String filename, WebViewController controller) async {
+  String fileText = await rootBundle.loadString(filename);
+  controller.loadUrl(Uri.dataFromString(fileText,
+          mimeType: 'text/html', encoding: Encoding.getByName('utf-8'))
+      .toString());
+}
+
+// this has a file that exists, and passes an http:// path to the fling device
+// that is a local path e.g. 10.0.0.76:4040 that should then return the file
+// as being served here. but that doesn't happen? the http link is passed directly to the fling device
+// but we don't register anything on listen here... if you go to a browser it will play though.
+// regular fling (cloud) is also broken, but this breaks first so it's not the URL i think
+// look at comparing the logs as a next step / step through 1 by 1. might be a timing thing.
+Future<String> _server2(String _targetFile) async {
+  VirtualDirectory staticFiles = VirtualDirectory('.')
+    ..followLinks = true
+    ..allowDirectoryListing = true
+    ..jailRoot = false;
+  var serverRequests =
+      //await HttpServer.bind(InternetAddress.loopbackIPv4, 4040);
+      await HttpServer.bind('0.0.0.0', 4040);
+  print(
+      "listening to ${serverRequests.address} address and port: ${serverRequests.port}");
+  serverRequests.listen((event) async {
+    print(
+        "request received to ${serverRequests.address} address and port: ${serverRequests.port}");
+    print("1");
+    print("2");
+    print("3");
+    print("14");
+    print("5");
+    print("6");
+    print("7");
+    print("8");
+    print("9");
+    print("10");
+    print("11");
+    print("12");
+    print("13");
+    print("14");
+    print("15");
+    File targetFile = File(_targetFile);
+
+    assert(await targetFile.exists());
+    //File targetFile = File("public/index.html");
+    //await loadHtmlFromAssets("public/index.html", webViewController);
+    staticFiles.serveFile(targetFile, event);
+    //staticFiles.serveRequest(event);
+    //await event.response.close();
+  });
+  return "http://" +
+      (await GetIp.ipAddress) +
+      "/" +
+      serverRequests.port.toString();
+}
+
+// for this i can't seem to get a local html file to be served.
+Future<String> _server3(String _targetFile) async {
+  String toreturn;
+  //await HttpServer.bind(InternetAddress.loopbackIPv4, 4040);
+  HttpServer.bind('0.0.0.0', 4040).then((HttpServer server) {
+    VirtualDirectory staticFiles = VirtualDirectory('.')
+      ..followLinks = true
+      ..allowDirectoryListing = true
+      ..jailRoot = false;
+    //staticFiles.serve(server);
+
+    server.listen((event) async {
+      print(
+          "request received to ${server.address} address and port: ${server.port}");
+      //File targetFile = File(_targetFile);
+      File targetFile = File("public/index.html");
+      assert(await targetFile.exists());
+      //await loadHtmlFromAssets("public/index.html", webViewController);
+      staticFiles.serveFile(targetFile, event);
+      //staticFiles.serveRequest(event);
+
+      //await event.response.close();
+    });
+
+    toreturn = server.port.toString();
+  });
+  return "http://" + (await GetIp.ipAddress) + "/" + toreturn;
+}
 
 //TODO: implement dispose
 //TODO: this is all kind of just thrown in here for now. some is from startup that isn't created yet.
@@ -37,6 +154,7 @@ class HomeController {
     if (recordNewVideo) {
       final picker = ImagePicker();
       final pickedFile = await picker.getVideo(source: ImageSource.camera);
+      //return pickedFile.path;
       if (pickedFile == null) {
         return null;
       }
@@ -131,6 +249,9 @@ class HomeController {
     } else {
       exercise.videoPath = url;
     }
+    //url = await _server2(url);
+    //print(ip);
+    //String final_rul = ip + "/" + url.substring(url.lastIndexOf("/") + 1);
 
     // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information
     //....so could check for the garbage (default) URLs before updating this..

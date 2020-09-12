@@ -21,6 +21,7 @@ class HelpView extends StatefulWidget {
 class HelpViewState extends State<HelpView> {
   //SettingsController settingsController = SettingsController();
   // should these go in the Settingscontroller probably then...
+
   Future<void> loadHtmlFromAssets(String filename, controller) async {
     String fileText = await rootBundle.loadString(filename);
     controller.loadUrl(Uri.dataFromString(fileText,
