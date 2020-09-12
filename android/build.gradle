@@ -11,6 +11,9 @@ buildscript {
         classpath 'com.google.gms:google-services:4.3.3'
         
     }
+    ext {
+  flutterFFmpegPackage  = "min-gpl-lts"
+}
 }
 
 allprojects {

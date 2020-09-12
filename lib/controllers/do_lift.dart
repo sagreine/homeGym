@@ -10,14 +10,57 @@ import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:get_ip/get_ip.dart';
 import 'package:http_server/http_server.dart';
 import 'package:webview_flutter/webview_flutter.dart';
-
+import 'package:flutter_ffmpeg/flutter_ffmpeg.dart';
 //http://10.0.0.76:8080/
 
 //NetworkAssetBundle
+
+class EncodingProvider {
+  static final FlutterFFmpeg _encoder = FlutterFFmpeg();
+  static final FlutterFFprobe _probe = FlutterFFprobe();
+  static final FlutterFFmpegConfig _config = FlutterFFmpegConfig();
+
+  static Future<Map<dynamic, dynamic>> getMediaInformation(String path) async {
+    return await _probe.getMediaInformation(path);
+  }
+
+  static double getAspectRatio(Map<dynamic, dynamic> info) {
+    final int width = info['streams'][0]['width'];
+    final int height = info['streams'][0]['height'];
+    final double aspect = height / width;
+    return aspect;
+  }
+
+  static int getDuration(Map<dynamic, dynamic> info) {
+    return info['duration'];
+  }
+
+  static Future<String> encodeHLS(videoPath, outDirPath) async {
+    assert(File(videoPath).existsSync());
+
+    final arguments = '-y -i $videoPath ' +
+        '-preset ultrafast -g 48 -sc_threshold 0 ' +
+        '-map 0:0 -map 0:1 -map 0:0 -map 0:1 ' +
+        '-c:v:0 libx264 -b:v:0 2000k ' +
+        '-c:v:1 libx264 -b:v:1 365k ' +
+        '-c:a copy ' +
+        '-var_stream_map "v:0,a:0 v:1,a:1" ' +
+        '-master_pl_name master.m3u8 ' +
+        '-f hls -hls_time 6 -hls_list_size 0 ' +
+        '-hls_segment_filename "$outDirPath/%v_fileSequence_%d.ts" ' +
+        '$outDirPath/%v_playlistVariant.m3u8';
+
+    final int rc = await _encoder.execute(arguments);
+    assert(rc == 0);
+
+    return outDirPath;
+  }
+}
 
 Future<String> _server() async {
   //final StreamController<String> onCode = new StreamController();
@@ -57,7 +100,7 @@ Future<void> loadHtmlFromAssets(
 // but we don't register anything on listen here... if you go to a browser it will play though.
 // regular fling (cloud) is also broken, but this breaks first so it's not the URL i think
 // look at comparing the logs as a next step / step through 1 by 1. might be a timing thing.
-Future<String> _server2(String _targetFile) async {
+/*Future<String> _server2(String _targetFile) async {
   VirtualDirectory staticFiles = VirtualDirectory('.')
     ..followLinks = true
     ..allowDirectoryListing = true
@@ -86,7 +129,67 @@ Future<String> _server2(String _targetFile) async {
     print("14");
     print("15");
     File targetFile = File(_targetFile);
+    //void abc(File rawVideoFile) async {
+    final videoName = "abc";
+    final Directory extDir = await getApplicationDocumentsDirectory();
+    final outDirPath = '${extDir.path}/Videos/$videoName';
 
+    ////////////////////////// use this, cuz you're not right now
+    final videosDir = new Directory(outDirPath);
+
+    final rawVideoPath = targetFile.path;
+    final info = await EncodingProvider.getMediaInformation(rawVideoPath);
+    //final aspectRatio = EncodingProvider.getAspectRatio(info);
+
+    final encodedFilesDir =
+        await EncodingProvider.encodeHLS(rawVideoPath, videosDir);
+
+    targetFile = File(encodedFilesDir + 'master.m3u8');
+    assert(await targetFile.exists());
+    //File targetFile = File("public/index.html");
+    //await loadHtmlFromAssets("public/index.html", webViewController);
+    staticFiles.serveFile(targetFile, event);
+    //staticFiles.serveRequest(event);
+    //await event.response.close();
+  });
+  return "http://" +
+      (await GetIp.ipAddress) +
+      "/" +
+      serverRequests.port.toString();
+}*/
+
+Future<String> _server21(String _targetFile) async {
+  VirtualDirectory staticFiles = VirtualDirectory('.')
+    ..followLinks = true
+    ..allowDirectoryListing = true
+    ..jailRoot = false;
+  var serverRequests =
+      //await HttpServer.bind(InternetAddress.loopbackIPv4, 4040);
+      await HttpServer.bind('0.0.0.0', 4040);
+  print(
+      "listening to ${serverRequests.address} address and port: ${serverRequests.port}");
+  serverRequests.listen((event) async {
+    print(
+        "request received to ${serverRequests.address} address and port: ${serverRequests.port}");
+    print("1");
+    print("2");
+    print("3");
+    print("14");
+    print("5");
+    print("6");
+    print("7");
+    print("8");
+    print("9");
+    print("10");
+    print("11");
+    print("12");
+    print("13");
+    print("14");
+    print("15");
+    File targetFile = File(_targetFile + 'master.m3u8');
+    //void abc(File rawVideoFile) async {
+
+    //targetFile = File(encodedFilesDir );
     assert(await targetFile.exists());
     //File targetFile = File("public/index.html");
     //await loadHtmlFromAssets("public/index.html", webViewController);
@@ -155,6 +258,19 @@ class HomeController {
       final picker = ImagePicker();
       final pickedFile = await picker.getVideo(source: ImageSource.camera);
       //return pickedFile.path;
+      final videoName = "abc";
+      final Directory extDir = await getTemporaryDirectory();
+      final outDirPath = '${extDir.path}/Videos/$videoName';
+      final videosDir = new Directory(outDirPath);
+
+      final rawVideoPath = pickedFile.path;
+      //final info = await EncodingProvider.getMediaInformation(rawVideoPath);
+      //final aspectRatio = EncodingProvider.getAspectRatio(info);
+
+      final encodedFilesDir =
+          await EncodingProvider.encodeHLS(rawVideoPath, videosDir.path);
+      return encodedFilesDir;
+
       if (pickedFile == null) {
         return null;
       }
@@ -249,7 +365,7 @@ class HomeController {
     } else {
       exercise.videoPath = url;
     }
-    //url = await _server2(url);
+    url = await _server21(url);
     //print(ip);
     //String final_rul = ip + "/" + url.substring(url.lastIndexOf("/") + 1);
 
