@@ -9,8 +9,6 @@ part 'exercise.g.dart';
 
 @JsonSerializable()
 class ExerciseSet extends ChangeNotifier {
-  // this will only be used on mobile - previously i thought that, but easiest to keep it and write it to db alongside this..
-
   String videoPath;
   // these will be passed to TV. probably won't live here in the long run tbh.
   String title;
@@ -21,6 +19,7 @@ class ExerciseSet extends ChangeNotifier {
   int weight;
   int reps;
   DateTime dateTime;
+  bool thisSetPRSet;
   //BuildContext context;
 
   ExerciseSet({
@@ -31,16 +30,19 @@ class ExerciseSet extends ChangeNotifier {
     this.restPeriodAfter,
     this.weight,
     this.reps,
+    this.thisSetPRSet,
   }) {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
     this.dateTime = DateTime.now();
     this.type = "/video";
+    this.thisSetPRSet = false;
   }
 
   void updateExerciseFull(
       {@required context,
       String exerciseTitle,
+      int plannedSet,
       @required int reps,
       @required double setPct}) {
     // should be using the controller here instead of doing this...
@@ -55,6 +57,9 @@ class ExerciseSet extends ChangeNotifier {
     var thisWeights = Provider.of<LifterWeights>(context, listen: false);
     // default to 0
     double trainingMax = 0;
+    // some sets are PR sets, if the week has them and we're currently on the progress set.
+    bool thisSetPRSet =
+        (thisDay.prSetWeek && plannedSet == thisDay.progressSet);
     switch (this.title.toLowerCase()) {
       case "deadlift":
         trainingMax = (thisMax.deadliftMax.toDouble() * thisDay.trainingMax);
@@ -84,6 +89,7 @@ class ExerciseSet extends ChangeNotifier {
     this.updateExercise(
         // reps is a straight pull
         reps: reps,
+        thisSetPRSet: thisSetPRSet,
         weight: calculatedWeight,
         description: "Weight each side: " +
             (thisWeights.getPickedPlatesAsString(targetWeight: targetWeight))
@@ -104,8 +110,9 @@ class ExerciseSet extends ChangeNotifier {
     int restPeriodAfter,
     int weight,
     int reps,
+    bool thisSetPRSet,
   }) {
-    // should hanlde this another way probably -> controller if nothing else.
+    // should handle this another way probably -> controller if nothing else.
     if (title != null) {
       this.title = title;
     }
@@ -117,6 +124,11 @@ class ExerciseSet extends ChangeNotifier {
     }
     this.weight = weight;
     this.reps = reps;
+    if (thisSetPRSet != null) {
+      this.thisSetPRSet = thisSetPRSet;
+    } else {
+      this.thisSetPRSet = false;
+    }
     this.type = "video/";
     this.dateTime = DateTime.now();
     notifyListeners();
@@ -137,5 +149,6 @@ class ExerciseSet extends ChangeNotifier {
         reps,
         weight,
         dateTime,
+        thisSetPRSet,
       ];
 }

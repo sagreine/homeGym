@@ -1,6 +1,4 @@
 // may want this to be a changeNotifier just to simplify things..
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 part 'lifter_weights.g.dart';

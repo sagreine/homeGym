@@ -145,8 +145,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                             mainAxisSize: MainAxisSize.min,
                                             children: <Widget>[
                                               Expanded(
-                                                child:
-                                                    _pickChild((i / 2).toInt()),
+                                                child: _pickChild(i ~/ 2),
                                               ),
                                               InkWell(
                                                 child: Icon(

@@ -73,7 +73,9 @@ class HomeController {
     thisSet.updateExercise(
         title: formControllerTitle.text,
         description: formControllerDescription.text,
-        reps: int.parse(formControllerReps.text),
+        // keep only the digits parts of the reps
+        reps: int.parse(
+            formControllerReps.text.replaceAll(new RegExp(r'[^0-9]'), '')),
         weight: int.parse(formControllerWeight.text),
         restPeriodAfter: int.parse(formControllerRestInterval.text));
   }
@@ -104,7 +106,11 @@ class HomeController {
     //var exercise = Provider.of<ExerciseSet>(context, listen: false);
     formControllerTitle.text = exercise.title;
     formControllerDescription.text = exercise.description;
+
     formControllerReps.text = exercise.reps.toString();
+    if (exercise.thisSetPRSet) {
+      formControllerReps.text += "xPR";
+    }
     formControllerWeight.text = exercise.weight.toString();
   }
 

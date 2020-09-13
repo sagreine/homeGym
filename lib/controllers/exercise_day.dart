@@ -18,6 +18,7 @@ class ExerciseDayController {
     List<int> assistancePullReps,
     List<int> assistancePushReps,
     bool updateMaxIfGetReps,
+    bool prSetWeek,
     int progressSet,
     List<ExerciseSet> exercises,
   }) {
@@ -34,6 +35,7 @@ class ExerciseDayController {
           assistancePull.length +
           assistancePush.length,
       progressSet: progressSet,
+      prSetWeek: prSetWeek,
       trainingMax: trainingMaxPct,
       assistanceCore: assistanceCore,
       assistanceCoreReps: assistanceCoreReps,

@@ -269,6 +269,7 @@ Future<void> getExercisesCloud({
     program: program,
     context: context,
     reps: reps,
+    prSetWeek: pctAndReps.data()["PRSetWeek"],
     percentages: percentages,
     progressSet: pctAndReps.data()["progressSet"],
     trainingMaxPct: pctAndReps.data()["trainingMaxPct"],

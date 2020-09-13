@@ -23,6 +23,7 @@ class ExerciseDay extends ChangeNotifier {
   List<String> assistanceCore;
   List<String> assistancePush;
   bool updateMaxIfGetReps;
+  bool prSetWeek;
   int progressSet;
 
   List<ExerciseSet> exercises;
@@ -45,6 +46,7 @@ class ExerciseDay extends ChangeNotifier {
     this.updateMaxIfGetReps,
     this.progressSet,
     this.exercises,
+    this.prSetWeek,
   });
 
   void buildDay({
@@ -62,6 +64,7 @@ class ExerciseDay extends ChangeNotifier {
     List<String> assistanceCore,
     List<String> assistancePush,
     bool updateMaxIfGetReps,
+    bool prSetWeek,
     int progressSet,
     BuildContext context,
   }) {
@@ -80,26 +83,32 @@ class ExerciseDay extends ChangeNotifier {
     this.assistancePush = assistancePush;
     this.updateMaxIfGetReps = updateMaxIfGetReps;
     this.progressSet = progressSet;
+    this.prSetWeek = prSetWeek;
     // build and populate the list of exercises to do.
     this.exercises = new List<ExerciseSet>();
     List<String> allAssistance =
         assistanceCore + assistancePull + assistancePush;
     List<int> allAssistanceReps =
         assistanceCoreReps + assistancePullReps + assistancePushReps;
-    for (int i = 0; i < reps.length; ++i) {
+    // this is bad, but sometimes we want to prime some exercises based on what set they're planned to be
+    // this is very stupid.
+    int plannedSet = 0;
+    for (int i = 0; i < reps.length; ++i, ++plannedSet) {
       ExerciseSet tmp = new ExerciseSet();
       // add the main items to the list
 
       // this function depends on the current set of the day, but we need to reset that at the end.
       tmp.updateExerciseFull(
-          context: context,
-          exerciseTitle: lift,
-          reps: this.reps[i],
-          setPct: this.percentages[i]);
+        context: context,
+        exerciseTitle: lift,
+        reps: this.reps[i],
+        setPct: this.percentages[i],
+        plannedSet: plannedSet,
+      );
       this.exercises.add(tmp);
       // updating it here for whatever reason instead of passing it in as a parameter.........
     }
-    for (int i = 0; i < allAssistance.length; ++i) {
+    for (int i = 0; i < allAssistance.length; ++i, ++plannedSet) {
       this.exercises.add(new ExerciseSet(
           restPeriodAfter: 90,
           // the first rep.length are the main lift, non-assistance.
@@ -160,5 +169,6 @@ class ExerciseDay extends ChangeNotifier {
         updateMaxIfGetReps,
         progressSet,
         exercises,
+        prSetWeek,
       ];
 }
