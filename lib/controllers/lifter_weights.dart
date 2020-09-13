@@ -8,12 +8,23 @@ import 'package:home_gym/controllers/controllers.dart';
 class LifterWeightsController {
   TextEditingController barWeightTextController = new TextEditingController();
 
-  void updatePlate({BuildContext context, double plate, int plateCount}) {
+  void updatePlate(
+      {@required BuildContext context,
+      @required double plate,
+      @required int plateCount}) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
     if (liftweights.updatePlate(plate: plate, plateCount: plateCount)) {
       updatePlateCloud(
           plate: plate, plateCount: plateCount, userID: user.firebaseUser.uid);
+    }
+  }
+
+  void updateBumpers({@required BuildContext context, @required bool bumpers}) {
+    var liftweights = Provider.of<LifterWeights>(context, listen: false);
+    var user = Provider.of<Muser>(context, listen: false);
+    if (liftweights.updateBumpers(bumpers: bumpers)) {
+      updateBumpersCloud(bumpers: bumpers, userID: user.firebaseUser.uid);
     }
   }
 

@@ -86,6 +86,19 @@ void updatePlateCloud(
       .set(data);
 }
 
+void updateBumpersCloud(
+    {@required bool bumpers, @required String userID}) async {
+  final databaseReference = FirebaseFirestore.instance;
+  Map data = Map<String, dynamic>();
+  data["bumpers"] = bumpers;
+  await databaseReference
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("AVAILABLE_WEIGHTS")
+      .doc("bumpers")
+      .set(data);
+}
+
 void update1RepMaxCloud(
     {@required String lift,
     @required int newMax,
@@ -229,13 +242,18 @@ void getPlatesCloud({@required context, @required String userID}) async {
       .get();
 
   plates.docs.forEach((result) {
-    if (result.id != "bar") {
+    if (result.id != "bar" && result.id != "bumpers") {
       print("Plate pulled: ${result.id}" +
           "Count of plates: ${result.data()["count"]}");
       lifterWeightsController.updatePlate(
           context: context,
           plate: double.parse(result.id.substring(0, result.id.indexOf("_"))),
           plateCount: result.data()["count"]);
+    }
+    if (result.id == "bumpers") {
+      print("person owns bumpers: ${result.data()["bumpers"]}");
+      lifterWeightsController.updateBumpers(
+          context: context, bumpers: result.data()["bumpers"]);
     }
   });
 }

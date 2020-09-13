@@ -9,11 +9,9 @@ class LifterWeights extends ChangeNotifier {
   int barWeight;
   Map<dynamic, int> plates;
   PlateFinder _plateFinder;
+  bool bumpers;
 
-  LifterWeights({
-    this.barWeight,
-    this.plates,
-  });
+  LifterWeights({this.barWeight, this.plates, this.bumpers});
 
   void updateBarWeight(int newWeight) {
     barWeight = newWeight;
@@ -35,6 +33,16 @@ class LifterWeights extends ChangeNotifier {
     plates[plate] = plateCount;
     notifyListeners();
     return true;
+  }
+
+  bool updateBumpers({bool bumpers}) {
+    if (this.bumpers != bumpers) {
+      this.bumpers = bumpers;
+      notifyListeners();
+      return true;
+    }
+    return false;
+    ;
   }
 
 // we're given a target weight but we know we need to subtract the bar weigth!
@@ -67,6 +75,7 @@ class LifterWeights extends ChangeNotifier {
   List<Object> get props => [
         barWeight,
         plates,
+        bumpers,
       ];
 
   factory LifterWeights.fromJson(Map<String, dynamic> json) =>
@@ -79,7 +88,6 @@ class LifterWeights extends ChangeNotifier {
 // TODO: return the minimum # of plates - not thinking about future/previous sets at this point...
 // TODO: Issue has extensive discussion on optimization over the day
 // TODO: plates is a map so there is a lot of VERY DANGEROUS assuming going on here. instead of converting back and forth from
-// TODO: we don't want to expose just a string here, because we will need to return 'actual value' if we don't have an exact match
 // with the person's current plates. that is, if the closest you can get is X-3 we need to tell the user it is X-3....
 // map to uncoupled 'trust me' lists, do it right.
 // TODO: there's some strange bleed in here. why am i calculating and returning deep within instead of just at the end? i guess we have to calc along the way

@@ -100,6 +100,21 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                               context, int.parse(value));
                         },
                       ),
+                      CheckboxListTile(
+                        title: Text("Are these bumpers"),
+                        secondary: lifterweights.bumpers
+                            ? Icon(Icons.airline_seat_legroom_extra)
+                            : Icon(Icons.airline_seat_legroom_reduced),
+                        value: lifterweights.bumpers,
+                        onChanged: (newValue) {
+                          setState(() {
+                            lifterWeightsController.updateBumpers(
+                                context: context, bumpers: newValue);
+                          });
+                        },
+                        controlAffinity: ListTileControlAffinity.platform,
+                      ),
+
                       Text(
                         "Your plates",
                         style: TextStyle(
