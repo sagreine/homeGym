@@ -114,7 +114,6 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                         },
                         controlAffinity: ListTileControlAffinity.platform,
                       ),
-
                       Text(
                         "Your plates",
                         style: TextStyle(

@@ -75,11 +75,13 @@ class ExerciseSet extends ChangeNotifier {
         break;
     }
     int targetWeight = (setPct * trainingMax).floor();
+
     // Now though, we can only lift based on what weights we actually own.
     // so, calculate that based on our weight and updated accordingly
     // TODO: this higlights the absurdity of using ints vs doubles....
-    int calculatedWeight =
-        thisWeights.getPickedOverallTotal(targetWeight: targetWeight).toInt();
+    int calculatedWeight = thisWeights
+        .getPickedOverallTotal(targetWeight: targetWeight, lift: this.title)
+        .toInt();
 
     if (calculatedWeight < targetWeight) {
       print(
@@ -92,7 +94,8 @@ class ExerciseSet extends ChangeNotifier {
         thisSetPRSet: thisSetPRSet,
         weight: calculatedWeight,
         description: "Weight each side: " +
-            (thisWeights.getPickedPlatesAsString(targetWeight: targetWeight))
+            (thisWeights.getPickedPlatesAsString(
+                targetWeight: targetWeight, lift: this.title))
 
         // + nextExercise(context),
         );
