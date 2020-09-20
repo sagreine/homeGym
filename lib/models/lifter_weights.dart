@@ -150,6 +150,8 @@ class PlateFinder {
   Map<dynamic, int> _closestYetMap = Map<dynamic, int>();
   List<Map<dynamic, int>> _exactMatches;
 
+  // these are the two items we expose, but we require they be both calculated if they are not at default value.
+  // ideally this means you can't get these out of sync
   double _closestTotalYet = 0;
   Map<dynamic, int> _foundPlates;
 
@@ -179,7 +181,7 @@ class PlateFinder {
     }
     String toReturn = "";
     // sort so we get the heaviest weights first
-    // TODO: use toList() not List.from()
+    // TODO: use toList() not List.from() for type keeping efficiency...
     List<double> sorted = (new List.from(_foundPlates.keys))
       ..sort((a, b) => b.compareTo(a));
     // then put how many of each weight we're to add. e.g. "2 45s 1 35 4 10s"
@@ -296,10 +298,13 @@ class PlateFinder {
       }
     } else if (value == price) {
       if (require45 == false || variation[indexOf45] > 0) {
+        // if this is our first exact match, we definitely want to add it no matter what.
+        bool firstExactMatch = _closestTotalYet != value;
         // so we'll never track the closest yet anymore, since we have an exact solution
         _closestTotalYet = value;
-        // if we haven't added any lists yet or this one uses fewer plates than any list we have so far, add it.
+        // if we haven't added any lists yet, ths is our first exact match, or this one uses fewer plates than any list we have so far, add it.
         if (list == null ||
+            firstExactMatch ||
             // Remove this to not limit to small # of plates. for instance if we want to care about what was on the bar
             // immediately before this....
             variation.fold(0, (previous, current) => previous + current) <
