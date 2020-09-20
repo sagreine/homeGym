@@ -12,12 +12,13 @@ class ExcerciseDayView extends StatefulWidget {
 class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   ExerciseDay thisDay;
 
-  Widget _pickChild(int index) {
+  Widget _pickChild({@required int index, @required bool enabled}) {
     final ExerciseSet step = thisDay.exercises[index];
 
     final child = Container(
         child: _TimelineStepsChild(
       activity: step,
+      enabled: enabled,
     ));
 
     final isFirst = index == 0;
@@ -109,6 +110,9 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                             : Colors.transparent,
                                       )
                                     : Container(
+                                        /*color: i > thisDay.currentSet * 2 - 1
+                                            ? Colors.transparent
+                                            : Colors.grey[500].withOpacity(.7),*/
                                         height: 75,
                                         key: UniqueKey(),
                                         child: Dismissible(
@@ -145,7 +149,11 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                             mainAxisSize: MainAxisSize.min,
                                             children: <Widget>[
                                               Expanded(
-                                                child: _pickChild(i ~/ 2),
+                                                child: _pickChild(
+                                                    index: i ~/ 2,
+                                                    enabled: i >
+                                                        thisDay.currentSet * 2 -
+                                                            1),
                                               ),
                                               InkWell(
                                                 child: Icon(
@@ -208,15 +216,18 @@ class _TimelineStepIndicator extends StatelessWidget {
 }
 
 class _TimelineStepsChild extends StatelessWidget {
-  const _TimelineStepsChild({Key key, this.activity}) : super(key: key);
+  const _TimelineStepsChild({Key key, this.activity, @required this.enabled})
+      : super(key: key);
 
   final ExerciseSet activity;
+  final bool enabled;
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 15,
       child: Container(
+        color: enabled ? Colors.transparent : Colors.grey[500].withOpacity(0.7),
         padding: const EdgeInsets.all(4.0),
         height: 200,
         child: ListTile(
