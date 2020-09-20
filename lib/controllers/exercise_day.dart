@@ -9,14 +9,17 @@ class ExerciseDayController {
     BuildContext context,
     String program,
     List<int> reps,
+    List<int> prSets,
     List<double> percentages,
+    List<String> lifts,
     double trainingMaxPct,
+    /*
     List<String> assistanceCore,
     List<String> assistancePull,
     List<String> assistancePush,
     List<int> assistanceCoreReps,
     List<int> assistancePullReps,
-    List<int> assistancePushReps,
+    List<int> assistancePushReps,*/
     bool updateMaxIfGetReps,
     bool prSetWeek,
     int progressSet,
@@ -26,23 +29,28 @@ class ExerciseDayController {
     day.buildDay(
       lift: lift == null ? day.lift : lift,
       updateMaxIfGetReps: updateMaxIfGetReps,
+      lifts: lifts,
       program: program,
       currentSet: 0,
       reps: reps,
       percentages: percentages,
-      sets: reps.length +
+      sets: reps.length,
+      prSets: prSets,
+      /*+
           assistanceCore.length +
           assistancePull.length +
-          assistancePush.length,
+          assistancePush.length*/
       progressSet: progressSet,
       prSetWeek: prSetWeek,
       trainingMax: trainingMaxPct,
+      /*
       assistanceCore: assistanceCore,
       assistanceCoreReps: assistanceCoreReps,
       assistancePull: assistancePull,
       assistancePullReps: assistancePullReps,
       assistancePush: assistancePush,
       assistancePushReps: assistancePushReps,
+      */
       context: context,
     );
   }

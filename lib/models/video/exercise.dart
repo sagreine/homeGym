@@ -42,9 +42,9 @@ class ExerciseSet extends ChangeNotifier {
   void updateExerciseFull(
       {@required context,
       String exerciseTitle,
-      int plannedSet,
       @required int reps,
-      @required double setPct}) {
+      @required double setPct,
+      bool thisSetPRSet}) {
     // should be using the controller here instead of doing this...
     // if we passed a title in and there wasn't already a title (that equals this one)
     if (exerciseTitle != null &&
@@ -58,8 +58,9 @@ class ExerciseSet extends ChangeNotifier {
     // default to 0
     double trainingMax = 0;
     // some sets are PR sets, if the week has them and we're currently on the progress set.
-    bool thisSetPRSet =
-        (thisDay.prSetWeek && plannedSet == thisDay.progressSet);
+    // this is really stupid. obviously not right, put it in the db...
+    //bool thisSetPRSet =
+    //(thisDay.prSetWeek && plannedSet == thisDay.progressSet);
     switch (this.title.toLowerCase()) {
       case "deadlift":
         trainingMax = (thisMax.deadliftMax.toDouble() * thisDay.trainingMax);

@@ -278,19 +278,24 @@ Future<void> getExercisesCloud({
       .collection('PROGRAMS')
       .doc(program)
       .get();
-  List<int> reps = new List<int>.from(pctAndReps.data()["reps"]);
+  List<int> reps = new List<int>.from(pctAndReps.data()["Reps"]);
   List<double> percentages =
-      new List<double>.from(pctAndReps.data()["percentages"]);
+      new List<double>.from(pctAndReps.data()["week1Percentages"]);
+  List<String> lifts = new List<String>.from(pctAndReps.data()["LIft"]);
+  List<int> prSets = new List<int>.from(pctAndReps.data()["prSets"]);
   //var exercise = Provider.of<ExerciseDay>(context, listen: false);
   await exerciseDayController.updateDay(
     updateMaxIfGetReps: pctAndReps.data()["update_max_if_get_reps"],
+    lifts: lifts,
     program: program,
     context: context,
     reps: reps,
+    prSets: prSets,
     prSetWeek: pctAndReps.data()["PRSetWeek"],
     percentages: percentages,
     progressSet: pctAndReps.data()["progressSet"],
     trainingMaxPct: pctAndReps.data()["trainingMaxPct"],
+    /*
     assistanceCore: new List<String>.from(pctAndReps.data()["assistance_core"]),
     assistanceCoreReps:
         new List<int>.from(pctAndReps.data()["assistance_core_reps"]),
@@ -299,6 +304,6 @@ Future<void> getExercisesCloud({
         new List<int>.from(pctAndReps.data()["assistance_pull_reps"]),
     assistancePush: new List<String>.from(pctAndReps.data()["assistance_push"]),
     assistancePushReps:
-        new List<int>.from(pctAndReps.data()["assistance_push_reps"]),
+        new List<int>.from(pctAndReps.data()["assistance_push_reps"]),*/
   );
 }

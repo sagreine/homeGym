@@ -229,7 +229,7 @@ class _TimelineStepsChild extends StatelessWidget {
             title: Text(
                 activity.reps.toString() +
                     "x" +
-                    (activity.thisSetPRSet ? "xPRx" : "") +
+                    (activity.thisSetPRSet ? "PRx" : "") +
                     activity.weight.toString(),
                 textAlign: TextAlign.left,
                 style: TextStyle(

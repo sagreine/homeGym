@@ -8,6 +8,7 @@ part of 'exercise_day.dart';
 
 ExerciseDay _$ExerciseDayFromJson(Map<String, dynamic> json) {
   return ExerciseDay(
+    lift: json['lift'] as String,
     program: json['program'] as String,
     sets: json['sets'] as int,
     reps: (json['reps'] as List)?.map((e) => e as int)?.toList(),
@@ -16,37 +17,29 @@ ExerciseDay _$ExerciseDayFromJson(Map<String, dynamic> json) {
         ?.map((e) => (e as num)?.toDouble())
         ?.toList(),
     trainingMax: (json['trainingMax'] as num)?.toDouble(),
-    assistancePullReps:
-        (json['assistancePullReps'] as List)?.map((e) => e as int)?.toList(),
-    assistanceCoreReps:
-        (json['assistanceCoreReps'] as List)?.map((e) => e as int)?.toList(),
-    assistancePushReps:
-        (json['assistancePushReps'] as List)?.map((e) => e as int)?.toList(),
-    assistanceCore:
-        (json['assistanceCore'] as List)?.map((e) => e as String)?.toList(),
-    assistancePull:
-        (json['assistancePull'] as List)?.map((e) => e as String)?.toList(),
-    assistancePush:
-        (json['assistancePush'] as List)?.map((e) => e as String)?.toList(),
+    lifts: (json['lifts'] as List)?.map((e) => e as String)?.toList(),
     updateMaxIfGetReps: json['updateMaxIfGetReps'] as bool,
     progressSet: json['progressSet'] as int,
+    exercises: (json['exercises'] as List)
+        ?.map((e) =>
+            e == null ? null : ExerciseSet.fromJson(e as Map<String, dynamic>))
+        ?.toList(),
+    prSetWeek: json['prSetWeek'] as bool,
   );
 }
 
 Map<String, dynamic> _$ExerciseDayToJson(ExerciseDay instance) =>
     <String, dynamic>{
       'program': instance.program,
+      'lift': instance.lift,
       'sets': instance.sets,
       'trainingMax': instance.trainingMax,
       'currentSet': instance.currentSet,
       'reps': instance.reps,
       'percentages': instance.percentages,
-      'assistancePullReps': instance.assistancePullReps,
-      'assistanceCoreReps': instance.assistanceCoreReps,
-      'assistancePushReps': instance.assistancePushReps,
-      'assistancePull': instance.assistancePull,
-      'assistanceCore': instance.assistanceCore,
-      'assistancePush': instance.assistancePush,
+      'lifts': instance.lifts,
       'updateMaxIfGetReps': instance.updateMaxIfGetReps,
+      'prSetWeek': instance.prSetWeek,
       'progressSet': instance.progressSet,
+      'exercises': instance.exercises,
     };
