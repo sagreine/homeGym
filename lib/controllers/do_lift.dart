@@ -34,12 +34,6 @@ class HomeController {
       ConfettiController(duration: const Duration(seconds: 1));
   File targetFile;
 
-  /* HomeController() {
-    if (serverRequests == null) {
-
-      _serverInit();
-    }
-  }*/
 /*
   dispose() {
     if (serverRequests != null) {
@@ -49,18 +43,6 @@ class HomeController {
 
   bool justDidLastSet = false;
 
-  //HttpServer serverRequests;
-
-  /*Future<void> serverListen() async {
-    // this doesn't work. the port is already listened to, even if this server is new.
-    // the hack for now is shared = true    
-      serverRequests =
-          //await HttpServer.bind(InternetAddress.loopbackIPv4, 4040);
-          await HttpServer.bind('0.0.0.0', 4040, shared: true);
-      print(
-          "listening to ${serverRequests.address} address and port: ${serverRequests.port}");
-      //}
-*/
   Future<void> serverListen(context) async {
     // we only listen once.
     var _serverRequest = Provider.of<FlingMediaModel>(context, listen: false);
@@ -83,11 +65,8 @@ class HomeController {
       staticFiles.serveFile(targetFile, event);
     });
   }
-  //}
 
   Future<PickedFile> getVideo(BuildContext context) async {
-    //var url;
-    //var cloudUrl;
     final picker = ImagePicker();
     final pickedFile = await picker.getVideo(
       source: ImageSource.camera,
@@ -112,12 +91,11 @@ class HomeController {
 
       frameRate: 24,
     );
-    // THIS IS WHAT WE ARE RETURNING, FLINGING LOCALLOY NOT CLOUD.
+
     return mediaInfo.path;
   }
 
   Future<String> uploadVideoToCloud(BuildContext context, String filePath) {
-    // this should be a separate function...
     var url;
     var user = Provider.of<Muser>(context, listen: false);
     // restrict to videos under a certain size for a given set - this is ~6 min video on my camera
@@ -265,7 +243,8 @@ class HomeController {
     String nextExercise = json.encode(nextSet.toJson());
 
     // if we're doing the video, do these steps (since casting the recorded video directly doesn't work)
-    // 1) get the video
+    // 1a) get the video
+    // 1b) ask if they got the reps, correct it if not.
     // 2a) start a timer while we compress, so we can cast the 'correct' timer start value
     // 2b) cast a placeholder while we wait, so the next lift instructions get there right away
     // 2c) TBD, but ask them about reps at this point?
@@ -275,6 +254,114 @@ class HomeController {
     if (doVideo) {
       // 1 get video
       var pickedFile = await getVideo(context);
+
+      // 1b)
+      showDialog(
+          barrierDismissible: false,
+          context: context,
+          builder: (_) => AssetGiffyDialog(
+                buttonCancelText: Text("Yes"),
+                buttonOkText: Text("No"),
+                buttonOkColor: Colors.grey[700],
+                buttonCancelColor: Colors.green[500],
+                image: Image.asset('assets/images/animation_1.gif'),
+                title: Text(
+                  'Did you get ${exercise.reps} reps?',
+                  style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
+                ),
+                description: Text(
+                  'If no, hit no and enter how many you got',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(),
+                ),
+                entryAnimation: EntryAnimation.DEFAULT,
+                onOkButtonPressed: () => {
+                  Navigator.pop(context),
+                  showDialog(
+                      context: context,
+                      barrierDismissible: false,
+                      builder: (_) => AlertDialog(
+                              title: Text("Reps you got"),
+                              content: TextFormField(
+                                decoration: new InputDecoration(
+                                    focusedBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                        color: Colors.greenAccent,
+                                        width: 1.0,
+                                        style: BorderStyle.solid,
+                                      ),
+                                    ),
+                                    enabledBorder: OutlineInputBorder(
+                                      borderSide: BorderSide(
+                                          color: Colors.blueGrey, width: 1.0),
+                                    ),
+                                    labelText: "Reps"),
+                                keyboardType: TextInputType.number,
+                                inputFormatters: <TextInputFormatter>[
+                                  WhitelistingTextInputFormatter.digitsOnly,
+                                ],
+                                enableSuggestions: true,
+                                controller: formControllerRepsCorrection,
+                                validator: (value) {
+                                  if (value.isEmpty) {
+                                    formControllerRepsCorrection.text = "0";
+                                    return "Reps cannot be empty";
+                                  }
+                                  //homeController.formController.validator()
+                                  return null;
+                                },
+                              ),
+                              actions: [
+                                IconButton(
+                                  icon: Icon(Icons.done),
+                                  onPressed: () => {
+                                    Navigator.pop(context),
+                                    // update this exercise's reps to reps
+                                    exercise.reps = int.parse(
+                                        formControllerRepsCorrection.text),
+                                    /*updateDatabaseRecordWithReps(
+                                      userID: user.firebaseUser.uid,
+                                      dbDocID: origExerciseID,
+                                      reps: int.parse(
+                                          formControllerRepsCorrection.text)),*/
+                                    // if we are updating because we got >= the target, say so
+                                    if (int.parse(formControllerRepsCorrection
+                                            .text) >=
+                                        exercise.reps)
+                                      {
+                                        if (thisDay.updateMaxIfGetReps &&
+                                            //thisDay.areWeOnLastSet()
+                                            thisDay.currentSet ==
+                                                thisDay.progressSet)
+                                          {
+                                            progressAfter = true,
+                                          },
+
+                                        // should only confetti if it is the last set of a week that tests/progresses?
+                                        confettiController.play(),
+                                      },
+                                    // update the reps for this exercise? for the timeline i guess is the thought, but not sure
+                                    // if that's what we'd want from the biz side or not really...
+                                    // i say no actaully, just keep the target there (which do update).
+                                  },
+                                ),
+                              ]))
+                },
+                //on 'Yes i got the reps'
+                onCancelButtonPressed: () => {
+                  Navigator.pop(context),
+                  if (thisDay.updateMaxIfGetReps &&
+                      //thisDay.areWeOnLastSet()
+                      thisDay.currentSet == thisDay.progressSet)
+                    {
+                      progressAfter = true,
+                    },
+
+                  // should only confetti if it is the last set of a week that tests/progresses?
+                  confettiController.play()
+                },
+              ));
+
       // 2a)
       Stopwatch stopwatch = Stopwatch();
       stopwatch.start();
@@ -325,8 +412,9 @@ class HomeController {
     // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information
     //....so could check for the garbage (default) URLs before updating this..
     // make the firestore record for this exercise. (dangerous, they can still back out of video.....)
-    String origExerciseID = await createDatabaseRecord(
-        exercise: exercise, userID: user.firebaseUser.uid);
+    //String origExerciseID =
+    //await
+    createDatabaseRecord(exercise: exercise, userID: user.firebaseUser.uid);
 
     if (doCast & !doVideo) {
       cast(
@@ -339,110 +427,7 @@ class HomeController {
 
 // move the UI components to....the UI
 // could do this before the casting and saving and save some round trips. more logical, puts correct info on the TV for end user too...
-    await showDialog(
-        barrierDismissible: false,
-        context: context,
-        builder: (_) => AssetGiffyDialog(
-              buttonCancelText: Text("Yes"),
-              buttonOkText: Text("No"),
-              buttonOkColor: Colors.grey[700],
-              buttonCancelColor: Colors.green[500],
-              image: Image.asset('assets/images/animation_1.gif'),
-              title: Text(
-                'Did you get ${exercise.reps} reps?',
-                style: TextStyle(fontSize: 22.0, fontWeight: FontWeight.w600),
-              ),
-              description: Text(
-                'If no, hit no and enter how many you got',
-                textAlign: TextAlign.center,
-                style: TextStyle(),
-              ),
-              entryAnimation: EntryAnimation.DEFAULT,
-              onOkButtonPressed: () => {
-                Navigator.pop(context),
-                showDialog(
-                    context: context,
-                    barrierDismissible: false,
-                    builder: (_) => AlertDialog(
-                            title: Text("Reps you got"),
-                            content: TextFormField(
-                              decoration: new InputDecoration(
-                                  focusedBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                      color: Colors.greenAccent,
-                                      width: 1.0,
-                                      style: BorderStyle.solid,
-                                    ),
-                                  ),
-                                  enabledBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(
-                                        color: Colors.blueGrey, width: 1.0),
-                                  ),
-                                  labelText: "Reps"),
-                              keyboardType: TextInputType.number,
-                              inputFormatters: <TextInputFormatter>[
-                                WhitelistingTextInputFormatter.digitsOnly,
-                              ],
-                              enableSuggestions: true,
-                              controller: formControllerRepsCorrection,
-                              validator: (value) {
-                                if (value.isEmpty) {
-                                  formControllerRepsCorrection.text = "0";
-                                  return "Reps cannot be empty";
-                                }
-                                //homeController.formController.validator()
-                                return null;
-                              },
-                            ),
-                            actions: [
-                              IconButton(
-                                icon: Icon(Icons.done),
-                                onPressed: () => {
-                                  Navigator.pop(context),
-                                  // need to use controller here...
 
-                                  updateDatabaseRecordWithReps(
-                                      userID: user.firebaseUser.uid,
-                                      dbDocID: origExerciseID,
-                                      reps: int.parse(
-                                          formControllerRepsCorrection.text)),
-                                  // if we are updating because we got >= the target, say so
-                                  if (int.parse(
-                                          formControllerRepsCorrection.text) >=
-                                      exercise.reps)
-                                    {
-                                      if (thisDay.updateMaxIfGetReps &&
-                                          //thisDay.areWeOnLastSet()
-                                          thisDay.currentSet ==
-                                              thisDay.progressSet)
-                                        {
-                                          progressAfter = true,
-                                        },
-
-                                      // should only confetti if it is the last set of a week that tests/progresses?
-                                      confettiController.play(),
-                                    },
-                                  // update the reps for this exercise? for the timeline i guess is the thought, but not sure
-                                  // if that's what we'd want from the biz side or not really...
-                                  // i say no actaully, just keep the target there (which do update).
-                                },
-                              ),
-                            ]))
-              },
-              //on 'Yes i got the reps'
-              onCancelButtonPressed: () => {
-                Navigator.pop(context),
-                if (thisDay.updateMaxIfGetReps &&
-                    //thisDay.areWeOnLastSet()
-                    thisDay.currentSet == thisDay.progressSet)
-                  {
-                    progressAfter = true,
-                  },
-
-                // should only confetti if it is the last set of a week that tests/progresses?
-                confettiController.play()
-              },
-            ));
     displayInExerciseInfo(exercise: nextSet);
     // if we passed on the week that we were told to pass on, progress at the end.
     // TODO: this is also broken when the last set is the test set AND might update twice (second to last set and actual last set)
