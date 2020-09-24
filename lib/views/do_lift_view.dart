@@ -19,7 +19,8 @@ class DoLiftView extends StatefulWidget {
   _DoLiftViewState createState() => _DoLiftViewState();
 }
 
-class _DoLiftViewState extends State<DoLiftView> {
+class _DoLiftViewState extends State<DoLiftView>
+    with AutomaticKeepAliveClientMixin<DoLiftView> {
   /*static const TextStyle timerTextStyle = TextStyle(
     fontSize: 60,
     fontWeight: FontWeight.bold,
@@ -49,6 +50,7 @@ class _DoLiftViewState extends State<DoLiftView> {
     doCast = false;
     // this is bad, but whatever.
     homeController.formControllerRestInterval.text = "90";
+    //homeController.serverListen();
 
     //confettiController
   }
@@ -65,6 +67,12 @@ class _DoLiftViewState extends State<DoLiftView> {
   void dispose() async {
     super.dispose();
     await FlutterFling.stopDiscoveryController();
+    //homeController.dispose();
+  }
+
+  @override
+  bool get wantKeepAlive {
+    return true;
   }
 
   Future showCastDevicePickerDialog() {
@@ -123,6 +131,7 @@ class _DoLiftViewState extends State<DoLiftView> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     //var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     //final DoLiftView args = ModalRoute.of(context).settings.arguments;
     return Consumer<FlingMediaModel>(builder: (context, flingy, child) {

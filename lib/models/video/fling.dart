@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_fling/remote_media_player.dart';
 
@@ -10,6 +12,10 @@ class FlingMediaModel extends ChangeNotifier {
   String mediaState;
   String mediaCondition;
   String mediaPosition;
+  HttpServer httpServer;
+  // this is set once we have listened to something with our httpServer -> we only want to listen to one port, 1 time, and nothing else can listen to that port
+  // in production that'd have to be a randomly selected one > 1024, not hardcoded, in case user has something there already...
+  bool isListening;
 
   void addFlingDevices(RemoteMediaPlayer remoteMediaPlayer) {
     flingDevices.add(remoteMediaPlayer);
@@ -33,6 +39,7 @@ class FlingMediaModel extends ChangeNotifier {
     mediaCondition = 'null';
     mediaPosition = '0';
     selectedPlayer = null;
+    //httpServer.close()
     notifyListeners();
   }
 
@@ -41,11 +48,21 @@ class FlingMediaModel extends ChangeNotifier {
       this.selectedPlayer,
       this.mediaCondition,
       this.mediaPosition,
-      this.mediaState}) {
+      this.mediaState,
+      this.httpServer,
+      this.isListening}) {
     flingDevices = Set();
+    isListening = false;
   }
 
   //@override
-  List<Object> get props =>
-      [flingDevices, selectedPlayer, mediaCondition, mediaState, mediaPosition];
+  List<Object> get props => [
+        flingDevices,
+        selectedPlayer,
+        mediaCondition,
+        mediaState,
+        mediaPosition,
+        httpServer,
+        isListening,
+      ];
 }

@@ -6,11 +6,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/flutter_fling.dart';
 import 'package:flutter_fling/remote_media_player.dart';
+import 'package:get_ip/get_ip.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:http_server/http_server.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'package:video_compress/video_compress.dart';
 
 //TODO: implement dispose
 //TODO: this is all kind of just thrown in here for now. some is from startup that isn't created yet.
@@ -29,36 +32,109 @@ class HomeController {
 
   ConfettiController confettiController =
       ConfettiController(duration: const Duration(seconds: 1));
+  File targetFile;
+
+  /* HomeController() {
+    if (serverRequests == null) {
+
+      _serverInit();
+    }
+  }*/
+/*
+  dispose() {
+    if (serverRequests != null) {
+      serverRequests.close();
+    }
+  }*/
 
   bool justDidLastSet = false;
 
-  Future<String> getVideo(bool recordNewVideo, BuildContext context) async {
-    var url;
-    if (recordNewVideo) {
-      final picker = ImagePicker();
-      final pickedFile = await picker.getVideo(source: ImageSource.camera);
-      if (pickedFile == null) {
-        return null;
-      }
-      var user = Provider.of<Muser>(context, listen: false);
-      // restrict to videos under a certain size for a given set - this is ~6 min video on my camera
-      // but obviously we need to be careful here.
-      print(File(File(pickedFile.path).resolveSymbolicLinksSync())
-          .lengthSync()
-          .toString());
-      if (File(File(pickedFile.path).resolveSymbolicLinksSync()).lengthSync() <
-          983977033) {
-        url = await uploadToCloudStorage(
-            userID: user.fAuthUser.uid, fileToUpload: File(pickedFile.path));
-      } else {
-        url = "https://i.imgur.com/ACgwkoh.mp4";
-        print(
-            "SAGREHOMEGYM: You elected to record a video, but it is too large");
-      }
-    } else {
-      url =
-          "https://firebasestorage.googleapis.com/v0/b/sagrehomegym.appspot.com/o/animation_1.mkv?alt=media&token=95062198-8a3a-4cba-8de4-6fcb8cb0bf22"; //https://i.imgur.com/ACgwkoh.mp4";
+  //HttpServer serverRequests;
+
+  /*Future<void> serverListen() async {
+    // this doesn't work. the port is already listened to, even if this server is new.
+    // the hack for now is shared = true    
+      serverRequests =
+          //await HttpServer.bind(InternetAddress.loopbackIPv4, 4040);
+          await HttpServer.bind('0.0.0.0', 4040, shared: true);
+      print(
+          "listening to ${serverRequests.address} address and port: ${serverRequests.port}");
+      //}
+*/
+  Future<void> serverListen(context) async {
+    // we only listen once.
+    var _serverRequest = Provider.of<FlingMediaModel>(context, listen: false);
+    if (_serverRequest.isListening) {
+      return;
     }
+    _serverRequest.isListening = true;
+    VirtualDirectory staticFiles = VirtualDirectory('.')
+      ..followLinks = true
+      ..allowDirectoryListing = true
+      ..jailRoot = false;
+    //serverRequests.drain();
+
+    //int abc = _serverRequest.httpServer.connectionsInfo().total;
+    _serverRequest.httpServer.listen((event) async {
+      print(
+          "request received to ${_serverRequest.httpServer.address} address and port: ${_serverRequest.httpServer.port}");
+      //File targetFile2 = File(targetFile);
+      assert(await targetFile.exists());
+      staticFiles.serveFile(targetFile, event);
+    });
+  }
+  //}
+
+  Future<PickedFile> getVideo(BuildContext context) async {
+    //var url;
+    //var cloudUrl;
+    final picker = ImagePicker();
+    final pickedFile = await picker.getVideo(
+      source: ImageSource.camera,
+      maxDuration: const Duration(seconds: 300),
+    );
+    if (pickedFile == null) {
+      return null;
+    }
+    return pickedFile;
+  }
+
+  Future<String> compressVideo(
+      BuildContext context, PickedFile pickedFile) async {
+    // my internet and/or device is way to slow for this
+    // which is unfortunate because it casts almosts immediately.
+    //return pickedFile.path;
+    MediaInfo mediaInfo = await VideoCompress.compressVideo(
+      pickedFile.path,
+      quality: VideoQuality.MediumQuality,
+      deleteOrigin: false, // It's false by default
+      includeAudio: false,
+
+      frameRate: 24,
+    );
+    // THIS IS WHAT WE ARE RETURNING, FLINGING LOCALLOY NOT CLOUD.
+    return mediaInfo.path;
+  }
+
+  Future<String> uploadVideoToCloud(BuildContext context, String filePath) {
+    // this should be a separate function...
+    var url;
+    var user = Provider.of<Muser>(context, listen: false);
+    // restrict to videos under a certain size for a given set - this is ~6 min video on my camera
+    // but obviously we need to be careful here.
+    print(File(File(filePath).resolveSymbolicLinksSync())
+        .lengthSync()
+        .toString());
+    if (File(File(filePath).resolveSymbolicLinksSync()).lengthSync() <
+        983977033) {
+      //cloudUrl =
+      url = uploadToCloudStorage(
+          userID: user.fAuthUser.uid, fileToUpload: File(filePath));
+    } else {
+      //cloudUrl = "https://i.imgur.com/ACgwkoh.mp4";
+      print("SAGREHOMEGYM: You elected to record a video, but it is too large");
+    }
+
     return url;
   }
 
@@ -114,6 +190,28 @@ class HomeController {
     formControllerWeight.text = exercise.weight.toString();
   }
 
+  Future cast(
+      {@required BuildContext context,
+      @required RemoteMediaPlayer player,
+      @required String url,
+      @required String mediaTitle}) async {
+    await serverListen(context);
+    await FlutterFling.stopPlayer();
+    await FlutterFling.play(
+      (state, condition, position) {
+        // not sure we need this
+        print(state.toString());
+        if (state.toString() == "MediaState.Finished") {
+          print("context has finished");
+          FlutterFling.stopPlayer();
+        }
+      },
+      player: player,
+      mediaUri: url, // url,
+      mediaTitle: mediaTitle, //json.encode(exercise.toJson()),
+    );
+  }
+
 // see about this ---> pass in the next exercise? concatenate JSON...
 
   // or just don't wait? once we send the video there's nothing
@@ -127,22 +225,12 @@ class HomeController {
   }) async {
     //var exercise = Provider.of<ExerciseSet>(context, listen: false);
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
+    var flingy = Provider.of<FlingMediaModel>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
 
-    // TODO: pull do video out of here? either way is kind of stupid...
-    String url = await getVideo(doVideo, context);
-    // if they hit the back button we need to stop in our tracks.
-    if (url == null) {
-      return;
-    } else {
-      exercise.videoPath = url;
-    }
+    String url =
+        "https://firebasestorage.googleapis.com/v0/b/sagrehomegym.appspot.com/o/animation_1.mkv?alt=media&token=95062198-8a3a-4cba-8de4-6fcb8cb0bf22";
 
-    // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information
-    //....so could check for the garbage (default) URLs before updating this..
-    // make the firestore record for this exercise. (dangerous, they can still back out of video.....)
-    String origExerciseID = await createDatabaseRecord(
-        exercise: exercise, userID: user.firebaseUser.uid);
     //updateDatabaseRecordWithURL(
     //dbDocID: origExerciseID, url: url, userID: user.firebaseUser.uid);
 
@@ -175,30 +263,82 @@ class HomeController {
     ///
     ExerciseSet nextSet = getNextExercise(context: context);
     String nextExercise = json.encode(nextSet.toJson());
-    // below is needed for dispalying assistance on screen - remove if not doing anymore
-    String thisDayJSON = json.encode(thisDay.toJson());
 
-    // TODO: do we want to delay cast at all if not recording?
-    // that is, give them time to do the actual exercise?
-    // do we need to await? think rest period...
-    if (doCast) {
-      await FlutterFling.play(
-        (state, condition, position) {
-          // not sure we need this
-          print(state.toString());
-          if (state.toString() == "MediaState.Finished") {
-            print("context has finished");
-            FlutterFling.stopPlayer();
-          }
-        },
+    // if we're doing the video, do these steps (since casting the recorded video directly doesn't work)
+    // 1) get the video
+    // 2a) start a timer while we compress, so we can cast the 'correct' timer start value
+    // 2b) cast a placeholder while we wait, so the next lift instructions get there right away
+    // 2c) TBD, but ask them about reps at this point?
+    // 3) compress the video
+    // 4) cast the compressed video
+    // 5) reset to the original rest period value
+    if (doVideo) {
+      // 1 get video
+      var pickedFile = await getVideo(context);
+      // 2a)
+      Stopwatch stopwatch = Stopwatch();
+      stopwatch.start();
+      // if we didn't record the video, like by pressing back, back all the way out
+      if (pickedFile == null) {
+        stopwatch.stop();
+        return;
+      }
+      // 2b cast placeholder
+      if (doCast) {
+        cast(
+          url: url,
+          player: player,
+          mediaTitle: thisExercise + nextExercise,
+          context: context,
+        );
+      }
+      // 3 compress video
+      var targetFilePath = await compressVideo(context, pickedFile);
+      // 4 cast the compressed video
+      if (doCast) {
+        // this is the file we'll serve to anyone who visits the URL
+        targetFile = File(targetFilePath);
+        // we pass this URL to the cast device, it visits it and gets the target file
+        url = "http://" +
+            (await GetIp.ipAddress) +
+            ":" +
+            flingy.httpServer.port.toString();
+        // store the original rest period
+        var origRestPeriod = exercise.restPeriodAfter;
+        // remove the elapsed time from the rest period and re-JSON-ify it (dangerous...)
+        exercise.restPeriodAfter -= stopwatch.elapsed.inSeconds;
+        thisExercise = json.encode(exercise.toJson());
+        cast(
+          url: url,
+          player: player,
+          mediaTitle: thisExercise + nextExercise,
+          context: context,
+        );
+        // put the rest period back to what the user knows.
+        exercise.restPeriodAfter = origRestPeriod;
+      }
+      // upload the compressed video to cloud storage. could change to a upload then update model to not need to wait.
+      exercise.videoPath = await uploadVideoToCloud(context, targetFilePath);
+      print(exercise.videoPath);
+    }
+
+    // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information
+    //....so could check for the garbage (default) URLs before updating this..
+    // make the firestore record for this exercise. (dangerous, they can still back out of video.....)
+    String origExerciseID = await createDatabaseRecord(
+        exercise: exercise, userID: user.firebaseUser.uid);
+
+    if (doCast & !doVideo) {
+      cast(
+        url: url,
         player: player,
-        mediaUri: url, // url,
-        mediaTitle: thisExercise +
-            nextExercise +
-            thisDayJSON, //json.encode(exercise.toJson()),
+        mediaTitle: thisExercise + nextExercise,
+        context: context,
       );
     }
+
 // move the UI components to....the UI
+// could do this before the casting and saving and save some round trips. more logical, puts correct info on the TV for end user too...
     await showDialog(
         barrierDismissible: false,
         context: context,
