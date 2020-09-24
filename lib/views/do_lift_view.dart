@@ -41,6 +41,57 @@ class _DoLiftViewState extends State<DoLiftView>
 // temporary. and should be in controller.
   bool doCast;
 
+  bool _noDayPickedOnEntry;
+
+  //Container banner;
+
+  Container _showBanner() {
+    if (_noDayPickedOnEntry) {
+      return Container(
+        padding: EdgeInsets.all(8),
+        decoration: BoxDecoration(
+            border: Border(bottom: BorderSide(color: Colors.grey[500]))),
+        child: Column(
+          children: [
+            Container(
+              padding: EdgeInsets.only(left: 8, right: 24, top: 16),
+              child: Text(
+                  "You didn't pick a program, so using a default Squat program for now. Please pick a day and program."),
+            ),
+            ButtonBar(
+              children: [
+                FlatButton(
+                  child: Text(
+                    "DISMISS",
+                    style: TextStyle(color: Colors.purple[300], fontSize: 16),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _noDayPickedOnEntry = false;
+                    });
+                  },
+                ),
+                FlatButton(
+                  child: Text(
+                    "PICK A PROGRAM",
+                    style: TextStyle(color: Colors.purple[300], fontSize: 16),
+                  ),
+                  onPressed: () {
+                    Navigator.pushNamed(context, "/pick_day");
+                  },
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+    } else {
+      return Container(
+        height: 0,
+      );
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -48,6 +99,7 @@ class _DoLiftViewState extends State<DoLiftView>
     fling = FlutterFling();
     doVideo = false;
     doCast = false;
+    _noDayPickedOnEntry = false;
     // this is bad, but whatever.
     homeController.formControllerRestInterval.text = "90";
     //homeController.serverListen();
@@ -56,9 +108,21 @@ class _DoLiftViewState extends State<DoLiftView>
   }
 
   @override
-  void didChangeDependencies() {
+  void didChangeDependencies() async {
     super.didChangeDependencies();
     var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
+
+    // if they came here without picking a day first, pick squat by default and tell them about it.
+    // TODO this should definitely not be in the UI though...
+    if (exerciseDay.lift == null) {
+      _noDayPickedOnEntry = true;
+      exerciseDay.lift = "Squat";
+      PickDayController pickDayController = PickDayController();
+      await pickDayController.getExercises(context, "widowmaker3_2");
+      exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
+      //banner =
+    }
+
     exercise = exerciseDay.exercises[exerciseDay.currentSet];
     homeController.displayInExerciseInfo(exercise: exercise);
   }
@@ -157,6 +221,8 @@ class _DoLiftViewState extends State<DoLiftView>
               ),
             ),
             Column(children: <Widget>[
+              // if they didn't pick a day on the way in, yell at them about it here.
+              _showBanner(),
               Row(
                 //crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.center,
