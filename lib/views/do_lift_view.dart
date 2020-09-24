@@ -67,7 +67,7 @@ class _DoLiftViewState extends State<DoLiftView>
   void dispose() async {
     super.dispose();
     await FlutterFling.stopDiscoveryController();
-    //homeController.dispose();
+    homeController.dispose();
   }
 
   @override
@@ -92,28 +92,32 @@ class _DoLiftViewState extends State<DoLiftView>
                 child: AlertDialog(
                     scrollable: true,
                     title: Text("Cast to"),
-                    content: Container(
-                        width: double.maxFinite,
-                        height: 60,
-                        child: ListView.builder(
-                          //shrinkWrap: true,
-                          itemCount: flingy.flingDevices == null
-                              ? 0
-                              : flingy.flingDevices.length,
-                          itemBuilder: (context, index) {
-                            return ListTile(
-                              leading: Icon(Icons.tv),
-                              title: Text(
-                                  flingy.flingDevices.elementAt(index).name),
-                              onTap: () {
-                                flingController.selectPlayer(context,
-                                    flingy.flingDevices.elementAt(index));
-                                doCast = true;
-                                Navigator.of(context).pop();
-                              },
-                            );
-                          },
-                        )),
+                    content: Column(mainAxisSize: MainAxisSize.min, children: [
+                      Container(
+                          width: double.maxFinite,
+                          height: 100,
+                          child: ListView.builder(
+                            //shrinkWrap: true,
+                            itemCount: flingy.flingDevices == null
+                                ? 0
+                                : flingy.flingDevices.length,
+                            // should check to rebuild? this could be out of date.
+                            itemBuilder: (context, index) {
+                              return ListTile(
+                                leading: Icon(Icons.tv),
+                                title: Text(
+                                    flingy.flingDevices.elementAt(index).name),
+                                onTap: () {
+                                  // or check here before we let them select it..
+                                  flingController.selectPlayer(context,
+                                      flingy.flingDevices.elementAt(index));
+                                  doCast = true;
+                                  Navigator.of(context).pop();
+                                },
+                              );
+                            },
+                          ))
+                    ]),
                     actions: [
                       FlatButton(
                         child: Text("Don't cast"),

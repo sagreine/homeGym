@@ -34,6 +34,13 @@ class HomeController {
       ConfettiController(duration: const Duration(seconds: 1));
   File targetFile;
 
+  dispose() {
+    // delete the targetfile when we're done.
+    if (targetFile != null) {
+      targetFile.delete();
+    }
+  }
+
 /*
   dispose() {
     if (serverRequests != null) {
@@ -244,7 +251,8 @@ class HomeController {
 
     // if we're doing the video, do these steps (since casting the recorded video directly doesn't work)
     // 1a) get the video
-    // 1b) ask if they got the reps, correct it if not.
+    // 1b) show the next exercise
+    // 1c) ask if they got the reps, correct it if not.
     // 2a) start a timer while we compress, so we can cast the 'correct' timer start value
     // 2b) cast a placeholder while we wait, so the next lift instructions get there right away
     // 2c) TBD, but ask them about reps at this point?
@@ -252,10 +260,11 @@ class HomeController {
     // 4) cast the compressed video
     // 5) reset to the original rest period value
     if (doVideo) {
-      // 1 get video
+      // 1a) get video
       var pickedFile = await getVideo(context);
-
-      // 1b)
+      // 1b) show the next execise
+      displayInExerciseInfo(exercise: nextSet);
+      // 1c)
       showDialog(
           barrierDismissible: false,
           context: context,
@@ -381,8 +390,14 @@ class HomeController {
       }
       // 3 compress video
       var targetFilePath = await compressVideo(context, pickedFile);
+      // now we have the compressed file, so delete the original.
+      File(pickedFile.path)..delete();
       // 4 cast the compressed video
       if (doCast) {
+        // if we've already casted, delete the old file :)
+        if (targetFile != null) {
+          targetFile.delete();
+        }
         // this is the file we'll serve to anyone who visits the URL
         targetFile = File(targetFilePath);
         // we pass this URL to the cast device, it visits it and gets the target file
@@ -415,7 +430,7 @@ class HomeController {
     //String origExerciseID =
     //await
     createDatabaseRecord(exercise: exercise, userID: user.firebaseUser.uid);
-
+    // otherwise we'll cast the default video.
     if (doCast & !doVideo) {
       cast(
         url: url,
@@ -428,7 +443,6 @@ class HomeController {
 // move the UI components to....the UI
 // could do this before the casting and saving and save some round trips. more logical, puts correct info on the TV for end user too...
 
-    displayInExerciseInfo(exercise: nextSet);
     // if we passed on the week that we were told to pass on, progress at the end.
     // TODO: this is also broken when the last set is the test set AND might update twice (second to last set and actual last set)
     if (progressAfter && exerciseDayController.areWeOnLastSet(context)) {
