@@ -381,10 +381,7 @@ class _DoLiftViewState extends State<DoLiftView>
                 ),
               ),
               // this should be in a controller
-              CheckboxListTile(
-                title: Text("Cast to TV"),
-                secondary:
-                    doCast ? Icon(Icons.cast_connected) : Icon(Icons.cast),
+              SwitchListTile.adaptive(
                 value: doCast,
                 //TODO: or do we want to make them pick a cast device every time?
                 // that's what others do.... annoying to otherwise have to go to settings
@@ -398,8 +395,11 @@ class _DoLiftViewState extends State<DoLiftView>
                     });
                   }
                 },
+                secondary:
+                    doCast ? Icon(Icons.cast_connected) : Icon(Icons.cast),
+                title: Text("Cast to TV"),
               ),
-              CheckboxListTile(
+              SwitchListTile.adaptive(
                 title: Text("Record Video"),
                 secondary:
                     doVideo ? Icon(Icons.videocam) : Icon(Icons.videocam_off),

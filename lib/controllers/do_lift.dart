@@ -40,8 +40,6 @@ class HomeController {
     if (targetFile != null) {
       targetFile.delete();
     }
-    // this is a future but we can't wait.
-    //VideoCompress.deleteAllCache();
   }
 
   bool justDidLastSet = false;

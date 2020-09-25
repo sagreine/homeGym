@@ -100,7 +100,7 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                               context, int.parse(value));
                         },
                       ),
-                      CheckboxListTile(
+                      SwitchListTile.adaptive(
                         title: Text("Are these bumpers"),
                         secondary: lifterweights.bumpers
                             ? Icon(Icons.airline_seat_legroom_extra)
