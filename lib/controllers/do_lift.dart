@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/flutter_fling.dart';
 import 'package:flutter_fling/remote_media_player.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:get_ip/get_ip.dart';
 import 'package:giffy_dialog/giffy_dialog.dart';
 import 'package:home_gym/controllers/controllers.dart';
@@ -212,6 +213,7 @@ class HomeController {
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
     var flingy = Provider.of<FlingMediaModel>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
+    var settings = Provider.of<Settings>(context, listen: false);
 
     String url =
         "https://firebasestorage.googleapis.com/v0/b/sagrehomegym.appspot.com/o/animation_1.mkv?alt=media&token=95062198-8a3a-4cba-8de4-6fcb8cb0bf22";
@@ -248,6 +250,7 @@ class HomeController {
     ///
     ExerciseSet nextSet = getNextExercise(context: context);
     String nextExercise = json.encode(nextSet.toJson());
+    bool startTimerCast = true;
 
     // if we're doing the video, do these steps (since casting the recorded video directly doesn't work)
     // 1a) get the video
@@ -259,6 +262,7 @@ class HomeController {
     // 3) compress the video
     // 4) cast the compressed video
     // 5) reset to the original rest period value
+    // 6) if they want us to, save to local and or cloud
     if (doVideo) {
       // 1a) get video
       var pickedFile = await getVideo(context);
@@ -384,7 +388,7 @@ class HomeController {
         cast(
           url: url,
           player: player,
-          mediaTitle: thisExercise + nextExercise,
+          mediaTitle: thisExercise + nextExercise + json.encode(startTimerCast),
           context: context,
         );
       }
@@ -410,18 +414,26 @@ class HomeController {
         // remove the elapsed time from the rest period and re-JSON-ify it (dangerous...)
         exercise.restPeriodAfter -= stopwatch.elapsed.inSeconds;
         thisExercise = json.encode(exercise.toJson());
+        // we don't want to cast a timer this time, so set it to false.
+        startTimerCast = false;
         cast(
           url: url,
           player: player,
-          mediaTitle: thisExercise + nextExercise,
+          mediaTitle: thisExercise + nextExercise + json.encode(startTimerCast),
           context: context,
         );
         // put the rest period back to what the user knows.
         exercise.restPeriodAfter = origRestPeriod;
       }
-      // upload the compressed video to cloud storage. could change to a upload then update model to not need to wait.
-      exercise.videoPath = await uploadVideoToCloud(context, targetFilePath);
-      print(exercise.videoPath);
+      // regardless of cast, here, we need to handle the video
+      if (settings.saveCloud) {
+        // upload the compressed video to cloud storage. could change to a upload then update model to not need to wait.
+        exercise.videoPath = await uploadVideoToCloud(context, targetFilePath);
+        print(exercise.videoPath);
+      }
+      if (settings.saveLocal) {
+        GallerySaver.saveVideo(targetFilePath);
+      }
     }
 
     // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information
@@ -435,7 +447,7 @@ class HomeController {
       cast(
         url: url,
         player: player,
-        mediaTitle: thisExercise + nextExercise,
+        mediaTitle: thisExercise + nextExercise + json.encode(startTimerCast),
         context: context,
       );
     }

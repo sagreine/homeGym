@@ -16,6 +16,7 @@ import 'package:provider/provider.dart';
 //import 'package:bloc/bloc.dart';
 //import 'package:flutter_fling/flutter_fling.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // BLoC for each page
 // complex page-children should have their own block, parent subscribes to state changes
@@ -43,6 +44,7 @@ void main() async {
     ChangeNotifierProvider(
       create: (context) => Muser(),
     ),
+    ChangeNotifierProvider(create: (context) => Settings()),
     // most of these can move down now...
     ChangeNotifierProvider(create: (context) => LifterWeights()),
     ChangeNotifierProvider(create: (context) => LifterMaxes()),
@@ -84,6 +86,13 @@ void _getInitialPull(BuildContext context) async {
   flingController.getCastDevices(context);
 }
 
+void _getSharedPrerferences(BuildContext context) async {
+  var settings = Provider.of<Settings>(context, listen: false);
+  final prefs = await SharedPreferences.getInstance();
+  settings.saveLocal = prefs.getBool("saveLocal");
+  settings.saveCloud = prefs.getBool("saveCloud");
+}
+
 void _serverInit(context) {
   // this doesn't work. the port is already listened to, even if this server is new.
   // the hack for now is shared = true
@@ -108,6 +117,7 @@ class MyApp extends StatelessWidget {
     // but this is running over and over again....? just on hot reload though actually.
     _getInitialPull(context);
     _serverInit(context);
+    _getSharedPrerferences(context);
     // maybe check if the user is already authorized here, and go to login if not?
     return MaterialApp(
       debugShowCheckedModeBanner: false,

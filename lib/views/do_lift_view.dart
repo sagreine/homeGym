@@ -120,7 +120,6 @@ class _DoLiftViewState extends State<DoLiftView>
       PickDayController pickDayController = PickDayController();
       await pickDayController.getExercises(context, "widowmaker3_2");
       exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
-      //banner =
     }
 
     exercise = exerciseDay.exercises[exerciseDay.currentSet];

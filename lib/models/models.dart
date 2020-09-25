@@ -5,3 +5,4 @@ export 'package:home_gym/models/lifter_weights.dart';
 export 'package:home_gym/models/lifter_maxes.dart';
 export 'package:home_gym/models/muser.dart';
 export 'package:home_gym/models/programs.dart';
+export 'package:home_gym/models/settings.dart';

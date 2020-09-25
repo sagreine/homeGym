@@ -31,7 +31,41 @@ class SettingsViewState extends State<SettingsView> {
             mainAxisAlignment: MainAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: <Widget>[
-              Text("Settings"),
+              Text(
+                "Settings",
+                style: TextStyle(fontSize: 16),
+              ),
+              Divider(
+                height: 10,
+                thickness: 8,
+                color: Colors.blueGrey,
+                indent: 20,
+                endIndent: 20,
+              ),
+              Consumer<Settings>(builder: (context, settings, child) {
+                return Column(
+                  children: [
+                    SwitchListTile.adaptive(
+                      value: settings.saveLocal,
+                      onChanged: (value) {
+                        settingsController.updateBoolVal(
+                            context: context, key: "saveLocal", value: value);
+                      },
+                      secondary: const Icon(Icons.save_alt),
+                      title: Text("Save local copy of video too"),
+                    ),
+                    SwitchListTile.adaptive(
+                      value: settings.saveCloud,
+                      onChanged: (value) {
+                        settingsController.updateBoolVal(
+                            context: context, key: "saveCloud", value: value);
+                      },
+                      secondary: const Icon(Icons.cloud),
+                      title: Text("Save to Cloud"),
+                    )
+                  ],
+                );
+              }),
               Divider(
                 height: 10,
                 thickness: 8,
