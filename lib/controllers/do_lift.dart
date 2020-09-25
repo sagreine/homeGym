@@ -42,13 +42,6 @@ class HomeController {
     }
   }
 
-/*
-  dispose() {
-    if (serverRequests != null) {
-      serverRequests.close();
-    }
-  }*/
-
   bool justDidLastSet = false;
 
   Future<void> serverListen(context) async {
@@ -193,8 +186,8 @@ class HomeController {
         }
       },
       player: player,
-      mediaUri: url, // url,
-      mediaTitle: mediaTitle, //json.encode(exercise.toJson()),
+      mediaUri: url,
+      mediaTitle: mediaTitle,
     );
   }
 
@@ -376,11 +369,8 @@ class HomeController {
               ));
 
       // 2a)
-      Stopwatch stopwatch = Stopwatch();
-      stopwatch.start();
       // if we didn't record the video, like by pressing back, back all the way out
       if (pickedFile == null) {
-        stopwatch.stop();
         return;
       }
       // 2b cast placeholder
@@ -411,9 +401,6 @@ class HomeController {
             flingy.httpServer.port.toString();
         // store the original rest period
         var origRestPeriod = exercise.restPeriodAfter;
-        // remove the elapsed time from the rest period and re-JSON-ify it (dangerous...)
-        exercise.restPeriodAfter -= stopwatch.elapsed.inSeconds;
-        thisExercise = json.encode(exercise.toJson());
         // we don't want to cast a timer this time, so set it to false.
         startTimerCast = false;
         cast(
