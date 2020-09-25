@@ -40,6 +40,8 @@ class HomeController {
     if (targetFile != null) {
       targetFile.delete();
     }
+    // this is a future but we can't wait.
+    //VideoCompress.deleteAllCache();
   }
 
   bool justDidLastSet = false;
@@ -87,12 +89,11 @@ class HomeController {
     MediaInfo mediaInfo = await VideoCompress.compressVideo(
       pickedFile.path,
       quality: VideoQuality.MediumQuality,
-      deleteOrigin: false, // It's false by default
+      deleteOrigin: true, // It's false by default
       includeAudio: false,
 
       frameRate: 24,
     );
-
     return mediaInfo.path;
   }
 
@@ -190,8 +191,6 @@ class HomeController {
       mediaTitle: mediaTitle,
     );
   }
-
-// see about this ---> pass in the next exercise? concatenate JSON...
 
   // or just don't wait? once we send the video there's nothing
   // stoppping us from retrieving and updating the app right?
@@ -384,8 +383,6 @@ class HomeController {
       }
       // 3 compress video
       var targetFilePath = await compressVideo(context, pickedFile);
-      // now we have the compressed file, so delete the original.
-      File(pickedFile.path)..delete();
       // 4 cast the compressed video
       if (doCast) {
         // if we've already casted, delete the old file :)

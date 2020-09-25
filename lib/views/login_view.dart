@@ -8,6 +8,7 @@ import 'package:home_gym/models/models.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:firebase_auth_ui/firebase_auth_ui.dart';
 import 'package:home_gym/views/views.dart';
+
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
@@ -39,6 +40,7 @@ class _LoginViewState extends State<LoginView> {
     super.initState();
     _user = Provider.of<Muser>(context, listen: false);
     listener = DataConnectionChecker().onStatusChange;
+    //_clearOlddata();
   }
 
   @override

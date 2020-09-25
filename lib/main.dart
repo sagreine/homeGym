@@ -11,6 +11,7 @@ import 'package:home_gym/models/models.dart';
 //import 'package:home_gym/blocs/timer/timer_bloc.dart';
 //import 'package:home_gym/ticker.dart';
 import 'package:home_gym/views/views.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 //import 'package:home_gym/simple_bloc_delegate.dart';
 //import 'package:bloc/bloc.dart';
@@ -108,6 +109,15 @@ void _serverInit(context) {
   });
 }
 
+void _clearOlddata() async {
+  var appDir = (await getTemporaryDirectory()).path;
+
+  var videosDr = (await getApplicationDocumentsDirectory()).path.toString();
+  // + "/files/video_compress";
+  new Directory(appDir).delete(recursive: true);
+  new Directory(videosDr).delete(recursive: true);
+}
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
@@ -118,6 +128,8 @@ class MyApp extends StatelessWidget {
     _getInitialPull(context);
     _serverInit(context);
     _getSharedPrerferences(context);
+    _clearOlddata();
+
     // maybe check if the user is already authorized here, and go to login if not?
     return MaterialApp(
       debugShowCheckedModeBanner: false,
