@@ -94,18 +94,9 @@ class ExerciseSet extends ChangeNotifier {
         reps: reps,
         thisSetPRSet: thisSetPRSet,
         weight: calculatedWeight,
-        description: "Weight each side: " +
+        description: "Plates: " +
             (thisWeights.getPickedPlatesAsString(
-                targetWeight: targetWeight, lift: this.title))
-
-        // + nextExercise(context),
-        );
-    //formControllerTitle
-    //formControllerDescription.text = exercise.description;
-    //formControllerReps.text = exercise.reps.toString();
-    //formControllerWeight.text = exercise.weight.toString();
-
-    // this is a hack for now.
+                targetWeight: targetWeight, lift: this.title)));
   }
 
   void updateExercise({

@@ -244,7 +244,6 @@ class HomeController {
 
     // if we're doing the video, do these steps (since casting the recorded video directly doesn't work)
     // 1a) get the video
-    // 1b) show the next exercise
     // 1c) ask if they got the reps, correct it if not.
     // 2a) start a timer while we compress, so we can cast the 'correct' timer start value
     // 2b) cast a placeholder while we wait, so the next lift instructions get there right away
@@ -415,7 +414,7 @@ class HomeController {
         GallerySaver.saveVideo(targetFilePath);
       }
     }
-    // 1b) show the next execise
+    //show the next execise
     displayInExerciseInfo(exercise: nextSet);
 
     // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information

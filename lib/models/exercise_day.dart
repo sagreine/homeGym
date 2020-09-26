@@ -131,7 +131,7 @@ class ExerciseDay extends ChangeNotifier {
             restPeriodAfter: 90,
             // the first rep.length are the main lift, non-assistance.
             title: lifts[i],
-            description: "Do the assistance activity",
+            description: "Do the lift",
             weight:
                 0, // TODO: could do ternary? if there is a weight set in db, use it.
             reps: reps[i]));
