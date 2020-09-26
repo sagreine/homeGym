@@ -231,7 +231,7 @@ class _DoLiftViewState extends State<DoLiftView>
                       width: 280,
                       child: TextField(
                         readOnly: true,
-                        style: TextStyle(fontSize: 24),
+                        style: TextStyle(fontSize: 30),
                         textAlign: TextAlign.center,
                         enabled: false,
                         // remove border and center
@@ -243,7 +243,7 @@ class _DoLiftViewState extends State<DoLiftView>
                     ),
                   ],
                 ),
-                SizedBox(height: 16),
+                SizedBox(height: 13),
                 Expanded(
                   child: ListView(children: <Widget>[
                     Form(
@@ -252,6 +252,7 @@ class _DoLiftViewState extends State<DoLiftView>
                       // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...
                       child: Column(
                         children: [
+                          SizedBox(height: 3),
                           TextFormField(
                             decoration: new InputDecoration(
                               focusedBorder: OutlineInputBorder(

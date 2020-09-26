@@ -244,9 +244,11 @@ class ReusableWidgets {
                 title: Text("Log Out"),
                 leading: Icon(Icons.exit_to_app),
                 onTap: () async {
-                  //Navigator.of(context).pop();
                   // wait while we log the user out.
                   await user.logout();
+                  var exerciseDay =
+                      Provider.of<ExerciseDay>(context, listen: false);
+                  exerciseDay.lift = null;
                   print("successfully logged out");
                   // pop until we get to the login page
                   Navigator.of(context).pushNamedAndRemoveUntil(

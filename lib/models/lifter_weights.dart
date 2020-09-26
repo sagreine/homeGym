@@ -192,9 +192,9 @@ class PlateFinder {
             "${_foundPlates[element]} $element${_foundPlates[element] > 1 ? "'s" : ""}  ";
       }
     });
-    // obvioulsy refactor this, but this says to replace spaces with commas after removing the trailing space.
+    // obvioulsy refactor this, but this says to replace spaces with comma + space after removing the trailing space.
     toReturn = toReturn.trim();
-    toReturn = toReturn.replaceAll("  ", ",");
+    toReturn = toReturn.replaceAll("  ", ", ");
 
     print(toReturn);
     return toReturn;
