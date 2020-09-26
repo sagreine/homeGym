@@ -65,4 +65,9 @@ class ExerciseDayController {
     var day = Provider.of<ExerciseDay>(context, listen: false);
     return day.areWeOnLastSet();
   }
+
+  void justDidLastSet(BuildContext context) {
+    var day = Provider.of<ExerciseDay>(context, listen: false);
+    //day.justDidLastSet();
+  }
 }

@@ -56,6 +56,9 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   @override
   Widget build(BuildContext context) {
     thisDay = Provider.of<ExerciseDay>(context, listen: false);
+    // if we just did the last set we want to reflect that here, otherwise just use what set it says we're on.
+    int currentSet =
+        thisDay.justDidLastSet ? thisDay.currentSet + 1 : thisDay.currentSet;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
@@ -82,7 +85,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                     child: Column(
                       children: <Widget>[
                         //_Header(),
-                        Text("Current Set: ${thisDay.currentSet}"),
+                        Text("Current Set: $currentSet"),
                         Expanded(
                           child: ReorderableListView(
                             onReorder: (_oldIndex, _newIndex) {
@@ -105,7 +108,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                         key: UniqueKey(),
                                         thickness: 2,
                                         height: 1,
-                                        color: i == thisDay.currentSet * 2 - 1
+                                        color: i == currentSet * 2 - 1
                                             ? Colors.blueGrey
                                             : Colors.transparent,
                                       )
@@ -151,9 +154,8 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                               Expanded(
                                                 child: _pickChild(
                                                     index: i ~/ 2,
-                                                    enabled: i >
-                                                        thisDay.currentSet * 2 -
-                                                            1),
+                                                    enabled:
+                                                        i > currentSet * 2 - 1),
                                               ),
                                               InkWell(
                                                 child: Icon(

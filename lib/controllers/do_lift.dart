@@ -34,6 +34,7 @@ class HomeController {
   ConfettiController confettiController =
       ConfettiController(duration: const Duration(seconds: 1));
   File targetFile;
+  bool justDidLastSet = false;
 
   dispose() {
     // delete the targetfile when we're done.
@@ -41,8 +42,6 @@ class HomeController {
       targetFile.delete();
     }
   }
-
-  bool justDidLastSet = false;
 
   Future<void> serverListen(context) async {
     // we only listen once.
@@ -147,7 +146,7 @@ class HomeController {
           reps: 0,
           weight: 0,
           restPeriodAfter: 100);
-      justDidLastSet = true;
+      //exerciseDayController.justDidLastSet(context);
     }
     //otherwise advance to the next set and display it
     else {
@@ -208,10 +207,6 @@ class HomeController {
     String url =
         "https://firebasestorage.googleapis.com/v0/b/sagrehomegym.appspot.com/o/animation_1.mkv?alt=media&token=95062198-8a3a-4cba-8de4-6fcb8cb0bf22";
 
-    //updateDatabaseRecordWithURL(
-    //dbDocID: origExerciseID, url: url, userID: user.firebaseUser.uid);
-
-    //var thisMaxes = Provider.of<LifterMaxes>(context, listen: false);
     String thisExercise = json.encode(exercise.toJson());
 
     bool progressAfter = false;
@@ -240,6 +235,7 @@ class HomeController {
     ///
     ExerciseSet nextSet = getNextExercise(context: context);
     String nextExercise = json.encode(nextSet.toJson());
+    // will tell the TV if we need to start a timer on fling
     bool startTimerCast = true;
 
     // if we're doing the video, do these steps (since casting the recorded video directly doesn't work)
@@ -414,6 +410,8 @@ class HomeController {
         GallerySaver.saveVideo(targetFilePath);
       }
     }
+    // no need to ask about REPS if not recording video, because they can just edit it directly in the form
+    // before hitting the button. a bit annoying i guess, and not expected.
     //show the next execise
     displayInExerciseInfo(exercise: nextSet);
 

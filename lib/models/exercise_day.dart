@@ -29,6 +29,8 @@ class ExerciseDay extends ChangeNotifier {
   bool prSetWeek;
   int progressSet;
 
+  bool justDidLastSet;
+
   List<ExerciseSet> exercises;
   ExerciseController exerciseController = new ExerciseController();
 
@@ -54,6 +56,7 @@ class ExerciseDay extends ChangeNotifier {
     this.progressSet,
     this.exercises,
     this.prSetWeek,
+    this.justDidLastSet,
   });
 
   void buildDay({
@@ -98,6 +101,7 @@ class ExerciseDay extends ChangeNotifier {
     this.updateMaxIfGetReps = updateMaxIfGetReps;
     this.progressSet = progressSet;
     this.prSetWeek = prSetWeek;
+    this.justDidLastSet = false;
     // build and populate the list of exercises to do.
     this.exercises = new List<ExerciseSet>();
     /*
@@ -160,7 +164,14 @@ class ExerciseDay extends ChangeNotifier {
   }
 
   bool areWeOnLastSet() {
-    return (currentSet == sets - 1);
+    if (currentSet == sets - 1) {
+      justDidLastSet = true;
+      notifyListeners();
+      return true;
+    }
+    return false;
+
+    //justDidLastSet = true;
   }
 
   // update currentSet here .... check it is < sets - 1 etc.
@@ -193,5 +204,6 @@ class ExerciseDay extends ChangeNotifier {
         progressSet,
         exercises,
         prSetWeek,
+        justDidLastSet,
       ];
 }

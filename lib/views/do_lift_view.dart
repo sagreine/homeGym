@@ -92,6 +92,10 @@ class _DoLiftViewState extends State<DoLiftView>
     }
   }
 
+  bool _isLastExercise() {
+    return homeController.justDidLastSet;
+  }
+
   @override
   void initState() {
     super.initState();
@@ -228,7 +232,7 @@ class _DoLiftViewState extends State<DoLiftView>
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 280,
+                      width: 300,
                       child: TextField(
                         readOnly: true,
                         style: TextStyle(fontSize: 30),
@@ -420,54 +424,58 @@ class _DoLiftViewState extends State<DoLiftView>
                       },
                       controlAffinity: ListTileControlAffinity.platform,
                     ),
-                    //Consumer<ExerciseDay>(
-                    //builder: (context, exerciseDay, child) {
-                    // use model & provider to do this, doesn't work right now!
-                    RaisedButton(
-                      onPressed: homeController
-                              .justDidLastSet //exerciseDay.areWeOnLastSet()
-                          ? null
-                          : () async {
-                              if (_formkey.currentState.validate()) {
-                                print("valid form");
-                                // make any updates that are necessary, check we have a fling device, then cast
+                    Consumer<ExerciseDay>(
+                        builder: (context, exerciseDay, child) {
+                      // use model & provider to do this, doesn't work right now!
+                      return RaisedButton(
+                        onPressed:
+                            //_isLastExercise()
+                            //homeController.justDidLastSet
+                            exerciseDay.justDidLastSet
+                                ? null
+                                : () async {
+                                    if (_formkey.currentState.validate()) {
+                                      print("valid form");
+                                      // make any updates that are necessary, check we have a fling device, then cast
 
-                                if (doCast && flingy.selectedPlayer == null) {
-                                  await showCastDevicePickerDialog();
-                                }
+                                      if (doCast &&
+                                          flingy.selectedPlayer == null) {
+                                        await showCastDevicePickerDialog();
+                                      }
 
-                                // if we made manual updates via the form, put them in!
-                                homeController.updateThisExercise(
-                                  thisSet: exercise,
-                                );
-                                // then get the next exercise's info into the form (not fully implemented of course)
-                                //homeController.updateExercise(context);
-                                // may need to await this, if it is updating our exercise that we're sending....
-                                await homeController.castMediaTo(
-                                    player: flingy.selectedPlayer,
-                                    context: context,
-                                    doCast: doCast,
-                                    doVideo: doVideo,
-                                    exercise: exercise);
+                                      // if we made manual updates via the form, put them in!
+                                      homeController.updateThisExercise(
+                                        thisSet: exercise,
+                                      );
+                                      // then get the next exercise's info into the form (not fully implemented of course)
+                                      //homeController.updateExercise(context);
+                                      // may need to await this, if it is updating our exercise that we're sending....
+                                      await homeController.castMediaTo(
+                                          player: flingy.selectedPlayer,
+                                          context: context,
+                                          doCast: doCast,
+                                          doVideo: doVideo,
+                                          exercise: exercise);
 
-                                // TODO: this is a consequence of not using a model. the controller progresses but nobody told the UI's data
-                                // so we have to tell it too. that's pretty stupid, eh? do it right instead and you won't have to worry about it.
-                                var exerciseDay = Provider.of<ExerciseDay>(
-                                    context,
-                                    listen: false);
-                                exercise = exerciseDay
-                                    .exercises[exerciseDay.currentSet];
-                              }
-                            },
-                      child: ListTile(
-                        leading: doCast
-                            ? Icon(Icons.cast_connected)
-                            : SizedBox(width: 5),
-                        title: Text("Record and cast"),
-                      ),
-                      //);
+                                      // TODO: this is a consequence of not using a model. the controller progresses but nobody told the UI's data
+                                      // so we have to tell it too. that's pretty stupid, eh? do it right instead and you won't have to worry about it.
+                                      var exerciseDay =
+                                          Provider.of<ExerciseDay>(context,
+                                              listen: false);
+                                      exercise = exerciseDay
+                                          .exercises[exerciseDay.currentSet];
+                                    }
+                                  },
+                        child: ListTile(
+                          leading: doCast
+                              ? Icon(Icons.cast_connected)
+                              : SizedBox(width: 5),
+                          title: Text("Record and cast"),
+                        ),
+                      );
                       //},
-                    ),
+                      //),
+                    }),
                   ]),
                 ),
               ],
