@@ -256,8 +256,6 @@ class HomeController {
     if (doVideo) {
       // 1a) get video
       var pickedFile = await getVideo(context);
-      // 1b) show the next execise
-      displayInExerciseInfo(exercise: nextSet);
       // 1c)
       showDialog(
           barrierDismissible: false,
@@ -417,6 +415,8 @@ class HomeController {
         GallerySaver.saveVideo(targetFilePath);
       }
     }
+    // 1b) show the next execise
+    displayInExerciseInfo(exercise: nextSet);
 
     // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information
     //....so could check for the garbage (default) URLs before updating this..

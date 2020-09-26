@@ -18,6 +18,7 @@ import 'package:provider/provider.dart';
 //import 'package:flutter_fling/flutter_fling.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter/foundation.dart' as Foundation;
 
 // BLoC for each page
 // complex page-children should have their own block, parent subscribes to state changes
@@ -95,15 +96,12 @@ void _getSharedPrerferences(BuildContext context) async {
 }
 
 void _serverInit(context) {
-  // this doesn't work. the port is already listened to, even if this server is new.
-  // the hack for now is shared = true
-
   var serverRequest = Provider.of<FlingMediaModel>(context, listen: false);
-
-  //await HttpServer.bind(InternetAddress.loopbackIPv4, 4040);
-  HttpServer.bind('0.0.0.0', 4040).then((serverRequests) {
+  // we only want to allow sharing in debug mode, simply to allow live-refreshes more easily...
+  HttpServer.bind('0.0.0.0', 4040, shared: Foundation.kDebugMode)
+      .then((serverRequests) {
     serverRequest.httpServer = serverRequests;
-    //serverRequest.httpServer.autoCompress = true;
+    // note: autocompress doesn't allow non-compressed videos of meaningful length to go well...
     print(
         "listening to ${serverRequests.address} address and port: ${serverRequests.port}");
   });

@@ -70,15 +70,8 @@ class HelpViewState extends State<HelpView> {
                   style: TextStyle(fontSize: 12),
                 ),
               ),
-              FlatButton(
-                child: Container(
-                  alignment: Alignment.centerLeft,
-                  padding: const EdgeInsets.all(15),
-                  height: 50,
-                  width: 150,
-                  color: Colors.blueGrey[200],
-                  child: Text("See Instructions"),
-                ),
+              RaisedButton(
+                child: Text("See Instructions"),
                 onPressed: () {
                   print("pressed for help!");
                   Navigator.pushNamed(context, '/intro_screen');
