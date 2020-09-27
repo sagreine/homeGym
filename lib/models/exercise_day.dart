@@ -188,6 +188,11 @@ class ExerciseDay extends ChangeNotifier {
     notifyListeners();
   }
 
+  void insert(int index, ExerciseSet exerciseSet) {
+    exercises.insert(index, exerciseSet);
+    notifyListeners();
+  }
+
   // update currentSet here .... check it is < sets - 1 etc.
 
   factory ExerciseDay.fromJson(Map<String, dynamic> json) =>

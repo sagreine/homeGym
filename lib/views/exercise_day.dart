@@ -93,8 +93,12 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                 if (_newIndex > _oldIndex) {
                                   _newIndex -= 1;
                                 }
-                                thisDay.exercises.insert(_newIndex ~/ 2,
+                                thisDay.insert(_newIndex ~/ 2,
                                     thisDay.exercises.removeAt(_oldIndex ~/ 2));
+                                //thisDay.removeAt();
+
+                                /*thisDay.exercises.insert(_newIndex ~/ 2,
+                                    thisDay.exercises.removeAt(_oldIndex ~/ 2));*/
                               });
                             },
                             children: <Widget>[
