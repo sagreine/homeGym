@@ -133,21 +133,27 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                           key: UniqueKey(),
                                           // Provide a function that tells the app
                                           // what to do after an item has been swiped away.
-                                          onDismissed: (direction) {
+                                          // and only allows swipes from not-already-completed items
+                                          confirmDismiss: (direction) async {
                                             // Remove the item from the data source.
-
-                                            if (direction ==
-                                                DismissDirection.endToStart) {
-                                              setState(() {
-                                                // sugar for toInt()
-                                                thisDay.remove((i ~/ 2));
-                                                //thisDay.exercises
-                                                //  .removeAt((i ~/ 2));
-                                                // show snakcbar?
-                                              });
-                                              // this would be after it already dismisses, so stop that!
-                                              // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
+                                            if (i >= currentSet * 2 - 1) {
+                                              if (direction ==
+                                                  DismissDirection.endToStart) {
+                                                setState(() {
+                                                  // sugar for toInt()
+                                                  thisDay.remove((i ~/ 2));
+                                                  //thisDay.exercises
+                                                  //  .removeAt((i ~/ 2));
+                                                  // show snakcbar?
+                                                });
+                                                // this would be after it already dismisses, so stop that!
+                                                // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
+                                              }
+                                              return true;
+                                            } else {
+                                              return false;
                                             }
+
                                             //else {
                                             //widget.callback();
                                             //}
