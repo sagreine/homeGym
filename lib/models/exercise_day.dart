@@ -163,6 +163,10 @@ class ExerciseDay extends ChangeNotifier {
     return returnval;
   }
 
+  // this is disgusting but expedient.
+  // because we dont' have MVC actually in use, we need to treat it differently
+  // so if you press the button on the last set, you want to set it to no more by subtracting 1
+  // but if you delete the last item from the Day view, you don't want to skip that last set.
   bool areWeOnLastSet({int offset}) {
     offset ??= 1;
     if (currentSet == sets - offset) {
@@ -180,6 +184,7 @@ class ExerciseDay extends ChangeNotifier {
     sets -= 1;
     // to update justDidLastSet, but also why we should probably have that as the getter for a private variable if we're doing caching like that...
     areWeOnLastSet(offset: 0);
+    //displayInExerciseInfo();
     notifyListeners();
   }
 
