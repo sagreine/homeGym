@@ -49,6 +49,7 @@ class _ProgramsState extends State<ProgramsView> {
               returnProgram.week = 1;
               return ListTile(
                   onTap: () async {
+                    // this should be done in a controller....
                     if (programSnap.data[index].week > 1) {
                       returnProgram.week = await programsController.pickWeek(
                           context, programSnap.data[index].week);

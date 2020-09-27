@@ -118,7 +118,10 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                             : Colors.grey[500].withOpacity(.7),*/
                                         height: 75,
                                         key: UniqueKey(),
-                                        child: Dismissible(
+                                        child:
+                                            // call a function to do this, and condition a container or dismissible?
+                                            //i < currentSet * 2 - 1  ? :
+                                            Dismissible(
                                           direction:
                                               DismissDirection.endToStart,
                                           // Each Dismissible must contain a Key. Keys allow Flutter to
@@ -133,8 +136,9 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                 DismissDirection.endToStart) {
                                               setState(() {
                                                 // sugar for toInt()
-                                                thisDay.exercises
-                                                    .removeAt((i ~/ 2));
+                                                thisDay.remove((i ~/ 2));
+                                                //thisDay.exercises
+                                                //  .removeAt((i ~/ 2));
                                                 // show snakcbar?
                                               });
                                               // this would be after it already dismisses, so stop that!

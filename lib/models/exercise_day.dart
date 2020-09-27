@@ -163,8 +163,9 @@ class ExerciseDay extends ChangeNotifier {
     return returnval;
   }
 
-  bool areWeOnLastSet() {
-    if (currentSet == sets - 1) {
+  bool areWeOnLastSet({int offset}) {
+    offset ??= 1;
+    if (currentSet == sets - offset) {
       justDidLastSet = true;
       notifyListeners();
       return true;
@@ -172,6 +173,14 @@ class ExerciseDay extends ChangeNotifier {
     return false;
 
     //justDidLastSet = true;
+  }
+
+  void remove(int index) {
+    exercises.removeAt(index);
+    sets -= 1;
+    // to update justDidLastSet, but also why we should probably have that as the getter for a private variable if we're doing caching like that...
+    areWeOnLastSet(offset: 0);
+    notifyListeners();
   }
 
   // update currentSet here .... check it is < sets - 1 etc.
