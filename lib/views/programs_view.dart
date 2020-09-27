@@ -52,6 +52,10 @@ class _ProgramsState extends State<ProgramsView> {
                     if (programSnap.data[index].week > 1) {
                       returnProgram.week = await programsController.pickWeek(
                           context, programSnap.data[index].week);
+                      // this is a (potential) progressWeek if this is the last week of the program.
+                      // later we'll also check if this program is allowed to progess (at any week) -> why later though?
+                      returnProgram.potentialProgressWeek =
+                          (returnProgram.week == programSnap.data[index].week);
                     }
                     // if they picked a week, return with it, else just play dumb
                     if (returnProgram.week != null) {

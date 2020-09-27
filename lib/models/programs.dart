@@ -6,8 +6,13 @@ part 'programs.g.dart';
 class PickedProgram {
   String program;
   int week;
+  bool potentialProgressWeek;
 
-  PickedProgram({this.program, this.week});
+  PickedProgram({
+    this.program,
+    this.week,
+    this.potentialProgressWeek,
+  });
 }
 
 @JsonSerializable()

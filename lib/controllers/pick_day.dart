@@ -13,6 +13,7 @@ class PickDayController {
   bool readyToGo = false;
   String selectedProgram;
   int selectedWeek;
+  bool potentialProgressWeek;
   TextEditingController programController = TextEditingController();
   // TODO: not currently used for anythin.
   TextEditingController weekController = TextEditingController();
@@ -55,6 +56,7 @@ class PickDayController {
     if (pickedProgram != null) {
       selectedProgram = pickedProgram.program;
       selectedWeek = pickedProgram.week;
+      potentialProgressWeek = pickedProgram.potentialProgressWeek;
       programController.text = selectedProgram;
       // or just... do actual state management...
       updateReadyToGo();
@@ -77,6 +79,13 @@ class PickDayController {
         exercises[selectedExercise.indexWhere((element) => element)];
 
     await getExercises(context, selectedProgram, selectedWeek);
+
+    // only allow this to be a progress week if:
+    // 1) the program allows progression at all and
+    // 2) this is the last week of the program
+    ///// orrrrrr just specify this in the db as a week to do so...
+    exerciseDay.updateMaxIfGetReps =
+        (exerciseDay.updateMaxIfGetReps && potentialProgressWeek);
 
     /*
     exerciseController.updateExercise(
