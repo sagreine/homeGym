@@ -3,19 +3,36 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'programs.g.dart';
 
+class PickedProgram {
+  String program;
+  int week;
+
+  PickedProgram({this.program, this.week});
+}
+
 @JsonSerializable()
 class Programs extends ChangeNotifier {
-  // sets is derivable no?
+  // we don't need these really though?
   List<String> programs;
+  List<int> weeks;
 
+  List<PickedProgram> pickedPrograms;
+
+  // but wouldn't want them to do this? woudln't want a public constructor since the other fields are derived i mean.
   Programs({
     this.programs,
+    this.weeks,
+    this.pickedPrograms,
   });
 
   void setProgram({
-    List<String> programs,
+    @required List<PickedProgram> programs,
   }) {
-    this.programs = programs;
+    this.pickedPrograms = programs;
+    this.programs = new List<String>.generate(
+        programs.length, (index) => programs[index].program);
+    this.weeks = new List<int>.generate(
+        programs.length, (index) => programs[index].week);
     notifyListeners();
   }
 
@@ -29,5 +46,7 @@ class Programs extends ChangeNotifier {
   //@override
   List<Object> get props => [
         programs,
+        weeks,
+        pickedPrograms,
       ];
 }

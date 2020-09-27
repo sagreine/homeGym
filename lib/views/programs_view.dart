@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
+import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 
 class ProgramsView extends StatefulWidget {
@@ -21,12 +22,12 @@ class _ProgramsState extends State<ProgramsView> {
     return Scaffold(
       appBar: ReusableWidgets.getAppBar(),
       drawer: ReusableWidgets.getDrawer(context),
-      body: _buildSuggestions(),
+      body: _buildSuggestions(context),
     );
   }
 
   // b) will likely not want to use documentID in reality, but rather a display name..
-  Widget _buildSuggestions() {
+  Widget _buildSuggestions(context) {
     return FutureBuilder(
       // while retrieving, put a loading indicator
       builder: (context, programSnap) {
@@ -42,9 +43,23 @@ class _ProgramsState extends State<ProgramsView> {
             itemBuilder: (context, i) {
               if (i.isOdd) return Divider();
               final index = i ~/ 2;
+              // default to the 1st week, but only for programs that don't have weeks specified (those get nulled if they don't pick a week)
+              PickedProgram returnProgram = PickedProgram();
+              returnProgram.program = programSnap.data[index].program;
+              returnProgram.week = 1;
               return ListTile(
-                  onTap: () => Navigator.pop(context, programSnap.data[index]),
-                  title: Text(programSnap.data[index]));
+                  onTap: () async {
+                    if (programSnap.data[index].week > 1) {
+                      returnProgram.week = await programsController.pickWeek(
+                          context, programSnap.data[index].week);
+                    }
+                    // if they picked a week, return with it, else just play dumb
+                    if (returnProgram.week != null) {
+                      Navigator.pop(context, returnProgram);
+                    }
+                    //Navigator.pop(context, programSnap.data[index]);
+                  },
+                  title: Text(programSnap.data[index].program));
             });
       },
       future: programsController.updateProgramList(context),

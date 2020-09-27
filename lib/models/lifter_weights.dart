@@ -42,7 +42,6 @@ class LifterWeights extends ChangeNotifier {
       return true;
     }
     return false;
-    ;
   }
 
 // we're given a target weight but we know we need to subtract the bar weigth!

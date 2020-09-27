@@ -45,16 +45,43 @@ updateDatabaseRecordWithReps(
       .update({"reps": reps});
 }
 
-Future<List<String>> getPrograms() async {
+// instead of returning a naked list, we need to return the display name and # weeks for each program
+Future<List<PickedProgram>> getPrograms() async {
+  List<PickedProgram> toReturn = List<PickedProgram>();
+
   QuerySnapshot querySnapshot =
       await FirebaseFirestore.instance.collection('PROGRAMS').get();
   List<QueryDocumentSnapshot> list = new List.from(querySnapshot.docs.toList());
+  //var a = new List.from(querySnapshot.docs["weeks"]);
   List<String> rtr = list.map((QueryDocumentSnapshot docSnapshot) {
     return docSnapshot.id.toString();
     // this is a first step towards how to get a step further for if/when we're not (stupidly) using the ID and want e.g. a display name.
     //return docSnapshot.data().entries.toString();
   }).toList();
-  return rtr;
+
+  List<int> rtr2 = list.map((QueryDocumentSnapshot docSnapshot) {
+    /*var a = docSnapshot.data();
+    var b = a.entries;
+    var c = b.toList();
+    var d = c.toString();
+    var e = a["numWeeks"];
+    var f;*/
+    int returnVal = docSnapshot.data()["numWeeks"] ?? 1;
+
+    return returnVal;
+    // this is a first step towards how to get a step further for if/when we're not (stupidly) using the ID and want e.g. a display name.
+    //return docSnapshot.data().entries.toString();
+  }).toList();
+
+  toReturn = new List<PickedProgram>.generate(rtr.length, (index) {
+    PickedProgram pickedProgram = PickedProgram();
+    pickedProgram.program = rtr[index];
+    // we'll default to 1 if this value isn't set.
+    pickedProgram.week = rtr2[index] ?? 1; //rtr2[index];
+    return pickedProgram;
+  });
+
+  return toReturn;
 }
 
 void updateBarWeightCloud(
@@ -263,6 +290,7 @@ void getPlatesCloud({@required context, @required String userID}) async {
 Future<void> getExercisesCloud({
   @required context,
   @required String program,
+  @required int week,
 }) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
   // would update the exercise model here so pass in context...
@@ -279,8 +307,8 @@ Future<void> getExercisesCloud({
       .doc(program)
       .get();
   List<int> reps = new List<int>.from(pctAndReps.data()["Reps"]);
-  List<double> percentages =
-      new List<double>.from(pctAndReps.data()["week1Percentages"]);
+  List<double> percentages = new List<double>.from(
+      pctAndReps.data()["week" + week.toString() + "Percentages"]);
   List<String> lifts = new List<String>.from(pctAndReps.data()["LIft"]);
   List<int> prSets = new List<int>.from(pctAndReps.data()["prSets"]);
   //var exercise = Provider.of<ExerciseDay>(context, listen: false);

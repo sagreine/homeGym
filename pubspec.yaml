@@ -50,6 +50,7 @@ dependencies:
   http_server: ^0.9.8+3  
   gallery_saver: ^2.0.1
   shared_preferences: ^0.5.12
+  numberpicker: ^1.2.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

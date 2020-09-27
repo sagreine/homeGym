@@ -92,9 +92,9 @@ class _DoLiftViewState extends State<DoLiftView>
     }
   }
 
-  bool _isLastExercise() {
+  /*bool _isLastExercise() {
     return homeController.justDidLastSet;
-  }
+  }*/
 
   @override
   void initState() {
@@ -122,7 +122,7 @@ class _DoLiftViewState extends State<DoLiftView>
       _noDayPickedOnEntry = true;
       exerciseDay.lift = "Squat";
       PickDayController pickDayController = PickDayController();
-      await pickDayController.getExercises(context, "widowmaker3_2");
+      await pickDayController.getExercises(context, "widowmaker3_2", 1);
       exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     }
 

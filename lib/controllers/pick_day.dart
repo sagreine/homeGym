@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/cloud.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 
 class PickDayController {
@@ -11,12 +12,17 @@ class PickDayController {
   List<bool> selectedExercise = [false, false, false, false];
   bool readyToGo = false;
   String selectedProgram;
+  int selectedWeek;
   TextEditingController programController = TextEditingController();
+  // TODO: not currently used for anythin.
+  TextEditingController weekController = TextEditingController();
 
   ExerciseDayController exerciseDayController = ExerciseDayController();
 
   void updateReadyToGo() {
-    if (selectedProgram != null && selectedExercise.any((element) => element)) {
+    if (selectedProgram != null &&
+        selectedExercise.any((element) => element) &&
+        selectedWeek != null) {
       readyToGo = true;
     } else {
       readyToGo = false;
@@ -38,18 +44,26 @@ class PickDayController {
   Future<void> pickProgram(BuildContext context) async {
     // launch the page to pick them, return it when done
     /// - do this more safely obviously. if they OS-back button this goes badly.
-    var temp = await Navigator.pushNamed(context, '/programs');
+    /// // can't just do a vanilla push named because we're returning a non primitive object
+    final pickedProgram = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => ProgramsView(),
+      ),
+    );
     // update the page we're on now
-    if (temp != null) {
-      selectedProgram = temp;
+    if (pickedProgram != null) {
+      selectedProgram = pickedProgram.program;
+      selectedWeek = pickedProgram.week;
       programController.text = selectedProgram;
       // or just... do actual state management...
       updateReadyToGo();
     }
   }
 
-  Future<void> getExercises(BuildContext context, String program) async {
-    await getExercisesCloud(context: context, program: program);
+  Future<void> getExercises(
+      BuildContext context, String program, int week) async {
+    await getExercisesCloud(context: context, program: program, week: week);
   }
 
   // launch the day, which is program and exercise
@@ -62,7 +76,7 @@ class PickDayController {
     exerciseDay.lift =
         exercises[selectedExercise.indexWhere((element) => element)];
 
-    await getExercises(context, selectedProgram);
+    await getExercises(context, selectedProgram, selectedWeek);
 
     /*
     exerciseController.updateExercise(
