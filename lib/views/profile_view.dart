@@ -3,6 +3,7 @@ import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 //import 'package:home_gym/controllers/controllers.dart';
 import 'package:provider/provider.dart';
+import 'package:timeago/timeago.dart' as timeago;
 
 class ProfileView extends StatefulWidget {
   @override
@@ -60,7 +61,7 @@ class ProfileViewState extends State<ProfileView> {
                           Text("Email: ${user.firebaseUser.email}"),
                           SizedBox(height: 10),
                           Text(
-                              "Are you a new user: ${user.firebaseUser.isNewUser.toString()}"),
+                              "Are you a new user: ${user.firebaseUser.isNewUser == true ? "Yep" : "Nope"}"),
                           SizedBox(height: 10),
                           Text(
                               "Your phone number: ${user.firebaseUser.phoneNumber}"),
@@ -68,21 +69,15 @@ class ProfileViewState extends State<ProfileView> {
                           Text("Your user ID: ${user.firebaseUser.uid}"),
                           SizedBox(height: 10),
                           Text(
-                              "Are you an anonymous user: ${user.firebaseUser.isAnonymous.toString()}"),
+                              "Are you an anonymous user: ${user.firebaseUser.isAnonymous == true ? "Yep" : "Nope"}"),
                           SizedBox(height: 10),
                           Text(user.fAuthUser == null
                               ? "Not sure when you created your account!"
-                              : "Account creation date: "
-                                  "${user.fAuthUser.metadata.creationTime.month.toString()}"
-                                  "/${user.fAuthUser.metadata.creationTime.day.toString()}"
-                                  ", ${user.fAuthUser.metadata.creationTime.year.toString()}"),
+                              : "Account creation date: ${timeago.format(user.fAuthUser.metadata.creationTime)}"),
                           SizedBox(height: 10),
                           Text(user.fAuthUser == null
                               ? "Not sure when you last signed in!"
-                              : "Last sign in date: "
-                                  "${user.fAuthUser.metadata.lastSignInTime.month.toString()}"
-                                  "/${user.fAuthUser.metadata.lastSignInTime.day.toString()}"
-                                  ", ${user.fAuthUser.metadata.lastSignInTime.year.toString()}"),
+                              : "Last sign in date: ${timeago.format(user.fAuthUser.metadata.lastSignInTime)}"),
                         ],
                       ),
                     ],

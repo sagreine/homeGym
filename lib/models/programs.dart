@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:json_annotation/json_annotation.dart';
+//import 'package:json_annotation/json_annotation.dart';
 
-part 'programs.g.dart';
+//part 'programs.g.dart';
 
 class PickedProgram {
   String program;
@@ -15,7 +15,7 @@ class PickedProgram {
   });
 }
 
-@JsonSerializable()
+//@JsonSerializable()
 class Programs extends ChangeNotifier {
   // we don't need these really though?
   List<String> programs;
@@ -43,10 +43,10 @@ class Programs extends ChangeNotifier {
 
   // update currentSet here .... check it is < sets - 1 etc.
 
-  factory Programs.fromJson(Map<String, dynamic> json) =>
-      _$ProgramsFromJson(json);
+  //factory Programs.fromJson(Map<String, dynamic> json) =>
+  // _$ProgramsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$ProgramsToJson(this);
+  //Map<String, dynamic> toJson() => _$ProgramsToJson(this);
 
   //@override
   List<Object> get props => [

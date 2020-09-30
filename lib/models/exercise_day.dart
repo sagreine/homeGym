@@ -32,7 +32,7 @@ class ExerciseDay extends ChangeNotifier {
   bool justDidLastSet;
 
   List<ExerciseSet> exercises;
-  ExerciseController exerciseController = new ExerciseController();
+  //ExerciseController exerciseController = new ExerciseController();
 
   ExerciseDay({
     this.lift,

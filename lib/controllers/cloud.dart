@@ -142,8 +142,10 @@ void update1RepMaxCloud(
 }
 
 Future<String> uploadToCloudStorage(
-    {@required String userID, @required File fileToUpload}) async {
-  print("File size: " + fileToUpload.lengthSync().toString());
+    {@required String userID,
+    @required File fileToUpload,
+    @required bool isVideo}) async {
+  /*print("File size: " + fileToUpload.lengthSync().toString());
   MediaInfo mediaInfo = await VideoCompress.compressVideo(
     fileToUpload.path,
     quality: VideoQuality.MediumQuality,
@@ -151,12 +153,12 @@ Future<String> uploadToCloudStorage(
   );
   print(
       "Compressed File size: " + File(mediaInfo.path).lengthSync().toString());
-
+*/
+  //print("userID is: $userID");
   final StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(
-      "user/$userID / ${UniqueKey().toString()} ${UniqueKey().toString()} ${UniqueKey().toString()}");
+      "user/$userID/${UniqueKey().toString()} ${UniqueKey().toString()} ${UniqueKey().toString()}_${isVideo ? "video" : "thumbnail"}");
   //.child("user/" + userID + "/" + UniqueKey().toString() + UniqueKey().toString() +UniqueKey().toString());
-  StorageUploadTask uploadTask =
-      firebaseStorageRef.putFile(File(mediaInfo.path));
+  StorageUploadTask uploadTask = firebaseStorageRef.putFile(fileToUpload);
 
   StorageTaskSnapshot storageSnapshot = await uploadTask.onComplete;
   var downloadUrl = await storageSnapshot.ref.getDownloadURL();
@@ -310,6 +312,7 @@ Future<void> getExercisesCloud({
   List<double> percentages = new List<double>.from(
       pctAndReps.data()["week" + week.toString() + "Percentages"]);
   List<String> lifts = new List<String>.from(pctAndReps.data()["LIft"]);
+  // TODO: this means we have to set this array for every single program in the db. but if we don't want to do that, make it conditional here.
   List<int> prSets = new List<int>.from(pctAndReps.data()["prSets"]);
   //var exercise = Provider.of<ExerciseDay>(context, listen: false);
   await exerciseDayController.updateDay(

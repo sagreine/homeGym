@@ -33,6 +33,7 @@ class HomeController {
 
   ConfettiController confettiController =
       ConfettiController(duration: const Duration(seconds: 1));
+  //var thumbnail;
   File targetFile;
   bool justDidLastSet = false;
 
@@ -94,7 +95,8 @@ class HomeController {
     return mediaInfo.path;
   }
 
-  Future<String> uploadVideoToCloud(BuildContext context, String filePath) {
+  Future<String> uploadVideoToCloud(
+      BuildContext context, String filePath) async {
     var url;
     var user = Provider.of<Muser>(context, listen: false);
     // restrict to videos under a certain size for a given set - this is ~6 min video on my camera
@@ -106,13 +108,27 @@ class HomeController {
         983977033) {
       //cloudUrl =
       url = uploadToCloudStorage(
-          userID: user.fAuthUser.uid, fileToUpload: File(filePath));
+        userID: user.fAuthUser.uid,
+        fileToUpload: File(filePath),
+        isVideo: true,
+      );
     } else {
       //cloudUrl = "https://i.imgur.com/ACgwkoh.mp4";
       print("SAGREHOMEGYM: You elected to record a video, but it is too large");
     }
-
     return url;
+  }
+
+  Future<String> uploadThumbnailToCloud(
+      BuildContext context, String filePath) async {
+    var user = Provider.of<Muser>(context, listen: false);
+    var thumbnail = await VideoCompress.getFileThumbnail(
+        filePath); //VideoCompress.getMediaInfo(path).
+    return uploadToCloudStorage(
+      userID: user.fAuthUser.uid,
+      fileToUpload: thumbnail,
+      isVideo: false,
+    );
   }
 
   Future<bool> logout(BuildContext context) async {
@@ -403,7 +419,12 @@ class HomeController {
       // regardless of cast, here, we need to handle the video
       if (settings.saveCloud) {
         // upload the compressed video to cloud storage. could change to a upload then update model to not need to wait.
+
         exercise.videoPath = await uploadVideoToCloud(context, targetFilePath);
+        exercise.thumbnailPath =
+            await uploadThumbnailToCloud(context, targetFilePath);
+        var mediaInfo = await VideoCompress.getMediaInfo(targetFilePath);
+        exercise.aspectRatio = mediaInfo.height / mediaInfo.width;
         print(exercise.videoPath);
       }
       if (settings.saveLocal) {

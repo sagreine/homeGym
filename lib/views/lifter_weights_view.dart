@@ -100,6 +100,20 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                               context, int.parse(value));
                         },
                       ),
+                      SizedBox(height: 12),
+                      Divider(
+                        height: 10,
+                        thickness: 8,
+                        color: Colors.blueGrey,
+                        indent: 20,
+                        endIndent: 20,
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        "Your plates",
+                        style: TextStyle(
+                            fontSize: 16, fontWeight: FontWeight.bold),
+                      ),
                       SwitchListTile.adaptive(
                         title: Text("Are these bumpers"),
                         secondary: lifterweights.bumpers
@@ -113,11 +127,6 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                           });
                         },
                         controlAffinity: ListTileControlAffinity.platform,
-                      ),
-                      Text(
-                        "Your plates",
-                        style: TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.bold),
                       ),
                       // this is unnecessary since it is already done above...
                       // this is not yet 'controlled' of course and doesn't use real data yet.
@@ -177,7 +186,20 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                                               showEditIcon: true),
                                         ],
                                       ))
-                                  .toList())
+                                  .toList()),
+                      Consumer<Muser>(
+                        builder: (context, user, child) {
+                          return Visibility(
+                              visible: user.firebaseUser.isNewUser,
+                              child: RaisedButton(
+                                  splashColor: Colors.green[600],
+                                  elevation: 4,
+                                  color: Colors.green[800],
+                                  onPressed: () =>
+                                      Navigator.pushNamed(context, "/do_lift"),
+                                  child: Text("Now do a workout!")));
+                        },
+                      ),
                     ]);
                   },
                 ),

@@ -89,17 +89,21 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                         Expanded(
                           child: ReorderableListView(
                             onReorder: (_oldIndex, _newIndex) {
-                              setState(() {
-                                if (_newIndex > _oldIndex) {
-                                  _newIndex -= 1;
-                                }
-                                thisDay.insert(_newIndex ~/ 2,
-                                    thisDay.exercises.removeAt(_oldIndex ~/ 2));
-                                //thisDay.removeAt();
+                              if (_newIndex > currentSet * 2 - 1) {
+                                setState(() {
+                                  if (_newIndex > _oldIndex) {
+                                    _newIndex -= 1;
+                                  }
+                                  thisDay.insert(
+                                      _newIndex ~/ 2,
+                                      thisDay.exercises
+                                          .removeAt(_oldIndex ~/ 2));
+                                  //thisDay.removeAt();
 
-                                /*thisDay.exercises.insert(_newIndex ~/ 2,
+                                  /*thisDay.exercises.insert(_newIndex ~/ 2,
                                     thisDay.exercises.removeAt(_oldIndex ~/ 2));*/
-                              });
+                                });
+                              }
                             },
                             children: <Widget>[
                               for (int i = 0;
@@ -123,68 +127,73 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                         height: 75,
                                         key: UniqueKey(),
                                         child:
-                                            // call a function to do this, and condition a container or dismissible?
-                                            //i < currentSet * 2 - 1  ? :
-                                            Dismissible(
-                                          direction:
-                                              DismissDirection.endToStart,
-                                          // Each Dismissible must contain a Key. Keys allow Flutter to
-                                          // uniquely identify widgets.
-                                          key: UniqueKey(),
-                                          // Provide a function that tells the app
-                                          // what to do after an item has been swiped away.
-                                          // and only allows swipes from not-already-completed items
-                                          confirmDismiss: (direction) async {
-                                            // Remove the item from the data source.
-                                            if (i >= currentSet * 2 - 1) {
-                                              if (direction ==
-                                                  DismissDirection.endToStart) {
-                                                setState(() {
-                                                  // sugar for toInt()
-                                                  thisDay.remove((i ~/ 2));
-                                                  //thisDay.exercises
-                                                  //  .removeAt((i ~/ 2));
-                                                  // show snakcbar?
-                                                });
-                                                // this would be after it already dismisses, so stop that!
-                                                // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
+                                            // this stops them from deleting or reordering the deleted items
+                                            // but need to stop them from dragging not-yet-done items to deleted if we're going to do this.
+                                            IgnorePointer(
+                                          ignoring: i < currentSet * 2 - 1,
+                                          child: Dismissible(
+                                            direction:
+                                                DismissDirection.endToStart,
+                                            // Each Dismissible must contain a Key. Keys allow Flutter to
+                                            // uniquely identify widgets.
+                                            key: UniqueKey(),
+                                            // Provide a function that tells the app
+                                            // what to do after an item has been swiped away.
+                                            // and only allows swipes from not-already-completed items - unnecessary protection if ignorePointer is kept..
+                                            // TODO: could use this to go back to the tab!
+                                            confirmDismiss: (direction) async {
+                                              // Remove the item from the data source.
+                                              if (i >= currentSet * 2 - 1) {
+                                                if (direction ==
+                                                    DismissDirection
+                                                        .endToStart) {
+                                                  setState(() {
+                                                    // sugar for toInt()
+                                                    thisDay.remove((i ~/ 2));
+                                                    //thisDay.exercises
+                                                    //  .removeAt((i ~/ 2));
+                                                    // show snakcbar?
+                                                  });
+                                                  // this would be after it already dismisses, so stop that!
+                                                  // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
+                                                }
+                                                return true;
+                                              } else {
+                                                return false;
                                               }
-                                              return true;
-                                            } else {
-                                              return false;
-                                            }
 
-                                            //else {
-                                            //widget.callback();
-                                            //}
-                                          },
-                                          // Show a red background as the item is swiped away.
-                                          background:
-                                              Container(color: Colors.red),
+                                              //else {
+                                              //widget.callback();
+                                              //}
+                                            },
+                                            // Show a red background as the item is swiped away.
+                                            background:
+                                                Container(color: Colors.red),
 
-                                          child: Row(
-                                            mainAxisSize: MainAxisSize.min,
-                                            children: <Widget>[
-                                              Expanded(
-                                                child: _pickChild(
-                                                    index: i ~/ 2,
-                                                    enabled:
-                                                        i > currentSet * 2 - 1),
-                                              ),
-                                              InkWell(
-                                                child: Icon(
-                                                  Icons.delete_sweep,
-                                                  color: Colors.red,
-                                                  size: 35,
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: <Widget>[
+                                                Expanded(
+                                                  child: _pickChild(
+                                                      index: i ~/ 2,
+                                                      enabled: i >
+                                                          currentSet * 2 - 1),
                                                 ),
-                                                //onTap: () {
-                                                //setState(() {
-                                                //thisDay.activities.removeAt(i);
-                                                // snackbar show..
-                                                //});
-                                                //},
-                                              ),
-                                            ],
+                                                InkWell(
+                                                  child: Icon(
+                                                    Icons.delete_sweep,
+                                                    color: Colors.red,
+                                                    size: 35,
+                                                  ),
+                                                  //onTap: () {
+                                                  //setState(() {
+                                                  //thisDay.activities.removeAt(i);
+                                                  // snackbar show..
+                                                  //});
+                                                  //},
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),

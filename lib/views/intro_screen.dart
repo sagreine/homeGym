@@ -50,9 +50,9 @@ class IntroScreenViewState extends State<IntroScreenView> {
         bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
       ),
       PageViewModel(
-        pageColor: Colors.greenAccent[700],
+        pageColor: Colors.indigoAccent[700],
         iconImageAssetPath: 'assets/images/pos_icon.png',
-        bubbleBackgroundColor: Colors.greenAccent[400],
+        bubbleBackgroundColor: Colors.indigoAccent[700],
         body: Text(
             "Enter the weights you own, then maxes to start. We'll automatically update them as you progress"),
         title: Text('Make it happen'),

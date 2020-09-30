@@ -51,6 +51,10 @@ dependencies:
   gallery_saver: ^2.0.1
   shared_preferences: ^0.5.12
   numberpicker: ^1.2.1
+  video_player: ^0.11.0
+  timeago: ^2.0.27
+  transparent_image: ^1.0.0
+  flappy_search_bar: ^1.7.2
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

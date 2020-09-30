@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
+import 'package:video_compress/video_compress.dart';
 
 part 'exercise.g.dart';
 
@@ -10,6 +11,8 @@ part 'exercise.g.dart';
 @JsonSerializable()
 class ExerciseSet extends ChangeNotifier {
   String videoPath;
+  String thumbnailPath;
+  double aspectRatio;
   // these will be passed to TV. probably won't live here in the long run tbh.
   String title;
   String description;
@@ -25,16 +28,21 @@ class ExerciseSet extends ChangeNotifier {
   ExerciseSet({
     //this.context,
     this.videoPath,
+    this.thumbnailPath,
     this.title,
     this.description,
     this.restPeriodAfter,
     this.weight,
     this.reps,
     this.thisSetPRSet,
+    this.aspectRatio,
+    this.dateTime,
   }) {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
-    this.dateTime = DateTime.now();
+    if (this.dateTime == null) {
+      this.dateTime = DateTime.now();
+    }
     this.type = "/video";
     this.thisSetPRSet = false;
   }
@@ -137,6 +145,7 @@ class ExerciseSet extends ChangeNotifier {
   //@override
   List<Object> get props => [
         videoPath,
+        thumbnailPath,
         title,
         description,
         type,
@@ -145,5 +154,6 @@ class ExerciseSet extends ChangeNotifier {
         weight,
         dateTime,
         thisSetPRSet,
+        aspectRatio,
       ];
 }

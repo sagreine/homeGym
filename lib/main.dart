@@ -159,6 +159,7 @@ class MyApp extends StatelessWidget {
         '/settings': (context) => SettingsView(),
         '/intro_screen': (context) => IntroScreenView(),
         '/excerciseday': (context) => ExcerciseDayView(),
+        "/lifter_videos": (context) => OldVideosView(),
         '/today': (context) => TodayView(),
       },
     );
