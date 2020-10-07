@@ -208,9 +208,6 @@ class _DoLiftViewState extends State<DoLiftView>
 
     return Consumer<FlingMediaModel>(builder: (context, flingy, child) {
       return SafeArea(
-          // this allows resizing on click to enter text & rotate
-          //child: Flexible(
-          //fit: FlexFit.tight,
           child: Stack(children: <Widget>[
         Align(
           alignment: Alignment.topCenter,
@@ -235,15 +232,11 @@ class _DoLiftViewState extends State<DoLiftView>
                 // -ever we build anything at all on the page is gigantically wasteful. just text i guess.. is what we'll tell ourselves.
                 exercise = exerciseDay.exercises[exerciseDay.currentSet];
                 homeController.displayInExerciseInfo(exercise: exercise);
-                return
-                    //Positioned.fill(
-                    //child:
-                    Column(
+                return Column(
                   children: <Widget>[
                     // if they didn't pick a day on the way in, yell at them about it here.
                     _showBanner(),
                     Row(
-                      //crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Container(
@@ -263,8 +256,6 @@ class _DoLiftViewState extends State<DoLiftView>
                       ],
                     ),
                     SizedBox(height: 10),
-                    //Positioned.fill(
-                    //child:
                     Column(children: [
                       Form(
                         autovalidate: true,
@@ -288,6 +279,8 @@ class _DoLiftViewState extends State<DoLiftView>
                                 ),
                                 labelText: "Description for this set",
                               ),
+                              onChanged: (value) =>
+                                  exercise.description = value,
                               autocorrect: true,
                               enableSuggestions: true,
                               controller:
@@ -323,6 +316,8 @@ class _DoLiftViewState extends State<DoLiftView>
                                     inputFormatters: <TextInputFormatter>[
                                       WhitelistingTextInputFormatter.digitsOnly,
                                     ],
+                                    onChanged: (value) =>
+                                        exercise.reps = int.parse(value),
                                     enableSuggestions: true,
                                     controller:
                                         homeController.formControllerReps,
@@ -357,6 +352,8 @@ class _DoLiftViewState extends State<DoLiftView>
                                     inputFormatters: <TextInputFormatter>[
                                       WhitelistingTextInputFormatter.digitsOnly,
                                     ],
+                                    onChanged: (value) =>
+                                        exercise.weight = int.parse(value),
                                     enableSuggestions: true,
                                     controller:
                                         homeController.formControllerWeight,
@@ -391,6 +388,8 @@ class _DoLiftViewState extends State<DoLiftView>
                                     inputFormatters: <TextInputFormatter>[
                                       WhitelistingTextInputFormatter.digitsOnly,
                                     ],
+                                    onChanged: (value) => exercise
+                                        .restPeriodAfter = int.parse(value),
                                     autocorrect: true,
                                     enableSuggestions: true,
                                     controller: homeController
@@ -491,23 +490,15 @@ class _DoLiftViewState extends State<DoLiftView>
                             title: Text("Record and cast"),
                           ),
                         );
-                        //},
-                        //),
                       }),
                     ]),
-                    //),
                   ],
-                  //)
                 );
               }),
             ],
           ),
         ),
-      ])
-
-          //)
-          );
-      //);
+      ]));
     });
   }
 }
