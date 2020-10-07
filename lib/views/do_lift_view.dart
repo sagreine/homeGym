@@ -208,56 +208,64 @@ class _DoLiftViewState extends State<DoLiftView>
 
     return Consumer<FlingMediaModel>(builder: (context, flingy, child) {
       return SafeArea(
-        child: (Stack(
-          children: <Widget>[
-            Align(
-              alignment: Alignment.topCenter,
-              child: ConfettiWidget(
-                confettiController: homeController.confettiController,
-                blastDirection:
-                    pi / 2, // don't specify a direction, blast randomly
-                shouldLoop: false,
-                maxBlastForce: 3, // set a lower max blast force
-                minBlastForce: 1, // set a lower min blast force
-                emissionFrequency: 0.9,
-                numberOfParticles: 10, // a lot of particles at once
-                gravity: .7,
-              ),
-            ),
-            Consumer<ExerciseDay>(builder: (context, exerciseDay, child) {
-              // because we're not doing MVC correctly, we re-set the exercise on each build?
-              // manually because the controllers are not part of the model but hold the text values that are displayed here.
-              // sure i guess. almost 10000% certainly this is repeating work. multiple times on each build, and then re-building when-
-              // -ever we build anything at all on the page is gigantically wasteful. just text i guess.. is what we'll tell ourselves.
-              exercise = exerciseDay.exercises[exerciseDay.currentSet];
-              homeController.displayInExerciseInfo(exercise: exercise);
-              return Column(
-                children: <Widget>[
-                  // if they didn't pick a day on the way in, yell at them about it here.
-                  _showBanner(),
-                  Row(
-                    //crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        width: 300,
-                        child: TextField(
-                          readOnly: true,
-                          style: TextStyle(fontSize: 30),
-                          textAlign: TextAlign.center,
-                          enabled: false,
-                          // remove border and center
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
+          // this allows resizing on click to enter text & rotate
+          //child: Flexible(
+          //fit: FlexFit.tight,
+          child: Stack(children: <Widget>[
+        Align(
+          alignment: Alignment.topCenter,
+          child: ConfettiWidget(
+            confettiController: homeController.confettiController,
+            blastDirection: pi / 2, // don't specify a direction, blast randomly
+            shouldLoop: false,
+            maxBlastForce: 3, // set a lower max blast force
+            minBlastForce: 1, // set a lower min blast force
+            emissionFrequency: 0.9,
+            numberOfParticles: 10, // a lot of particles at once
+            gravity: .7,
+          ),
+        ),
+        Positioned.fill(
+          child: ListView(
+            children: <Widget>[
+              Consumer<ExerciseDay>(builder: (context, exerciseDay, child) {
+                // because we're not doing MVC correctly, we re-set the exercise on each build?
+                // manually because the controllers are not part of the model but hold the text values that are displayed here.
+                // sure i guess. almost 10000% certainly this is repeating work. multiple times on each build, and then re-building when-
+                // -ever we build anything at all on the page is gigantically wasteful. just text i guess.. is what we'll tell ourselves.
+                exercise = exerciseDay.exercises[exerciseDay.currentSet];
+                homeController.displayInExerciseInfo(exercise: exercise);
+                return
+                    //Positioned.fill(
+                    //child:
+                    Column(
+                  children: <Widget>[
+                    // if they didn't pick a day on the way in, yell at them about it here.
+                    _showBanner(),
+                    Row(
+                      //crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 300,
+                          child: TextField(
+                            readOnly: true,
+                            style: TextStyle(fontSize: 30),
+                            textAlign: TextAlign.center,
+                            enabled: false,
+                            // remove border and center
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                            ),
+                            controller: homeController.formControllerTitle,
                           ),
-                          controller: homeController.formControllerTitle,
                         ),
-                      ),
-                    ],
-                  ),
-                  SizedBox(height: 13),
-                  Expanded(
-                    child: ListView(children: <Widget>[
+                      ],
+                    ),
+                    SizedBox(height: 10),
+                    //Positioned.fill(
+                    //child:
+                    Column(children: [
                       Form(
                         autovalidate: true,
                         key: _formkey,
@@ -487,13 +495,19 @@ class _DoLiftViewState extends State<DoLiftView>
                         //),
                       }),
                     ]),
-                  ),
-                ],
-              );
-            }),
-          ],
-        )),
-      );
+                    //),
+                  ],
+                  //)
+                );
+              }),
+            ],
+          ),
+        ),
+      ])
+
+          //)
+          );
+      //);
     });
   }
 }

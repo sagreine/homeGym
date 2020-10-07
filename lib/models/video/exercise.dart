@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
-import 'package:video_compress/video_compress.dart';
 
 part 'exercise.g.dart';
 

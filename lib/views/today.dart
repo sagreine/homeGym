@@ -32,8 +32,10 @@ class TodayViewState extends State<TodayView>
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: ReusableWidgets.getDrawer(context),
-      appBar: ReusableWidgets.getAppBar(
-          tabController: this.defaultTabController, tabs: myTabs),
+      appBar: MediaQuery.of(context).orientation == Orientation.portrait
+          ? ReusableWidgets.getAppBar(
+              tabController: this.defaultTabController, tabs: myTabs)
+          : ReusableWidgets.getAppBar(tabController: null, tabs: myTabs),
       body: TabBarView(
         controller: this.defaultTabController,
         children: [

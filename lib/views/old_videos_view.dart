@@ -1,12 +1,11 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flappy_search_bar/scaled_tile.dart';
+import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:video_player/video_player.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:transparent_image/transparent_image.dart';
-import 'package:flappy_search_bar/flappy_search_bar.dart';
 
 class OldVideosView extends StatefulWidget {
   @override
@@ -34,192 +33,152 @@ class OldVideosViewState extends State<OldVideosView> {
     });
   }
 
-  _getListView() {
-    return ListView.builder(
-        padding: const EdgeInsets.all(8),
-        itemCount: _videos.length,
-        itemBuilder: (BuildContext context, int index) {
-          final video = _videos[index];
-          return GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) {
-                    return Player(
-                      video: video,
-                    );
-                  },
-                ),
+  _buildListItem(ExerciseSet video) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return Player(
+                video: video,
               );
             },
-            child: Card(
-              child: new Container(
-                padding: new EdgeInsets.all(10.0),
-                child: Stack(
-                  children: <Widget>[
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Stack(
-                          children: <Widget>[
-                            Container(
-                              width: 100,
-                              height: 150,
-                              child: Center(child: CircularProgressIndicator()),
-                            ),
-                            //BoxDecoration(image:
-                            Container(
-                              width: 100,
-                              height: 150,
-                              child: ClipRRect(
-                                borderRadius: new BorderRadius.circular(8.0),
-                                child: FadeInImage.memoryNetwork(
-                                    fit: BoxFit.cover,
-                                    //height: 360,
-                                    //width: 360,
-                                    placeholder: kTransparentImage,
-                                    image: video.thumbnailPath ??
-                                        ////NetworkImage(
-                                        "https://imgur.com/gallery/5PKoKz7" //),
-                                    ),
-                              ),
-                            ),
-                          ],
-                        ),
-                        Expanded(
-                          child: Container(
-                            margin: new EdgeInsets.only(left: 20.0),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              mainAxisSize: MainAxisSize.max,
-                              children: <Widget>[
-                                Text("${video.title}"),
-                                Text("${video.reps}x${video.weight}"),
-                                Container(
-                                  margin: new EdgeInsets.only(top: 12.0),
-                                  child:
-                                      Text('${timeago.format(video.dateTime)}'),
-                                ),
-                              ],
-                            ),
+          ),
+        );
+      },
+      child: Card(
+        child: new Container(
+          padding: new EdgeInsets.all(10.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Stack(
+                children: <Widget>[
+                  Container(
+                    width: 100,
+                    height: 150,
+                    child: Center(child: CircularProgressIndicator()),
+                  ),
+                  //BoxDecoration(image:
+                  Container(
+                    width: 100,
+                    height: 150,
+                    child: ClipRRect(
+                      borderRadius: new BorderRadius.circular(8.0),
+                      child: FadeInImage.memoryNetwork(
+                          fit: BoxFit.cover,
+                          //height: 360,
+                          //width: 360,
+                          placeholder: kTransparentImage,
+                          image: video.thumbnailPath ??
+                              ////NetworkImage(
+                              "https://imgur.com/gallery/5PKoKz7" //),
                           ),
-                        ),
-                      ],
+                    ),
+                  ),
+                ],
+              ),
+              //Expanded(
+              //child:
+              Container(
+                width: 100,
+                height: 150,
+                margin: new EdgeInsets.only(left: 20.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text("${video.title}"),
+                    Text("${video.reps}x${video.weight}"),
+                    Container(
+                      margin: new EdgeInsets.only(top: 12.0),
+                      child: Text('${timeago.format(video.dateTime)}'),
                     ),
                   ],
                 ),
               ),
-            ),
-          );
+              //),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  _getListView(List<ExerciseSet> videos) {
+    return ListView.builder(
+        padding: const EdgeInsets.all(8),
+        itemCount: videos.length,
+        itemBuilder: (BuildContext context, int index) {
+          return _buildListItem(videos[index]);
         });
   }
 
-  Future<List<ExerciseSet>> _getALlPosts(String text) async {
-    await Future.delayed(Duration(seconds: text.length == 4 ? 10 : 1));
-    //if (isReplay) return [Post("Replaying !", "Replaying body")];
-    //if (text.length == 5) throw Error();
-    //if (text.length == 6) return [];
-    //List<Post> posts = [];
-
-    //var random = new Random();
-    /*for (int i = 0; i < 10; i++) {
-      posts.add(Post("$text $i", "body random number : "));
-    }*/
-
-    var abc = _videos
-        .where((element) => element.title.toUpperCase() == text.toUpperCase())
+  // TODO: make this search by anything instead of just title? or even e.g. "TITLE:Squat"
+  // TODO: var instead of specified...
+  Future<List<ExerciseSet>> _getSearchResults(String text) async {
+    List<ExerciseSet> searchResults = _videos
+        .where((element) =>
+            element.title.toUpperCase().contains(text.toUpperCase()))
         .toList();
 
-    return abc;
+    return searchResults;
   }
 
-  SearchBarController _searchBarController = SearchBarController();
+  final SearchBarController<ExerciseSet> _searchBarController =
+      SearchBarController();
+  //final SearchBarController<Post> _searchBarController = SearchBarController();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: ReusableWidgets.getAppBar(),
       drawer: ReusableWidgets.getDrawer(context),
       body: Column(
+        mainAxisSize: MainAxisSize.min,
         children: [
-          //ListView(
-          //children: [
-          Container(
-            height: MediaQuery.of(context).size.height - kToolbarHeight - 50,
-            child:
-                //child:
-                SearchBar(
+          //Container(
+          // well this is garbage...
+          //height: MediaQuery.of(context).size.height - kToolbarHeight - 354,
+          //child:
+          Flexible(
+            fit: FlexFit.loose,
+            child: SearchBar<ExerciseSet>(
               searchBarPadding: EdgeInsets.symmetric(horizontal: 10),
               headerPadding: EdgeInsets.symmetric(horizontal: 10),
               listPadding: EdgeInsets.symmetric(horizontal: 10),
-              onSearch: _getALlPosts,
+              onSearch: _getSearchResults,
               searchBarController: _searchBarController,
-              placeHolder: //Container(
-                  //height: 500,
-                  //child:
-                  Container(
-                height:
-                    MediaQuery.of(context).size.height - kToolbarHeight - 50,
-                child: _getListView(),
-              ),
-              // ), //Text("placeholder"),
+              minimumChars: 1,
+              // doesn't do anything, right now.
+              /*suggestions: [
+                ExerciseSet(title: "Squat"),
+                ExerciseSet(title: "Deadlift"),
+                ExerciseSet(title: "Bench"),
+                ExerciseSet(title: "Press")
+              ],
+              buildSuggestion: (item, index) => Text(item.title),*/
+
+              placeHolder: _getListView(_videos),
+
               cancellationWidget: Text("Cancel"),
-              emptyWidget: Text("empty"),
-              indexedScaledTileBuilder: (int index) =>
-                  ScaledTile.count(1, index.isEven ? 2 : 1),
+              emptyWidget: Text("None"),
+              // could put buttons here and _searchBarController.filter or otherwise modify the search field....
               header: Row(
-                children: <Widget>[
-                  /*RaisedButton(
-                    child: Text("sort"),
-                    onPressed: () {
-                      _searchBarController.sortList((Post a, Post b) {
-                        return a.body.compareTo(b.body);
-                      });
-                    },
-                  ),*/
-                  /*RaisedButton(
-                    child: Text("Desort"),
-                    onPressed: () {
-                      _searchBarController.removeSort();
-                    },
-                  ),*/
-                  /*RaisedButton(
-                    child: Text("Replay"),
-                    onPressed: () {
-                      isReplay = !isReplay;
-                      _searchBarController.replayLastSearch();
-                    },
-                  ),*/
-                ],
+                children: <Widget>[],
               ),
               onCancelled: () {
                 print("Cancelled triggered");
               },
               mainAxisSpacing: 10,
               crossAxisSpacing: 10,
-              crossAxisCount: 2,
-              onItemFound: (post, int index) {
-                return (Container());
-                /*return Container(
-                  color: Colors.lightBlue,
-                  child: ListTile(
-                    title: Text(post.title),
-                    isThreeLine: true,
-                    subtitle: Text(post.body),
-                    onTap: () {
-                      //Navigator.of(context).push(
-                          //MaterialPageRoute(builder: (context) => Detail()));
-                    },
-                  ),
-                );*/
+              onItemFound: (exercise, int index) {
+                return _buildListItem(exercise);
               },
             ),
           ),
-          //),
         ],
       ),
-      //],
-      //)
     );
   }
 }

@@ -44,6 +44,16 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                   "Your weight collection",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
+                Divider(
+                  height: 10,
+                  thickness: 8,
+                  color: Colors.blueGrey,
+                  indent: 20,
+                  endIndent: 20,
+                ),
+                SizedBox(
+                  height: 10,
+                ),
                 Text(
                   "Bar weight",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),

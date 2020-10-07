@@ -1,5 +1,4 @@
 import 'package:flutter/cupertino.dart';
-import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 
