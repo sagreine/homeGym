@@ -1,11 +1,19 @@
+import 'dart:io';
+import 'dart:math';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
+//import 'package:image_picker/image_picker.dart';
+//import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:transparent_image/transparent_image.dart';
+import 'package:social_share_plugin/social_share_plugin.dart';
+//import 'package:http/http.dart' as http;
 
 class OldVideosView extends StatefulWidget {
   @override
@@ -16,6 +24,7 @@ class OldVideosViewState extends State<OldVideosView> {
   //SettingsController settingsController = SettingsController();
   // should these go in the Settingscontroller probably then...
   List<ExerciseSet> _videos = <ExerciseSet>[];
+  //PickedFile file;
 
   @override
   void dispose() {
@@ -26,12 +35,18 @@ class OldVideosViewState extends State<OldVideosView> {
   @override
   void initState() {
     super.initState();
-    FirebaseProvider.listenToVideos((newVideos) {
+    FirebaseProvider.listenToVideos(context, (newVideos) {
       setState(() {
         _videos = newVideos;
       });
     });
   }
+
+  /*_shareFile() async {
+    //file = await ImagePicker().getImage(source: ImageSource.gallery);
+    //file = 
+    await SocialSharePlugin.shareToFeedInstagram(path: file.path);
+  }*/
 
   _buildListItem(ExerciseSet video) {
     return GestureDetector(
@@ -94,6 +109,50 @@ class OldVideosViewState extends State<OldVideosView> {
                     Container(
                       margin: new EdgeInsets.only(top: 12.0),
                       child: Text('${timeago.format(video.dateTime)}'),
+                    ),
+                    RaisedButton(
+                      child: Text('Share to Instagram'),
+                      onPressed: () async {
+                        //_shareFile();
+                        //File file = await ImagePicker.pickImage(source: ImageSource.gallery);
+                        //File file = File(video.thumbnailPath);
+/*
+                        // generate random number.
+                        var rng = new Random();
+// get temporary directory of device.
+                        Directory tempDir = await getTemporaryDirectory();
+// get temporary path from temporary directory.
+                        String tempPath = tempDir.path;
+// create a new file in temporary path with random file name.
+                        File file = new File('$tempPath' +
+                            '/' +
+                            (rng.nextInt(100)).toString() +
+                            '.png');
+// call http.get method and pass imageUrl into it to get response.
+                        var response = await http.get(video.thumbnailPath);
+// write bodyBytes received in response to file.
+                        await file.writeAsBytes(response.bodyBytes);
+// now return the file which is created with random name in
+// temporary directory and image bytes from response is written to // that file.
+                        //return file;*/
+
+                        //Uri photoURI = FileProvider.getUriForFile(this,
+                        //"com.example.navigationdrawerfinal.fileprovider", // Over here
+                        //photoFile);
+
+                        /*FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()),
+                    BuildConfig.APPLICATION_ID + ".provider", file);*/
+
+                        /*await SocialSharePlugin.shareToFeedInstagram(
+                            path:
+                                //"com.example.home_gym.social.share.fileprovider.provider" +
+                                file.path);*/
+
+                        await SocialSharePlugin.shareToTwitterLink(
+                            text:
+                                "Just lifted with HomeGymTV! ${video.title}, ${video.reps}x${video.weight}",
+                            url: "");
+                      },
                     ),
                   ],
                 ),
@@ -492,11 +551,12 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
 }
 
 class FirebaseProvider {
-  static var userID = "4DchyEpIYyMAlgSOdiWuQycCqeC2";
+  //static var userID = "4DchyEpIYyMAlgSOdiWuQycCqeC2";
 
-  static listenToVideos(callback) async {
+  static listenToVideos(BuildContext context, callback) async {
+    var userId = (Provider.of<Muser>(context, listen: false)).firebaseUser.uid;
     FirebaseFirestore.instance
-        .collection('/USERDATA/$userID/LIFTS')
+        .collection('/USERDATA/$userId/LIFTS')
         .snapshots()
         .listen((qs) {
       // only uploads that have videos can have their videos searched :)

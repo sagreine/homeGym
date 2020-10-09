@@ -108,7 +108,7 @@ class HomeController {
         983977033) {
       //cloudUrl =
       url = uploadToCloudStorage(
-        userID: user.fAuthUser.uid,
+        userID: user.firebaseUser.uid,
         fileToUpload: File(filePath),
         isVideo: true,
       );
@@ -125,7 +125,7 @@ class HomeController {
     var thumbnail = await VideoCompress.getFileThumbnail(
         filePath); //VideoCompress.getMediaInfo(path).
     return uploadToCloudStorage(
-      userID: user.fAuthUser.uid,
+      userID: user.firebaseUser.uid,
       fileToUpload: thumbnail,
       isVideo: false,
     );
