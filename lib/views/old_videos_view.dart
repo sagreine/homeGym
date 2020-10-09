@@ -111,7 +111,7 @@ class OldVideosViewState extends State<OldVideosView> {
                       child: Text('${timeago.format(video.dateTime)}'),
                     ),
                     RaisedButton(
-                      child: Text('Share to Instagram'),
+                      child: Text('Share to Twitter'),
                       onPressed: () async {
                         //_shareFile();
                         //File file = await ImagePicker.pickImage(source: ImageSource.gallery);
