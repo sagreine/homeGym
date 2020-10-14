@@ -220,6 +220,7 @@ class HomeController {
     var user = Provider.of<Muser>(context, listen: false);
     var settings = Provider.of<Settings>(context, listen: false);
 
+    // TODO: set this to an assets video instead of cloud? saves bandwidth, doesn't need global internet to bet up...
     String url =
         "https://firebasestorage.googleapis.com/v0/b/sagrehomegym.appspot.com/o/animation_1.mkv?alt=media&token=95062198-8a3a-4cba-8de4-6fcb8cb0bf22";
 
@@ -249,6 +250,7 @@ class HomeController {
     ///    b) we keep the URL safe with careful ordering, but easy to forget that
     ///
     ///
+    bool firstExercise = thisDay.currentSet == 0;
     ExerciseSet nextSet = getNextExercise(context: context);
     String nextExercise = json.encode(nextSet.toJson());
     // will tell the TV if we need to start a timer on fling
@@ -379,12 +381,19 @@ class HomeController {
       if (pickedFile == null) {
         return;
       }
-      // 2b cast placeholder
+      // 2b cast placeholder - ONLY send firstExercise exactly once, so only sending it here.
       if (doCast) {
         cast(
           url: url,
           player: player,
-          mediaTitle: thisExercise + nextExercise + json.encode(startTimerCast),
+          mediaTitle: thisExercise +
+              nextExercise +
+              '{"startTimerCast":' +
+              startTimerCast.toString() +
+              "}"
+                  '{"firstExercise":' +
+              firstExercise.toString() +
+              "}",
           context: context,
         );
       }
@@ -410,7 +419,14 @@ class HomeController {
         cast(
           url: url,
           player: player,
-          mediaTitle: thisExercise + nextExercise + json.encode(startTimerCast),
+          mediaTitle: thisExercise +
+              nextExercise +
+              '{"startTimerCast":' +
+              startTimerCast.toString() +
+              "}"
+                  '{"firstExercise":' +
+              firstExercise.toString() +
+              "}",
           context: context,
         );
         // put the rest period back to what the user knows.
@@ -447,7 +463,14 @@ class HomeController {
       cast(
         url: url,
         player: player,
-        mediaTitle: thisExercise + nextExercise + json.encode(startTimerCast),
+        mediaTitle: thisExercise +
+            nextExercise +
+            '{"startTimerCast":' +
+            startTimerCast.toString() +
+            "}"
+                '{"firstExercise":' +
+            firstExercise.toString() +
+            "}",
         context: context,
       );
     }
