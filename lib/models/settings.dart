@@ -7,8 +7,8 @@ class Settings extends ChangeNotifier {
   bool saveCloud;
 
   Settings() {
-    saveCloud = true;
-    saveLocal = false;
+    this.saveCloud = true;
+    this.saveLocal = false;
   }
   updateSaveLocal(bool value) {
     saveLocal = value;

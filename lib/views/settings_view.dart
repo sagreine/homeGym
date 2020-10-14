@@ -46,7 +46,7 @@ class SettingsViewState extends State<SettingsView> {
                 return Column(
                   children: [
                     SwitchListTile.adaptive(
-                      value: settings.saveLocal,
+                      value: settings.saveLocal ?? false,
                       onChanged: (value) {
                         settingsController.updateBoolVal(
                             context: context, key: "saveLocal", value: value);
@@ -55,7 +55,7 @@ class SettingsViewState extends State<SettingsView> {
                       title: Text("Save local copy of video too"),
                     ),
                     SwitchListTile.adaptive(
-                      value: settings.saveCloud,
+                      value: settings.saveCloud ?? false,
                       onChanged: (value) {
                         settingsController.updateBoolVal(
                             context: context, key: "saveCloud", value: value);

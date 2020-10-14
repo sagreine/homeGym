@@ -218,6 +218,54 @@ class ReusableWidgets {
                     }
                   }),
               ListTile(
+                  title: Text("Check Form Picture"),
+                  //leading: Icon(Icons.description),
+                  leading: Icon(Icons.video_library),
+                  onTap: () {
+                    newRouteName = "/form_check";
+                    // if the current route is the exact location we're at (first on the stack), mark that
+                    Navigator.popUntil(context, (route) {
+                      if (route.settings.name == newRouteName) {
+                        isNewRouteSameAsCurrent = true;
+                      } else {
+                        isNewRouteSameAsCurrent = false;
+                      }
+                      return true;
+                    });
+                    // if it isn't, go to the new route
+                    if (!isNewRouteSameAsCurrent) {
+                      Navigator.pushNamed(context, newRouteName);
+                    }
+                    // again if it is, just pop the drawer away
+                    else {
+                      Navigator.pop(context);
+                    }
+                  }),
+              ListTile(
+                  title: Text("Check Form Video"),
+                  //leading: Icon(Icons.description),
+                  leading: Icon(Icons.video_library),
+                  onTap: () {
+                    newRouteName = "/form_check_copy";
+                    // if the current route is the exact location we're at (first on the stack), mark that
+                    Navigator.popUntil(context, (route) {
+                      if (route.settings.name == newRouteName) {
+                        isNewRouteSameAsCurrent = true;
+                      } else {
+                        isNewRouteSameAsCurrent = false;
+                      }
+                      return true;
+                    });
+                    // if it isn't, go to the new route
+                    if (!isNewRouteSameAsCurrent) {
+                      Navigator.pushNamed(context, newRouteName);
+                    }
+                    // again if it is, just pop the drawer away
+                    else {
+                      Navigator.pop(context);
+                    }
+                  }),
+              ListTile(
                   title: Text("Help"),
                   leading: Icon(Icons.help),
                   onTap: () {

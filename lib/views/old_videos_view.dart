@@ -111,6 +111,12 @@ class OldVideosViewState extends State<OldVideosView> {
                       child: Text('${timeago.format(video.dateTime)}'),
                     ),
                     RaisedButton(
+                      child: Text("check form"),
+                      onPressed: () {
+                        Navigator.pushNamed(context, "/form_check");
+                      },
+                    ),
+                    RaisedButton(
                       child: Text('Share to Twitter'),
                       onPressed: () async {
                         //_shareFile();

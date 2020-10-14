@@ -91,8 +91,8 @@ void _getInitialPull(BuildContext context) async {
 void _getSharedPrerferences(BuildContext context) async {
   var settings = Provider.of<Settings>(context, listen: false);
   final prefs = await SharedPreferences.getInstance();
-  settings.saveLocal = prefs.getBool("saveLocal");
-  settings.saveCloud = prefs.getBool("saveCloud");
+  settings.saveLocal = prefs.getBool("saveLocal") ?? false;
+  settings.saveCloud = prefs.getBool("saveCloud") ?? true;
 }
 
 void _serverInit(context) {
@@ -160,6 +160,8 @@ class MyApp extends StatelessWidget {
         '/intro_screen': (context) => IntroScreenView(),
         '/excerciseday': (context) => ExcerciseDayView(),
         "/lifter_videos": (context) => OldVideosView(),
+        '/form_check': (context) => FormCheckView(),
+        '/form_check_copy': (context) => FormCheckView(),
         '/today': (context) => TodayView(),
       },
     );
