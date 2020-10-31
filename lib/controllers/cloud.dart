@@ -155,7 +155,7 @@ Future<String> uploadToCloudStorage(
 */
   //print("userID is: $userID");
   final StorageReference firebaseStorageRef = FirebaseStorage.instance.ref().child(
-      "user/$userID/${UniqueKey().toString()} ${UniqueKey().toString()} ${UniqueKey().toString()}_${isVideo ? "video" : "thumbnail"}");
+      "user/$userID/${UniqueKey().toString()}${UniqueKey().toString()}${UniqueKey().toString()}_${isVideo ? "video" : "thumbnail"}");
   //.child("user/" + userID + "/" + UniqueKey().toString() + UniqueKey().toString() +UniqueKey().toString());
   StorageUploadTask uploadTask = firebaseStorageRef.putFile(fileToUpload);
 

@@ -60,6 +60,9 @@ dependencies:
   #http: ^0.12.2
   tflite: ^1.1.1
   image: ^2.1.18
+  instagram_share: ^0.1.9
+  flutter_downloader: ^1.5.2
+
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

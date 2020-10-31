@@ -4,6 +4,7 @@ import 'dart:io';
 
 import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 //import 'package:flutter_bloc/flutter_bloc.dart'
@@ -42,6 +43,11 @@ void main() async {
   //Bloc.observer = SimpleBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  // TODO if we stop using this plugin, remove this. at least
+  await FlutterDownloader.initialize(
+      debug: Foundation
+          .kDebugMode // optional: set false to disable printing logs to console
+      );
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
       create: (context) => Muser(),

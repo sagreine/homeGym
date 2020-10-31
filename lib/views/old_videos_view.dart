@@ -6,14 +6,17 @@ import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
+import 'package:path_provider/path_provider.dart';
 //import 'package:image_picker/image_picker.dart';
 //import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:transparent_image/transparent_image.dart';
+import 'package:instagram_share/instagram_share.dart';
 import 'package:social_share_plugin/social_share_plugin.dart';
 //import 'package:http/http.dart' as http;
+import 'package:flutter_downloader/flutter_downloader.dart';
 
 class OldVideosView extends StatefulWidget {
   @override
@@ -110,18 +113,26 @@ class OldVideosViewState extends State<OldVideosView> {
                       margin: new EdgeInsets.only(top: 12.0),
                       child: Text('${timeago.format(video.dateTime)}'),
                     ),
-                    RaisedButton(
+                    SizedBox(
+                      height: 8,
+                    ),
+                    Text("Share this lift!"),
+                    Row(
+                      children: [
+                        /*RaisedButton(
                       child: Text("check form"),
                       onPressed: () {
                         Navigator.pushNamed(context, "/form_check");
                       },
-                    ),
-                    RaisedButton(
-                      child: Text('Share to Twitter'),
-                      onPressed: () async {
-                        //_shareFile();
-                        //File file = await ImagePicker.pickImage(source: ImageSource.gallery);
-                        //File file = File(video.thumbnailPath);
+                    ),*/
+                        IconButton(
+                          //child: Text('Share to Twitter'),
+                          icon: Image.asset(
+                              "assets/images/Twitter_Logo_Blue.png"),
+                          onPressed: () async {
+                            //_shareFile();
+                            //File file = await ImagePicker.pickImage(source: ImageSource.gallery);
+                            //File file = File(video.thumbnailPath);
 /*
                         // generate random number.
                         var rng = new Random();
@@ -142,23 +153,55 @@ class OldVideosViewState extends State<OldVideosView> {
 // temporary directory and image bytes from response is written to // that file.
                         //return file;*/
 
-                        //Uri photoURI = FileProvider.getUriForFile(this,
-                        //"com.example.navigationdrawerfinal.fileprovider", // Over here
-                        //photoFile);
+                            //Uri photoURI = FileProvider.getUriForFile(this,
+                            //"com.example.navigationdrawerfinal.fileprovider", // Over here
+                            //photoFile);
 
-                        /*FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()),
+                            /*FileProvider.getUriForFile(Objects.requireNonNull(getApplicationContext()),
                     BuildConfig.APPLICATION_ID + ".provider", file);*/
 
-                        /*await SocialSharePlugin.shareToFeedInstagram(
+                            /*await SocialSharePlugin.shareToFeedInstagram(
                             path:
                                 //"com.example.home_gym.social.share.fileprovider.provider" +
                                 file.path);*/
 
-                        await SocialSharePlugin.shareToTwitterLink(
-                            text:
-                                "Just lifted with HomeGymTV! ${video.title}, ${video.reps}x${video.weight}",
-                            url: "");
-                      },
+                            // TODO: this plugin, or Twitter? breaks the link. it parses the '%' sigsn i think and that breaks everything...
+                            await SocialSharePlugin.shareToTwitterLink(
+                                text:
+                                    "Just lifted with HomeGymTV! ${video.title}, ${video.reps}x${video.weight}",
+                                //url: ""
+                                url: video.videoPath);
+                          },
+                        ),
+                        // TODO need to limit to videos < 60 seconds long for instagram's requirements.
+                        IconButton(
+                            icon:
+                                Image.asset("assets/images/Instagram_Logo.png"),
+                            onPressed: () async {
+                              final saveDir =
+                                  (await getApplicationDocumentsDirectory())
+                                      .absolute
+                                      .path;
+
+                              //final taskId =
+                              await FlutterDownloader.enqueue(
+                                url: video.videoPath,
+                                savedDir: saveDir,
+                                fileName: "tempVideo.mp4",
+                                showNotification:
+                                    false, // show download progress in status bar (for Android)
+                                openFileFromNotification:
+                                    false, // click on notification to open downloaded file (for Android)
+                              );
+                              await FlutterDownloader.loadTasks();
+                              /*final directory =
+                                  (await getApplicationDocumentsDirectory())
+                                      .path;
+                              List files = Directory("$directory").listSync();*/
+                              await InstagramShare.share(
+                                  "$saveDir/tempVideo.mp4", 'video');
+                            }),
+                      ],
                     ),
                   ],
                 ),

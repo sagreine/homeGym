@@ -356,6 +356,13 @@ packages:
     description: flutter
     source: sdk
     version: "0.0.0"
+  flutter_downloader:
+    dependency: "direct main"
+    description:
+      name: flutter_downloader
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.5.2"
   flutter_fling:
     dependency: "direct main"
     description:
@@ -492,6 +499,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1+1"
+  instagram_share:
+    dependency: "direct main"
+    description:
+      name: instagram_share
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.9"
   intl:
     dependency: transitive
     description:

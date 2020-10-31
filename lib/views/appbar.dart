@@ -217,10 +217,11 @@ class ReusableWidgets {
                       Navigator.pop(context);
                     }
                   }),
+              /*
               ListTile(
                   title: Text("Check Form Picture"),
                   //leading: Icon(Icons.description),
-                  leading: Icon(Icons.video_library),
+                  leading: Icon(Icons.accessibility),
                   onTap: () {
                     newRouteName = "/form_check";
                     // if the current route is the exact location we're at (first on the stack), mark that
@@ -244,7 +245,7 @@ class ReusableWidgets {
               ListTile(
                   title: Text("Check Form Video"),
                   //leading: Icon(Icons.description),
-                  leading: Icon(Icons.video_library),
+                  leading: Icon(Icons.flash_auto), //auto_awesome or fix
                   onTap: () {
                     newRouteName = "/form_check_copy";
                     // if the current route is the exact location we're at (first on the stack), mark that
@@ -264,7 +265,7 @@ class ReusableWidgets {
                     else {
                       Navigator.pop(context);
                     }
-                  }),
+                  }),*/
               ListTile(
                   title: Text("Help"),
                   leading: Icon(Icons.help),

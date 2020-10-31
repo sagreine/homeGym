@@ -206,7 +206,7 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                                   elevation: 4,
                                   color: Colors.green[800],
                                   onPressed: () =>
-                                      Navigator.pushNamed(context, "/do_lift"),
+                                      Navigator.pushNamed(context, "/pick_day"),
                                   child: Text("Now do a workout!")));
                         },
                       ),
