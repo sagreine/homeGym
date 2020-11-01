@@ -16,7 +16,7 @@ class LifterWeightsController {
     var user = Provider.of<Muser>(context, listen: false);
     if (liftweights.updatePlate(plate: plate, plateCount: plateCount)) {
       updatePlateCloud(
-          plate: plate, plateCount: plateCount, userID: user.firebaseUser.uid);
+          plate: plate, plateCount: plateCount, userID: user.fAuthUser.uid);
     }
   }
 
@@ -24,7 +24,7 @@ class LifterWeightsController {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
     if (liftweights.updateBumpers(bumpers: bumpers)) {
-      updateBumpersCloud(bumpers: bumpers, userID: user.firebaseUser.uid);
+      updateBumpersCloud(bumpers: bumpers, userID: user.fAuthUser.uid);
     }
   }
 
@@ -32,8 +32,7 @@ class LifterWeightsController {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
     liftweights.updateBarWeight(newBarWeight);
-    updateBarWeightCloud(
-        newWeight: newBarWeight, userID: user.firebaseUser.uid);
+    updateBarWeightCloud(newWeight: newBarWeight, userID: user.fAuthUser.uid);
   }
 
   //String pickPlates({BuildContext context, int targetWeight}) {

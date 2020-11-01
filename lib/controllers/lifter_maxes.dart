@@ -122,7 +122,7 @@ class LifterMaxesController {
     }
     if (updateCloud) {
       update1RepMaxCloud(
-          lift: lift, newMax: newMax, userID: user.firebaseUser.uid);
+          lift: lift, newMax: newMax, userID: user.fAuthUser.uid);
     }
     // call (perhaps not implemented yet) cloud update liftMax function - that'd be if the max both wasn't null and is now different.
   }

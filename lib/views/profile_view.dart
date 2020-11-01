@@ -44,7 +44,8 @@ class ProfileViewState extends State<ProfileView> {
                       CircleAvatar(
                         radius: 50,
                         backgroundColor: Colors.brown.shade800,
-                        backgroundImage: user.firebaseUser.photoUri.isEmpty
+                        backgroundImage: user.fAuthUser.photoURL == null ||
+                                user.fAuthUser.photoURL.isEmpty
                             ? AssetImage("assets/images/pos_icon.png")
                             : NetworkImage(user.getPhotoURL()),
                       ),
@@ -58,18 +59,18 @@ class ProfileViewState extends State<ProfileView> {
                           //Image.asset("assets/images/pos_icon.png"),
                           Text("Name: ${user.getDisplayName()}"),
                           SizedBox(height: 10),
-                          Text("Email: ${user.firebaseUser.email}"),
+                          Text("Email: ${user.fAuthUser.email}"),
                           SizedBox(height: 10),
                           Text(
-                              "Are you a new user: ${user.firebaseUser.isNewUser == true ? "Yep" : "Nope"}"),
+                              "Are you a new user: ${user.isNewUser == true ? "Yep" : "Nope"}"),
                           SizedBox(height: 10),
                           Text(
-                              "Your phone number: ${user.firebaseUser.phoneNumber}"),
+                              "Your phone number: ${user.fAuthUser.phoneNumber}"),
                           SizedBox(height: 10),
-                          Text("Your user ID: ${user.firebaseUser.uid}"),
+                          Text("Your user ID: ${user.fAuthUser.uid}"),
                           SizedBox(height: 10),
                           Text(
-                              "Are you an anonymous user: ${user.firebaseUser.isAnonymous == true ? "Yep" : "Nope"}"),
+                              "Are you an anonymous user: ${user.fAuthUser.isAnonymous == true ? "Yep" : "Nope"}"),
                           SizedBox(height: 10),
                           Text(user.fAuthUser == null
                               ? "Not sure when you created your account!"

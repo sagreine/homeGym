@@ -3,16 +3,20 @@ import 'package:firebase_auth/firebase_auth.dart' as fauth;
 import 'package:flutter/material.dart';
 
 class Muser extends ChangeNotifier {
-  FirebaseUser firebaseUser;
+  FirebaseUser _firebaseUser;
   fauth.User fAuthUser = fauth.FirebaseAuth.instance.currentUser;
+  bool isNewUser;
 
   Muser({
-    this.firebaseUser,
+    //this.firebaseUser,
+    isNewUser = true,
   });
 
   Future<bool> logout() async {
     final result = await FirebaseAuthUi.instance().logout();
-    this.firebaseUser = null;
+    //this.firebaseUser = null;
+    isNewUser = true;
+
     this.fAuthUser = null;
     return result;
   }
@@ -54,5 +58,5 @@ class Muser extends ChangeNotifier {
   }
 
   //@override
-  List<Object> get props => [firebaseUser, fAuthUser];
+  List<Object> get props => [fAuthUser];
 }

@@ -200,7 +200,7 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                       Consumer<Muser>(
                         builder: (context, user, child) {
                           return Visibility(
-                              visible: user.firebaseUser.isNewUser,
+                              visible: user.isNewUser,
                               child: RaisedButton(
                                   splashColor: Colors.green[600],
                                   elevation: 4,

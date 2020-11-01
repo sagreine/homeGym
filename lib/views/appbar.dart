@@ -35,7 +35,8 @@ class ReusableWidgets {
                           radius: 50,
                           backgroundColor:
                               Color(0xFFCB8421), //Colors.brown.shade800,
-                          backgroundImage: user.firebaseUser.photoUri.isEmpty
+                          backgroundImage: user.fAuthUser.photoURL == null ||
+                                  user.fAuthUser.photoURL.isEmpty
                               ? AssetImage("assets/images/pos_icon.png")
                               : NetworkImage(user.getPhotoURL()),
                         ),

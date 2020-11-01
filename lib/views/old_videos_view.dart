@@ -603,7 +603,7 @@ class FirebaseProvider {
   //static var userID = "4DchyEpIYyMAlgSOdiWuQycCqeC2";
 
   static listenToVideos(BuildContext context, callback) async {
-    var userId = (Provider.of<Muser>(context, listen: false)).firebaseUser.uid;
+    var userId = (Provider.of<Muser>(context, listen: false)).fAuthUser.uid;
     FirebaseFirestore.instance
         .collection('/USERDATA/$userId/LIFTS')
         .snapshots()

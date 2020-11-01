@@ -108,7 +108,7 @@ class HomeController {
         983977033) {
       //cloudUrl =
       url = uploadToCloudStorage(
-        userID: user.firebaseUser.uid,
+        userID: user.fAuthUser.uid,
         fileToUpload: File(filePath),
         isVideo: true,
       );
@@ -125,7 +125,7 @@ class HomeController {
     var thumbnail = await VideoCompress.getFileThumbnail(
         filePath); //VideoCompress.getMediaInfo(path).
     return uploadToCloudStorage(
-      userID: user.firebaseUser.uid,
+      userID: user.fAuthUser.uid,
       fileToUpload: thumbnail,
       isVideo: false,
     );
@@ -334,7 +334,7 @@ class HomeController {
                                     exercise.reps = int.parse(
                                         formControllerRepsCorrection.text),
                                     /*updateDatabaseRecordWithReps(
-                                      userID: user.firebaseUser.uid,
+                                      userID: user.fAuthUser.uid,
                                       dbDocID: origExerciseID,
                                       reps: int.parse(
                                           formControllerRepsCorrection.text)),*/
@@ -457,7 +457,7 @@ class HomeController {
     // make the firestore record for this exercise. (dangerous, they can still back out of video.....)
     //String origExerciseID =
     //await
-    createDatabaseRecord(exercise: exercise, userID: user.firebaseUser.uid);
+    createDatabaseRecord(exercise: exercise, userID: user.fAuthUser.uid);
     // otherwise we'll cast the default video.
     if (doCast & !doVideo) {
       cast(
