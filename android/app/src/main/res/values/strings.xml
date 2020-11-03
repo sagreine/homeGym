@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Home Gym TV</string>
     <string name="facebook_app_id">357653628710078</string>
+    <string name="facebook_application_id">357653628710078</string>
 </resources>

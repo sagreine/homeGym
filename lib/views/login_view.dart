@@ -28,6 +28,7 @@ class _LoginViewState extends State<LoginView> {
 
   //FirebaseUser _firebaseUser;
   //User _user;
+  // TODO model not view....
   Muser _user;
   String error;
   bool result;
@@ -61,26 +62,26 @@ class _LoginViewState extends State<LoginView> {
   }
 
   //TODO: well this sure isn't UI..
-  void buildDefaultUser() {
-    lifterMaxesController.update1RepMax(
+  void buildDefaultUser() async {
+    await lifterMaxesController.update1RepMax(
         progression: false,
         context: context,
         lift: "bench",
         newMax: 100,
         updateCloud: true);
-    lifterMaxesController.update1RepMax(
+    await lifterMaxesController.update1RepMax(
         progression: false,
         context: context,
         lift: "deadlift",
         newMax: 120,
         updateCloud: true);
-    lifterMaxesController.update1RepMax(
+    await lifterMaxesController.update1RepMax(
         progression: false,
         context: context,
         lift: "squat",
         newMax: 110,
         updateCloud: true);
-    lifterMaxesController.update1RepMax(
+    await lifterMaxesController.update1RepMax(
         progression: false,
         context: context,
         lift: "press",
@@ -88,6 +89,7 @@ class _LoginViewState extends State<LoginView> {
         updateCloud: true);
 // default bar weight of 45
     lifterWeightsController.updateBarWeight(context, 45);
+    lifterWeightsController.updateBumpers(context: context, bumpers: false);
 // add default plate counts. first, lbs
     lifterWeightsController.updatePlate(
         context: context, plate: 2.5, plateCount: 4);
@@ -119,11 +121,18 @@ class _LoginViewState extends State<LoginView> {
   Scaffold buildNextPage() {
     //\\listener.drain();
     if (_user.isNewUser) {
+      buildDefaultUser();
       //buildDefaultUser();
       return Scaffold(
         body: Container(child: IntroScreenView()),
       );
     } else {
+      loginController.getMaxes(context);
+      loginController.getBarWeight(context);
+      loginController.getPlates(context);
+      if (_user.getPhotoURL() != null && _user.getPhotoURL().isNotEmpty) {
+        precacheImage(new NetworkImage(_user.getPhotoURL()), context);
+      }
       return Scaffold(
         body: Container(child: PickDayView()),
       );
@@ -149,6 +158,7 @@ class _LoginViewState extends State<LoginView> {
                 AuthProvider.email(),
                 AuthProvider.google(),
                 //AuthProvider.twitter(),
+                AuthProvider.facebook(),
                 AuthProvider.phone(),
               ],
               //TODO: actual deep links.
@@ -162,21 +172,12 @@ class _LoginViewState extends State<LoginView> {
                 // pull in this users' information or build a default user
                 if (snapshot.data.isNewUser != false) {
                   _user.isNewUser = true;
-                  buildDefaultUser();
+                  //buildDefaultUser();
                 } else {
                   _user.isNewUser = false;
                 }
-                loginController.getMaxes(context);
-                loginController.getBarWeight(context);
-                loginController.getPlates(context);
-                if (_user.getPhotoURL() != null &&
-                    _user.getPhotoURL().isNotEmpty) {
-                  precacheImage(new NetworkImage(_user.getPhotoURL()), context);
-                  //}
-                }
                 return buildNextPage();
               } else {
-                //return buildNextPage();
                 return Scaffold(
                   body: Center(
                     child: Container(),
