@@ -119,10 +119,8 @@ class _LoginViewState extends State<LoginView> {
   }
 
   Scaffold buildNextPage() {
-    //\\listener.drain();
     if (_user.isNewUser) {
       buildDefaultUser();
-      //buildDefaultUser();
       return Scaffold(
         body: Container(child: IntroScreenView()),
       );
@@ -138,15 +136,6 @@ class _LoginViewState extends State<LoginView> {
       );
     }
   }
-
-  /*doit(snapshot) async {
-    //fauth.User user = snapshot.data;
-    _user.fAuthUser = snapshot.data;
-    //if (_user.fAuthUser == null) {
-    await _onActionTapped(context: context, user: _user);
-    //}
-    return buildNextPage();
-  }*/
 
   @override
   Widget build(BuildContext context) {
@@ -164,7 +153,13 @@ class _LoginViewState extends State<LoginView> {
               //TODO: actual deep links.
               tosUrl: "https://sagrehomegym.web.app/",
               privacyPolicyUrl: "https://sagrehomegym.web.app/",
-            ).asStream(),
+            ).catchError((error) {
+              if (error is PlatformException) {
+                setState(() {
+                  if (error.code == FirebaseAuthUi.kUserCancelledError) {}
+                });
+              }
+            }).asStream(),
             builder: (context, snapshot) {
               authFlag = true;
               if (snapshot.connectionState == ConnectionState.done) {
@@ -186,49 +181,6 @@ class _LoginViewState extends State<LoginView> {
               }
             },
           );
-  }
-  //_user = Provider.of<Muser>(context, listen: false);
-  //Navigator.of(context).pushReplacement(
-  //MaterialPageRoute<void>(builder: (BuildContext context) {
-  //
-
-  //  return Scaffold(body: Container(child: PickDay()));
-
-  // if already logged in. this handles e.g. the phone falling asleep on next page (guh)
-  // does require that we null out on logout, but that looks standard
-
-//consider... https://stackoverflow.com/questions/50885891/one-time-login-in-app-firebaseauth
-
-  Future<void> _onActionTapped({BuildContext context, Muser user}) async {
-    await FirebaseAuthUi.instance().launchAuth(
-      [
-        AuthProvider.email(),
-        AuthProvider.google(),
-        //AuthProvider.twitter(),
-        AuthProvider.phone(), // kind of silly on a phone though?
-      ],
-      //TODO: actual deep links.
-      tosUrl: "https://sagrehomegym.web.app/",
-      privacyPolicyUrl: "https://sagrehomegym.web.app/",
-    ).then((firebaseUser) {
-      //user.firebaseUser = firebaseUser;
-      // pull in this users' information
-      if (user.isNewUser) {
-        buildDefaultUser();
-      }
-      loginController.getMaxes(context);
-      loginController.getBarWeight(context);
-      loginController.getPlates(context);
-      if (user.getPhotoURL() != null && user.getPhotoURL().isNotEmpty) {
-        precacheImage(new NetworkImage(user.getPhotoURL()), context);
-      }
-    }).catchError((error) {
-      if (error is PlatformException) {
-        setState(() {
-          if (error.code == FirebaseAuthUi.kUserCancelledError) {}
-        });
-      }
-    });
   }
 /*
   void _logout() async {
