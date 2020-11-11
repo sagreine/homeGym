@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:firebase_auth/firebase_auth.dart' as fAuth;
 import 'package:firebase_auth_ui/providers.dart';
 import 'package:flutter/material.dart';

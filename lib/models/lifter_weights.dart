@@ -195,6 +195,10 @@ class PlateFinder {
     toReturn = toReturn.trim();
     toReturn = toReturn.replaceAll("  ", ", ");
 
+    if (toReturn.isEmpty) {
+      toReturn = "None";
+    }
+
     print(toReturn);
     return toReturn;
   }
