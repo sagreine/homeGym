@@ -8,13 +8,22 @@ class LifterMaxes extends ChangeNotifier {
   int squatMax;
   int benchMax;
   int pressMax;
+  int _total;
+  int get total =>
+      _total ??
+      (deadliftMax ?? 0) + (squatMax ?? 0) + (benchMax ?? 0) + (pressMax ?? 0);
 
   LifterMaxes({
     this.deadliftMax,
     this.squatMax,
     this.benchMax,
     this.pressMax,
-  });
+  }) {
+    _total = (this.deadliftMax ?? 0) +
+        (this.squatMax ?? 0) +
+        (this.benchMax ?? 0) +
+        (this.pressMax ?? 0);
+  }
 
   void updateMax(String string, int newValue) {
     switch (string.toLowerCase()) {
@@ -31,6 +40,10 @@ class LifterMaxes extends ChangeNotifier {
         pressMax = newValue;
         break;
     }
+    _total = (deadliftMax ?? 0) +
+        (squatMax ?? 0) +
+        (benchMax ?? 0) +
+        (pressMax ?? 0);
     notifyListeners();
   }
 
@@ -39,6 +52,7 @@ class LifterMaxes extends ChangeNotifier {
         squatMax,
         benchMax,
         pressMax,
+        _total,
       ];
   factory LifterMaxes.fromJson(Map<String, dynamic> json) =>
       _$LifterMaxesFromJson(json);

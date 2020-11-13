@@ -47,7 +47,7 @@ class LifterMaxesController {
           }
           //if this is not progression at all, just update to the new max
         } else {
-          liftMaxes.deadliftMax = newMax;
+          liftMaxes.updateMax(lift.toLowerCase(), newMax);
         }
         break;
       case "bench":
@@ -70,7 +70,7 @@ class LifterMaxesController {
           }
           //if this is not progression at all, just update to the new max
         } else {
-          liftMaxes.benchMax = newMax;
+          liftMaxes.updateMax(lift.toLowerCase(), newMax);
         }
         break;
       case "press":
@@ -93,7 +93,7 @@ class LifterMaxesController {
           }
           //if this is not progression at all, just update to the new max
         } else {
-          liftMaxes.pressMax = newMax;
+          liftMaxes.updateMax(lift.toLowerCase(), newMax);
         }
         break;
       case "squat":
@@ -116,7 +116,7 @@ class LifterMaxesController {
           }
           //if this is not progression at all, just update to the new max
         } else {
-          liftMaxes.squatMax = newMax;
+          liftMaxes.updateMax(lift.toLowerCase(), newMax);
         }
         break;
     }

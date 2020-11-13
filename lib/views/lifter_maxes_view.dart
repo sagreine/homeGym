@@ -100,6 +100,13 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
                           _buildMaxValues(
                               liftMaxes.pressMax.toString(), "press"),
                         ]),
+                        DataRow(cells: [
+                          DataCell(
+                            Text('Total: ', style: TextStyle(fontSize: 14)),
+                          ),
+                          DataCell(Text("${liftMaxes.total.toString()}",
+                              style: TextStyle(fontSize: 14)))
+                        ]),
                       ],
                     );
                   },

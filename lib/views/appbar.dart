@@ -57,6 +57,7 @@ class ReusableWidgets {
                               ),
                               onTap: () {
                                 newRouteName = "/profile";
+                                Navigator.canPop(context);
                                 // if the current route is the exact location we're at (first on the stack), mark that
                                 Navigator.popUntil(context, (route) {
                                   if (route.settings.name == newRouteName) {
