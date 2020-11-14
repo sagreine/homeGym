@@ -445,6 +445,7 @@ class _DoLiftViewState extends State<DoLiftView>
                           builder: (context, exerciseDay, child) {
                         // use model & provider to do this, doesn't work right now!
                         return RaisedButton(
+                          splashColor: Colors.blueGrey,
                           onPressed:
                               //_isLastExercise()
                               //homeController.justDidLastSet
