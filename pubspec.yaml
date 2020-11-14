@@ -62,6 +62,7 @@ dependencies:
   image: ^2.1.18
   instagram_share: ^0.1.9
   flutter_downloader: ^1.5.2
+  cloud_functions: ^0.7.0+1
 
 
   # The following adds the Cupertino Icons font to your application.
