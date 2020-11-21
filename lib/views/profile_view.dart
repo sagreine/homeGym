@@ -108,20 +108,25 @@ class ProfileViewState extends State<ProfileView> {
                       style: TextStyle(fontSize: 12),
                     ),
                   ),
-                  FlatButton(
-                    child: Container(
-                      alignment: Alignment.centerLeft,
-                      padding: const EdgeInsets.all(15),
-                      height: 50,
-                      width: 150,
-                      //color: Colors.blueGrey[200],
-                      child: Text("Delete Account"),
-                    ),
+                  RaisedButton(
+                    child: Text("Delete Account"),
+                    padding: EdgeInsets.all(8.0),
                     onPressed: () async {
                       print("pressed for deletion!");
-                      profileController.deleteAtPath(
+                      await profileController.deleteAtPath(
                           user: user.fAuthUser.uid.toString());
-                      await user.logout();
+                      await profileController.deleteStorage(
+                          user: user.fAuthUser.uid.toString());
+                      await user.delete();
+                      /* cough don't copy and paste code... */
+                      var exerciseDay =
+                          Provider.of<ExerciseDay>(context, listen: false);
+                      exerciseDay.lift = null;
+                      print("successfully logged out");
+                      // pop until we get to the login page
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                          '/login', (Route<dynamic> route) => false);
+                      //await user.logout();
                       /*Navigator.of(context).push(
                               MaterialPageRoute<void>(
                                 builder: (BuildContext context) {

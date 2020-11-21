@@ -21,6 +21,15 @@ class Muser extends ChangeNotifier {
     return result;
   }
 
+  Future<void> delete() async {
+    //final result = await FirebaseAuthUi.instance().logout();
+    await fAuthUser.delete();
+    //this.firebaseUser = null;
+    isNewUser = true;
+
+    this.fAuthUser = null;
+  }
+
   String getDisplayName() {
     String displayName = fauth.FirebaseAuth.instance.currentUser.displayName;
 

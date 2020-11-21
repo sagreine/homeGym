@@ -4,6 +4,10 @@
 const functions = require('firebase-functions');
 const nodemailer = require('nodemailer');
 const firebase_tools = require('firebase-tools');
+const admin = require('firebase-admin');
+admin.initializeApp(functions.config().firebase);
+//const gcs = require('@google-cloud/storage')();
+
 // Configure the email transport using the default SMTP transport and a GMail account.
 // For Gmail, enable these:
 // 1. https://www.google.com/settings/security/lesssecureapps
@@ -134,3 +138,26 @@ exports.recursiveDelete = functions
       path: path 
     };
   });
+
+  exports.storageDelete = functions.runWith({
+    timeoutSeconds: 540,
+    memory: '2GB'
+  })
+  .https.onCall(async (data, context) => {
+
+  const bucket = admin.storage().bucket();
+  const userId = data.userId;
+
+  return await bucket.deleteFiles({
+    prefix: `user/${userId}/`
+  }, function(err) {
+    if (err) {
+      console.log(err);
+    } else {
+      console.log(`All the Firebase Storage files in user/${userId}/ have been deleted`);
+    }
+  }
+  );
+  }
+);
+
