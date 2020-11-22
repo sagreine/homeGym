@@ -21,13 +21,27 @@ class Muser extends ChangeNotifier {
     return result;
   }
 
-  Future<void> delete() async {
+  Future<bool> delete() async {
     //final result = await FirebaseAuthUi.instance().logout();
-    await fAuthUser.delete();
+    // the right way to do this is to try deletion, then if it failes ask the user for their password, reauthenticate, then delete
+    // for now though, just going to ask them to login again first...
+    /*fauth.AuthCredential credential =
+      fauth.EmailAuthProvider.credential(        email: fAuthUser.email, password: null);
+
+    await fAuthUser.reauthenticateWithCredential(credential);*/
+    try {
+      await fAuthUser.delete();
+    } catch (_) {
+      print("deletion failed");
+      return false;
+    }
+    //await Muser().fAuthUser.delete();
+
     //this.firebaseUser = null;
     isNewUser = true;
 
     this.fAuthUser = null;
+    return true;
   }
 
   String getDisplayName() {

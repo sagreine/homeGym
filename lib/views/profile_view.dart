@@ -112,20 +112,34 @@ class ProfileViewState extends State<ProfileView> {
                     child: Text("Delete Account"),
                     padding: EdgeInsets.all(8.0),
                     onPressed: () async {
-                      print("pressed for deletion!");
-                      await profileController.deleteAtPath(
-                          user: user.fAuthUser.uid.toString());
-                      await profileController.deleteStorage(
-                          user: user.fAuthUser.uid.toString());
-                      await user.delete();
-                      /* cough don't copy and paste code... */
-                      var exerciseDay =
-                          Provider.of<ExerciseDay>(context, listen: false);
-                      exerciseDay.lift = null;
-                      print("successfully logged out");
-                      // pop until we get to the login page
+                      // lol cmon now....
+                      if (!await profileController.deleteUser(
+                          context: context)) {
+                        await showDialog(
+                            context: context,
+                            barrierDismissible: false,
+                            builder: (BuildContext context) {
+                              return AlertDialog(
+                                content: Text(
+                                    "We need you to sign in again first, then come back to this page"),
+                                actions: [
+                                  RaisedButton(
+                                      child: Text("Ok"),
+                                      onPressed: () async {
+                                        await user.logout();
+                                        Navigator.of(context)
+                                            .pushNamedAndRemoveUntil(
+                                                '/login',
+                                                (Route<dynamic> route) =>
+                                                    false);
+                                      }),
+                                ],
+                              );
+                            });
+                      }
                       Navigator.of(context).pushNamedAndRemoveUntil(
                           '/login', (Route<dynamic> route) => false);
+
                       //await user.logout();
                       /*Navigator.of(context).push(
                               MaterialPageRoute<void>(
