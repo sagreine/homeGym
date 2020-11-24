@@ -94,6 +94,24 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                   if (_newIndex > _oldIndex) {
                                     _newIndex -= 1;
                                   }
+                                  // if we just changed the progress set, we need to update to account for that.
+                                  // TODO this has not been tested at all. very much not view code....
+                                  if (thisDay.progressSet < _oldIndex ~/ 2 &&
+                                      thisDay.progressSet >= _newIndex ~/ 2) {
+                                    thisDay.progressSet++;
+                                  } else if (thisDay.progressSet ==
+                                      _oldIndex ~/ 2) {
+                                    if (thisDay.progressSet > _newIndex ~/ 2) {
+                                      thisDay.progressSet--;
+                                    } else if (thisDay.progressSet <
+                                        _newIndex ~/ 2) {
+                                      thisDay.progressSet++;
+                                    }
+                                  } else if (thisDay.progressSet >
+                                          _oldIndex ~/ 2 &&
+                                      thisDay.progressSet <= _newIndex ~/ 2) {
+                                    thisDay.progressSet--;
+                                  }
                                   thisDay.insert(
                                       _newIndex ~/ 2,
                                       thisDay.exercises
@@ -153,6 +171,12 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                     //thisDay.exercises
                                                     //  .removeAt((i ~/ 2));
                                                     // show snakcbar?
+                                                    // if we just changed the progress set order by deleting one..., we need to update to account for that.
+                                                    // TODO this has not been tested at all. very much not view code....
+                                                    if (i ~/ 2 <
+                                                        thisDay.progressSet) {
+                                                      thisDay.progressSet--;
+                                                    }
                                                   });
                                                   // this would be after it already dismisses, so stop that!
                                                   // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056

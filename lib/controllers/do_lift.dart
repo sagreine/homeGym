@@ -447,6 +447,14 @@ class HomeController {
         GallerySaver.saveVideo(targetFilePath);
       }
     }
+    // even if no video, we can still advance, so do that.
+    else {
+      if (thisDay.updateMaxIfGetReps &&
+          //thisDay.areWeOnLastSet()
+          thisDay.currentSet == thisDay.progressSet) {
+        progressAfter = true;
+      }
+    }
     // no need to ask about REPS if not recording video, because they can just edit it directly in the form
     // before hitting the button. a bit annoying i guess, and not expected.
     //show the next execise
