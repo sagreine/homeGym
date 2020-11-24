@@ -45,6 +45,21 @@ class _DoLiftViewState extends State<DoLiftView>
 
   //Container banner;
 
+  SnackBar _lastSetShareSnackBar() {
+    return SnackBar(
+      content: Text("Nice workout! Click to review and share your videos",
+          style: TextStyle(color: Colors.purple[300])),
+      action: SnackBarAction(
+        label: 'Go!',
+        onPressed: () {
+          Navigator.pushNamed(context, "/lifter_videos");
+        },
+      ),
+      elevation: 5,
+      backgroundColor: Theme.of(context).snackBarTheme.backgroundColor,
+    );
+  }
+
   Container _showBanner() {
     if (_noDayPickedOnEntry) {
       return Container(
@@ -482,6 +497,11 @@ class _DoLiftViewState extends State<DoLiftView>
                                                 listen: false);
                                         exercise = exerciseDay
                                             .exercises[exerciseDay.currentSet];
+                                        // TODO: ideally we'd want to have tracked if we've recorded any videos today and condition on that too
+                                        if (exerciseDay.justDidLastSet) {
+                                          Scaffold.of(context).showSnackBar(
+                                              _lastSetShareSnackBar());
+                                        }
                                       }
                                     },
                           child: ListTile(
