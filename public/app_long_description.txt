@@ -1,0 +1,19 @@
+Home gym lifting is great. Staring at your phone reading tiny font between sets and doing math to figure out how much weight to put on the bar for the next set suck. This app (still in development) makes it a lot better!
+
+It does the basics:
+Create an account then enter your max lifts on bench press, squat, deadlift, and overhead press, what weights you own, and what your bar weighs. Then, when you're ready to lift, select a program, e.g. 5/3/1, and the app calculates all your lifts for that day, including assistance. It then tells you which weights to put on the bar for each set to get your prescribed weight, or as close to it as possible without going over given the weights you own. No math for you! You can reorder sets and note if you didn't get all the reps. When it is time to progress in the program, it will automatically calculate that for you. Every lift, if you like, archived in the cloud. 
+
+It does some fancy stuff:
+You can choose to record a video of each set if you want, storing it locally and/or in the cloud. You can review all videos you've taken and share them to social media in one click. 
+
+It does some magic:
+If you have a TV and a Fire TV Stick (support for ChromeCast, Roku, others coming soon), you can choose to send your workout to your TV using a simple, free companion app. This will display a few things on the screen: 
+-The details of your current lift
+-The details of your next lift
+-A timer counting up across your whole workout
+-A large countdown timer of your rest period between these two sets
+-If you record one, the video of your previous set, to help you review your form between sets while you wait
+
+No more staring at your phone, notebook, or spreadsheet!
+
+More features yet to come, such as bar path & velocity monitoring and hopefully even fancier artificial intelligence features. If you have features you want, let us know!
