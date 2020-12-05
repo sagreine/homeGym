@@ -431,6 +431,11 @@ class _DoLiftViewState extends State<DoLiftView>
                         // vs. annoying bcuz people probably only have 1 cast device.
                         onChanged: (newValue) async {
                           if (newValue && flingy.selectedPlayer == null) {
+                            // if we don't have any fling devices, try to get one
+                            if (flingy.flingDevices == null ||
+                                flingy.flingDevices.length == 0) {
+                              await flingController.getCastDevices(context);
+                            }
                             await showCastDevicePickerDialog();
                           } else {
                             setState(() {

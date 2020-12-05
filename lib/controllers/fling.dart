@@ -9,7 +9,7 @@ import 'package:provider/provider.dart';
 
 // change this to singleton?
 class FlingController {
-  void getCastDevices(BuildContext context) async {
+  Future<void> getCastDevices(BuildContext context) async {
     var prov = Provider.of<FlingMediaModel>(context, listen: false);
 
     await FlutterFling.startDiscoveryController((status, player) {

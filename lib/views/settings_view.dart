@@ -90,7 +90,7 @@ class SettingsViewState extends State<SettingsView> {
                     RaisedButton(
                         child: Text('Search'),
                         onPressed: () async {
-                          settingsController.flingController
+                          await settingsController.flingController
                               .getCastDevices(context);
                         }),
                     RaisedButton(
