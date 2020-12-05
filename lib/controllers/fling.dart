@@ -37,7 +37,6 @@ class FlingController {
   void dispose(context) async {
     var prov = Provider.of<FlingMediaModel>(context, listen: false);
     await FlutterFling.stopDiscoveryController();
-    // call a Controller function to do this instead.....
     prov.reset();
     //prov.dispose();
   }

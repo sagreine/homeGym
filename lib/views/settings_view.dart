@@ -93,14 +93,6 @@ class SettingsViewState extends State<SettingsView> {
                           await settingsController.flingController
                               .getCastDevices(context);
                         }),
-                    RaisedButton(
-                      child: Text('Dispose Controller'),
-                      onPressed: () async {
-                        settingsController.flingController.dispose(context);
-                        //setState(() {});
-                        // should be in controller - imagine using Cast instead of fling...
-                      },
-                    ),
                     // future builder though?
                     ListView.builder(
                       shrinkWrap: true,
