@@ -87,6 +87,14 @@ class PickDayController {
     exerciseDay.updateMaxIfGetReps =
         (exerciseDay.updateMaxIfGetReps && potentialProgressWeek);
 
+    // at this point we've set the week-level variable to false, need to set it to false for each
+    // day element as well for safety (also i stupidly made this a requirement later..)
+    if (exerciseDay.updateMaxIfGetReps == false) {
+      exerciseDay.exercises.forEach((element) {
+        element.thisSetProgressSet = false;
+      });
+    }
+
     /*
     exerciseController.updateExercise(
         context: context,

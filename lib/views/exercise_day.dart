@@ -12,13 +12,17 @@ class ExcerciseDayView extends StatefulWidget {
 class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   ExerciseDay thisDay;
 
-  Widget _pickChild({@required int index, @required bool enabled}) {
+  Widget _pickChild({
+    @required int index,
+    @required bool enabled,
+  }) {
     final ExerciseSet step = thisDay.exercises[index];
 
     final child = Container(
         child: _TimelineStepsChild(
       activity: step,
       enabled: enabled,
+      thisSetProgressSet: step.thisSetProgressSet && thisDay.updateMaxIfGetReps,
     ));
 
     final isFirst = index == 0;
@@ -199,9 +203,10 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                               children: <Widget>[
                                                 Expanded(
                                                   child: _pickChild(
-                                                      index: i ~/ 2,
-                                                      enabled: i >
-                                                          currentSet * 2 - 1),
+                                                    index: i ~/ 2,
+                                                    enabled:
+                                                        i > currentSet * 2 - 1,
+                                                  ),
                                                 ),
                                                 InkWell(
                                                   child: Icon(
@@ -265,11 +270,16 @@ class _TimelineStepIndicator extends StatelessWidget {
 }
 
 class _TimelineStepsChild extends StatelessWidget {
-  const _TimelineStepsChild({Key key, this.activity, @required this.enabled})
+  const _TimelineStepsChild(
+      {Key key,
+      this.activity,
+      @required this.enabled,
+      @required this.thisSetProgressSet})
       : super(key: key);
 
   final ExerciseSet activity;
   final bool enabled;
+  final bool thisSetProgressSet;
 
   @override
   Widget build(BuildContext context) {
@@ -280,23 +290,30 @@ class _TimelineStepsChild extends StatelessWidget {
         padding: const EdgeInsets.all(4.0),
         height: 200,
         child: ListTile(
-            leading: Text(activity.title,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                )),
-            title: Text(
-                activity.reps.toString() +
-                    "x" +
-                    (activity.thisSetPRSet ? "PRx" : "") +
-                    activity.weight.toString(),
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                )),
-            subtitle: Text(activity.description)),
+          leading: Text(activity.title,
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              )),
+          title: Text(
+              activity.reps.toString() +
+                  "x" +
+                  (activity.thisSetPRSet ? "PRx" : "") +
+                  activity.weight.toString(),
+              textAlign: TextAlign.left,
+              style: TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              )),
+          subtitle: Text(activity.description),
+          trailing: thisSetProgressSet
+              ? Icon(Icons.star)
+              : Container(
+                  height: 0,
+                  width: 0,
+                ),
+        ),
       ),
     );
   }

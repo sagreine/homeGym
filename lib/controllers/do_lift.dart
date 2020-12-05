@@ -345,8 +345,7 @@ class HomeController {
                                       {
                                         if (thisDay.updateMaxIfGetReps &&
                                             //thisDay.areWeOnLastSet()
-                                            thisDay.currentSet ==
-                                                thisDay.progressSet)
+                                            exercise.thisSetProgressSet)
                                           {
                                             progressAfter = true,
                                           },
@@ -366,7 +365,7 @@ class HomeController {
                   Navigator.pop(context),
                   if (thisDay.updateMaxIfGetReps &&
                       //thisDay.areWeOnLastSet()
-                      thisDay.currentSet == thisDay.progressSet)
+                      exercise.thisSetProgressSet)
                     {
                       progressAfter = true,
                     },
@@ -451,8 +450,12 @@ class HomeController {
     else {
       if (thisDay.updateMaxIfGetReps &&
           //thisDay.areWeOnLastSet()
-          thisDay.currentSet == thisDay.progressSet) {
-        progressAfter = true;
+
+          exercise.thisSetProgressSet) {
+        // if we got the reps..
+        if (int.parse(formControllerRepsCorrection.text) >= exercise.reps) {
+          progressAfter = true;
+        }
       }
     }
     // no need to ask about REPS if not recording video, because they can just edit it directly in the form

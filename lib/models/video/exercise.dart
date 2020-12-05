@@ -22,6 +22,7 @@ class ExerciseSet extends ChangeNotifier {
   int reps;
   DateTime dateTime;
   bool thisSetPRSet;
+  bool thisSetProgressSet;
   //BuildContext context;
 
   ExerciseSet({
@@ -36,6 +37,7 @@ class ExerciseSet extends ChangeNotifier {
     this.thisSetPRSet,
     this.aspectRatio,
     this.dateTime,
+    this.thisSetProgressSet,
   }) {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
@@ -44,6 +46,7 @@ class ExerciseSet extends ChangeNotifier {
     }
     this.type = "/video";
     this.thisSetPRSet = false;
+    this.thisSetProgressSet = false;
   }
 
   void updateExerciseFull(
@@ -51,7 +54,8 @@ class ExerciseSet extends ChangeNotifier {
       String exerciseTitle,
       @required int reps,
       @required double setPct,
-      bool thisSetPRSet}) {
+      bool thisSetPRSet,
+      bool thisSetProgressSet}) {
     // should be using the controller here instead of doing this...
     // if we passed a title in and there wasn't already a title (that equals this one)
     if (exerciseTitle != null &&
@@ -100,6 +104,7 @@ class ExerciseSet extends ChangeNotifier {
         // reps is a straight pull
         reps: reps,
         thisSetPRSet: thisSetPRSet,
+        thisSetProgressSet: thisSetProgressSet,
         weight: calculatedWeight,
         description: "Plates: " +
             (thisWeights.getPickedPlatesAsString(
@@ -113,6 +118,7 @@ class ExerciseSet extends ChangeNotifier {
     int weight,
     int reps,
     bool thisSetPRSet,
+    bool thisSetProgressSet,
   }) {
     // should handle this another way probably -> controller if nothing else.
     if (title != null) {
@@ -131,6 +137,12 @@ class ExerciseSet extends ChangeNotifier {
     } else {
       this.thisSetPRSet = false;
     }
+    if (thisSetProgressSet != null) {
+      this.thisSetProgressSet = thisSetProgressSet;
+    } else {
+      this.thisSetProgressSet = false;
+    }
+
     this.type = "video/";
     this.dateTime = DateTime.now();
     notifyListeners();
@@ -154,5 +166,6 @@ class ExerciseSet extends ChangeNotifier {
         dateTime,
         thisSetPRSet,
         aspectRatio,
+        thisSetProgressSet,
       ];
 }

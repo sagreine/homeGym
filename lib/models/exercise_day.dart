@@ -122,6 +122,7 @@ class ExerciseDay extends ChangeNotifier {
           setPct: this.percentages[mainLiftIterator],
           // this is a PR set if it is in the list of PR sets.
           thisSetPRSet: prSets.any((element) => element == i),
+          thisSetProgressSet: this.progressSet == i && this.updateMaxIfGetReps,
         );
         this.exercises.add(tmp);
         // this iterator works through percentages, with is main lift only
