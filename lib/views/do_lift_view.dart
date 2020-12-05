@@ -60,6 +60,16 @@ class _DoLiftViewState extends State<DoLiftView>
     );
   }
 
+  SnackBar _progressSetShareSnackBar(
+      {@required String lift, @required int reps}) {
+    return SnackBar(
+      content: Text("If you get $reps reps, your max $lift will go up!",
+          style: TextStyle(color: Colors.purple[300])),
+      elevation: 5,
+      backgroundColor: Theme.of(context).snackBarTheme.backgroundColor,
+    );
+  }
+
   Container _showBanner() {
     if (_noDayPickedOnEntry) {
       return Container(
@@ -502,6 +512,12 @@ class _DoLiftViewState extends State<DoLiftView>
                                                 listen: false);
                                         exercise = exerciseDay
                                             .exercises[exerciseDay.currentSet];
+                                        if (exercise.thisSetProgressSet) {
+                                          Scaffold.of(context).showSnackBar(
+                                              _progressSetShareSnackBar(
+                                                  lift: exercise.title,
+                                                  reps: exercise.reps));
+                                        }
                                         // TODO: ideally we'd want to have tracked if we've recorded any videos today and condition on that too
                                         if (exerciseDay.justDidLastSet) {
                                           Scaffold.of(context).showSnackBar(
@@ -514,6 +530,12 @@ class _DoLiftViewState extends State<DoLiftView>
                                 ? Icon(Icons.cast_connected)
                                 : SizedBox(width: 5),
                             title: Text("Record and cast"),
+                            trailing: exercise.thisSetProgressSet
+                                ? Icon(Icons.star)
+                                : Container(
+                                    height: 0,
+                                    width: 0,
+                                  ),
                           ),
                         );
                       }),

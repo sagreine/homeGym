@@ -139,8 +139,6 @@ class ExerciseSet extends ChangeNotifier {
     }
     if (thisSetProgressSet != null) {
       this.thisSetProgressSet = thisSetProgressSet;
-    } else {
-      this.thisSetProgressSet = false;
     }
 
     this.type = "video/";

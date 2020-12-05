@@ -453,7 +453,7 @@ class HomeController {
 
           exercise.thisSetProgressSet) {
         // if we got the reps..
-        if (int.parse(formControllerRepsCorrection.text) >= exercise.reps) {
+        if (int.parse(formControllerReps.text) >= exercise.reps) {
           progressAfter = true;
         }
       }
@@ -485,13 +485,12 @@ class HomeController {
         context: context,
       );
     }
-
-// move the UI components to....the UI
 // could do this before the casting and saving and save some round trips. more logical, puts correct info on the TV for end user too...
-
     // if we passed on the week that we were told to pass on, progress at the end.
     // TODO: this is also broken when the last set is the test set AND might update twice (second to last set and actual last set)
-    if (progressAfter && exerciseDayController.areWeOnLastSet(context)) {
+
+    if (progressAfter) // && exerciseDayController.areWeOnLastSet(context)) {
+    {
       lifterMaxesController.update1RepMax(
           context: context,
           // TODO: be careful with this, since we're updating/progressing to the next exercise above this point.
