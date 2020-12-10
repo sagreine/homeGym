@@ -71,8 +71,7 @@ class LifterWeights extends ChangeNotifier {
             ", Buy bumpers or 45 pound weights to deadlift safely. Ignore if you're a monster with 60 pound weights or something";
       } else if (oneSidePlateWeight < 45) {
         print("deadlift weigth adjusted up, for form reasons");
-        deadliftWeightAdjustmentSuffix =
-            ", adjusted up to minimum using 45 pounders";
+        deadliftWeightAdjustmentSuffix = ", adjusted: min of 45";
         oneSidePlateWeight = 45;
         require45 = true;
       } else {
