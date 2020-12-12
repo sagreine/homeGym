@@ -7,11 +7,13 @@ class PickedProgram {
   String program;
   int week;
   bool potentialProgressWeek;
+  String type;
 
   PickedProgram({
     this.program,
     this.week,
     this.potentialProgressWeek,
+    this.type,
   });
 }
 

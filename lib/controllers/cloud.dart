@@ -45,40 +45,22 @@ updateDatabaseRecordWithReps(
 }
 
 // instead of returning a naked list, we need to return the display name and # weeks for each program
+//TODO this is extremely sloppy. stop just making random lists and pass and parse an object
 Future<List<PickedProgram>> getPrograms() async {
   List<PickedProgram> toReturn = List<PickedProgram>();
 
   QuerySnapshot querySnapshot =
       await FirebaseFirestore.instance.collection('PROGRAMS').get();
   List<QueryDocumentSnapshot> list = new List.from(querySnapshot.docs.toList());
-  //var a = new List.from(querySnapshot.docs["weeks"]);
-  List<String> rtr = list.map((QueryDocumentSnapshot docSnapshot) {
-    return docSnapshot.id.toString();
-    // this is a first step towards how to get a step further for if/when we're not (stupidly) using the ID and want e.g. a display name.
-    //return docSnapshot.data().entries.toString();
-  }).toList();
-
-  List<int> rtr2 = list.map((QueryDocumentSnapshot docSnapshot) {
-    /*var a = docSnapshot.data();
-    var b = a.entries;
-    var c = b.toList();
-    var d = c.toString();
-    var e = a["numWeeks"];
-    var f;*/
-    int returnVal = docSnapshot.data()["numWeeks"] ?? 1;
-
-    return returnVal;
-    // this is a first step towards how to get a step further for if/when we're not (stupidly) using the ID and want e.g. a display name.
-    //return docSnapshot.data().entries.toString();
-  }).toList();
-
-  toReturn = new List<PickedProgram>.generate(rtr.length, (index) {
+  toReturn = new List<PickedProgram>.generate(list.length, (index) {
     PickedProgram pickedProgram = PickedProgram();
-    pickedProgram.program = rtr[index];
+    pickedProgram.program = list[index].id;
     // we'll default to 1 if this value isn't set.
-    pickedProgram.week = rtr2[index] ?? 1; //rtr2[index];
+    pickedProgram.week = list[index].data()["numWeeks"] ?? 1;
+    pickedProgram.type = list[index].data()["type"];
     return pickedProgram;
-  });
+  })
+    ..sort((e, f) => e.type.compareTo(f.type));
 
   return toReturn;
 }
