@@ -50,7 +50,7 @@ android {
 
     defaultConfig {        
         applicationId "com.sagre1.home_gym"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 29
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName

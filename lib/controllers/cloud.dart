@@ -308,8 +308,9 @@ Future<void> getExercisesCloud({
       .doc(program)
       .get();
   List<int> reps = new List<int>.from(pctAndReps.data()["Reps"]);
-  List<double> percentages = new List<double>.from(
-      pctAndReps.data()["week" + week.toString() + "Percentages"]);
+  // a value of 100%, stored as 1, gets inferred as a int so need to deal with that.
+  var tmp = pctAndReps.data()["week" + week.toString() + "Percentages"];
+  List<double> percentages = List<double>.from(tmp.map((i) => i.toDouble()));
   List<String> lifts = new List<String>.from(pctAndReps.data()["LIft"]);
   // TODO: this means we have to set this array for every single program in the db. but if we don't want to do that, make it conditional here.
   List<int> prSets = new List<int>.from(pctAndReps.data()["prSets"]);

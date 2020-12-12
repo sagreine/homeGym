@@ -20,6 +20,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart' as Foundation;
+import 'package:camera/camera.dart';
 
 // BLoC for each page
 // complex page-children should have their own block, parent subscribes to state changes
@@ -39,9 +40,17 @@ import 'package:flutter/foundation.dart' as Foundation;
 
 //flutter pub run build_runner watch
 
+List<CameraDescription> cameras;
+int temp = 1;
+
 void main() async {
   //Bloc.observer = SimpleBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
+  try {
+    cameras = await availableCameras();
+  } on CameraException catch (e) {
+    print('Error: $e.code\nError Message: $e.message');
+  }
   await Firebase.initializeApp();
   // TODO if we stop using this plugin, remove this. at least
   await FlutterDownloader.initialize(
@@ -166,8 +175,8 @@ class MyApp extends StatelessWidget {
         '/intro_screen': (context) => IntroScreenView(),
         '/excerciseday': (context) => ExcerciseDayView(),
         "/lifter_videos": (context) => OldVideosView(),
-        '/form_check': (context) => FormCheckView(),
-        '/form_check_copy': (context) => FormCheckView(),
+        //'/form_check': (context) => FormCheckView(),
+        '/form_check_copy': (context) => HomePage(cameras),
         '/today': (context) => TodayView(),
       },
     );

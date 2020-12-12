@@ -10,6 +10,9 @@ export 'package:home_gym/views/profile_view.dart';
 export 'package:home_gym/views/exercise_day.dart';
 export 'package:home_gym/views/intro_screen.dart';
 export 'package:home_gym/views/appbar.dart';
-export 'package:home_gym/views/form_check.dart';
+
 export 'package:home_gym/views/today.dart';
 export 'package:home_gym/views/old_videos_view.dart';
+
+//export 'package:home_gym/views/form_check.dart';
+export 'package:home_gym/views/form_check_copy.dart';
