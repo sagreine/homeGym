@@ -284,7 +284,7 @@ class _DoLiftViewState extends State<DoLiftView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
+    //var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     //exercise = exerciseDay.exercises[exerciseDay.currentSet];
     //homeController.displayInExerciseInfo(exercise: exercise);
     return Consumer<FlingMediaModel>(builder: (context, flingy, child) {
@@ -307,6 +307,8 @@ class _DoLiftViewState extends State<DoLiftView>
           child: ListView(
             children: <Widget>[
               Consumer<ExerciseDay>(builder: (context, exerciseDay, child) {
+                // this is very stupid but necessary because we didn't do MVC right. protects us from building
+                // if we haven't picked a day yet, while elsewhere we populate a default day.
                 if (exerciseDay.lift == null) {
                   return Container();
                 }

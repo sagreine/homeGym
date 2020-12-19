@@ -60,7 +60,7 @@ dependencies:
   #http: ^0.12.2
   tflite: ^1.1.1
   image: ^2.1.18
-  instagram_share: ^0.1.9
+  #instagram_share: ^0.1.9
   flutter_downloader: ^1.5.2
   cloud_functions: ^0.7.0+1
   camera: 0.5.8+17
