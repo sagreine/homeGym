@@ -111,7 +111,8 @@ class ExerciseDay extends ChangeNotifier {
         */
     for (int i = 0, mainLiftIterator = 0; i < reps.length; ++i) {
       if (lifts[i].toUpperCase() == "MAIN") {
-        ExerciseSet tmp = new ExerciseSet();
+        // TODO: see elsewhere, but USE CONSTRUCTORS IT IS WHY THEY EXIST
+        ExerciseSet tmp = new ExerciseSet(reps: this.reps[i]);
         // add the main items to the list
 
         // this function depends on the current set of the day, but we need to reset that at the end.

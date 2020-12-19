@@ -20,11 +20,13 @@ class ExerciseSet extends ChangeNotifier {
   int restPeriodAfter;
   int weight;
   int reps;
+  final int prescribedReps;
   DateTime dateTime;
   bool thisSetPRSet;
   bool thisSetProgressSet;
   //BuildContext context;
 
+  // TODO: pro tip, construct in the constructor instead of some random function. good god this is garbage
   ExerciseSet({
     //this.context,
     this.videoPath,
@@ -34,11 +36,12 @@ class ExerciseSet extends ChangeNotifier {
     this.restPeriodAfter,
     this.weight,
     this.reps,
+    // read the pro tip above and realize this final variable setting is one (of many) reasons...
     this.thisSetPRSet,
     this.aspectRatio,
     this.dateTime,
     this.thisSetProgressSet,
-  }) {
+  }) : prescribedReps = reps {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
     if (this.dateTime == null) {
@@ -47,6 +50,7 @@ class ExerciseSet extends ChangeNotifier {
     this.type = "/video";
     this.thisSetPRSet = false;
     this.thisSetProgressSet = false;
+    //this.prescribedReps = reps;
   }
 
   void updateExerciseFull(
@@ -165,5 +169,6 @@ class ExerciseSet extends ChangeNotifier {
         thisSetPRSet,
         aspectRatio,
         thisSetProgressSet,
+        prescribedReps,
       ];
 }

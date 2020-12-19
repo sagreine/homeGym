@@ -341,7 +341,7 @@ class HomeController {
                                     // if we are updating because we got >= the target, say so
                                     if (int.parse(formControllerRepsCorrection
                                             .text) >=
-                                        exercise.reps)
+                                        exercise.prescribedReps)
                                       {
                                         if (thisDay.updateMaxIfGetReps &&
                                             //thisDay.areWeOnLastSet()
@@ -453,7 +453,8 @@ class HomeController {
 
           exercise.thisSetProgressSet) {
         // if we got the reps..
-        if (int.parse(formControllerReps.text) >= exercise.reps) {
+        // but is this the next set already....
+        if (int.parse(formControllerReps.text) >= exercise.prescribedReps) {
           progressAfter = true;
         }
       }
