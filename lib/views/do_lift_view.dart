@@ -9,6 +9,7 @@ import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:confetti/confetti.dart';
+import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 
 //sagre.HomeGymTV.player
 
@@ -36,6 +37,9 @@ class _DoLiftViewState extends State<DoLiftView>
   FlutterFling fling;
   FlingController flingController = FlingController();
 
+  CountDownController _countDownController = CountDownController();
+  bool startController = false;
+
   // temporary. and should be in MODEL for this page so we can save state via provider.. controller.
   bool doVideo;
 // temporary. and should be in controller.
@@ -58,6 +62,58 @@ class _DoLiftViewState extends State<DoLiftView>
       elevation: 5,
       backgroundColor: Theme.of(context).snackBarTheme.backgroundColor,
     );
+  }
+
+  CircularCountDownTimer _countDownTimer({@required int seconds}) {
+    return CircularCountDownTimer(
+      // Countdown duration in Seconds
+      duration: seconds,
+
+      // Controller to control (i.e Pause, Resume, Restart) the Countdown
+      controller: _countDownController,
+
+      // Width of the Countdown Widget
+      width: MediaQuery.of(context).size.width / 2,
+
+      // Height of the Countdown Widget
+      height: MediaQuery.of(context).size.height / 2,
+
+      // Default Color for Countdown Timer
+      color: Colors.white,
+
+      // Filling Color for Countdown Timer
+      fillColor: Colors.blueGrey,
+
+      // Background Color for Countdown Widget
+      backgroundColor: null,
+
+      // Border Thickness of the Countdown Circle
+      strokeWidth: 10.0,
+
+      // Begin and end contours with a flat edge and no extension
+      strokeCap: StrokeCap.round,
+
+      // Text Style for Countdown Text
+      textStyle: TextStyle(
+          fontSize: 22.0, color: Colors.white, fontWeight: FontWeight.bold),
+
+      // true for reverse countdown (max to 0), false for forward countdown (0 to max)
+      isReverse: true,
+
+      // true for reverse animation, false for forward animation
+      isReverseAnimation: false,
+
+      // Optional [bool] to hide the [Text] in this widget.
+      isTimerTextShown: true,
+
+      // Function which will execute when the Countdown Ends
+      onComplete: () {
+        // Here, do whatever you want
+        print('Countdown Ended');
+        startController = false;
+      },
+    );
+    //_countDownController.restart();
   }
 
   SnackBar _progressSetShareSnackBar(
@@ -131,6 +187,7 @@ class _DoLiftViewState extends State<DoLiftView>
     _noDayPickedOnEntry = false;
     // this is bad, but whatever.
     homeController.formControllerRestInterval.text = "90";
+
     //homeController.serverListen();
 
     //confettiController
@@ -523,6 +580,15 @@ class _DoLiftViewState extends State<DoLiftView>
                                           Scaffold.of(context).showSnackBar(
                                               _lastSetShareSnackBar());
                                         }
+                                        if (startController) {
+                                          _countDownController.restart(
+                                              duration: int.parse(homeController
+                                                      .formControllerRestInterval
+                                                      .text) ??
+                                                  exercise.restPeriodAfter ??
+                                                  60);
+                                        }
+                                        startController = true;
                                       }
                                     },
                           child: ListTile(
@@ -539,6 +605,22 @@ class _DoLiftViewState extends State<DoLiftView>
                           ),
                         );
                       }),
+                      /*Consumer<ExerciseSet>(
+                          builder: (context, exerciseSet, child) {*/
+                      //return
+                      startController
+                          ? Center(
+                              heightFactor: .75,
+                              child: _countDownTimer(
+                                  seconds: int.parse(homeController
+                                          .formControllerRestInterval.text) ??
+                                      exercise.restPeriodAfter ??
+                                      60))
+                          : Container()
+                      //;
+                      //}
+
+                      ,
                     ]),
                   ],
                 );

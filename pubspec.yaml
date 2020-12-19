@@ -64,6 +64,7 @@ dependencies:
   flutter_downloader: ^1.5.2
   cloud_functions: ^0.7.0+1
   camera: 0.5.8+17
+  circular_countdown_timer: ^0.0.8
 
 
   # The following adds the Cupertino Icons font to your application.
