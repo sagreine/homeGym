@@ -65,6 +65,7 @@ dependencies:
   cloud_functions: ^0.7.0+1
   camera: 0.5.8+17
   circular_countdown_timer: ^0.0.8
+  screenshot: ^0.2.0
 
 
   # The following adds the Cupertino Icons font to your application.

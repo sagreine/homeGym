@@ -137,7 +137,7 @@ class _DoLiftViewState extends State<DoLiftView>
             Container(
               padding: EdgeInsets.only(left: 8, right: 24, top: 16),
               child: Text(
-                  "You didn't pick a program, so using a default Squat program for now. Please pick a day and program."),
+                  "You didn't pick a program, so using a basic Squat day for now. Please pick a day and program."),
             ),
             ButtonBar(
               children: [
@@ -202,9 +202,9 @@ class _DoLiftViewState extends State<DoLiftView>
     // TODO this should definitely not be in the UI though...
     if (exerciseDay.lift == null) {
       _noDayPickedOnEntry = true;
-      exerciseDay.lift = "Squat";
+      //exerciseDay.lift = "Squat";
       PickDayController pickDayController = PickDayController();
-      await pickDayController.getExercises(context, "widowmaker3_2", 1);
+      await pickDayController.getExercises(context, "Advanced Prep", 1);
       exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     }
     exercise = exerciseDay.exercises[exerciseDay.currentSet];
@@ -284,10 +284,9 @@ class _DoLiftViewState extends State<DoLiftView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
-    //var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
+    var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     //exercise = exerciseDay.exercises[exerciseDay.currentSet];
     //homeController.displayInExerciseInfo(exercise: exercise);
-
     return Consumer<FlingMediaModel>(builder: (context, flingy, child) {
       return SafeArea(
           child: Stack(children: <Widget>[
@@ -308,6 +307,10 @@ class _DoLiftViewState extends State<DoLiftView>
           child: ListView(
             children: <Widget>[
               Consumer<ExerciseDay>(builder: (context, exerciseDay, child) {
+                if (exerciseDay.lift == null) {
+                  return Container();
+                }
+
                 // because we're not doing MVC correctly, we re-set the exercise on each build?
                 // manually because the controllers are not part of the model but hold the text values that are displayed here.
                 // sure i guess. almost 10000% certainly this is repeating work. multiple times on each build, and then re-building when-

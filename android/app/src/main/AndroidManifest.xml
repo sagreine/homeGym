@@ -53,12 +53,12 @@ xmlns:tools="http://schemas.android.com/tools"
             "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
     android:label="@string/app_name" />
     
-<provider android:authorities="com.facebook.app.FacebookContentProvider{FACEBOOK_APP_ID}"
+<provider android:authorities="com.facebook.app.FacebookContentProvider357653628710078"
             android:name="com.facebook.FacebookContentProvider"
             android:exported="true"/>
 
 <provider android:name="androidx.core.content.FileProvider"
-            android:authorities="{APP_PACKAGE}.social.share.fileprovider"
+            android:authorities="com.sagre1.home_gym.social.share.fileprovider"
             android:exported="false"
             android:grantUriPermissions="true"
             tools:replace="android:authorities">

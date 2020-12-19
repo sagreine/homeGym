@@ -165,7 +165,7 @@ class OldVideosViewState extends State<OldVideosView> {
                             // TODO: this plugin, or Twitter? breaks the link. it parses the '%' sigsn i think and that breaks everything...
                             await SocialSharePlugin.shareToTwitterLink(
                                 text:
-                                    "Just lifted with HomeGymTV! ${video.title}, ${video.reps}x${video.weight}",
+                                    "${Quotes().getQuote(greatnessQuote: true)} ${video.title}, ${video.reps}x${video.weight} @HomeGymTV",
                                 //url: ""
                                 url: video.videoPath);
                           },
@@ -175,10 +175,14 @@ class OldVideosViewState extends State<OldVideosView> {
                             icon:
                                 Image.asset("assets/images/Instagram_Logo.png"),
                             onPressed: () async {
-                              final saveDir =
+                              /*final saveDir =
                                   (await getApplicationDocumentsDirectory())
                                       .absolute
-                                      .path;
+                                      .path;*/
+
+                              final saveDir =
+                                  (await getExternalStorageDirectory())
+                                      .path; //from path_provide package
 
                               //final taskId =
                               await FlutterDownloader.enqueue(
@@ -195,8 +199,12 @@ class OldVideosViewState extends State<OldVideosView> {
                                   (await getApplicationDocumentsDirectory())
                                       .path;
                               List files = Directory("$directory").listSync();*/
-                              await InstagramShare.share(
-                                  "$saveDir/tempVideo.mp4", 'video');
+                              /*await InstagramShare.share(
+                                  "$saveDir/tempVideo.mp4", 'video');*/
+
+                              await SocialSharePlugin.shareToFeedInstagram(
+                                  type: 'video',
+                                  path: "$saveDir/tempVideo.mp4");
                             }),
                       ],
                     ),

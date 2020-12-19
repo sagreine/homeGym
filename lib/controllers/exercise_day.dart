@@ -39,7 +39,7 @@ class ExerciseDayController {
 
     // TODO this is dangerous. if we don't start with a Main lift and start with something with multiple exercises based on the selected main day
     // this is going to leave us with a null
-    var liftCheck = lift ?? day.lift;
+    var liftCheck = lift ?? day.lift ?? "Squat";
     int liftNum = ["Squat", "Press", "Deadlift", "Bench"].indexOf(liftCheck);
 
     for (int i = 0; i < lifts.length; ++i) {
@@ -76,7 +76,7 @@ class ExerciseDayController {
     }
 
     day.buildDay(
-      lift: lift == null ? day.lift : lift,
+      lift: lift ?? day.lift ?? "Squat",
       updateMaxIfGetReps: updateMaxIfGetReps,
       lifts: lifts,
       program: program,
