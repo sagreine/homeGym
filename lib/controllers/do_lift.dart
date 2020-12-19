@@ -343,6 +343,11 @@ class HomeController {
                                             .text) >=
                                         exercise.prescribedReps)
                                       {
+                                        Scaffold.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Text(Quotes()
+                                              .getQuote(greatnessQuote: true)),
+                                        )),
                                         if (thisDay.updateMaxIfGetReps &&
                                             //thisDay.areWeOnLastSet()
                                             exercise.thisSetProgressSet)
@@ -352,6 +357,14 @@ class HomeController {
 
                                         // should only confetti if it is the last set of a week that tests/progresses?
                                         confettiController.play(),
+                                      }
+                                    else
+                                      {
+                                        Scaffold.of(context)
+                                            .showSnackBar(SnackBar(
+                                          content: Text(Quotes()
+                                              .getQuote(greatnessQuote: false)),
+                                        ))
                                       },
                                     // update the reps for this exercise? for the timeline i guess is the thought, but not sure
                                     // if that's what we'd want from the biz side or not really...
@@ -363,6 +376,9 @@ class HomeController {
                 //on 'Yes i got the reps'
                 onCancelButtonPressed: () => {
                   Navigator.pop(context),
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text(Quotes().getQuote(greatnessQuote: true)),
+                  )),
                   if (thisDay.updateMaxIfGetReps &&
                       //thisDay.areWeOnLastSet()
                       exercise.thisSetProgressSet)
@@ -458,6 +474,12 @@ class HomeController {
           progressAfter = true;
         }
       }
+      // holler about failure or greatness depending on if they got it or not.
+      Scaffold.of(context).showSnackBar(SnackBar(
+        content: Text(Quotes().getQuote(
+            greatnessQuote:
+                int.parse(formControllerReps.text) >= exercise.prescribedReps)),
+      ));
     }
     // no need to ask about REPS if not recording video, because they can just edit it directly in the form
     // before hitting the button. a bit annoying i guess, and not expected.

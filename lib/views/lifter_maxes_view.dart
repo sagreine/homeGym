@@ -114,6 +114,7 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
                 SizedBox(
                   height: 15,
                 ),
+
                 Consumer<Muser>(
                   builder: (context, user, child) {
                     return Visibility(
