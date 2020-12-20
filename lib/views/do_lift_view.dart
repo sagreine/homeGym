@@ -2,6 +2,7 @@
 //import 'package:flutter/gestures.dart';
 import 'dart:math';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/flutter_fling.dart';
@@ -10,6 +11,7 @@ import 'package:provider/provider.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:confetti/confetti.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 //sagre.HomeGymTV.player
 
@@ -281,6 +283,52 @@ class _DoLiftViewState extends State<DoLiftView>
         });
   }
 
+  Future showNewUserFlingDialog() {
+    return showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (_) => AlertDialog(
+                title: Text("To cast"),
+                content: RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                        text:
+                            "First, use your phone or computer to download the free companion TV app HomeGymTV available in the Amazon App Store. For FireStick: ",
+                      ),
+                      TextSpan(
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue),
+                        text: "click this link.",
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            final url =
+                                'https://www.amazon.com/dp/B08P9TKSPL/ref=mp_s_a_1_1?dchild=1&keywords=homegymtv&qid=1608494257&s=mobile-apps&sr=1-1 ';
+                            if (await canLaunch(url)) {
+                              await launch(
+                                url,
+                                forceSafariVC: false,
+                              );
+                            }
+                          },
+                      ),
+                      TextSpan(
+                        text: " for user manual with further instructions",
+                      ),
+                    ],
+                  ),
+                ),
+                actions: [
+                  IconButton(
+                    icon: Icon(Icons.done),
+                    onPressed: () => {
+                      Navigator.pop(context),
+                    },
+                  ),
+                ]));
+  }
+
   @override
   Widget build(BuildContext context) {
     super.build(context);
@@ -496,30 +544,35 @@ class _DoLiftViewState extends State<DoLiftView>
                       ),
                       SizedBox(height: 16),
                       // this should be in a controller
-                      SwitchListTile.adaptive(
-                        value: doCast,
-                        //TODO: or do we want to make them pick a cast device every time?
-                        // that's what others do.... annoying to otherwise have to go to settings
-                        // vs. annoying bcuz people probably only have 1 cast device.
-                        onChanged: (newValue) async {
-                          if (newValue && flingy.selectedPlayer == null) {
-                            // if we don't have any fling devices, try to get one
-                            if (flingy.flingDevices == null ||
-                                flingy.flingDevices.length == 0) {
-                              await flingController.getCastDevices(context);
+                      Consumer<Muser>(builder: (context, user, child) {
+                        return SwitchListTile.adaptive(
+                          value: doCast,
+                          //TODO: or do we want to make them pick a cast device every time?
+                          // that's what others do.... annoying to otherwise have to go to settings
+                          // vs. annoying bcuz people probably only have 1 cast device.
+                          onChanged: (newValue) async {
+                            if (newValue && user.isNewUser) {
+                              await showNewUserFlingDialog();
                             }
-                            await showCastDevicePickerDialog();
-                          } else {
-                            setState(() {
-                              doCast = newValue;
-                            });
-                          }
-                        },
-                        secondary: doCast
-                            ? Icon(Icons.cast_connected)
-                            : Icon(Icons.cast),
-                        title: Text("Cast to TV"),
-                      ),
+                            if (newValue && flingy.selectedPlayer == null) {
+                              // if we don't have any fling devices, try to get one
+                              if (flingy.flingDevices == null ||
+                                  flingy.flingDevices.length == 0) {
+                                await flingController.getCastDevices(context);
+                              }
+                              await showCastDevicePickerDialog();
+                            } else {
+                              setState(() {
+                                doCast = newValue;
+                              });
+                            }
+                          },
+                          secondary: doCast
+                              ? Icon(Icons.cast_connected)
+                              : Icon(Icons.cast),
+                          title: Text("Cast to TV"),
+                        );
+                      }),
                       SwitchListTile.adaptive(
                         title: Text("Record Video"),
                         secondary: doVideo

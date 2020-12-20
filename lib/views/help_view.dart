@@ -12,6 +12,7 @@ import 'package:home_gym/views/views.dart';
 //import 'package:provider/provider.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 //import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class HelpView extends StatefulWidget {
   @override
@@ -80,8 +81,71 @@ class HelpViewState extends State<HelpView> {
               SizedBox(
                 height: 10,
               ),
-              Text(
-                  "Refer to www.example.com for user manual with further instructions"),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text:
+                          "To cast: First, use your phone or computer to download the free companion TV app HomeGymTV available in the Amazon App Store. For FireStick: ",
+                    ),
+                    TextSpan(
+                      style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Colors.blue),
+                      text: "click this link ",
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () async {
+                          final url =
+                              'https://www.amazon.com/dp/B08P9TKSPL/ref=mp_s_a_1_1?dchild=1&keywords=homegymtv&qid=1608494257&s=mobile-apps&sr=1-1 ';
+                          if (await canLaunch(url)) {
+                            await launch(
+                              url,
+                              forceSafariVC: false,
+                            );
+                          }
+                        },
+                    ),
+                    TextSpan(
+                      text:
+                          " then go to settings and click Search. In the future, you should be able to select the FireStick simply by toggling the Cast button on the main lifting page.",
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: "Refer to ",
+                    ),
+                    TextSpan(
+                      style: TextStyle(
+                          decoration: TextDecoration.underline,
+                          color: Colors.blue),
+                      text: "https://sagrehomegym.web.app/",
+                      recognizer: TapGestureRecognizer()
+                        ..onTap = () async {
+                          final url = 'https://sagrehomegym.web.app/';
+                          if (await canLaunch(url)) {
+                            await launch(
+                              url,
+                              forceSafariVC: false,
+                            );
+                          }
+                        },
+                    ),
+                    TextSpan(
+                      text: " for user manual with further instructions",
+                    ),
+                  ],
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
               RaisedButton(
                 onPressed: () {
                   showAboutDialog(

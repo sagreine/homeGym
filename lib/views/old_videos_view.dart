@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:transparent_image/transparent_image.dart';
-import 'package:instagram_share/instagram_share.dart';
+//import 'package:instagram_share/instagram_share.dart';
 import 'package:social_share_plugin/social_share_plugin.dart';
 //import 'package:http/http.dart' as http;
 import 'package:flutter_downloader/flutter_downloader.dart';
