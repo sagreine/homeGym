@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:home_gym/models/models.dart';
@@ -9,6 +10,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:social_share_plugin/social_share_plugin.dart';
 import 'package:screenshot/screenshot.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class LifterMaxesView extends StatefulWidget {
   @override
@@ -141,13 +143,48 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
                       builder: (context, user, child) {
                         return Visibility(
                             visible: user.isNewUser,
-                            child: RaisedButton(
-                                splashColor: Colors.green[600],
-                                elevation: 4,
-                                color: Colors.green[800],
-                                onPressed: () => Navigator.pushNamed(
-                                    context, "/lifter_weights"),
-                                child: Text("Now set the weights you own")));
+                            child: Column(
+                              children: [
+                                RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                        text:
+                                            "If you don't know how to calculate this, start at a weight you know you can get 10 times. Get 5 reps and add 10 pounds. Continue until you can't get 5 strong, fast reps, then put that weight into a calculator such as ",
+                                      ),
+                                      TextSpan(
+                                        style: TextStyle(
+                                            decoration:
+                                                TextDecoration.underline,
+                                            color: Colors.blue),
+                                        text: "this one ",
+                                        recognizer: TapGestureRecognizer()
+                                          ..onTap = () async {
+                                            final url =
+                                                'https://exrx.net/Calculators/OneRepMax ';
+                                            if (await canLaunch(url)) {
+                                              await launch(
+                                                url,
+                                                forceSafariVC: false,
+                                              );
+                                            }
+                                          },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 10,
+                                ),
+                                RaisedButton(
+                                    splashColor: Colors.green[600],
+                                    elevation: 4,
+                                    color: Colors.green[800],
+                                    onPressed: () => Navigator.pushNamed(
+                                        context, "/lifter_weights"),
+                                    child: Text("Now set the weights you own"))
+                              ],
+                            ));
                       },
                     ),
                   ]),
