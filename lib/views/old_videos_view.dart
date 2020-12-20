@@ -105,7 +105,11 @@ class OldVideosViewState extends State<OldVideosView> {
                   mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
                     Text("${video.title}"),
-                    Text("${video.reps}x${video.weight}"),
+                    // sometimes the weight is 0, so just put " reps" in for that case
+                    Text("${video.reps}" +
+                        (video.weight != 0
+                            ? "x" + video.weight.toString()
+                            : " reps")),
                     Container(
                       margin: new EdgeInsets.only(top: 12.0),
                       child: Text('${timeago.format(video.dateTime)}'),
@@ -165,7 +169,11 @@ class OldVideosViewState extends State<OldVideosView> {
                             // TODO: this plugin, or Twitter? breaks the link. it parses the '%' sigsn i think and that breaks everything...
                             await SocialSharePlugin.shareToTwitterLink(
                                 text:
-                                    "${Quotes().getQuote(greatnessQuote: true)} ${video.title}, ${video.reps}x${video.weight} @HomeGymTV",
+                                    "${Quotes().getQuote(greatnessQuote: true)} ${video.title}, ${video.reps}" +
+                                        (video.weight != 0
+                                            ? "x" + video.weight.toString()
+                                            : " reps") +
+                                        " @HomeGymTV",
                                 //url: ""
                                 url: video.videoPath);
                           },
