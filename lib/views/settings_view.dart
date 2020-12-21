@@ -67,9 +67,7 @@ class SettingsViewState extends State<SettingsView> {
                       value: settings.meanQuotes ?? false,
                       onChanged: (value) {
                         settingsController.updateBoolVal(
-                            context: context,
-                            key: "saveMeanQuotes",
-                            value: value);
+                            context: context, key: "MeanQuotes", value: value);
                       },
                       secondary: const Icon(Icons.save_alt),
                       title: Text("'Motivational' help if you miss reps"),

@@ -20,7 +20,7 @@ class SettingsController {
       settings.updateSaveLocal(value);
     } else if (key == "saveCloud") {
       settings.updateSaveCloud(value);
-    } else if (key == "saveMeanQuotes") {
+    } else if (key == "MeanQuotes") {
       settings.updateMeanQuotes(value);
     } else {
       print("A setting was updated that doesn't exist");
