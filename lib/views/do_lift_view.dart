@@ -549,7 +549,7 @@ class _DoLiftViewState extends State<DoLiftView>
                         return SwitchListTile.adaptive(
                           value: doCast,
                           //TODO: or do we want to make them pick a cast device every time?
-                          // that's what others do.... annoying to otherwise have to go to settings
+                          // that's what other apps do.... annoying to otherwise have to go to settings
                           // vs. annoying bcuz people probably only have 1 cast device.
                           onChanged: (newValue) async {
                             if (newValue && user.isNewUser) {

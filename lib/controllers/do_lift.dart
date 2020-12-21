@@ -220,7 +220,6 @@ class HomeController {
     var user = Provider.of<Muser>(context, listen: false);
     var settings = Provider.of<Settings>(context, listen: false);
 
-    // TODO: set this to an assets video instead of cloud? saves bandwidth, doesn't need global internet to bet up...
     String url =
         "https://firebasestorage.googleapis.com/v0/b/sagrehomegym.appspot.com/o/animation_1.mkv?alt=media&token=95062198-8a3a-4cba-8de4-6fcb8cb0bf22";
 
@@ -507,7 +506,7 @@ class HomeController {
     }
 // could do this before the casting and saving and save some round trips. more logical, puts correct info on the TV for end user too...
     // if we passed on the week that we were told to pass on, progress at the end.
-    // TODO: this is also broken when the last set is the test set AND might update twice (second to last set and actual last set)
+    // TODO: this is also broken when the last set is the test set
 
     if (progressAfter) // && exerciseDayController.areWeOnLastSet(context)) {
     {

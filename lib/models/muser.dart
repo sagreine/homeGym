@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart' as fauth;
 import 'package:flutter/material.dart';
 
 class Muser extends ChangeNotifier {
-  FirebaseUser _firebaseUser;
+  //FirebaseUser _firebaseUser;
   fauth.User fAuthUser = fauth.FirebaseAuth.instance.currentUser;
   bool isNewUser;
 

@@ -167,6 +167,8 @@ class OldVideosViewState extends State<OldVideosView> {
                                 file.path);*/
 
                             // TODO: this plugin, or Twitter? breaks the link. it parses the '%' sigsn i think and that breaks everything...
+                            // but in any event the links aren't public and you don't upload vidoes to flutter. could have a public bucket
+                            // we movfe things to or someting i guess...
                             await SocialSharePlugin.shareToTwitterLink(
                                 text:
                                     "${Quotes().getQuote(greatnessQuote: true)} ${video.title}, ${video.reps}" +
@@ -237,7 +239,6 @@ class OldVideosViewState extends State<OldVideosView> {
   }
 
   // TODO: make this search by anything instead of just title? or even e.g. "TITLE:Squat"
-  // TODO: var instead of specified...
   Future<List<ExerciseSet>> _getSearchResults(String text) async {
     List<ExerciseSet> searchResults = _videos
         .where((element) =>

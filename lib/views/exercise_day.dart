@@ -99,7 +99,9 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                     _newIndex -= 1;
                                   }
                                   // if we just changed the progress set, we need to update to account for that.
-                                  // TODO this has not been tested at all. very much not view code....
+                                  // TODO this has not been tested at all.
+                                  // TODO: very much not view code....
+                                  // TODO: dead code...
                                   if (thisDay.progressSet < _oldIndex ~/ 2 &&
                                       thisDay.progressSet >= _newIndex ~/ 2) {
                                     thisDay.progressSet++;
