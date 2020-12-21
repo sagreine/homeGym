@@ -352,7 +352,8 @@ class HomeController {
                                         // should only confetti if it is the last set of a week that tests/progresses?
                                         confettiController.play(),
                                       }
-                                    else
+                                    // only holler about failure if it is set up that way.
+                                    else if (settings.meanQuotes)
                                       {
                                         Scaffold.of(context)
                                             .showSnackBar(SnackBar(
@@ -469,13 +470,17 @@ class HomeController {
         }
       }
       // holler about failure or greatness depending on if they got it or not.
-      Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(
-          Quotes().getQuote(
+
+      // but only holler if they got the reps OR they are set to get mean quotes.
+      if (int.parse(formControllerReps.text) >= exercise.prescribedReps ||
+          settings.meanQuotes) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text(Quotes().getQuote(
+              // if you passed
               greatnessQuote: int.parse(formControllerReps.text) >=
-                  exercise.prescribedReps),
-        ),
-      ));
+                  exercise.prescribedReps)),
+        ));
+      }
     }
     // no need to ask about REPS if not recording video, because they can just edit it directly in the form
     // before hitting the button. a bit annoying i guess, and not expected.

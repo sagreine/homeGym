@@ -62,7 +62,18 @@ class SettingsViewState extends State<SettingsView> {
                       },
                       secondary: const Icon(Icons.cloud),
                       title: Text("Save to Cloud"),
-                    )
+                    ),
+                    SwitchListTile.adaptive(
+                      value: settings.meanQuotes ?? false,
+                      onChanged: (value) {
+                        settingsController.updateBoolVal(
+                            context: context,
+                            key: "saveMeanQuotes",
+                            value: value);
+                      },
+                      secondary: const Icon(Icons.save_alt),
+                      title: Text("'Motivational' help if you miss reps"),
+                    ),
                   ],
                 );
               }),

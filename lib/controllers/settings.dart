@@ -9,7 +9,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsController {
   FlingController flingController = FlingController();
-
+  // TODO: note that default settings are set in Main.dart for shared preferences
   updateBoolVal(
       {@required BuildContext context,
       @required String key,
@@ -20,6 +20,8 @@ class SettingsController {
       settings.updateSaveLocal(value);
     } else if (key == "saveCloud") {
       settings.updateSaveCloud(value);
+    } else if (key == "saveMeanQuotes") {
+      settings.updateMeanQuotes(value);
     } else {
       print("A setting was updated that doesn't exist");
     }

@@ -50,7 +50,8 @@ class Quotes {
     "Haters are to me as practice is to Iverson.",
     "It's going to be awkward for both of us when you have to apologize to me.",
     "King Kong just needed me to get at Denzel.",
-    "'I never thought you would get there' Yeah well that makes one of us."
+    "'I never thought you would get there' Yeah well that makes one of us.",
+    "Get you some."
   ];
   static List<String> _failure = [
     "First time lifting, eh?",
@@ -85,5 +86,6 @@ class Quotes {
     "And that is why no one will remember your name.",
     "Maybe next lifetime I guess?",
     "I guess everything people say about you behind your back is true.",
+    "I see why you work out alone at home.",
   ];
 }

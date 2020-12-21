@@ -108,6 +108,7 @@ void _getSharedPrerferences(BuildContext context) async {
   final prefs = await SharedPreferences.getInstance();
   settings.saveLocal = prefs.getBool("saveLocal") ?? false;
   settings.saveCloud = prefs.getBool("saveCloud") ?? true;
+  settings.meanQuotes = prefs.getBool("meanQuotes") ?? true;
 }
 
 void _serverInit(context) {
