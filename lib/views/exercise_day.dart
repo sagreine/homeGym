@@ -253,7 +253,8 @@ class _TimelineStepIndicator extends StatelessWidget {
       decoration: BoxDecoration(
         shape: BoxShape.circle,
         //step.lifepoints <= 0 ? Colors.greenAccent : Colors.redAccent,
-        color: Color(0xFFCB8421),
+        //color: Color(0xFFCB8421),
+        color: Colors.blueGrey,
       ),
       child: Center(
         child: Text(

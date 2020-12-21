@@ -333,26 +333,21 @@ class HomeController {
                                     // update this exercise's reps to reps
                                     exercise.reps = int.parse(
                                         formControllerRepsCorrection.text),
-                                    /*updateDatabaseRecordWithReps(
-                                      userID: user.fAuthUser.uid,
-                                      dbDocID: origExerciseID,
-                                      reps: int.parse(
-                                          formControllerRepsCorrection.text)),*/
                                     // if we are updating because we got >= the target, say so
                                     if (int.parse(formControllerRepsCorrection
                                             .text) >=
                                         exercise.prescribedReps)
                                       {
-                                        Scaffold.of(context)
-                                            .showSnackBar(SnackBar(
-                                          content: Text(Quotes()
-                                              .getQuote(greatnessQuote: true)),
-                                        )),
                                         if (thisDay.updateMaxIfGetReps &&
                                             //thisDay.areWeOnLastSet()
                                             exercise.thisSetProgressSet)
                                           {
                                             progressAfter = true,
+                                            Scaffold.of(context)
+                                                .showSnackBar(SnackBar(
+                                              content: Text(Quotes().getQuote(
+                                                  greatnessQuote: true)),
+                                            )),
                                           },
 
                                         // should only confetti if it is the last set of a week that tests/progresses?
@@ -376,14 +371,15 @@ class HomeController {
                 //on 'Yes i got the reps'
                 onCancelButtonPressed: () => {
                   Navigator.pop(context),
-                  Scaffold.of(context).showSnackBar(SnackBar(
-                    content: Text(Quotes().getQuote(greatnessQuote: true)),
-                  )),
+
                   if (thisDay.updateMaxIfGetReps &&
                       //thisDay.areWeOnLastSet()
                       exercise.thisSetProgressSet)
                     {
                       progressAfter = true,
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                        content: Text(Quotes().getQuote(greatnessQuote: true)),
+                      )),
                     },
 
                   // should only confetti if it is the last set of a week that tests/progresses?

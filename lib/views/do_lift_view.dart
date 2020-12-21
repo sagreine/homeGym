@@ -40,7 +40,7 @@ class _DoLiftViewState extends State<DoLiftView>
   FlingController flingController = FlingController();
 
   CountDownController _countDownController = CountDownController();
-  bool startController = false;
+  bool startController;
 
   // temporary. and should be in MODEL for this page so we can save state via provider.. controller.
   bool doVideo;
@@ -187,6 +187,7 @@ class _DoLiftViewState extends State<DoLiftView>
     doVideo = false;
     doCast = false;
     _noDayPickedOnEntry = false;
+    startController = false;
     // this is bad, but whatever.
     homeController.formControllerRestInterval.text = "90";
 
@@ -646,7 +647,9 @@ class _DoLiftViewState extends State<DoLiftView>
                                                   exercise.restPeriodAfter ??
                                                   60);
                                         }
-                                        startController = true;
+                                        setState(() {
+                                          startController = true;
+                                        });
                                       }
                                     },
                           child: ListTile(
@@ -663,22 +666,15 @@ class _DoLiftViewState extends State<DoLiftView>
                           ),
                         );
                       }),
-                      /*Consumer<ExerciseSet>(
-                          builder: (context, exerciseSet, child) {*/
-                      //return
-                      startController
-                          ? Center(
+                      Visibility(
+                          visible: startController,
+                          child: Center(
                               heightFactor: .75,
                               child: _countDownTimer(
                                   seconds: int.parse(homeController
                                           .formControllerRestInterval.text) ??
                                       exercise.restPeriodAfter ??
-                                      60))
-                          : Container()
-                      //;
-                      //}
-
-                      ,
+                                      60))),
                     ]),
                   ],
                 );
