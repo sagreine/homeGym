@@ -371,7 +371,6 @@ class HomeController {
                 //on 'Yes i got the reps'
                 onCancelButtonPressed: () => {
                   Navigator.pop(context),
-
                   if (thisDay.updateMaxIfGetReps &&
                       //thisDay.areWeOnLastSet()
                       exercise.thisSetProgressSet)
@@ -472,9 +471,11 @@ class HomeController {
       }
       // holler about failure or greatness depending on if they got it or not.
       Scaffold.of(context).showSnackBar(SnackBar(
-        content: Text(Quotes().getQuote(
-            greatnessQuote:
-                int.parse(formControllerReps.text) >= exercise.prescribedReps)),
+        content: Text(
+          Quotes().getQuote(
+              greatnessQuote: int.parse(formControllerReps.text) >=
+                  exercise.prescribedReps),
+        ),
       ));
     }
     // no need to ask about REPS if not recording video, because they can just edit it directly in the form
