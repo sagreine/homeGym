@@ -87,5 +87,6 @@ class Quotes {
     "Maybe next lifetime I guess?",
     "I guess everything people say about you behind your back is true.",
     "I see why you work out alone at home.",
+    "When people say 'there are moments in every man's life' they are talking about moments like these",
   ];
 }
