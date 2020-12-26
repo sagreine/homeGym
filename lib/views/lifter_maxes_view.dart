@@ -63,134 +63,129 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
       appBar: ReusableWidgets.getAppBar(),
       drawer: ReusableWidgets.getDrawer(context),
       body: ListView(children: <Widget>[
-        Screenshot(
-          controller: screenshotController,
-          child: Column(
-            children: <Widget>[
-              Column(
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    Text(
-                      "Your One Rep Maxes",
-                      style:
-                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                    ),
-                    // this is not yet 'controlled' of course and doesn't use real data yet.
-                    Consumer<LifterMaxes>(
-                      builder: (context, liftMaxes, child) {
-                        return DataTable(
-                          sortColumnIndex: 0,
-                          sortAscending: true,
-                          columns: [
-                            DataColumn(label: Text('Lift'), numeric: true),
-                            DataColumn(label: Text('Max'), numeric: true),
-                          ],
-                          rows: [
-                            DataRow(selected: true, cells: [
-                              DataCell(Text('Deadlift',
-                                  style: TextStyle(fontSize: 14))),
-                              _buildMaxValues(
-                                  liftMaxes.deadliftMax.toString(), "deadlift"),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(
-                                Text('Bench', style: TextStyle(fontSize: 14)),
-                              ),
-                              _buildMaxValues(
-                                  liftMaxes.benchMax.toString(), "bench"),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(
-                                Text('Squat', style: TextStyle(fontSize: 14)),
-                              ),
-                              _buildMaxValues(
-                                  liftMaxes.squatMax.toString(), "squat"),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(
-                                Text('Press', style: TextStyle(fontSize: 14)),
-                              ),
-                              _buildMaxValues(
-                                  liftMaxes.pressMax.toString(), "press"),
-                            ]),
-                            DataRow(cells: [
-                              DataCell(
-                                Text('Total: ', style: TextStyle(fontSize: 14)),
-                              ),
-                              DataCell(Text("${liftMaxes.total.toString()}",
-                                  style: TextStyle(fontSize: 14)))
-                            ]),
-                          ],
-                        );
-                      },
-                    ),
-                    SizedBox(
-                      height: 15,
-                    ),
+        Column(children: <Widget>[
+          Screenshot(
+            controller: screenshotController,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  Text(
+                    "Your One Rep Maxes",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  ),
+                  // this is not yet 'controlled' of course and doesn't use real data yet.
+                  Consumer<LifterMaxes>(
+                    builder: (context, liftMaxes, child) {
+                      return DataTable(
+                        sortColumnIndex: 0,
+                        sortAscending: true,
+                        columns: [
+                          DataColumn(label: Text('Lift'), numeric: true),
+                          DataColumn(label: Text('Max'), numeric: true),
+                        ],
+                        rows: [
+                          DataRow(selected: true, cells: [
+                            DataCell(Text('Deadlift',
+                                style: TextStyle(fontSize: 14))),
+                            _buildMaxValues(
+                                liftMaxes.deadliftMax.toString(), "deadlift"),
+                          ]),
+                          DataRow(cells: [
+                            DataCell(
+                              Text('Bench', style: TextStyle(fontSize: 14)),
+                            ),
+                            _buildMaxValues(
+                                liftMaxes.benchMax.toString(), "bench"),
+                          ]),
+                          DataRow(cells: [
+                            DataCell(
+                              Text('Squat', style: TextStyle(fontSize: 14)),
+                            ),
+                            _buildMaxValues(
+                                liftMaxes.squatMax.toString(), "squat"),
+                          ]),
+                          DataRow(cells: [
+                            DataCell(
+                              Text('Press', style: TextStyle(fontSize: 14)),
+                            ),
+                            _buildMaxValues(
+                                liftMaxes.pressMax.toString(), "press"),
+                          ]),
+                          DataRow(cells: [
+                            DataCell(
+                              Text('Total: ', style: TextStyle(fontSize: 14)),
+                            ),
+                            DataCell(Text("${liftMaxes.total.toString()}",
+                                style: TextStyle(fontSize: 14)))
+                          ]),
+                        ],
+                      );
+                    },
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
 
-                    Padding(
-                      padding: EdgeInsets.all(10),
-                      child: Center(
-                        child: Text(Quotes().getQuote(greatnessQuote: true)),
-                      ),
+                  Padding(
+                    padding: EdgeInsets.all(10),
+                    child: Center(
+                      child: Text(Quotes().getQuote(greatnessQuote: true)),
                     ),
-                    SizedBox(
-                      height: 15,
-                    ),
-
-                    Consumer<Muser>(
-                      builder: (context, user, child) {
-                        return Visibility(
-                            visible: user.isNewUser,
-                            child: Column(
-                              children: [
-                                RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                        text:
-                                            "If you don't know how to calculate this, start at a weight you know you can get 10 times. Get 5 reps and add 10 pounds. Continue until you can't get 5 strong, fast reps, then put that weight into a calculator such as ",
-                                      ),
-                                      TextSpan(
-                                        style: TextStyle(
-                                            decoration:
-                                                TextDecoration.underline,
-                                            color: Colors.blue),
-                                        text: "this one ",
-                                        recognizer: TapGestureRecognizer()
-                                          ..onTap = () async {
-                                            final url =
-                                                'https://exrx.net/Calculators/OneRepMax ';
-                                            if (await canLaunch(url)) {
-                                              await launch(
-                                                url,
-                                                forceSafariVC: false,
-                                              );
-                                            }
-                                          },
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                SizedBox(
-                                  height: 10,
-                                ),
-                                RaisedButton(
-                                    splashColor: Colors.green[600],
-                                    elevation: 4,
-                                    color: Colors.green[800],
-                                    onPressed: () => Navigator.pushNamed(
-                                        context, "/lifter_weights"),
-                                    child: Text("Now set the weights you own"))
-                              ],
-                            ));
-                      },
-                    ),
-                  ]),
-            ],
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                ]),
           ),
-        ),
+          Consumer<Muser>(
+            builder: (context, user, child) {
+              return Visibility(
+                  visible: user.isNewUser,
+                  child: Column(
+                    children: [
+                      RichText(
+                        text: TextSpan(
+                          children: [
+                            TextSpan(
+                              text:
+                                  "If you don't know how to calculate this, start at a weight you know you can get 10 times. Get 5 reps and add 10 pounds. Continue until you can't get 5 strong, fast reps, then put that weight into a calculator such as ",
+                            ),
+                            TextSpan(
+                              style: TextStyle(
+                                  decoration: TextDecoration.underline,
+                                  color: Colors.blue),
+                              text: "this one ",
+                              recognizer: TapGestureRecognizer()
+                                ..onTap = () async {
+                                  final url =
+                                      'https://exrx.net/Calculators/OneRepMax ';
+                                  if (await canLaunch(url)) {
+                                    await launch(
+                                      url,
+                                      forceSafariVC: false,
+                                    );
+                                  }
+                                },
+                            ),
+                          ],
+                        ),
+                      ),
+                      SizedBox(
+                        height: 10,
+                      ),
+                      RaisedButton(
+                          splashColor: Colors.green[600],
+                          elevation: 4,
+                          color: Colors.green[800],
+                          onPressed: () =>
+                              Navigator.pushNamed(context, "/lifter_weights"),
+                          child: Text("Now set the weights you own"))
+                    ],
+                  ));
+            },
+          ),
+        ]),
         IconButton(
             icon: Image.asset("assets/images/Instagram_Logo.png"),
             onPressed: () async {
