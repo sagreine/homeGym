@@ -85,7 +85,7 @@ class SettingsViewState extends State<SettingsView> {
               Padding(
                 padding: EdgeInsets.fromLTRB(8, 12, 0, 8),
                 child: Text(
-                  "Picking a Fling Device",
+                  "Reset and pick a Fling Device",
                   style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
                 ),
               ),
@@ -93,12 +93,15 @@ class SettingsViewState extends State<SettingsView> {
                 builder: (context, flingy, child) {
                   return Column(children: <Widget>[
                     flingy.selectedPlayer == null
-                        ? Text("Search, then pick a player by tapping on it")
+                        ? Text(
+                            "Reset, search, then pick a player by tapping on it")
                         : Text(
                             "Select Player State: ${flingy.selectedPlayer.name}"),
                     RaisedButton(
-                        child: Text('Search'),
+                        child: Text('Reset'),
                         onPressed: () async {
+                          await settingsController.flingController
+                              .dispose(context);
                           await settingsController.flingController
                               .getCastDevices(context);
                         }),

@@ -44,7 +44,6 @@ List<CameraDescription> cameras;
 int temp = 1;
 
 void main() async {
-  //Bloc.observer = SimpleBlocObserver();
   WidgetsFlutterBinding.ensureInitialized();
   try {
     cameras = await availableCameras();

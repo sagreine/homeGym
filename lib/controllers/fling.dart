@@ -34,10 +34,11 @@ class FlingController {
     }
   }
 
-  void dispose(context) async {
+  Future<void> dispose(context) async {
     var prov = Provider.of<FlingMediaModel>(context, listen: false);
     await FlutterFling.stopDiscoveryController();
     prov.reset();
+    prov = null;
     //prov.dispose();
   }
 }
