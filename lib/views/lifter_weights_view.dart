@@ -131,6 +131,7 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                             : Icon(Icons.airline_seat_legroom_reduced),
                         value: lifterweights.bumpers,
                         onChanged: (newValue) {
+                          //
                           setState(() {
                             lifterWeightsController.updateBumpers(
                                 context: context, bumpers: newValue);

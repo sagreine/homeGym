@@ -35,13 +35,15 @@ class LifterWeights extends ChangeNotifier {
     return true;
   }
 
-  bool updateBumpers({bool bumpers}) {
-    if (this.bumpers != bumpers) {
-      this.bumpers = bumpers;
+  void updateBumpers({@required bool bumpersNew}) {
+    /*if (bumpers != bumpersNew) {
+      bumpers = bumpersNew;
       notifyListeners();
       return true;
     }
-    return false;
+    return false;*/
+    bumpers = bumpersNew;
+    notifyListeners();
   }
 
 // we're given a target weight but we know we need to subtract the bar weigth!

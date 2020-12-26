@@ -87,6 +87,10 @@ class _LoginViewState extends State<LoginView> {
         updateCloud: true);
 // default bar weight of 45
     lifterWeightsController.updateBarWeight(context, 45);
+// TODO: this whole process goes like:
+// 1) sets it to a values in the cloud
+// 2) updates local with that new value (from null)
+// 3) sets the cloud to that local value (it already is that value...)
     lifterWeightsController.updateBumpers(context: context, bumpers: false);
 // add default plate counts. first, lbs
     lifterWeightsController.updatePlate(

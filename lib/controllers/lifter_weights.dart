@@ -23,9 +23,11 @@ class LifterWeightsController {
   void updateBumpers({@required BuildContext context, @required bool bumpers}) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
-    if (liftweights.updateBumpers(bumpers: bumpers)) {
-      updateBumpersCloud(bumpers: bumpers, userID: user.fAuthUser.uid);
-    }
+    //if (
+    liftweights.updateBumpers(bumpersNew: bumpers);
+    //) { //
+    updateBumpersCloud(bumpers: bumpers, userID: user.fAuthUser.uid);
+    //}
   }
 
   void updateBarWeight(BuildContext context, int newBarWeight) {
