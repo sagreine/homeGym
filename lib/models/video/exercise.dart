@@ -21,10 +21,23 @@ class ExerciseSet extends ChangeNotifier {
   int weight;
   int reps;
   final int prescribedReps;
+  List<String> keywords;
   DateTime dateTime;
   bool thisSetPRSet;
   bool thisSetProgressSet;
-  //BuildContext context;
+
+  // for searching, we'll popluate with keywords based on lift title
+  static List<String> makeKeywords(String name) {
+    List<String> arrName = [];
+    String curName = '';
+    // add the null string.
+    arrName.add(curName);
+    name.split('').forEach((element) {
+      curName += element;
+      arrName.add(curName);
+    });
+    return arrName;
+  }
 
   // TODO: pro tip, construct in the constructor instead of some random function. good god this is garbage
   ExerciseSet({
@@ -65,6 +78,7 @@ class ExerciseSet extends ChangeNotifier {
     if (exerciseTitle != null &&
         (this.title == null || this.title != exerciseTitle)) {
       this.title = exerciseTitle;
+      keywords = makeKeywords(title);
     }
     var thisDay = Provider.of<ExerciseDay>(context, listen: false);
     var thisMax = Provider.of<LifterMaxes>(context, listen: false);
@@ -127,6 +141,7 @@ class ExerciseSet extends ChangeNotifier {
     // should handle this another way probably -> controller if nothing else.
     if (title != null) {
       this.title = title;
+      keywords = makeKeywords(title);
     }
     if (description != null) {
       this.description = description;
@@ -170,5 +185,6 @@ class ExerciseSet extends ChangeNotifier {
         aspectRatio,
         thisSetProgressSet,
         prescribedReps,
+        keywords,
       ];
 }
