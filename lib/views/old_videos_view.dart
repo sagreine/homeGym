@@ -21,10 +21,9 @@ class OldVideosView extends StatefulWidget {
 }
 
 class OldVideosViewState extends State<OldVideosView> {
-  //SettingsController settingsController = SettingsController();
-  // should these go in the Settingscontroller probably then...
-  List<ExerciseSet> _videos = <ExerciseSet>[];
-  //PickedFile file;
+  List<ExerciseSet> _videos; // = ;
+  var scrollController = ScrollController();
+  QuerySnapshot collectionState;
 
   @override
   void dispose() {
@@ -35,18 +34,18 @@ class OldVideosViewState extends State<OldVideosView> {
   @override
   void initState() {
     super.initState();
-    FirebaseProvider.listenToVideos(context, (newVideos) {
-      setState(() {
-        _videos = newVideos;
-      });
+    _videos = <ExerciseSet>[];
+    scrollController.addListener(() {
+      if (scrollController.position.atEdge) {
+        if (scrollController.position.pixels == 0)
+          print('ListView scroll at top');
+        else {
+          print('ListView scroll at bottom');
+          getDocumentsNext(context); // Load next documents
+        }
+      }
     });
   }
-
-  /*_shareFile() async {
-    //file = await ImagePicker().getImage(source: ImageSource.gallery);
-    //file = 
-    await SocialSharePlugin.shareToFeedInstagram(path: file.path);
-  }*/
 
   _buildListItem(ExerciseSet video) {
     return GestureDetector(
@@ -229,13 +228,97 @@ class OldVideosViewState extends State<OldVideosView> {
     );
   }
 
-  _getListView(List<ExerciseSet> videos) {
+  _getListView(List<ExerciseSet> _videos) {
     return ListView.builder(
-        padding: const EdgeInsets.all(8),
-        itemCount: videos.length,
-        itemBuilder: (BuildContext context, int index) {
-          return _buildListItem(videos[index]);
-        });
+      physics: AlwaysScrollableScrollPhysics(),
+      controller: scrollController,
+      itemCount: _videos.length,
+      itemBuilder: (context, index) {
+        return _buildListItem(_videos[index]);
+      },
+    );
+  }
+
+  _getFutureBuilder(BuildContext context1 /*List<ExerciseSet> videos*/) {
+    return FutureBuilder(
+        builder: (context, snapshot) {
+          if (snapshot.hasData == false) {
+            return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [CircularProgressIndicator()]);
+          } else {
+            return _getListView(snapshot.data);
+          }
+        },
+        future: getDocuments(context1));
+  }
+
+  // TODO: use https://stackoverflow.com/questions/59191492/flutter-firestore-pagination-using-streambuilder
+  // to get newly submitted videos included as they come in too...
+
+  // TODO: to actually let them search, and do pagination,
+  // https://firebase.google.com/docs/firestore/solutions/search - agolia or elasticsearch ($$$)
+
+  // TODO: this combines our current approach with better search, try this next:
+  // https://medium.com/@ken11zer01/firebase-firestore-text-search-and-pagination-91a0df8131ef
+
+  Future<List<ExerciseSet>> getDocuments(BuildContext context) async {
+    // this is a mess but.... kick off future builder if this is the first build. otherwise, just return the list
+    // note that this precludes us from getting updates (things that are being written right now, e.g. video we just took)
+    if (_videos == null || _videos.length == 0) {
+      var userId = (Provider.of<Muser>(context, listen: false)).fAuthUser.uid;
+      // where and order by have to be same field in firestore. we value order by higher but we risk not returning any/enough if we don't filter first
+      // so filter, then order results? but that's super stupid, because we might have to fetch tons and tons and reorder every time
+      // but could handle that via a refresh indicator or something...
+
+      var collection = FirebaseFirestore.instance
+          .collection('/USERDATA/$userId/LIFTS')
+          .orderBy("dateTime", descending: true)
+          .limit(25);
+      print('getDocuments');
+
+      await fetchDocuments(collection);
+    }
+    return _videos;
+    //setState(() {});
+  }
+
+  Future<void> getDocumentsNext(BuildContext context) async {
+    // Get the last pulled document and go from there
+    var userId = (Provider.of<Muser>(context, listen: false)).fAuthUser.uid;
+    var lastVisible = collectionState.docs[collectionState.docs.length - 1];
+    print('listDocument legnth: ${collectionState.size} last: $lastVisible');
+    var collection = FirebaseFirestore.instance
+        .collection('/USERDATA/$userId/LIFTS')
+        .orderBy("dateTime", descending: true)
+        .startAfterDocument(lastVisible)
+        .limit(20);
+
+    fetchDocuments(collection);
+    setState(() {});
+  }
+
+  fetchDocuments(Query collection) async {
+    await collection.get().then((value) {
+      collectionState =
+          value; // store collection state to set where to start next
+      value.docs
+          // only uploads that have videos can have their videos searched :)
+          .where((element) => element.data()["videoPath"] != null)
+          .forEach((element) {
+        _videos.add(ExerciseSet(
+          videoPath: element.data()['videoPath'],
+          thumbnailPath: element.data()['thumbnailPath'],
+          aspectRatio: element.data()['aspectRatio'],
+          title: element.data()['title'],
+          reps: element.data()['reps'],
+          weight: element.data()['weight'],
+          dateTime:
+              DateTime.parse(element.data()['dateTime']) ?? DateTime.now(),
+        ));
+      });
+    });
   }
 
   // TODO: make this search by anything instead of just title? or even e.g. "TITLE:Squat"
@@ -259,12 +342,10 @@ class OldVideosViewState extends State<OldVideosView> {
       body: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          //Container(
-          // well this is garbage...
-          //height: MediaQuery.of(context).size.height - kToolbarHeight - 354,
-          //child:
           Flexible(
             fit: FlexFit.loose,
+            // this is crazy misleading though, beacuse it only searches what you have locally. so you'd need
+            // to continually repull to get more...
             child: SearchBar<ExerciseSet>(
               searchBarPadding: EdgeInsets.symmetric(horizontal: 10),
               headerPadding: EdgeInsets.symmetric(horizontal: 10),
@@ -272,16 +353,8 @@ class OldVideosViewState extends State<OldVideosView> {
               onSearch: _getSearchResults,
               searchBarController: _searchBarController,
               minimumChars: 1,
-              // doesn't do anything, right now.
-              /*suggestions: [
-                ExerciseSet(title: "Squat"),
-                ExerciseSet(title: "Deadlift"),
-                ExerciseSet(title: "Bench"),
-                ExerciseSet(title: "Press")
-              ],
-              buildSuggestion: (item, index) => Text(item.title),*/
 
-              placeHolder: _getListView(_videos),
+              placeHolder: _getFutureBuilder(context), //_getListView(_videos),
 
               cancellationWidget: Text("Cancel"),
               emptyWidget: Text("None"),
@@ -298,6 +371,13 @@ class OldVideosViewState extends State<OldVideosView> {
                 return _buildListItem(exercise);
               },
             ),
+
+            // could put this in a refresh indicator to re-start it though?
+            //_getFutureBuilder(context)
+
+            /*_videos?.length == 0 ?? null
+                ? _getFutureBuilder(context)
+                : _getListView(_videos), // this sucks because we lose scroll position and it is stupid in general*/
           ),
         ],
       ),
@@ -613,7 +693,7 @@ class AspectRatioVideoState extends State<AspectRatioVideo> {
   }
 }
 
-class FirebaseProvider {
+/*class FirebaseProvider {
   //static var userID = "4DchyEpIYyMAlgSOdiWuQycCqeC2";
 
   static listenToVideos(BuildContext context, callback) async {
@@ -643,11 +723,4 @@ class FirebaseProvider {
         );
     }).toList();
   }
-}
-
-class Post {
-  final String title;
-  final String body;
-
-  Post(this.title, this.body);
-}
+}*/
