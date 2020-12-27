@@ -196,7 +196,7 @@ class ReusableWidgets {
                     }
                   }),
               ListTile(
-                  title: Text("My Videos"),
+                  title: Text("My Lifts"),
                   //leading: Icon(Icons.description),
                   leading: Icon(Icons.video_library),
                   onTap: () {
