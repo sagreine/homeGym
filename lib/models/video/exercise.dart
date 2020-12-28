@@ -33,7 +33,7 @@ class ExerciseSet extends ChangeNotifier {
     // add the null string.
     arrName.add(curName);
     name.split('').forEach((element) {
-      curName += element;
+      curName += element.toLowerCase();
       arrName.add(curName);
     });
     return arrName;
