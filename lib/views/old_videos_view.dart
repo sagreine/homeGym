@@ -32,6 +32,7 @@ class OldVideosViewState extends State<OldVideosView> {
   var numDocumentsToPaginateNext = 5;
   bool gottenLastDocument = false;
   String search = "";
+  bool veryFirstLoad; // = true;
 
   @override
   void dispose() {
@@ -68,6 +69,7 @@ class OldVideosViewState extends State<OldVideosView> {
                         DateTime.now(),
               ));
           _streamController.add(_videos);
+          // below lets us do "streaming" to search results
           if (search != "") {
             _searchBarController.replayLastSearch();
           }
@@ -81,12 +83,15 @@ class OldVideosViewState extends State<OldVideosView> {
   @override
   void initState() {
     Future.delayed(Duration.zero).then((value) async {
-      _videos = await getDocuments(context, search);
+      //veryFirstLoad = false;
+      //_videos = await getDocuments(context, search);
+      // this is garbage, but is used in the streambulder to only fire something once
       setState(() {
         isLoaded = true;
       });
     });
     super.initState();
+    veryFirstLoad = true;
     //_videos = <ExerciseSet>[];
     userId = (Provider.of<Muser>(context, listen: false)).fAuthUser.uid;
     // grab the first several exercises
@@ -291,7 +296,11 @@ class OldVideosViewState extends State<OldVideosView> {
           if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
-              getDocuments(context, "");
+              if (veryFirstLoad ?? true) {
+                veryFirstLoad = false;
+                getDocuments(context, "");
+                print("get documents from streambuilder");
+              }
               return new Text('Loading...');
             default:
               return ListView.builder(
@@ -333,8 +342,8 @@ class OldVideosViewState extends State<OldVideosView> {
   // TODO: this combines our current approach with better search, try this next:
   // https://medium.com/@ken11zer01/firebase-firestore-text-search-and-pagination-91a0df8131ef
 
-  Future<List<ExerciseSet>> getDocuments(
-      BuildContext context, String search) async {
+  Future<List<ExerciseSet>> getDocuments(BuildContext context, String search,
+      {bool firstLoad}) async {
     _videos = <ExerciseSet>[];
     gottenLastDocument = false;
     //_streamController = StreamController<List<ExerciseSet>>.broadcast();
