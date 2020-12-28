@@ -68,6 +68,9 @@ class OldVideosViewState extends State<OldVideosView> {
                         DateTime.now(),
               ));
           _streamController.add(_videos);
+          if (search != "") {
+            _searchBarController.replayLastSearch();
+          }
         }
       }
     });
