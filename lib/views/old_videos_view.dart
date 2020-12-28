@@ -91,7 +91,7 @@ class OldVideosViewState extends State<OldVideosView> {
       });
     });
     super.initState();
-    veryFirstLoad = true;
+    //veryFirstLoad = true;
     //_videos = <ExerciseSet>[];
     userId = (Provider.of<Muser>(context, listen: false)).fAuthUser.uid;
     // grab the first several exercises
@@ -274,21 +274,7 @@ class OldVideosViewState extends State<OldVideosView> {
     }
   }
 
-  /*_getListView(List<ExerciseSet> _videos) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: AlwaysScrollableScrollPhysics(),
-      controller: scrollController,
-      itemCount: _videos.length,
-      itemBuilder: (context, index) {
-        return _buildListItem(_videos[index]);
-      },
-    );
-  }*/
-
   StreamBuilder<List<ExerciseSet>> _getStreamBuilder() {
-    //if (_videos == null || _videos?.length == 0 ?? null) {
-//      getDocuments(context, search).then((value) {
     return StreamBuilder<List<ExerciseSet>>(
         stream: _streamController.stream,
         builder:
@@ -431,6 +417,7 @@ class OldVideosViewState extends State<OldVideosView> {
   //Future<List<ExerciseSet>>
   //Stream<List<ExerciseSet>>
   Future<List<ExerciseSet>> _getSearchResults(String text) async {
+    veryFirstLoad = true;
     // if this is already our search term and we're calling it again, that means we are here because we're re-adding
     if (text == "") {
       search = text;
