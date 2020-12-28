@@ -45,7 +45,8 @@ class OldVideosViewState extends State<OldVideosView> {
       if (productChange.type == DocumentChangeType.added) {
         // check if we have already pulled this video -- hmmm shure should define equality in the model eh
         var temp = List<String>.from(productChange.doc.data()['keywords']);
-
+        // if this is not a search, add it. otherwise, if it is a search and the item is one of our desired search results,
+        // it is not yet ineligible to add
         bool searchCheck = search == "" || temp.contains(search);
 
         int indexWhere = _videos.indexWhere((video) {
@@ -54,8 +55,6 @@ class OldVideosViewState extends State<OldVideosView> {
               productChange.doc.data()['weight'] == video.weight &&
               DateTime.parse(productChange.doc.data()['dateTime']) ==
                   video.dateTime);
-
-          /// TODO: bad and lazy. parse each stream here. going to have a lot of these....
         });
         // if we haven't, add it to the list at the start so it shows up on top unless this is a search result and this item
         // does not match our search criteria
@@ -83,12 +82,9 @@ class OldVideosViewState extends State<OldVideosView> {
     });
   }
 
-  bool isLoaded = false;
-
   @override
   void initState() {
     super.initState();
-    //userId = (Provider.of<Muser>(context, listen: false)).fAuthUser.uid;
     // set up the non-search scroll listner to paginate
     scrollController.addListener(() {
       if (scrollController.position.atEdge) {
@@ -160,7 +156,7 @@ class OldVideosViewState extends State<OldVideosView> {
                     ),
                     // TODO need to limit to videos < 60 seconds long for instagram's requirements.
                     // only let them share on instagram if there is a video - can't pass a quote so no value in it
-                    // TODO: if you later can pass a quote, consider posting the homegymtv logo from assets + quote.
+                    // TODO: if you later can pass a quote, consider posting the logo from assets + quote.
                     video.videoPath != null
                         ? IconButton(
                             icon:
