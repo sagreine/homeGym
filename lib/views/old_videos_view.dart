@@ -44,15 +44,22 @@ class OldVideosViewState extends State<OldVideosView> {
     documentChanges.forEach((productChange) {
       if (productChange.type == DocumentChangeType.added) {
         // check if we have already pulled this video -- hmmm shure should define equality in the model eh
+        var temp = List<String>.from(productChange.doc.data()['keywords']);
+
+        bool searchCheck = search == "" || temp.contains(search);
+
         int indexWhere = _videos.indexWhere((video) {
           return (productChange.doc.data()['title'] == video.title &&
               productChange.doc.data()['reps'] == video.reps &&
               productChange.doc.data()['weight'] == video.weight &&
               DateTime.parse(productChange.doc.data()['dateTime']) ==
                   video.dateTime);
+
+          /// TODO: bad and lazy. parse each stream here. going to have a lot of these....
         });
-        // if we haven't, add it to the list at the start so it shows up on top
-        if (indexWhere == -1) {
+        // if we haven't, add it to the list at the start so it shows up on top unless this is a search result and this item
+        // does not match our search criteria
+        if (indexWhere == -1 && searchCheck) {
           _videos.insert(
               0,
               ExerciseSet(
@@ -259,6 +266,8 @@ class OldVideosViewState extends State<OldVideosView> {
               // on initializing the page OR after clearing a search, go get starter documents for this streambuilder to build with
               if (getDocsInStreamBuilder ?? true) {
                 getDocsInStreamBuilder = false;
+                // clear this to be sure here (if they delete, not cancel, out of search)
+                search = "";
                 getDocuments(context, "");
                 print("get documents from streambuilder");
               }
@@ -347,19 +356,25 @@ class OldVideosViewState extends State<OldVideosView> {
   }
 
   // TODO: make this search by anything instead of just title? or even e.g. "TITLE:Squat"
+  // TODO: may yet be
   Future<List<ExerciseSet>> _getSearchResults(String text) async {
     getDocsInStreamBuilder = true;
-    // if this is already our search term and we're calling it again, that means we are here because we're re-adding
+    // if search is null, we'll go get documents - might be ablet o get rid of this
     if (text == "") {
       search = text;
       await getDocuments(context, text);
       setState(() {});
       return _videos;
-    } else if (search == text) {
-    } else {
+    }
+    // if ths is the same search term, don't do anything.
+    else if (search == text) {
+    }
+    // if this is a new term, we need to repull initial values. this definitely needs to be here
+    else {
       search = text;
       await getDocuments(context, text);
     }
+    // might be able to put this in the conditional block above
     setState(() {});
     return _videos;
   }
@@ -410,12 +425,9 @@ class OldVideosViewState extends State<OldVideosView> {
                   header: Row(
                     children: <Widget>[],
                   ),
-                  // TODO: try this one just setting the global streambuilder bool instead of calling this..
                   onCancelled: () async {
                     search = "";
                     getDocsInStreamBuilder = true;
-                    /*await getDocuments(context, search);
-                    print("Cancelled triggered");*/
                   },
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
