@@ -6,15 +6,11 @@ import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:path_provider/path_provider.dart';
-//import 'package:image_picker/image_picker.dart';
-//import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:video_player/video_player.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:transparent_image/transparent_image.dart';
-//import 'package:instagram_share/instagram_share.dart';
 import 'package:social_share_plugin/social_share_plugin.dart';
-//import 'package:http/http.dart' as http;
 import 'package:flutter_downloader/flutter_downloader.dart';
 
 class OldVideosView extends StatefulWidget {
@@ -32,7 +28,9 @@ class OldVideosViewState extends State<OldVideosView> {
   var numDocumentsToPaginateNext = 5;
   bool gottenLastDocument = false;
   String search = "";
-  bool veryFirstLoad; // = true;
+  bool getDocsInStreamBuilder;
+  final SearchBarController<ExerciseSet> _searchBarController =
+      SearchBarController();
 
   @override
   void dispose() {
@@ -82,20 +80,9 @@ class OldVideosViewState extends State<OldVideosView> {
 
   @override
   void initState() {
-    Future.delayed(Duration.zero).then((value) async {
-      //veryFirstLoad = false;
-      //_videos = await getDocuments(context, search);
-      // this is garbage, but is used in the streambulder to only fire something once
-      setState(() {
-        isLoaded = true;
-      });
-    });
     super.initState();
-    //veryFirstLoad = true;
-    //_videos = <ExerciseSet>[];
-    userId = (Provider.of<Muser>(context, listen: false)).fAuthUser.uid;
-    // grab the first several exercises
-//    getDocuments(context, search);
+    //userId = (Provider.of<Muser>(context, listen: false)).fAuthUser.uid;
+    // set up the non-search scroll listner to paginate
     scrollController.addListener(() {
       if (scrollController.position.atEdge) {
         if (scrollController.position.pixels == 0)
@@ -109,19 +96,6 @@ class OldVideosViewState extends State<OldVideosView> {
         }
       }
     });
-  }
-
-  @override
-  void didChangeDependencies() async {
-    super.didChangeDependencies();
-
-    // then, listen but only to the latest change or so - they'll unlikely to add more than 1 at a time
-    /*FirebaseFirestore.instance
-        .collection('/USERDATA/$userId/LIFTS')
-        .orderBy("dateTime", descending: true)
-        .limit(1)
-        .snapshots()
-        .listen((data) => onChangeData(data.docChanges));*/
   }
 
   Container _shareBox(ExerciseSet video) {
@@ -282,8 +256,9 @@ class OldVideosViewState extends State<OldVideosView> {
           if (snapshot.hasError) return new Text('Error: ${snapshot.error}');
           switch (snapshot.connectionState) {
             case ConnectionState.waiting:
-              if (veryFirstLoad ?? true) {
-                veryFirstLoad = false;
+              // on initializing the page OR after clearing a search, go get starter documents for this streambuilder to build with
+              if (getDocsInStreamBuilder ?? true) {
+                getDocsInStreamBuilder = false;
                 getDocuments(context, "");
                 print("get documents from streambuilder");
               }
@@ -299,48 +274,15 @@ class OldVideosViewState extends State<OldVideosView> {
                   });
           }
         });
-    //});
   }
-  //}
-
-/*
-  _getFutureBuilder(BuildContext context1) {
-    return FutureBuilder(
-        builder: (context, snapshot) {
-          if (snapshot.hasData == false) {
-            return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [CircularProgressIndicator()]);
-          } else {
-            return _getListView(snapshot.data);
-          }
-        },
-        future: getDocuments(context1, search));
-  }
-*/
-  // TODO: use https://stackoverflow.com/questions/59191492/flutter-firestore-pagination-using-streambuilder
-  // to get newly submitted videos included as they come in too...
-
-  // TODO: to actually let them search, and do pagination,
-  // https://firebase.google.com/docs/firestore/solutions/search - agolia or elasticsearch ($$$)
-
-  // TODO: this combines our current approach with better search, try this next:
-  // https://medium.com/@ken11zer01/firebase-firestore-text-search-and-pagination-91a0df8131ef
 
   Future<List<ExerciseSet>> getDocuments(BuildContext context, String search,
       {bool firstLoad}) async {
+    // this is a refresh of sorts, so clear our our cache of videos and that we've gotten all videos.
     _videos = <ExerciseSet>[];
     gottenLastDocument = false;
-    //_streamController = StreamController<List<ExerciseSet>>.broadcast();
-    // this is a mess but.... kick off future builder if this is the first build. otherwise, just return the list
-    // note that this precludes us from getting updates (things that are being written right now, e.g. video we just took)
-    //if (_videos == null || _videos.length == 0) {
+    // go get a 15 sample, most recent first
     var userId = (Provider.of<Muser>(context, listen: false)).fAuthUser.uid;
-    // where and order by have to be same field in firestore. we value order by higher but we risk not returning any/enough if we don't filter first
-    // so filter, then order results? but that's super stupid, because we might have to fetch tons and tons and reorder every time
-    // but could handle that via a refresh indicator or something...
-
     var collection = FirebaseFirestore.instance
         .collection('/USERDATA/$userId/LIFTS')
         .where('keywords', arrayContains: search.toLowerCase())
@@ -349,9 +291,7 @@ class OldVideosViewState extends State<OldVideosView> {
     print('getDocuments');
 
     await fetchDocuments(collection);
-    //}
-
-    // then, listen but only to the latest change or so - they'll unlikely to add more than 1 at a time
+    // then, listen but only to the latest change (addition, we'll define it in the function) - they'll unlikely to add more than 1 at a time
     FirebaseFirestore.instance
         .collection('/USERDATA/$userId/LIFTS')
         .where('keywords', arrayContains: search.toLowerCase())
@@ -359,12 +299,12 @@ class OldVideosViewState extends State<OldVideosView> {
         .limit(1)
         .snapshots()
         .listen((data) => onChangeData(data.docChanges));
-    // this line only for the stream controlloer, obviously. if using future, uncomment setState
     _streamController.add(_videos);
+    // this line may not actually be necessary since we're using a global..
     return _videos;
-    //setState(() {});
   }
 
+  // get the next page
   Future<void> getDocumentsNext(BuildContext context, String search) async {
     if (_isRequesting == false && gottenLastDocument == false) {
       _isRequesting = true;
@@ -380,23 +320,16 @@ class OldVideosViewState extends State<OldVideosView> {
           .limit(numDocumentsToPaginateNext);
 
       await fetchDocuments(collection);
-      // this line only for the stream controlloer, obviously. if using future, uncomment setState
       _streamController.add(_videos);
       _isRequesting = false;
     }
-    //setState(() {});
   }
 
   fetchDocuments(Query collection) async {
     await collection.get().then((value) {
       collectionState =
           value; // store collection state to set where to start next
-      value.docs
-          // only uploads that have videos can have their videos searched :)
-          // will want to use this to know if we need to restart though,
-          // check if documentSnapshots.size is = the limit and if it is, and we have no records to return, fire again
-          //.where((element) => element.data()["videoPath"] != null)
-          .forEach((element) {
+      value.docs.forEach((element) {
         _videos.add(ExerciseSet(
           videoPath: element.data()['videoPath'],
           thumbnailPath: element.data()['thumbnailPath'],
@@ -414,10 +347,8 @@ class OldVideosViewState extends State<OldVideosView> {
   }
 
   // TODO: make this search by anything instead of just title? or even e.g. "TITLE:Squat"
-  //Future<List<ExerciseSet>>
-  //Stream<List<ExerciseSet>>
   Future<List<ExerciseSet>> _getSearchResults(String text) async {
-    veryFirstLoad = true;
+    getDocsInStreamBuilder = true;
     // if this is already our search term and we're calling it again, that means we are here because we're re-adding
     if (text == "") {
       search = text;
@@ -425,28 +356,14 @@ class OldVideosViewState extends State<OldVideosView> {
       setState(() {});
       return _videos;
     } else if (search == text) {
-      //await getDocumentsNext(context, search);
     } else {
       search = text;
       await getDocuments(context, text);
     }
-    //return
-    //yield
     setState(() {});
     return _videos;
   }
 
-  Future<List<ExerciseSet>> Function(String) _pickResults(
-      List<ExerciseSet> videos) {
-    /*if (_videos.length == 15) {
-      setState(() {});
-    }*/
-    return _getSearchResults;
-  }
-
-  final SearchBarController<ExerciseSet> _searchBarController =
-      SearchBarController();
-  //var redrawObject;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -459,8 +376,6 @@ class OldVideosViewState extends State<OldVideosView> {
               fit: FlexFit.loose,
               child: NotificationListener<ScrollNotification>(
                 onNotification: (notification) {
-                  //print("$notification");
-                  //notification.metrics.maxScrollExtent
                   // if we're searching and have hit the bottom index.
                   if (search != "") {
                     if (notification.metrics.atEdge) {
@@ -472,80 +387,43 @@ class OldVideosViewState extends State<OldVideosView> {
                           print(
                               "number of search results after getting next page: ${_videos.length}");
                           if (temp != _videos.length) {
-                            /*setState(() {
-                              redrawObject = Object();
-                            });*/
                             // we've updated the source we're pulling from, so the same search will give more data
                             _searchBarController.replayLastSearch();
                           }
-                          /*setState(() {
-                          print("added to the list");
-                          print("${_videos.length}");
-                        });*/
                         });
                       }
                     }
                   }
                   return true;
                 },
-                // this is crazy misleading though, beacuse it only searches what you have locally. so you'd need
-                // to continually repull to get more...
                 child: SearchBar<ExerciseSet>(
-                  //key: ValueKey<Object>(redrawObject),
                   searchBarPadding: EdgeInsets.symmetric(horizontal: 10),
                   headerPadding: EdgeInsets.symmetric(horizontal: 10),
                   listPadding: EdgeInsets.symmetric(horizontal: 10),
-                  onSearch:
-                      /*(_) {
-                    setState(() {
-                      
-                    });
-                    return _getSearchResults(_);
-                    //_pickResults(_videos);
-                  },*/
-                      _getSearchResults,
+                  onSearch: _getSearchResults,
                   searchBarController: _searchBarController,
                   minimumChars: 1,
-                  //suggestions: _videos,
                   placeHolder: _getStreamBuilder(),
-                  // _getFutureBuilder(context), //_getListView(_videos),
                   cancellationWidget: Text("Cancel"),
                   emptyWidget: Text("None"),
                   // could put buttons here and _searchBarController.filter or otherwise modify the search field....
                   header: Row(
                     children: <Widget>[],
                   ),
+                  // TODO: try this one just setting the global streambuilder bool instead of calling this..
                   onCancelled: () async {
-                    //_getStreamBuilder(context);
                     search = "";
-                    await getDocuments(context, search);
-                    print("Cancelled triggered");
-                    print("${_videos.length}");
+                    getDocsInStreamBuilder = true;
+                    /*await getDocuments(context, search);
+                    print("Cancelled triggered");*/
                   },
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
                   onItemFound: (exercise, int index) {
-                    /*
-                FirebaseFirestore.instance
-                    .collection('/USERDATA/$userId/LIFTS')
-                    .orderBy("dateTime", descending: true)
-                    .limit(1)
-                    .snapshots()
-                    .listen((data) => onChangeData(data.docChanges));*/
                     return _buildListItem(exercise);
-
-                    //  return _getStreamBuilder(context);
                   },
                 ),
-              )
-
-              // could put this in a refresh indicator to re-start it though?
-              //_getFutureBuilder(context)
-
-              /*_videos?.length == 0 ?? null
-                ? _getFutureBuilder(context)
-                : _getListView(_videos), // this sucks because we lose scroll position and it is stupid in general*/
-              ),
+              )),
         ],
       ),
     );
