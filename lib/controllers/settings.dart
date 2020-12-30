@@ -4,6 +4,7 @@ import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:wakelock/wakelock.dart';
 //import 'package:home_gym/models/models.dart';
 //import 'package:provider/provider.dart';
 
@@ -22,6 +23,8 @@ class SettingsController {
       settings.updateSaveCloud(value);
     } else if (key == "MeanQuotes") {
       settings.updateMeanQuotes(value);
+    } else if (key == "wakeLock") {
+      await settings.updateWakeLock(value);
     } else {
       print("A setting was updated that doesn't exist");
     }

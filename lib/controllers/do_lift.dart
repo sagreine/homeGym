@@ -191,6 +191,7 @@ class HomeController {
       @required String mediaTitle}) async {
     await serverListen(context);
     await FlutterFling.stopPlayer();
+    // TODO: check if the player is connected first
     await FlutterFling.play(
       (state, condition, position) {
         // not sure we need this

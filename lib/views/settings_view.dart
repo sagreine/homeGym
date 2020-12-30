@@ -70,7 +70,16 @@ class SettingsViewState extends State<SettingsView> {
                             context: context, key: "MeanQuotes", value: value);
                       },
                       secondary: const Icon(Icons.save_alt),
-                      title: Text("'Motivational' help if you miss reps"),
+                      title: Text("'Motivational' Quotes"),
+                    ),
+                    SwitchListTile.adaptive(
+                      value: settings.wakeLock ?? false,
+                      onChanged: (value) {
+                        settingsController.updateBoolVal(
+                            context: context, key: "wakeLock", value: value);
+                      },
+                      secondary: const Icon(Icons.save_alt),
+                      title: Text("Keep screen unlocked"),
                     ),
                   ],
                 );
