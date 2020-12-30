@@ -69,6 +69,7 @@ dependencies:
   url_launcher: ^5.7.1
   wakelock: ^0.1.4+2
   adaptive_theme: ^1.1.0
+  vibration: ^1.7.3
 
 
   # The following adds the Cupertino Icons font to your application.

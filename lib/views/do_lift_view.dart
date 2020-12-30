@@ -12,6 +12,7 @@ import 'package:home_gym/controllers/controllers.dart';
 import 'package:confetti/confetti.dart';
 import 'package:circular_countdown_timer/circular_countdown_timer.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:vibration/vibration.dart';
 
 //sagre.HomeGymTV.player
 
@@ -48,6 +49,8 @@ class _DoLiftViewState extends State<DoLiftView>
   bool doCast;
 
   bool _noDayPickedOnEntry;
+  bool hasVibration;
+  bool hasCustomVibration;
 
   //Container banner;
 
@@ -64,6 +67,11 @@ class _DoLiftViewState extends State<DoLiftView>
       elevation: 5,
       backgroundColor: Theme.of(context).snackBarTheme.backgroundColor,
     );
+  }
+
+  _vibin() async {
+    hasVibration = await Vibration.hasVibrator();
+    hasCustomVibration = await Vibration.hasCustomVibrationsSupport();
   }
 
   CircularCountDownTimer _countDownTimer({@required int seconds}) {
@@ -113,6 +121,16 @@ class _DoLiftViewState extends State<DoLiftView>
       // Function which will execute when the Countdown Ends
       onComplete: () {
         // Here, do whatever you want
+        //await _vibin();
+        if (hasVibration) {
+          if (hasCustomVibration) {
+            Vibration.vibrate(
+                pattern: [100, 100, 100, 100, 100, 100], intensities: [1, 255]);
+          } else {
+            Vibration.vibrate();
+          }
+        }
+
         print('Countdown Ended');
         startController = false;
       },
@@ -180,7 +198,7 @@ class _DoLiftViewState extends State<DoLiftView>
   /*bool _isLastExercise() {
     return homeController.justDidLastSet;
   }*/
-
+///////
   @override
   void initState() {
     super.initState();
@@ -192,6 +210,7 @@ class _DoLiftViewState extends State<DoLiftView>
     startController = false;
     // this is bad, but whatever.
     homeController.formControllerRestInterval.text = "90";
+    _vibin();
 
     //homeController.serverListen();
 
@@ -337,6 +356,7 @@ class _DoLiftViewState extends State<DoLiftView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    //Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
     //var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     //exercise = exerciseDay.exercises[exerciseDay.currentSet];
     //homeController.displayInExerciseInfo(exercise: exercise);

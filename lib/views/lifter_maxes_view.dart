@@ -130,7 +130,10 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
                   Padding(
                     padding: EdgeInsets.all(10),
                     child: Center(
-                      child: Text(Quotes().getQuote(greatnessQuote: true)),
+                      child: Text(
+                        Quotes().getQuote(greatnessQuote: true),
+                        textAlign: TextAlign.center,
+                      ),
                     ),
                   ),
                   SizedBox(
