@@ -13,6 +13,7 @@ import 'package:home_gym/views/views.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 //import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:package_info/package_info.dart';
 
 class HelpView extends StatefulWidget {
   @override
@@ -155,7 +156,8 @@ class HelpViewState extends State<HelpView> {
                 height: 10,
               ),
               RaisedButton(
-                onPressed: () {
+                onPressed: () async {
+                  PackageInfo packageInfo = await PackageInfo.fromPlatform();
                   showAboutDialog(
                       context: context,
                       children: [
@@ -200,8 +202,8 @@ class HelpViewState extends State<HelpView> {
                           ),
                         ]),
                       ],
-                      applicationVersion: "Version 0.1",
-                      applicationName: "Home Gym TV",
+                      applicationVersion: packageInfo.version,
+                      applicationName: packageInfo.appName,
                       applicationLegalese: "",
                       applicationIcon:
                           ImageIcon(AssetImage("assets/images/pos_icon.png")));
