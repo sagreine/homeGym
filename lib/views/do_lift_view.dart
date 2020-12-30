@@ -262,7 +262,9 @@ class _DoLiftViewState extends State<DoLiftView>
                                   // or check here before we let them select it..
                                   flingController.selectPlayer(context,
                                       flingy.flingDevices.elementAt(index));
-                                  doCast = true;
+                                  setState(() {
+                                    doCast = true;
+                                  });
                                   Navigator.of(context).pop();
                                 },
                               );
@@ -555,18 +557,21 @@ class _DoLiftViewState extends State<DoLiftView>
                             if (newValue && user.isNewUser) {
                               await showNewUserFlingDialog();
                             }
-                            if (newValue && flingy.selectedPlayer == null) {
+                            if (newValue) {
                               // if we don't have any fling devices, try to get one
+                              bool showPicker = false;
                               if (flingy.flingDevices == null ||
                                   flingy.flingDevices.length == 0) {
                                 await flingController.getCastDevices(context);
+                                showPicker = true;
                               }
-                              await showCastDevicePickerDialog();
-                            } else {
-                              setState(() {
-                                doCast = newValue;
-                              });
+                              if (flingy.selectedPlayer == null || showPicker) {
+                                await showCastDevicePickerDialog();
+                              }
                             }
+                            setState(() {
+                              doCast = newValue;
+                            });
                           },
                           secondary: doCast
                               ? Icon(Icons.cast_connected)
@@ -603,7 +608,10 @@ class _DoLiftViewState extends State<DoLiftView>
                                         // make any updates that are necessary, check we have a fling device, then cast
 
                                         if (doCast &&
-                                            flingy.selectedPlayer == null) {
+                                            (flingy.selectedPlayer == null ||
+                                                flingy.flingDevices == null ||
+                                                flingy.flingDevices.length ==
+                                                    0)) {
                                           await showCastDevicePickerDialog();
                                         }
 

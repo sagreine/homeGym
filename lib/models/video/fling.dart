@@ -13,6 +13,8 @@ class FlingMediaModel extends ChangeNotifier {
   String mediaCondition;
   String mediaPosition;
   HttpServer httpServer;
+  bool testyTest = false;
+  int secondTest = 1;
   // this is set once we have listened to something with our httpServer -> we only want to listen to one port, 1 time, and nothing else can listen to that port
   // in production that'd have to be a randomly selected one > 1024, not hardcoded, in case user has something there already...
   bool isListening;
@@ -23,6 +25,9 @@ class FlingMediaModel extends ChangeNotifier {
   }
 
   void removeFlingDevice(RemoteMediaPlayer remoteMediaPlayer) {
+    if (remoteMediaPlayer == selectedPlayer) {
+      selectedPlayer = null;
+    }
     flingDevices.remove(remoteMediaPlayer);
     notifyListeners();
   }

@@ -355,7 +355,7 @@ class OldVideosViewState extends State<OldVideosView> {
   // TODO: may yet be
   Future<List<ExerciseSet>> _getSearchResults(String text) async {
     getDocsInStreamBuilder = true;
-    // if search is null, we'll go get documents - might be ablet o get rid of this
+    // if search is null, we'll go get documents - might be ablet o get rid of this as i'm not sure it ever gets called.
     if (text == "") {
       search = text;
       await getDocuments(context, text);
@@ -365,7 +365,7 @@ class OldVideosViewState extends State<OldVideosView> {
     // if ths is the same search term, don't do anything.
     else if (search == text) {
     }
-    // if this is a new term, we need to repull initial values. this definitely needs to be here
+    // if this is a new term to search, we need to repull initial values. this definitely needs to be here
     else {
       search = text;
       await getDocuments(context, text);

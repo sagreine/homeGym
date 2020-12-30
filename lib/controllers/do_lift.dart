@@ -183,6 +183,7 @@ class HomeController {
     formControllerWeight.text = exercise.weight.toString();
   }
 
+  // why is this here and why aren't we try catching it or at least handling errors..
   Future cast(
       {@required BuildContext context,
       @required RemoteMediaPlayer player,
