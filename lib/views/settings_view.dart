@@ -88,6 +88,17 @@ class SettingsViewState extends State<SettingsView> {
                       title: Text("Keep screen unlocked"),
                     ),
                     SwitchListTile.adaptive(
+                      value: settings.timerVibrate ?? true,
+                      onChanged: (value) {
+                        settingsController.updateBoolVal(
+                            context: context,
+                            key: "timerVibrate",
+                            value: value);
+                      },
+                      secondary: Icon(Icons.vibration),
+                      title: Text("Vibrate at timer end"),
+                    ),
+                    SwitchListTile.adaptive(
                       value: settings.darkTheme ??
                           (widget.savedThemeMode == AdaptiveThemeMode.dark) ??
                           true,

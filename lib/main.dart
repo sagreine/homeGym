@@ -114,6 +114,7 @@ void _getSharedPrerferences(BuildContext context) async {
   settings.saveLocal = prefs.getBool("saveLocal") ?? false;
   settings.saveCloud = prefs.getBool("saveCloud") ?? true;
   settings.meanQuotes = prefs.getBool("meanQuotes") ?? true;
+  settings.timerVibrate = prefs.getBool("timerVibrate") ?? true;
   settings.updateWakeLock(prefs.getBool("wakeLock") ?? true);
 }
 

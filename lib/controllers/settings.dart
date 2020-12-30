@@ -23,6 +23,8 @@ class SettingsController {
       settings.updateSaveCloud(value);
     } else if (key == "MeanQuotes") {
       settings.updateMeanQuotes(value);
+    } else if (key == "timerVibrate") {
+      settings.updateTimerVibrate(value);
     } else if (key == "wakeLock") {
       await settings.updateWakeLock(value);
     } else if (key == "darkTheme") {

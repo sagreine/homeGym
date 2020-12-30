@@ -75,6 +75,7 @@ class _DoLiftViewState extends State<DoLiftView>
   }
 
   CircularCountDownTimer _countDownTimer({@required int seconds}) {
+    var settings = Provider.of<Settings>(context, listen: false);
     return CircularCountDownTimer(
       // Countdown duration in Seconds
       duration: seconds,
@@ -122,12 +123,15 @@ class _DoLiftViewState extends State<DoLiftView>
       onComplete: () {
         // Here, do whatever you want
         //await _vibin();
-        if (hasVibration) {
-          if (hasCustomVibration) {
-            Vibration.vibrate(
-                pattern: [100, 100, 100, 100, 100, 100], intensities: [1, 255]);
-          } else {
-            Vibration.vibrate();
+        if (settings.timerVibrate) {
+          if (hasVibration) {
+            if (hasCustomVibration) {
+              Vibration.vibrate(
+                  pattern: [100, 100, 100, 100, 100, 100],
+                  intensities: [1, 255]);
+            } else {
+              Vibration.vibrate();
+            }
           }
         }
 
@@ -210,6 +214,8 @@ class _DoLiftViewState extends State<DoLiftView>
     startController = false;
     // this is bad, but whatever.
     homeController.formControllerRestInterval.text = "90";
+    // this is stupid spaghetti code.
+
     _vibin();
 
     //homeController.serverListen();

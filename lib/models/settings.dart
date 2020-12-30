@@ -11,12 +11,14 @@ class Settings extends ChangeNotifier {
   bool meanQuotes;
   bool wakeLock;
   bool darkTheme;
+  bool timerVibrate;
 
   Settings() {
     this.saveCloud = true;
     this.saveLocal = false;
     this.meanQuotes = true;
     this.wakeLock = true;
+    this.timerVibrate = true;
     //this.darkTheme = true;
   }
   // golly this looks awfully like copying and pasting code...
@@ -44,6 +46,11 @@ class Settings extends ChangeNotifier {
   updateDarkTheme(bool value, BuildContext context) async {
     darkTheme = value;
     AdaptiveTheme.of(context).toggleThemeMode();
+    notifyListeners();
+  }
+
+  updateTimerVibrate(bool value) async {
+    timerVibrate = value;
     notifyListeners();
   }
 }
