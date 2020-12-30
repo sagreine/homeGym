@@ -85,6 +85,8 @@ class HelpViewState extends State<HelpView> {
                 text: TextSpan(
                   children: [
                     TextSpan(
+                      style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyText1.color),
                       text:
                           "To cast: First, use your phone or computer to download the free companion TV app HomeGymTV available in the Amazon App Store. For FireStick: ",
                     ),
@@ -106,6 +108,8 @@ class HelpViewState extends State<HelpView> {
                         },
                     ),
                     TextSpan(
+                      style: TextStyle(
+                          color: Theme.of(context).textTheme.bodyText1.color),
                       text:
                           " then go to settings and click Search. In the future, you should be able to select the FireStick simply by toggling the Cast button on the main lifting page.",
                     ),
@@ -119,8 +123,10 @@ class HelpViewState extends State<HelpView> {
                 text: TextSpan(
                   children: [
                     TextSpan(
-                      text: "Refer to ",
-                    ),
+                        text: "Refer to ",
+                        style: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodyText1.color)),
                     TextSpan(
                       style: TextStyle(
                           decoration: TextDecoration.underline,
@@ -138,8 +144,10 @@ class HelpViewState extends State<HelpView> {
                         },
                     ),
                     TextSpan(
-                      text: " for user manual with further instructions",
-                    ),
+                        text: " for user manual with further instructions",
+                        style: TextStyle(
+                            color:
+                                Theme.of(context).textTheme.bodyText1.color)),
                   ],
                 ),
               ),

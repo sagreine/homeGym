@@ -33,15 +33,13 @@ class _LoginViewState extends State<LoginView> {
   // this flag is to prevent the auth listener from calling twice unnecessarily - when assigned, and when changed.
   // we only want one call, and if we already have a signed in user we can avoid multiple calls.
   var authFlag;
+  bool isFirstPull;
 
-/*
   @override
   void initState() {
     super.initState();
-    _user = Provider.of<Muser>(context, listen: false);
-
     //_clearOlddata();
-  }*/
+  }
 
   @override
   void didChangeDependencies() async {
@@ -122,16 +120,21 @@ class _LoginViewState extends State<LoginView> {
 
   Scaffold buildNextPage() {
     if (_user.isNewUser) {
-      buildDefaultUser();
+      if (isFirstPull) {
+        buildDefaultUser();
+      }
       return Scaffold(
         body: Container(child: IntroScreenView()),
       );
     } else {
-      loginController.getMaxes(context);
-      loginController.getBarWeight(context);
-      loginController.getPlates(context);
-      if (_user.getPhotoURL() != null && _user.getPhotoURL().isNotEmpty) {
-        precacheImage(new NetworkImage(_user.getPhotoURL()), context);
+      if (isFirstPull) {
+        loginController.getMaxes(context);
+        loginController.getBarWeight(context);
+        loginController.getPlates(context);
+
+        if (_user.getPhotoURL() != null && _user.getPhotoURL().isNotEmpty) {
+          precacheImage(new NetworkImage(_user.getPhotoURL()), context);
+        }
       }
       return Scaffold(
         body: Container(child: PickDayView()),
@@ -141,6 +144,13 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   Widget build(BuildContext context) {
+    // because some things rebuild everything in the app (e.g. dark theme toggle)
+    // we only want to pull these things in the first time this page is 'built' for a given user
+    // but, we need to take care beacuse of user generation and etc.
+    // so, we use a user-specific item as a proxy
+    isFirstPull =
+        Provider.of<LifterWeights>(context, listen: false).barWeight == null;
+
     return authFlag
         ? buildNextPage()
         : StreamBuilder<FirebaseUser>(

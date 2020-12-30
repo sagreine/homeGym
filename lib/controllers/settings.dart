@@ -25,6 +25,10 @@ class SettingsController {
       settings.updateMeanQuotes(value);
     } else if (key == "wakeLock") {
       await settings.updateWakeLock(value);
+    } else if (key == "darkTheme") {
+      settings.updateDarkTheme(value, context);
+      // we don't manage the prefs for this one so immediately return;
+      return;
     } else {
       print("A setting was updated that doesn't exist");
     }

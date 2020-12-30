@@ -296,7 +296,7 @@ class _TimelineStepsChild extends StatelessWidget {
           leading: Text(activity.title,
               textAlign: TextAlign.left,
               style: TextStyle(
-                color: Colors.white,
+                //color: Colors.white,
                 fontWeight: FontWeight.bold,
               )),
           title: Text(
@@ -309,7 +309,7 @@ class _TimelineStepsChild extends StatelessWidget {
                       : " reps"),
               textAlign: TextAlign.left,
               style: TextStyle(
-                color: Colors.white,
+                //color: Colors.white,
                 fontWeight: FontWeight.bold,
               )),
           subtitle: Text(activity.description),

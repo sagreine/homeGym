@@ -1,3 +1,4 @@
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/settings.dart';
 import 'package:home_gym/models/models.dart';
@@ -6,6 +7,9 @@ import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 
 class SettingsView extends StatefulWidget {
+  final AdaptiveThemeMode savedThemeMode;
+  SettingsView({Key key, this.savedThemeMode}) : super(key: key);
+
   @override
   SettingsViewState createState() => SettingsViewState();
 }
@@ -69,7 +73,7 @@ class SettingsViewState extends State<SettingsView> {
                         settingsController.updateBoolVal(
                             context: context, key: "MeanQuotes", value: value);
                       },
-                      secondary: const Icon(Icons.save_alt),
+                      secondary: const Icon(Icons.format_quote),
                       title: Text("'Motivational' Quotes"),
                     ),
                     SwitchListTile.adaptive(
@@ -78,8 +82,26 @@ class SettingsViewState extends State<SettingsView> {
                         settingsController.updateBoolVal(
                             context: context, key: "wakeLock", value: value);
                       },
-                      secondary: const Icon(Icons.save_alt),
+                      secondary: settings.wakeLock
+                          ? Icon(Icons.lock_open)
+                          : Icon(Icons.lock),
                       title: Text("Keep screen unlocked"),
+                    ),
+                    SwitchListTile.adaptive(
+                      value: settings.darkTheme ??
+                          (widget.savedThemeMode == AdaptiveThemeMode.dark) ??
+                          true,
+                      onChanged: (value) {
+                        settingsController.updateBoolVal(
+                            context: context, key: "darkTheme", value: value);
+                      },
+                      secondary: settings.darkTheme ??
+                              (widget.savedThemeMode ==
+                                  AdaptiveThemeMode.dark) ??
+                              true
+                          ? Icon(Icons.brightness_low)
+                          : Icon(Icons.brightness_high),
+                      title: Text("Toggle Dark Mode"),
                     ),
                   ],
                 );

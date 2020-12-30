@@ -1,5 +1,6 @@
 // could/should save this to user prefences.... maytbe the cast device too?
 // singleton..... or just use provider
+import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:wakelock/wakelock.dart';
 
@@ -9,12 +10,14 @@ class Settings extends ChangeNotifier {
   bool saveCloud;
   bool meanQuotes;
   bool wakeLock;
+  bool darkTheme;
 
   Settings() {
     this.saveCloud = true;
     this.saveLocal = false;
     this.meanQuotes = true;
     this.wakeLock = true;
+    //this.darkTheme = true;
   }
   // golly this looks awfully like copying and pasting code...
   updateSaveLocal(bool value) {
@@ -35,6 +38,12 @@ class Settings extends ChangeNotifier {
   updateWakeLock(bool value) async {
     wakeLock = value;
     await Wakelock.toggle(on: value);
+    notifyListeners();
+  }
+
+  updateDarkTheme(bool value, BuildContext context) async {
+    darkTheme = value;
+    AdaptiveTheme.of(context).toggleThemeMode();
     notifyListeners();
   }
 }

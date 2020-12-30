@@ -21,7 +21,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart' as Foundation;
 import 'package:camera/camera.dart';
-
+import 'package:adaptive_theme/adaptive_theme.dart';
 // BLoC for each page
 // complex page-children should have their own block, parent subscribes to state changes
 
@@ -42,6 +42,8 @@ import 'package:camera/camera.dart';
 
 List<CameraDescription> cameras;
 int temp = 1;
+// this is bad practice :(
+bool firstPull;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +58,10 @@ void main() async {
       debug: Foundation
           .kDebugMode // optional: set false to disable printing logs to console
       );
+  final savedThemeMode = await AdaptiveTheme.getThemeMode();
+  // themedata will rebuild from just below here, which we don't want to do everything
+  // cuz some things are only on first pull, so not that we're not on the first pull anymore
+  firstPull = false;
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
       create: (context) => Muser(),
@@ -76,7 +82,7 @@ void main() async {
     ChangeNotifierProvider(
       create: (context) => FlingMediaModel(),
     ),
-  ], child: MyApp()));
+  ], child: MyApp(savedThemeMode: savedThemeMode)));
 }
 
 /*
@@ -133,53 +139,85 @@ void _clearOlddata() async {
 }
 
 class MyApp extends StatelessWidget {
+  // necessary to pull in the last saved theme mode at the very start
+  // technically we don't much care and could roll our own, but seems best practice
+  final AdaptiveThemeMode savedThemeMode;
+
+  const MyApp({Key key, this.savedThemeMode}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     //var day = Provider.of<ExerciseDay>(context, listen: false);
     // load all non-user-specific things async (not waiting for them) during the splash.
     // okay to be here because this is only to be built once --- if the screen goes black during splash though?
     // but this is running over and over again....? just on hot reload though actually.
-    _getInitialPull(context);
-    _serverInit(context);
-    _getSharedPrerferences(context);
-    _clearOlddata();
+    if (firstPull = true) {
+      print("doing initial pulls and setups from Main");
+      _getInitialPull(context);
+      _serverInit(context);
+      _getSharedPrerferences(context);
+      _clearOlddata();
+    }
 
     // maybe check if the user is already authorized here, and go to login if not?
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primaryColor: Color(0xFF282828), //Color.fromRGBO(109, 234, 255, 1),
-        accentColor: Color.fromRGBO(72, 74, 126, 1),
-        brightness: Brightness.dark,
-      ),
-      title: 'Home Gym',
-      initialRoute: '/',
-      routes: {
-        // When navigating to the "/" route, build the FirstScreen widget.
-        '/': (context) => SplashScreen.navigate(
-              backgroundColor: Colors.grey[850],
-              name: 'assets/flares/logo1.flr',
-              next: (context) => LoginView(),
-              until: () => Future.delayed(Duration(seconds: 2)),
-              startAnimation: 'Untitled',
-            ),
-        // When navigating to the "/second" route, build the SecondScreen widget.
-        '/login': (context) => LoginView(),
-        '/do_lift': (context) => DoLiftView(),
-        '/help': (context) => HelpView(),
-        '/lifter_maxes': (context) => LifterMaxesView(),
-        '/lifter_weights': (context) => LifterWeightsView(),
-        '/pick_day': (context) => PickDayView(),
-        '/profile': (context) => ProfileView(),
-        '/programs': (context) => ProgramsView(),
-        '/settings': (context) => SettingsView(),
-        '/intro_screen': (context) => IntroScreenView(),
-        '/excerciseday': (context) => ExcerciseDayView(),
-        "/lifter_videos": (context) => OldVideosView(),
-        //'/form_check': (context) => FormCheckView(),
-        '/form_check_copy': (context) => HomePage(cameras),
-        '/today': (context) => TodayView(),
-      },
-    );
+    return AdaptiveTheme(
+        light: ThemeData(
+          brightness: Brightness.light,
+          primarySwatch: Colors.red,
+          accentColor: Colors.amber,
+        ),
+        dark: ThemeData(
+          brightness: Brightness.dark,
+          primaryColor: Color(0xFF282828),
+          accentColor: Color.fromRGBO(72, 74, 126, 1),
+          //primarySwatch: Colors.red,
+          //accentColor: Colors.amber,
+        ),
+        initial: savedThemeMode ?? AdaptiveThemeMode.dark,
+        builder: (theme, darkTheme) {
+          /*theme: theme,
+        darkTheme: darkTheme,
+        home: MyHomePage(),*/
+
+          return MaterialApp(
+            debugShowCheckedModeBanner: false,
+            theme: theme,
+            darkTheme: darkTheme,
+            /*ThemeData(
+        //primaryColor: Color(0xFF282828), //Color.fromRGBO(109, 234, 255, 1),
+        //accentColor: Color.fromRGBO(72, 74, 126, 1),
+        //brightness: Brightness.dark,
+      ),*/
+            title: 'Home Gym',
+            initialRoute: '/',
+            routes: {
+              // When navigating to the "/" route, build the FirstScreen widget.
+              '/': (context) => SplashScreen.navigate(
+                    backgroundColor: Colors.grey[850],
+                    name: 'assets/flares/logo1.flr',
+                    next: (context) => LoginView(),
+                    until: () => Future.delayed(Duration(seconds: 2)),
+                    startAnimation: 'Untitled',
+                  ),
+              // When navigating to the "/second" route, build the SecondScreen widget.
+              '/login': (context) => LoginView(),
+              '/do_lift': (context) => DoLiftView(),
+              '/help': (context) => HelpView(),
+              '/lifter_maxes': (context) => LifterMaxesView(),
+              '/lifter_weights': (context) => LifterWeightsView(),
+              '/pick_day': (context) => PickDayView(),
+              '/profile': (context) => ProfileView(),
+              '/programs': (context) => ProgramsView(),
+              '/settings': (context) =>
+                  SettingsView(savedThemeMode: savedThemeMode),
+              '/intro_screen': (context) => IntroScreenView(),
+              '/excerciseday': (context) => ExcerciseDayView(),
+              "/lifter_videos": (context) => OldVideosView(),
+              //'/form_check': (context) => FormCheckView(),
+              '/form_check_copy': (context) => HomePage(cameras),
+              '/today': (context) => TodayView(),
+            },
+          );
+        });
   }
 }

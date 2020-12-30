@@ -81,7 +81,7 @@ class _DoLiftViewState extends State<DoLiftView>
       height: MediaQuery.of(context).size.height / 2,
 
       // Default Color for Countdown Timer
-      color: Colors.white,
+      color: Theme.of(context).textTheme.bodyText1.color,
 
       // Filling Color for Countdown Timer
       fillColor: Colors.blueGrey,
@@ -97,7 +97,9 @@ class _DoLiftViewState extends State<DoLiftView>
 
       // Text Style for Countdown Text
       textStyle: TextStyle(
-          fontSize: 22.0, color: Colors.white, fontWeight: FontWeight.bold),
+          fontSize: 22.0,
+          color: Theme.of(context).textTheme.bodyText1.color,
+          fontWeight: FontWeight.bold),
 
       // true for reverse countdown (max to 0), false for forward countdown (0 to max)
       isReverse: true,
