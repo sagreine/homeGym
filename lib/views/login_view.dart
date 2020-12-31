@@ -155,9 +155,14 @@ class _LoginViewState extends State<LoginView> {
     // we only want to pull these things in the first time this page is 'built' for a given user
     // but, we need to take care beacuse of user generation and etc.
     // so, we use a user-specific item as a proxy
+
+    // note that this is null on startup or rebuild othr than from logout, but there's no guarantee of that
+    bool isFromLogoutPress = ModalRoute.of(context).settings.arguments;
+
     isFirstPull =
-        Provider.of<LifterWeights>(context, listen: false).squatBarWeight ==
-            null;
+        (Provider.of<LifterWeights>(context, listen: false).squatBarWeight ==
+                null ||
+            isFromLogoutPress);
 
     return authFlag
         ? buildNextPage()
