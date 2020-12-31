@@ -22,6 +22,8 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
   // should these go in the Settingscontroller probably then...
   LifterMaxesController lifterMaxesController = LifterMaxesController();
   ScreenshotController screenshotController = ScreenshotController();
+  TextEditingController formControllerReps = TextEditingController();
+  TextEditingController formControllerWeight = TextEditingController();
 
 //  File _imageFile;
 
@@ -145,47 +147,101 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
             builder: (context, user, child) {
               return Visibility(
                   visible: user.isNewUser,
-                  child: Column(
-                    children: [
-                      RichText(
-                        text: TextSpan(
+                  child: Padding(
+                      padding: EdgeInsets.only(left: 25, right: 20),
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            TextSpan(
-                              text:
-                                  "If you don't know how to calculate this, start at a weight you know you can get 10 times. Get 5 reps and add 10 pounds. Continue until you can't get 5 strong, fast reps, then put that weight into a calculator such as ",
+                            Text(
+                              "To calculate a one rep max, start at a weight you know you can get 10 times. Get 5 reps and add 10 pounds. Repeat until you can't get 5 strong, fast reps, then complete the calculator below",
                             ),
-                            TextSpan(
-                              style: TextStyle(
-                                  decoration: TextDecoration.underline,
-                                  color: Colors.blue),
-                              text: "this one ",
-                              recognizer: TapGestureRecognizer()
-                                ..onTap = () async {
-                                  final url =
-                                      'https://exrx.net/Calculators/OneRepMax ';
-                                  if (await canLaunch(url)) {
-                                    await launch(
-                                      url,
-                                      forceSafariVC: false,
-                                    );
-                                  }
-                                },
+                            SizedBox(
+                              height: 10,
                             ),
-                          ],
-                        ),
-                      ),
-                      SizedBox(
-                        height: 10,
-                      ),
-                      RaisedButton(
-                          splashColor: Colors.green[600],
-                          elevation: 4,
-                          color: Colors.green[800],
-                          onPressed: () =>
-                              Navigator.pushNamed(context, "/lifter_weights"),
-                          child: Text("Now set the weights you own"))
-                    ],
-                  ));
+                            Consumer<LifterMaxes>(
+                                builder: (context, lifterMax, child) {
+                              /*if (lifterMax.calculatedMax == null) {
+                                lifterMax.calculatorReps = 0;
+                                lifterMax.calculatorWeight = 0;
+                              }*/
+                              return Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Expanded(
+                                      child: TextFormField(
+                                        decoration: new InputDecoration(
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Colors.greenAccent,
+                                                width: 1.0,
+                                                style: BorderStyle.solid,
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.blueGrey,
+                                                  width: 1.0),
+                                            ),
+                                            labelText: "Reps"),
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: <TextInputFormatter>[
+                                          WhitelistingTextInputFormatter
+                                              .digitsOnly,
+                                        ],
+                                        onChanged: (value) =>
+                                            lifterMax.calculatorReps =
+                                                int.tryParse(value),
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: TextFormField(
+                                        decoration: new InputDecoration(
+                                            focusedBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                color: Colors.greenAccent,
+                                                width: 1.0,
+                                                style: BorderStyle.solid,
+                                              ),
+                                            ),
+                                            enabledBorder: OutlineInputBorder(
+                                              borderSide: BorderSide(
+                                                  color: Colors.blueGrey,
+                                                  width: 1.0),
+                                            ),
+                                            labelText: "weight"),
+                                        keyboardType: TextInputType.number,
+                                        inputFormatters: <TextInputFormatter>[
+                                          WhitelistingTextInputFormatter
+                                              .digitsOnly,
+                                        ],
+                                        onChanged: (value) =>
+                                            lifterMax.calculatorWeight =
+                                                int.tryParse(value),
+                                        controller: formControllerReps,
+                                      ),
+                                    ),
+                                    SizedBox(
+                                      width: 8,
+                                    ),
+                                    Expanded(
+                                      child: Text(
+                                          //"75"),
+                                          "One rep max: ${lifterMax.calculatedMax ?? ''}"),
+                                    ),
+                                  ]);
+                            }),
+                            SizedBox(
+                              height: 10,
+                            ),
+                            RaisedButton(
+                                splashColor: Colors.green[600],
+                                elevation: 4,
+                                color: Colors.green[800],
+                                onPressed: () => Navigator.pushNamed(
+                                    context, "/lifter_weights"),
+                                child: Text("Now set the weights you own"))
+                          ])));
             },
           ),
         ]),

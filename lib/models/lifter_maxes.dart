@@ -9,6 +9,47 @@ class LifterMaxes extends ChangeNotifier {
   int benchMax;
   int pressMax;
   int _total;
+  int _calculatorReps;
+  int _calculatorWeight;
+  int calculatedMax;
+
+  set calculatorReps(newValue) {
+    //if (newValue != null) {
+    _calculatorReps = newValue;
+    //}
+
+    calculateMax();
+    notifyListeners();
+  }
+
+  set calculatorWeight(newValue) {
+    //if (newValue != null) {
+    _calculatorWeight = newValue;
+    //} else {}
+    calculateMax();
+    notifyListeners();
+  }
+
+  calculateMax() {
+    if (_calculatorReps != null &&
+        _calculatorReps > 0 &&
+        _calculatorWeight != null &&
+        _calculatorWeight > 0) {
+      var tmp = _calculatorWeight * (1 + _calculatorReps / 40);
+      calculatedMax = tmp.toInt();
+    } else {
+      calculatedMax = null;
+    }
+    notifyListeners();
+  }
+
+  /*get calculatedMax {
+    //if ((_calculatorReps ?? 0 > 0) && (_calculatorWeight ?? 0 > 0)) {
+    calculateMax();
+    return _calculatedMax;
+    //}
+  }*/
+
   int get total =>
       _total ??
       (deadliftMax ?? 0) + (squatMax ?? 0) + (benchMax ?? 0) + (pressMax ?? 0);
