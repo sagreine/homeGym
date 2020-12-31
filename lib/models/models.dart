@@ -7,3 +7,4 @@ export 'package:home_gym/models/muser.dart';
 export 'package:home_gym/models/programs.dart';
 export 'package:home_gym/models/settings.dart';
 export 'package:home_gym/models/greatness_quotes.dart';
+export 'package:home_gym/models/old_videos.dart';

@@ -2,6 +2,7 @@
 //import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:io';
 
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flare_splash_screen/flare_splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
@@ -62,6 +63,9 @@ void main() async {
   // themedata will rebuild from just below here, which we don't want to do everything
   // cuz some things are only on first pull, so not that we're not on the first pull anymore
   firstPull = false;
+  Admob.initialize();
+  //Admob.initialize(testDeviceIds: ['54ce071a-af3d-401e-8ee4-e5b7507bd021']);
+  //Admob.initialize(testDeviceIds: ['C3484AC7A3D0D8EA2FB46B94EE1F98A5']);
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
       create: (context) => Muser(),
@@ -78,6 +82,9 @@ void main() async {
     ),
     ChangeNotifierProvider(
       create: (context) => Programs(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => OldVideos(),
     ),
     ChangeNotifierProvider(
       create: (context) => FlingMediaModel(),

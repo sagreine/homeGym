@@ -12,6 +12,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:transparent_image/transparent_image.dart';
 import 'package:social_share_plugin/social_share_plugin.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
+import 'package:admob_flutter/admob_flutter.dart';
 
 class OldVideosView extends StatefulWidget {
   @override
@@ -19,6 +20,7 @@ class OldVideosView extends StatefulWidget {
 }
 
 class OldVideosViewState extends State<OldVideosView> {
+  // sooo a lot of this should be in the modell....
   List<ExerciseSet> _videos; // = ;
   var scrollController = ScrollController();
   var _streamController = StreamController<List<ExerciseSet>>.broadcast();
@@ -31,12 +33,83 @@ class OldVideosViewState extends State<OldVideosView> {
   bool getDocsInStreamBuilder;
   final SearchBarController<ExerciseSet> _searchBarController =
       SearchBarController();
+  AdmobBannerSize bannerSize;
+  AdmobInterstitial interstitialAd;
+  AdmobReward rewardAd;
 
   @override
   void dispose() {
     super.dispose();
     scrollController.dispose();
+    interstitialAd.dispose();
     //_streamController.close();
+  }
+
+  Future<void> _loadAdMobReward() {
+    rewardAd = new AdmobReward(
+      adUnitId: getRewardBasedVideoAdUnitId(),
+      listener: (
+        AdmobAdEvent event,
+        Map<String, dynamic> args,
+      ) {
+        //args["videoInex"] = selectedItemToPlay;
+        if (event == AdmobAdEvent.closed) {
+          rewardAd.load();
+        }
+        handleEvent(event, args, 'Reward');
+      },
+    );
+    Future.delayed(Duration(seconds: 1)).then((value) {
+      rewardAd.load();
+      return;
+    });
+  }
+
+  void handleEvent(
+      AdmobAdEvent event, Map<String, dynamic> args, String adType) {
+    switch (event) {
+      case AdmobAdEvent.loaded:
+        print('New Admob $adType Ad loaded!');
+        break;
+      case AdmobAdEvent.opened:
+        print('Admob $adType Ad opened!');
+        //adOpen = true;
+        break;
+      case AdmobAdEvent.closed:
+        print('Admob $adType Ad closed!');
+        //adOpen = false;
+        return;
+        break;
+      case AdmobAdEvent.failedToLoad:
+        print('Admob $adType failed to load. :(');
+        break;
+
+      case AdmobAdEvent.rewarded:
+        //var abc = args["type"];
+        print("ad has stopped playing");
+        // necessary to remove this from the screen - navigator.pop and navigator.push don't do this for us unfortunately
+        // but this removes from the tree permanently and could be a source of our errors - it is not!
+        rewardAd.dispose();
+        // this we won't wait for. it is for the next video they click on
+        _loadAdMobReward();
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) {
+              return Player(
+                video: Provider.of<OldVideos>(context, listen: false).video,
+                // for some reason if you get a new item in via stream, this is still hardcoded to 0 instead
+                // of going out and getting the most up to date value for it..
+                //video: _videos[getIndex()], //_videos[selectedItemToPlay],
+              );
+            },
+          ),
+        );
+
+        break;
+      default:
+    }
   }
 
   // listen to newly added items - this might be stupid because of where it puts it in the array...
@@ -82,6 +155,18 @@ class OldVideosViewState extends State<OldVideosView> {
     });
   }
 
+  String getBannerAdUnitId() {
+    return 'ca-app-pub-3940256099942544/6300978111';
+  }
+
+  String getInterstitialAdUnitId() {
+    return 'ca-app-pub-3940256099942544/1033173712';
+  }
+
+  String getRewardBasedVideoAdUnitId() {
+    return 'ca-app-pub-3940256099942544/5224354917';
+  }
+
   @override
   void initState() {
     super.initState();
@@ -99,6 +184,31 @@ class OldVideosViewState extends State<OldVideosView> {
         }
       }
     });
+    interstitialAd = AdmobInterstitial(
+      adUnitId: getInterstitialAdUnitId(),
+      listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+        if (event == AdmobAdEvent.closed) interstitialAd.load();
+        handleEvent(event, args, 'Interstitial');
+      },
+    );
+    //TODO replace copy and pasted code
+    rewardAd = AdmobReward(
+      adUnitId: getRewardBasedVideoAdUnitId(),
+      listener: (
+        AdmobAdEvent event,
+        Map<String, dynamic> args,
+      ) {
+        //args["videoInex"] = selectedItemToPlay;
+        if (event == AdmobAdEvent.closed) {
+          rewardAd.load();
+        }
+        handleEvent(event, args, 'Reward');
+      },
+    );
+
+    interstitialAd.load();
+    rewardAd.load();
+    bannerSize = AdmobBannerSize.MEDIUM_RECTANGLE;
   }
 
   Container _shareBox(ExerciseSet video) {
@@ -188,32 +298,72 @@ class OldVideosViewState extends State<OldVideosView> {
     );
   }
 
-  _buildListItem(ExerciseSet video) {
+  _buildListItem(ExerciseSet video, int index) {
     if (video.videoPath == null) {
-      return Card(
-          child: new Container(
-              padding: new EdgeInsets.all(10.0),
-              child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Container(
-                      width: 80,
-                    ),
-                    _shareBox(video),
-                  ])));
+      if (index != 0 && index % 6 == 0) {
+        return Column(
+          children: <Widget>[
+            Container(
+              margin: EdgeInsets.only(bottom: 20.0),
+              child: AdmobBanner(
+                adUnitId: getBannerAdUnitId(),
+                adSize: bannerSize,
+                listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+                  handleEvent(event, args, 'Banner');
+                },
+                onBannerCreated: (AdmobBannerController controller) {
+                  // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
+                  // Normally you don't need to worry about disposing this yourself, it's handled.
+                  // If you need direct access to dispose, this is your guy!
+                  // controller.dispose();
+                },
+              ),
+            ),
+            Card(
+                child: new Container(
+                    padding: new EdgeInsets.all(10.0),
+                    child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: <Widget>[
+                          Container(
+                            width: 80,
+                          ),
+                          _shareBox(video),
+                        ])))
+          ],
+        );
+      } else {
+        return Card(
+            child: new Container(
+                padding: new EdgeInsets.all(10.0),
+                child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        width: 80,
+                      ),
+                      _shareBox(video),
+                    ])));
+      }
     } else {
       return GestureDetector(
-        onTap: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) {
-                return Player(
-                  video: video,
-                );
-              },
-            ),
-          );
+        onTap: () async {
+          // load up the video. CANT rely on the index here, do it directly
+          Provider.of<OldVideos>(context, listen: false).video = video;
+          if (await rewardAd.isLoaded) {
+            rewardAd.show();
+          } else {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) {
+                  return Player(
+                    video: video,
+                  );
+                },
+              ),
+            );
+          }
         },
         child: Card(
           child: new Container(
@@ -275,7 +425,7 @@ class OldVideosViewState extends State<OldVideosView> {
                   controller: scrollController,
                   itemCount: snapshot.data.length,
                   itemBuilder: (context, index) {
-                    return _buildListItem(_videos[index]);
+                    return _buildListItem(_videos[index], index);
                   });
           }
         });
@@ -428,7 +578,7 @@ class OldVideosViewState extends State<OldVideosView> {
                   mainAxisSpacing: 10,
                   crossAxisSpacing: 10,
                   onItemFound: (exercise, int index) {
-                    return _buildListItem(exercise);
+                    return _buildListItem(exercise, index);
                   },
                 ),
               )),
@@ -439,9 +589,12 @@ class OldVideosViewState extends State<OldVideosView> {
 }
 
 class Player extends StatefulWidget {
-  final ExerciseSet video;
+  ExerciseSet video;
+  //final List<ExerciseSet> videos;
 
-  const Player({Key key, this.video}) : super(key: key);
+  //final AdmobReward rewardAd;
+  /*getIndex()*/
+  Player({Key key, /*this.videos, this.index,*/ this.video}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _PlayerState();

@@ -14,6 +14,11 @@ xmlns:tools="http://schemas.android.com/tools"
         android:label="GymTV"
         android:icon="@mipmap/ic_launcher"
         android:usesCleartextTraffic="true">
+                      <meta-data 
+                android:name="com.google.android.gms.ads.APPLICATION_ID"
+                android:value="ca-app-pub-3940256099942544~3347511713"
+              
+              />
         
         <activity
             android:name=".MainActivity"
@@ -39,6 +44,8 @@ xmlns:tools="http://schemas.android.com/tools"
               android:name="io.flutter.embedding.android.SplashScreenDrawable"
               android:resource="@drawable/launch_background"
               />
+              <!-- ca-app-pub-6946458461924831~5512430957 -->
+
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
