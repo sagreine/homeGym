@@ -84,7 +84,14 @@ class _LoginViewState extends State<LoginView> {
         newMax: 90,
         updateCloud: true);
 // default bar weight of 45
-    lifterWeightsController.updateBarWeight(context, 45);
+    lifterWeightsController.updateBarWeight(
+        context: context, newBarWeight: 45, lift: "Squat");
+    lifterWeightsController.updateBarWeight(
+        context: context, newBarWeight: 45, lift: "Press");
+    lifterWeightsController.updateBarWeight(
+        context: context, newBarWeight: 45, lift: "Deadlift");
+    lifterWeightsController.updateBarWeight(
+        context: context, newBarWeight: 45, lift: "Bench");
 // TODO: this whole process goes like:
 // 1) sets it to a values in the cloud
 // 2) updates local with that new value (from null)
@@ -129,7 +136,7 @@ class _LoginViewState extends State<LoginView> {
     } else {
       if (isFirstPull) {
         loginController.getMaxes(context);
-        loginController.getBarWeight(context);
+        loginController.getBarWeights(context);
         loginController.getPlates(context);
 
         if (_user.getPhotoURL() != null && _user.getPhotoURL().isNotEmpty) {
@@ -149,7 +156,8 @@ class _LoginViewState extends State<LoginView> {
     // but, we need to take care beacuse of user generation and etc.
     // so, we use a user-specific item as a proxy
     isFirstPull =
-        Provider.of<LifterWeights>(context, listen: false).barWeight == null;
+        Provider.of<LifterWeights>(context, listen: false).squatBarWeight ==
+            null;
 
     return authFlag
         ? buildNextPage()

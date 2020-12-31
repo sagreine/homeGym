@@ -4,12 +4,28 @@ import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 
 class LoginController {
-  void getBarWeight(BuildContext context) async {
+  void getBarWeights(BuildContext context) async {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
 
-    liftweights
-        .updateBarWeight(await getBarWeightCloud(userID: user.fAuthUser.uid));
+    liftweights.updateBarWeight(
+        newWeight:
+            await getBarWeightCloud(userID: user.fAuthUser.uid, lift: "Press"),
+        lift: "Press");
+
+    liftweights.updateBarWeight(
+        newWeight:
+            await getBarWeightCloud(userID: user.fAuthUser.uid, lift: "Squat"),
+        lift: "Squat");
+
+    liftweights.updateBarWeight(
+        newWeight: await getBarWeightCloud(
+            userID: user.fAuthUser.uid, lift: "Deadlift"),
+        lift: "Deadlift");
+    liftweights.updateBarWeight(
+        newWeight:
+            await getBarWeightCloud(userID: user.fAuthUser.uid, lift: "Bench"),
+        lift: "Bench");
   }
 
   void getMaxes(BuildContext context) async {

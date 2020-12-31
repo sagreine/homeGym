@@ -29,6 +29,55 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
   //SettingsController settingsController = SettingsController();
   LifterWeightsController lifterWeightsController = LifterWeightsController();
 
+  _barWeightWidget(LifterWeights lifterweights, String lift) {
+    var barweight;
+    switch (lift) {
+      case "Squat":
+        barweight = lifterweights.squatBarWeight;
+        break;
+      case "Deadlift":
+        barweight = lifterweights.deadliftBarWeight;
+        break;
+      case "Press":
+        barweight = lifterweights.pressBarWeight;
+        break;
+      case "Bench":
+        barweight = lifterweights.benchBarWeight;
+        break;
+      default:
+    }
+
+    return TextField(
+      decoration: new InputDecoration(
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.greenAccent,
+            width: 1.0,
+            style: BorderStyle.solid,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.blueGrey, width: 1.0),
+        ),
+        labelText: barweight == null
+            ? "Enter Your $lift Bar's weight"
+            : "Edit Your $lift Bar's weight",
+      ),
+
+      //_allowedSore.toString()),
+      keyboardType: TextInputType.number,
+      inputFormatters: <TextInputFormatter>[
+        WhitelistingTextInputFormatter.digitsOnly,
+      ],
+      controller: TextEditingController.fromValue(
+          TextEditingValue(text: barweight.toString())),
+      onSubmitted: (String value) {
+        lifterWeightsController.updateBarWeight(
+            context: context, newBarWeight: int.parse(value), lift: lift);
+      },
+    ); //..controller().text = barweight.toString();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,7 +104,7 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                   height: 10,
                 ),
                 Text(
-                  "Bar weight",
+                  "Your Bar weights",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                 ),
                 Padding(
@@ -76,40 +125,21 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                       platesAsList.sort((b, a) => a.compareTo(b));
                     }
 // set the bar weight initially.
-                    lifterWeightsController.barWeightTextController.text =
+                    /*lifterWeightsController.barWeightTextController.text =
                         lifterweights.barWeight != null
                             ? lifterweights.barWeight.toString()
-                            : "";
+                            : "";*/
                     return Column(children: <Widget>[
-                      TextField(
-                        decoration: new InputDecoration(
-                          focusedBorder: OutlineInputBorder(
-                            borderSide: BorderSide(
-                              color: Colors.greenAccent,
-                              width: 1.0,
-                              style: BorderStyle.solid,
-                            ),
-                          ),
-                          enabledBorder: OutlineInputBorder(
-                            borderSide:
-                                BorderSide(color: Colors.blueGrey, width: 1.0),
-                          ),
-                          labelText: lifterweights.barWeight == null
-                              ? "Enter Your Bar's weight"
-                              : "Edit Your Bar's weight",
-                        ),
-                        //_allowedSore.toString()),
-                        keyboardType: TextInputType.number,
-                        inputFormatters: <TextInputFormatter>[
-                          WhitelistingTextInputFormatter.digitsOnly,
-                        ],
-                        controller:
-                            lifterWeightsController.barWeightTextController,
-                        onSubmitted: (String value) {
-                          lifterWeightsController.updateBarWeight(
-                              context, int.parse(value));
-                        },
+                      _barWeightWidget(
+                        lifterweights,
+                        "Squat",
                       ),
+                      SizedBox(height: 4),
+                      _barWeightWidget(lifterweights, "Press"),
+                      SizedBox(height: 4),
+                      _barWeightWidget(lifterweights, "Deadlift"),
+                      SizedBox(height: 4),
+                      _barWeightWidget(lifterweights, "Bench"),
                       SizedBox(height: 12),
                       Divider(
                         height: 10,

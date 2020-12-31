@@ -30,11 +30,16 @@ class LifterWeightsController {
     //}
   }
 
-  void updateBarWeight(BuildContext context, int newBarWeight) {
+  void updateBarWeight(
+      {@required BuildContext context,
+      @required int newBarWeight,
+      @required String lift}) {
     var liftweights = Provider.of<LifterWeights>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
-    liftweights.updateBarWeight(newBarWeight);
-    updateBarWeightCloud(newWeight: newBarWeight, userID: user.fAuthUser.uid);
+
+    liftweights.updateBarWeight(newWeight: newBarWeight, lift: lift);
+    updateBarWeightCloud(
+        newWeight: newBarWeight, userID: user.fAuthUser.uid, lift: lift);
   }
 
   //String pickPlates({BuildContext context, int targetWeight}) {

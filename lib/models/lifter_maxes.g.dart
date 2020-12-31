@@ -12,7 +12,7 @@ LifterMaxes _$LifterMaxesFromJson(Map<String, dynamic> json) {
     squatMax: json['squatMax'] as int,
     benchMax: json['benchMax'] as int,
     pressMax: json['pressMax'] as int,
-  );
+  )..calculatedMax = json['calculatedMax'] as int;
 }
 
 Map<String, dynamic> _$LifterMaxesToJson(LifterMaxes instance) =>
@@ -21,4 +21,5 @@ Map<String, dynamic> _$LifterMaxesToJson(LifterMaxes instance) =>
       'squatMax': instance.squatMax,
       'benchMax': instance.benchMax,
       'pressMax': instance.pressMax,
+      'calculatedMax': instance.calculatedMax,
     };

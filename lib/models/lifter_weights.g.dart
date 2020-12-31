@@ -8,7 +8,10 @@ part of 'lifter_weights.dart';
 
 LifterWeights _$LifterWeightsFromJson(Map<String, dynamic> json) {
   return LifterWeights(
-    barWeight: json['barWeight'] as int,
+    squatBarWeight: json['squatBarWeight'] as int,
+    deadliftBarWeight: json['deadliftBarWeight'] as int,
+    pressBarWeight: json['pressBarWeight'] as int,
+    benchBarWeight: json['benchBarWeight'] as int,
     plates: (json['plates'] as Map<String, dynamic>)?.map(
       (k, e) => MapEntry(k, e as int),
     ),
@@ -22,7 +25,10 @@ LifterWeights _$LifterWeightsFromJson(Map<String, dynamic> json) {
 
 Map<String, dynamic> _$LifterWeightsToJson(LifterWeights instance) =>
     <String, dynamic>{
-      'barWeight': instance.barWeight,
+      'squatBarWeight': instance.squatBarWeight,
+      'deadliftBarWeight': instance.deadliftBarWeight,
+      'pressBarWeight': instance.pressBarWeight,
+      'benchBarWeight': instance.benchBarWeight,
       'plates': instance.plates,
       'bumpers': instance.bumpers,
       'deadliftWeightAdjustmentPrefix': instance.deadliftWeightAdjustmentPrefix,

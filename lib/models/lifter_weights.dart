@@ -6,16 +6,40 @@ part 'lifter_weights.g.dart';
 @JsonSerializable()
 //@CustomDoubleConverter()
 class LifterWeights extends ChangeNotifier {
-  int barWeight;
+  int squatBarWeight;
+  int deadliftBarWeight;
+  int pressBarWeight;
+  int benchBarWeight;
   Map<dynamic, int> plates;
   PlateFinder _plateFinder;
   bool bumpers;
 
-  LifterWeights({this.barWeight, this.plates, this.bumpers});
+  LifterWeights(
+      {this.squatBarWeight,
+      this.deadliftBarWeight,
+      this.pressBarWeight,
+      this.benchBarWeight,
+      this.plates,
+      this.bumpers});
 
-  void updateBarWeight(int newWeight) {
-    barWeight = newWeight;
-    print("new bar weight: ${barWeight.toString()}");
+  void updateBarWeight({@required int newWeight, @required String lift}) {
+    //TODO: this is bad but also stop redefining it across the app
+    switch (lift) {
+      case "Squat":
+        squatBarWeight = newWeight;
+        break;
+      case "Deadlift":
+        deadliftBarWeight = newWeight;
+        break;
+      case "Press":
+        pressBarWeight = newWeight;
+        break;
+      case "Bench":
+        benchBarWeight = newWeight;
+        break;
+      default:
+    }
+    print("new $lift bar weight: ${newWeight.toString()}");
     notifyListeners();
   }
 
@@ -53,7 +77,25 @@ class LifterWeights extends ChangeNotifier {
   String deadliftWeightAdjustmentSuffix = "";
 
   void _calculatePlates({int targetWeight, @required String lift}) {
-    double oneSidePlateWeight = (targetWeight - barWeight) / 2;
+    // TODO: expose this as a function getBarWeight(lift);
+    var barweight;
+    switch (lift) {
+      case "Squat":
+        barweight = squatBarWeight;
+        break;
+      case "Deadlift":
+        barweight = deadliftBarWeight;
+        break;
+      case "Press":
+        barweight = pressBarWeight;
+        break;
+      case "Bench":
+        barweight = benchBarWeight;
+        break;
+      default:
+    }
+
+    double oneSidePlateWeight = (targetWeight - barweight) / 2;
     //Map<dynamic, int> _plates = new Map<dynamic, int>.from(plates);
     //deadliftWeightAdjustmentPrefix = "";
     deadliftWeightAdjustmentSuffix = "";
@@ -109,13 +151,32 @@ class LifterWeights extends ChangeNotifier {
   }
 
   double getPickedOverallTotal({int targetWeight, @required String lift}) {
+    var barweight;
+    switch (lift) {
+      case "Squat":
+        barweight = squatBarWeight;
+        break;
+      case "Deadlift":
+        barweight = deadliftBarWeight;
+        break;
+      case "Press":
+        barweight = pressBarWeight;
+        break;
+      case "Bench":
+        barweight = benchBarWeight;
+        break;
+      default:
+    }
     _calculatePlates(targetWeight: targetWeight, lift: lift);
     return getPickedPlatesTotal(targetWeight: targetWeight, lift: lift) * 2 +
-        barWeight;
+        barweight;
   }
 
   List<Object> get props => [
-        barWeight,
+        squatBarWeight,
+        deadliftBarWeight,
+        pressBarWeight,
+        benchBarWeight,
         plates,
         bumpers,
       ];

@@ -66,7 +66,9 @@ Future<List<PickedProgram>> getPrograms() async {
 }
 
 void updateBarWeightCloud(
-    {@required int newWeight, @required String userID}) async {
+    {@required int newWeight,
+    @required String userID,
+    @required String lift}) async {
   final databaseReference = FirebaseFirestore.instance;
   Map data = Map<String, dynamic>();
   data["weight"] = newWeight;
@@ -75,7 +77,7 @@ void updateBarWeightCloud(
       .collection("USERDATA")
       .doc(userID)
       .collection("AVAILABLE_WEIGHTS")
-      .doc("bar")
+      .doc("$lift" + "Bar")
       .set(data);
 }
 
@@ -150,12 +152,14 @@ Future<String> uploadToCloudStorage(
   return null;
 }
 
-Future<int> getBarWeightCloud({@required String userID}) async {
+Future<int> getBarWeightCloud(
+    {@required String userID, @required String lift}) async {
+  String docname = lift + "Bar";
   DocumentSnapshot barWeight = await FirebaseFirestore.instance
       .collection("USERDATA")
       .doc(userID)
       .collection('AVAILABLE_WEIGHTS')
-      .doc("bar")
+      .doc(docname)
       .get()
       .catchError((onError) {
     print("Could not retrieve users' bar weight. Returning 45 by default");
@@ -252,7 +256,7 @@ void getPlatesCloud({@required context, @required String userID}) async {
       .get();
 
   plates.docs.forEach((result) {
-    if (result.id != "bar" && result.id != "bumpers") {
+    if (!result.id.contains("Bar") && result.id != "bumpers") {
       print("Plate pulled: ${result.id}" +
           "Count of plates: ${result.data()["count"]}");
       lifterWeightsController.updatePlate(
