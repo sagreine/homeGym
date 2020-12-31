@@ -176,11 +176,6 @@ class _PickDayViewState extends State<PickDayView> {
                 },
               ),
             ),
-
-          //SizedBox(            height: 10,          ),
-          //Expanded(
-          //flex: 1,
-          //child:
           TextFormField(
             controller: pickDayController.programController,
             decoration: new InputDecoration(

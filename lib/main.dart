@@ -63,9 +63,9 @@ void main() async {
   // themedata will rebuild from just below here, which we don't want to do everything
   // cuz some things are only on first pull, so not that we're not on the first pull anymore
   firstPull = false;
-  Admob.initialize();
+  //Admob.initialize();
   //Admob.initialize(testDeviceIds: ['54ce071a-af3d-401e-8ee4-e5b7507bd021']);
-  //Admob.initialize(testDeviceIds: ['C3484AC7A3D0D8EA2FB46B94EE1F98A5']);
+  Admob.initialize(testDeviceIds: ['C3484AC7A3D0D8EA2FB46B94EE1F98A5']);
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
       create: (context) => Muser(),
