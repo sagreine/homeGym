@@ -53,6 +53,8 @@ class _DoLiftViewState extends State<DoLiftView>
   bool hasVibration;
   bool hasCustomVibration;
 
+  AdmobBannerSize bannerSize;
+
   //Container banner;
 
   SnackBar _lastSetShareSnackBar() {
@@ -218,7 +220,8 @@ class _DoLiftViewState extends State<DoLiftView>
     // this is stupid spaghetti code.
 
     _vibin();
-    Admob.requestTrackingAuthorization();
+    bannerSize = AdmobBannerSize.MEDIUM_RECTANGLE;
+    //Admob.requestTrackingAuthorization();
 
     //homeController.serverListen();
 

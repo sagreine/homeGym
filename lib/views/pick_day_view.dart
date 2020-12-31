@@ -1,6 +1,9 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
+import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
+import 'package:provider/provider.dart';
 
 class PickDayView extends StatefulWidget {
   @override
@@ -9,6 +12,7 @@ class PickDayView extends StatefulWidget {
 
 class _PickDayViewState extends State<PickDayView> {
   PickDayController pickDayController = PickDayController();
+  AdmobBannerSize bannerSize = AdmobBannerSize.LARGE_BANNER;
 
   @override
   Widget build(BuildContext context) {
@@ -154,6 +158,25 @@ class _PickDayViewState extends State<PickDayView> {
               }),
             ),
           ),
+          if (MediaQuery.of(context).orientation == Orientation.portrait)
+            Container(
+              margin: EdgeInsets.only(bottom: 80.0),
+              child: AdmobBanner(
+                adUnitId: Provider.of<OldVideos>(context, listen: false)
+                    .getBannerAdUnitId(),
+                adSize: bannerSize,
+                /* listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+                  handleEvent(event, args, 'Banner');
+                },*/
+                onBannerCreated: (AdmobBannerController controller) {
+                  // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
+                  // Normally you don't need to worry about disposing this yourself, it's handled.
+                  // If you need direct access to dispose, this is your guy!
+                  // controller.dispose();
+                },
+              ),
+            ),
+
           //SizedBox(            height: 10,          ),
           //Expanded(
           //flex: 1,
@@ -184,6 +207,7 @@ class _PickDayViewState extends State<PickDayView> {
             },
           ),
           SizedBox(height: 10),
+
           //),
           //SizedBox(height: 10),
           //Expanded(

@@ -1,3 +1,4 @@
+import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:home_gym/models/models.dart';
@@ -11,6 +12,13 @@ class ExcerciseDayView extends StatefulWidget {
 
 class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   ExerciseDay thisDay;
+  AdmobBannerSize bannerSize;
+
+  @override
+  void initState() {
+    super.initState();
+    bannerSize = AdmobBannerSize.FULL_BANNER;
+  }
 
   Widget _pickChild({
     @required int index,
@@ -229,6 +237,25 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                         ),
                                       ),
                             ],
+                          ),
+                        ),
+                        Container(
+                          margin: EdgeInsets.only(bottom: 20.0),
+                          child: AdmobBanner(
+                            adUnitId:
+                                Provider.of<OldVideos>(context, listen: false)
+                                    .getBannerAdUnitId(),
+                            adSize: bannerSize,
+                            /* listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+                  handleEvent(event, args, 'Banner');
+                },*/
+                            onBannerCreated:
+                                (AdmobBannerController controller) {
+                              // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
+                              // Normally you don't need to worry about disposing this yourself, it's handled.
+                              // If you need direct access to dispose, this is your guy!
+                              // controller.dispose();
+                            },
                           ),
                         ),
                       ],

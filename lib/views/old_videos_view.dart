@@ -47,7 +47,8 @@ class OldVideosViewState extends State<OldVideosView> {
 
   Future<void> _loadAdMobReward() {
     rewardAd = new AdmobReward(
-      adUnitId: getRewardBasedVideoAdUnitId(),
+      adUnitId: Provider.of<OldVideos>(context, listen: false)
+          .getRewardBasedVideoAdUnitId(),
       listener: (
         AdmobAdEvent event,
         Map<String, dynamic> args,
@@ -155,21 +156,10 @@ class OldVideosViewState extends State<OldVideosView> {
     });
   }
 
-  String getBannerAdUnitId() {
-    return 'ca-app-pub-3940256099942544/6300978111';
-  }
-
-  String getInterstitialAdUnitId() {
-    return 'ca-app-pub-3940256099942544/1033173712';
-  }
-
-  String getRewardBasedVideoAdUnitId() {
-    return 'ca-app-pub-3940256099942544/5224354917';
-  }
-
   @override
   void initState() {
     super.initState();
+    var model = Provider.of<OldVideos>(context, listen: false);
     // set up the non-search scroll listner to paginate
     scrollController.addListener(() {
       if (scrollController.position.atEdge) {
@@ -185,7 +175,7 @@ class OldVideosViewState extends State<OldVideosView> {
       }
     });
     interstitialAd = AdmobInterstitial(
-      adUnitId: getInterstitialAdUnitId(),
+      adUnitId: model.getInterstitialAdUnitId(),
       listener: (AdmobAdEvent event, Map<String, dynamic> args) {
         if (event == AdmobAdEvent.closed) interstitialAd.load();
         handleEvent(event, args, 'Interstitial');
@@ -193,7 +183,7 @@ class OldVideosViewState extends State<OldVideosView> {
     );
     //TODO replace copy and pasted code
     rewardAd = AdmobReward(
-      adUnitId: getRewardBasedVideoAdUnitId(),
+      adUnitId: model.getRewardBasedVideoAdUnitId(),
       listener: (
         AdmobAdEvent event,
         Map<String, dynamic> args,
@@ -306,7 +296,8 @@ class OldVideosViewState extends State<OldVideosView> {
             Container(
               margin: EdgeInsets.only(bottom: 20.0),
               child: AdmobBanner(
-                adUnitId: getBannerAdUnitId(),
+                adUnitId: Provider.of<OldVideos>(context, listen: false)
+                    .getBannerAdUnitId(),
                 adSize: bannerSize,
                 listener: (AdmobAdEvent event, Map<String, dynamic> args) {
                   handleEvent(event, args, 'Banner');
