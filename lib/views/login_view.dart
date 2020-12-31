@@ -157,7 +157,7 @@ class _LoginViewState extends State<LoginView> {
     // so, we use a user-specific item as a proxy
 
     // note that this is null on startup or rebuild othr than from logout, but there's no guarantee of that
-    bool isFromLogoutPress = ModalRoute.of(context).settings.arguments;
+    bool isFromLogoutPress = ModalRoute.of(context).settings.arguments ?? false;
 
     isFirstPull =
         (Provider.of<LifterWeights>(context, listen: false).squatBarWeight ==
