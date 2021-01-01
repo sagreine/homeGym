@@ -66,7 +66,7 @@ class LifterMaxes extends ChangeNotifier {
         (this.pressMax ?? 0);
   }
 
-  void updateMax(String string, int newValue) {
+  void updateMax({String string, int newValue, bool dontNotify}) {
     switch (string.toLowerCase()) {
       case "deadlift":
         deadliftMax = newValue;
@@ -85,7 +85,9 @@ class LifterMaxes extends ChangeNotifier {
         (squatMax ?? 0) +
         (benchMax ?? 0) +
         (pressMax ?? 0);
-    notifyListeners();
+    if (dontNotify == null || dontNotify == false) {
+      notifyListeners();
+    }
   }
 
   List<Object> get props => [

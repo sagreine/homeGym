@@ -18,6 +18,7 @@ class ReusableWidgets {
   static getDrawer(BuildContext context) {
     bool isNewRouteSameAsCurrent = false;
     String newRouteName;
+    bool jankLogoutTracker = false;
 
     return Consumer<Muser>(builder: (context, user, child) {
       return Drawer(
@@ -196,6 +197,30 @@ class ReusableWidgets {
                     }
                   }),
               ListTile(
+                  title: Text("My PRs"),
+                  //leading: Icon(Icons.description),
+                  leading: Icon(Icons.trending_up), //whatshot_outlined
+                  onTap: () {
+                    newRouteName = "/prs";
+                    // if the current route is the exact location we're at (first on the stack), mark that
+                    Navigator.popUntil(context, (route) {
+                      if (route.settings.name == newRouteName) {
+                        isNewRouteSameAsCurrent = true;
+                      } else {
+                        isNewRouteSameAsCurrent = false;
+                      }
+                      return true;
+                    });
+                    // if it isn't, go to the new route
+                    if (!isNewRouteSameAsCurrent) {
+                      Navigator.pushNamed(context, newRouteName);
+                    }
+                    // again if it is, just pop the drawer away
+                    else {
+                      Navigator.pop(context);
+                    }
+                  }),
+              ListTile(
                   title: Text("My Lifts"),
                   //leading: Icon(Icons.description),
                   leading: Icon(Icons.video_library),
@@ -321,15 +346,25 @@ class ReusableWidgets {
                 leading: Icon(Icons.exit_to_app),
                 onTap: () async {
                   // wait while we log the user out.
-                  await user.logout();
                   var exerciseDay =
                       Provider.of<ExerciseDay>(context, listen: false);
+                  var prs = Provider.of<Prs>(context, listen: false);
+                  if (prs.prs != null) {
+                    prs.prs.clear();
+                  }
+                  prs.prs = null;
                   exerciseDay.lift = null;
+
+                  await user.logout();
+
                   print("successfully logged out");
                   // pop until we get to the login page
                   Navigator.of(context).pushNamedAndRemoveUntil(
-                      '/login', (Route<dynamic> route) => false,
-                      arguments: true);
+                    '/login',
+                    (Route<dynamic> route) => false,
+                  );
+                  //arguments: true); // this doesn't actually work because of static + on every page
+                  // so clicking open the drawer fires events
                 },
               ),
             ]),

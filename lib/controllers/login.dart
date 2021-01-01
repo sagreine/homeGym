@@ -38,4 +38,19 @@ class LoginController {
     var user = Provider.of<Muser>(context, listen: false);
     getPlatesCloud(context: context, userID: user.fAuthUser.uid);
   }
+
+  void getRepPRs(BuildContext context) async {
+    var user = Provider.of<Muser>(context, listen: false);
+    var prs = Provider.of<Prs>(context, listen: false);
+    prs.getCurrentPrs(
+      squatPRs: await getCurrentPRsCloud(
+          context: context, userId: user.fAuthUser.uid, lift: "Squat"),
+      pressPRs: await getCurrentPRsCloud(
+          context: context, userId: user.fAuthUser.uid, lift: "Press"),
+      deadliftPRs: await getCurrentPRsCloud(
+          context: context, userId: user.fAuthUser.uid, lift: "Deadlift"),
+      benchPRs: await getCurrentPRsCloud(
+          context: context, userId: user.fAuthUser.uid, lift: "Bench"),
+    );
+  }
 }

@@ -128,6 +128,7 @@ class _LoginViewState extends State<LoginView> {
   Scaffold buildNextPage() {
     if (_user.isNewUser) {
       if (isFirstPull) {
+        isFirstPull = false;
         buildDefaultUser();
       }
       return Scaffold(
@@ -135,9 +136,11 @@ class _LoginViewState extends State<LoginView> {
       );
     } else {
       if (isFirstPull) {
+        isFirstPull = false;
         loginController.getMaxes(context);
         loginController.getBarWeights(context);
         loginController.getPlates(context);
+        loginController.getRepPRs(context);
 
         if (_user.getPhotoURL() != null && _user.getPhotoURL().isNotEmpty) {
           precacheImage(new NetworkImage(_user.getPhotoURL()), context);
@@ -147,7 +150,7 @@ class _LoginViewState extends State<LoginView> {
         body: Container(child: PickDayView()),
       );
     }
-  }
+  } //
 
   @override
   Widget build(BuildContext context) {
@@ -156,13 +159,16 @@ class _LoginViewState extends State<LoginView> {
     // but, we need to take care beacuse of user generation and etc.
     // so, we use a user-specific item as a proxy
 
-    // note that this is null on startup or rebuild othr than from logout, but there's no guarantee of that
-    bool isFromLogoutPress = ModalRoute.of(context).settings.arguments ?? false;
+    // below item failed, so instead we will rely on a combo flag of either there is no userid (probably only need this really)
+    // to force a repull if they logged out and back in.
+    //bool isFromLogoutPress = ModalRoute.of(context).settings.arguments ?? false;
+    bool nouser =
+        Provider.of<Muser>(context, listen: false)?.fAuthUser?.uid == null;
 
     isFirstPull =
         (Provider.of<LifterWeights>(context, listen: false).squatBarWeight ==
                 null ||
-            isFromLogoutPress);
+            nouser);
 
     return authFlag
         ? buildNextPage()

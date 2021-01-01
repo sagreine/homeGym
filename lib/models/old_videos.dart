@@ -11,15 +11,15 @@ class OldVideos extends ChangeNotifier {
   }
 
   String getBannerAdUnitId() {
-    return 'ca-app-pub-6946458461924831~5512430957';
+    return 'ca-app-pub-6946458461924831/8314279147';
   }
 
   String getInterstitialAdUnitId() {
-    return 'ca-app-pub-6946458461924831~5512430957';
+    return 'ca-app-pub-6946458461924831/7001197477';
   }
 
   String getRewardBasedVideoAdUnitId() {
-    return 'ca-app-pub-6946458461924831~5512430957';
+    return 'ca-app-pub-6946458461924831/7711643914';
   }
 
   ExerciseSet _video;

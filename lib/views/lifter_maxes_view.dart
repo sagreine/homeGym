@@ -24,14 +24,16 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
   ScreenshotController screenshotController = ScreenshotController();
   TextEditingController formControllerReps = TextEditingController();
   TextEditingController formControllerWeight = TextEditingController();
+  bool isScreenshotting;
+  String quote;
 
 //  File _imageFile;
 
   @override
-  void dispose() {
-    // TODO: implement dispose for controllers
-    super.dispose();
-    //lifterMaxesController.dispose();
+  void initState() {
+    super.initState();
+    isScreenshotting = false;
+    quote = Quotes().getQuote(greatnessQuote: true);
   }
 
   DataCell _buildMaxValues(String initialMax, String lift) {
@@ -59,6 +61,22 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
         showEditIcon: true);
   }
 
+  // this allows us to splash something on just for the screenshot
+  doScreenshot(String path) async {
+    setState(() {
+      isScreenshotting = true;
+    });
+    //await Future.delayed(Duration(seconds: 1))
+    await screenshotController
+        .capture(path: path, delay: Duration(milliseconds: 20))
+        .then((File image) async {
+      await SocialSharePlugin.shareToFeedInstagram(path: image.path);
+    });
+    setState(() {
+      isScreenshotting = false;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -73,7 +91,7 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
                 mainAxisSize: MainAxisSize.min,
                 children: <Widget>[
                   Text(
-                    "Your One Rep Maxes",
+                    "Your Estimated One Rep Maxes",
                     style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                   // this is not yet 'controlled' of course and doesn't use real data yet.
@@ -133,11 +151,19 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
                     padding: EdgeInsets.all(10),
                     child: Center(
                       child: Text(
-                        Quotes().getQuote(greatnessQuote: true),
+                        quote,
                         textAlign: TextAlign.center,
                       ),
                     ),
                   ),
+                  SizedBox(
+                    height: 15,
+                  ),
+
+                  Visibility(
+                      child: Text(
+                          "HomeGymTV"), //Image.asset("assets/images/fc_logo.png"),
+                      visible: isScreenshotting),
                   SizedBox(
                     height: 15,
                   ),
@@ -254,11 +280,12 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
               String fileName = DateTime.now().toIso8601String();
               var path = '$directory/$fileName.png';
 
-              screenshotController
+              /*screenshotController
                   .capture(path: path, delay: Duration(milliseconds: 10))
                   .then((File image) async {
                 await SocialSharePlugin.shareToFeedInstagram(path: image.path);
-              });
+              });*/
+              await doScreenshot(path);
             }),
       ]),
 

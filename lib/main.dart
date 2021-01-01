@@ -65,7 +65,12 @@ void main() async {
   firstPull = false;
   //Admob.initialize();
   //Admob.initialize(testDeviceIds: ['54ce071a-af3d-401e-8ee4-e5b7507bd021']);
-  Admob.initialize(testDeviceIds: ['C3484AC7A3D0D8EA2FB46B94EE1F98A5']);
+  if (Foundation.kDebugMode) {
+    Admob.initialize(testDeviceIds: ['C3484AC7A3D0D8EA2FB46B94EE1F98A5']);
+  } else {
+    Admob.initialize();
+  }
+  // TODO: these don't all need this much scope....
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
       create: (context) => Muser(),
@@ -88,6 +93,9 @@ void main() async {
     ),
     ChangeNotifierProvider(
       create: (context) => FlingMediaModel(),
+    ),
+    ChangeNotifierProvider(
+      create: (context) => Prs(),
     ),
   ], child: MyApp(savedThemeMode: savedThemeMode)));
 }
@@ -224,6 +232,7 @@ class MyApp extends StatelessWidget {
               //'/form_check': (context) => FormCheckView(),
               '/form_check_copy': (context) => HomePage(cameras),
               '/today': (context) => TodayView(),
+              '/prs': (context) => PrsView(),
             },
           );
         });

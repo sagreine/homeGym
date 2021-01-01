@@ -16,3 +16,4 @@ export 'package:home_gym/views/old_videos_view.dart';
 
 //export 'package:home_gym/views/form_check.dart';
 export 'package:home_gym/views/form_check_copy.dart';
+export 'package:home_gym/views/prs_view.dart';

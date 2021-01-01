@@ -30,6 +30,7 @@ class HomeController {
 
   ExerciseDayController exerciseDayController = new ExerciseDayController();
   LifterMaxesController lifterMaxesController = new LifterMaxesController();
+  PrsController prsController = new PrsController();
 
   ConfettiController confettiController =
       ConfettiController(duration: const Duration(seconds: 1));
@@ -467,19 +468,24 @@ class HomeController {
           exercise.thisSetProgressSet) {
         // if we got the reps..
         // but is this the next set already....
-        if (int.parse(formControllerReps.text) >= exercise.prescribedReps) {
+        if (int.tryParse(formControllerReps.text
+                .replaceAll(new RegExp(r'[^0-9]'), '')) >=
+            exercise.prescribedReps) {
           progressAfter = true;
         }
       }
       // holler about failure or greatness depending on if they got it or not.
 
       // but only holler if they got the reps OR they are set to get mean quotes.
-      if (int.parse(formControllerReps.text) >= exercise.prescribedReps ||
+      if (int.tryParse(formControllerReps.text
+                  .replaceAll(new RegExp(r'[^0-9]'), '')) >=
+              exercise.prescribedReps ||
           settings.meanQuotes) {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text(Quotes().getQuote(
               // if you passed
-              greatnessQuote: int.parse(formControllerReps.text) >=
+              greatnessQuote: int.parse(formControllerReps.text
+                      .replaceAll(new RegExp(r'[^0-9]'), '')) >=
                   exercise.prescribedReps)),
         ));
       }
@@ -511,6 +517,21 @@ class HomeController {
         context: context,
       );
     }
+
+    // check for PRs and upload them if so.
+    await prsController
+        .setPotentialPR(
+      context: context,
+      lift: exercise,
+    )
+        .then((value) {
+      if (value) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("New ${exercise.title} rep record set!"),
+        ));
+      }
+    });
+
 // could do this before the casting and saving and save some round trips. more logical, puts correct info on the TV for end user too...
     // if we passed on the week that we were told to pass on, progress at the end.
     // TODO: this is also broken when the last set is the test set

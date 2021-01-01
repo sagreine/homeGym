@@ -5,16 +5,22 @@ import 'package:provider/provider.dart';
 import 'package:home_gym/controllers/controllers.dart';
 
 class LifterMaxesController {
+  bool hereFromBuildDefaultUser = false;
   //TODO: compare if this is different from the cloud value as we currently see it before making a call...
-  update1RepMax(
-      { // this seems stupid and we should pass the object in.
-      @required BuildContext context,
-      @required String lift,
-      int newMax,
-      bool updateCloud = false,
-      @required bool progression}) {
+  update1RepMax({
+    // this seems stupid and we should pass the object in.
+    @required BuildContext context,
+    @required String lift,
+    int newMax,
+    bool updateCloud = false,
+    @required bool progression,
+    bool dontNotify,
+  }) {
     // this is not how we want to do this and it wouldn't print but sure
     assert(progression == true || newMax != null);
+    if (dontNotify == null) {
+      dontNotify = false;
+    }
     /*{
       print(
           "You have to either progress or explicitly state the new max. ERROR");
@@ -34,20 +40,26 @@ class LifterMaxesController {
           // if they gave a newMax, it either is valid or is not
           if (newMax != null) {
             if (newMax <= liftMaxes.deadliftMax + 10) {
-              liftMaxes.updateMax(lift, newMax);
+              liftMaxes.updateMax(string: lift, newValue: newMax);
             } else {
               print(
                   "You can't increase it this much under progression. You're using the wrong function parameters");
             }
             // if they didn't, this is just vanilla progression
           } else {
-            liftMaxes.updateMax(lift, liftMaxes.deadliftMax + 10);
+            liftMaxes.updateMax(
+                string: lift,
+                newValue: liftMaxes.deadliftMax + 10,
+                dontNotify: dontNotify);
             liftMaxes = Provider.of<LifterMaxes>(context, listen: false);
             newMax = liftMaxes.deadliftMax;
           }
           //if this is not progression at all, just update to the new max
         } else {
-          liftMaxes.updateMax(lift.toLowerCase(), newMax);
+          liftMaxes.updateMax(
+              string: lift.toLowerCase(),
+              newValue: newMax,
+              dontNotify: dontNotify);
         }
         break;
       case "bench":
@@ -57,20 +69,27 @@ class LifterMaxesController {
           // if they gave a newMax, it either is valid or is not
           if (newMax != null) {
             if (newMax <= liftMaxes.benchMax + 5) {
-              liftMaxes.updateMax(lift, newMax);
+              liftMaxes.updateMax(
+                  string: lift, newValue: newMax, dontNotify: dontNotify);
             } else {
               print(
                   "You can't increase it this much under progression. You're using the wrong function parameters");
             }
             // if they didn't, this is just vanilla progression
           } else {
-            liftMaxes.updateMax(lift, liftMaxes.benchMax + 5);
+            liftMaxes.updateMax(
+                string: lift,
+                newValue: liftMaxes.benchMax + 5,
+                dontNotify: dontNotify);
             liftMaxes = Provider.of<LifterMaxes>(context, listen: false);
             newMax = liftMaxes.benchMax;
           }
           //if this is not progression at all, just update to the new max
         } else {
-          liftMaxes.updateMax(lift.toLowerCase(), newMax);
+          liftMaxes.updateMax(
+              string: lift.toLowerCase(),
+              newValue: newMax,
+              dontNotify: dontNotify);
         }
         break;
       case "press":
@@ -80,20 +99,27 @@ class LifterMaxesController {
           // if they gave a newMax, it either is valid or is not
           if (newMax != null) {
             if (newMax <= liftMaxes.pressMax + 5) {
-              liftMaxes.updateMax(lift, newMax);
+              liftMaxes.updateMax(
+                  string: lift, newValue: newMax, dontNotify: dontNotify);
             } else {
               print(
                   "You can't increase it this much under progression. You're using the wrong function parameters");
             }
             // if they didn't, this is just vanilla progression
           } else {
-            liftMaxes.updateMax(lift, liftMaxes.pressMax + 5);
+            liftMaxes.updateMax(
+                string: lift,
+                newValue: liftMaxes.pressMax + 5,
+                dontNotify: dontNotify);
             liftMaxes = Provider.of<LifterMaxes>(context, listen: false);
             newMax = liftMaxes.pressMax;
           }
           //if this is not progression at all, just update to the new max
         } else {
-          liftMaxes.updateMax(lift.toLowerCase(), newMax);
+          liftMaxes.updateMax(
+              string: lift.toLowerCase(),
+              newValue: newMax,
+              dontNotify: dontNotify);
         }
         break;
       case "squat":
@@ -103,20 +129,27 @@ class LifterMaxesController {
           // if they gave a newMax, it either is valid or is not
           if (newMax != null) {
             if (newMax <= liftMaxes.squatMax + 10) {
-              liftMaxes.updateMax(lift, newMax);
+              liftMaxes.updateMax(
+                  string: lift, newValue: newMax, dontNotify: dontNotify);
             } else {
               print(
                   "You can't increase it this much under progression. You're using the wrong function parameters");
             }
             // if they didn't, this is just vanilla progression
           } else {
-            liftMaxes.updateMax(lift, liftMaxes.squatMax + 10);
+            liftMaxes.updateMax(
+                string: lift,
+                newValue: liftMaxes.squatMax + 10,
+                dontNotify: dontNotify);
             liftMaxes = Provider.of<LifterMaxes>(context, listen: false);
             newMax = liftMaxes.squatMax;
           }
           //if this is not progression at all, just update to the new max
         } else {
-          liftMaxes.updateMax(lift.toLowerCase(), newMax);
+          liftMaxes.updateMax(
+              string: lift.toLowerCase(),
+              newValue: newMax,
+              dontNotify: dontNotify);
         }
         break;
     }

@@ -8,6 +8,9 @@ import 'package:home_gym/models/models.dart';
 //
 //TODO: implement dispose
 
+//TODO make this actually a classs
+//TODO we should absolutely not be passing context in to this.
+
 Future<String> createDatabaseRecord(
     {@required ExerciseSet exercise, @required String userID}) async {
   // would put everyone in their own bucket and manage that via IAM
@@ -177,7 +180,8 @@ Future<int> getBarWeightCloud(
 // not liking having the controller in here? would rather return a
 // list to the page that then uses the controller or something.. also because if we delete that controller this function fails which is ... bad.
 // TODO: if this returns nothing, we need to handle that.
-void getMaxesCloud({@required context, @required String userID}) async {
+void getMaxesCloud(
+    {@required context, @required String userID, bool dontNotify}) async {
   LifterMaxesController liftMaxController = new LifterMaxesController();
   QuerySnapshot maxes;
   maxes = await FirebaseFirestore.instance
@@ -195,6 +199,7 @@ void getMaxesCloud({@required context, @required String userID}) async {
         " (each is individually checked, so it shouldn't be broken) or it means one of these is using a default value)");
   }
   liftMaxController.update1RepMax(
+      dontNotify: dontNotify,
       progression: false,
       context: context,
       lift: "bench",
@@ -208,6 +213,7 @@ void getMaxesCloud({@required context, @required String userID}) async {
               .data()["currentMax"]
           : 100);
   liftMaxController.update1RepMax(
+      dontNotify: dontNotify,
       progression: false,
       context: context,
       lift: "deadlift",
@@ -220,6 +226,7 @@ void getMaxesCloud({@required context, @required String userID}) async {
               .data()["currentMax"]
           : 150);
   liftMaxController.update1RepMax(
+      dontNotify: dontNotify,
       progression: false,
       context: context,
       lift: "squat",
@@ -232,6 +239,7 @@ void getMaxesCloud({@required context, @required String userID}) async {
               .data()["currentMax"]
           : 135);
   liftMaxController.update1RepMax(
+      dontNotify: dontNotify,
       progression: false,
       context: context,
       lift: "press",
@@ -243,6 +251,119 @@ void getMaxesCloud({@required context, @required String userID}) async {
                   maxes.docs.indexWhere((document) => document.id == "press"))
               .data()["currentMax"]
           : 90);
+}
+
+Future<List<Pr>> getCurrentPRsCloud(
+    {@required context, @required String userId, @required String lift}) async {
+  QuerySnapshot prs = await FirebaseFirestore.instance
+      .collection("USERDATA")
+      .doc(userId)
+      .collection("PRS")
+      .doc(lift.toLowerCase())
+      .collection("CURRENT_PRS")
+      //.orderBy("weight", descending: true)
+      //.limit(1)
+      .get();
+  List<QueryDocumentSnapshot> list = new List.from(prs.docs.toList());
+  var toReturn;
+
+  toReturn = new List<Pr>.generate(list.length, (index) {
+    Pr _pr = Pr();
+    _pr.reps = list[index].data()["reps"] ??
+        0; //int.parse(list[index].id.substring(1, 2));
+    // we'll default to 0 if this value isn't set.
+    _pr.weight = list[index].data()["weight"] ?? 0;
+    // becaus we dont need to store this in firestore but need it (for convenience) later
+    // or i guess we could just have lift-specific PRs...
+    _pr.lift = lift;
+    _pr.dateTime = list[index].data()["dateTime"]?.toDate() ?? DateTime.now();
+    return _pr;
+  })
+    ..sort((e, f) => e.reps.compareTo(f.reps));
+  return toReturn;
+}
+
+// TODO: untested. obvviously not the right way to do this either, but fix it later.
+Future<QuerySnapshot> getWhereQueriedAllPRsCloud(
+    {@required context,
+    @required String userId,
+    @required String lift,
+    @required String query}) async {
+  QuerySnapshot prs = await FirebaseFirestore.instance
+      .collection("USERDATA")
+      .doc(userId)
+      .collection("PRS")
+      .doc(lift.toLowerCase())
+      .collection("ALL_PRS")
+      .where(query)
+      .get();
+  return prs;
+}
+
+// would make this private to this library/class
+Future<void> addToAllPRsCloud(
+    {@required String lift,
+    @required String userId,
+    @required Map<String, dynamic> data}) async {
+  final databaseReference = FirebaseFirestore.instance;
+  /*
+  data["weight"] = lift.weight;
+  data["reps"] = lift.dateTime;
+  data["dateTime"] = lift.dateTime;
+  */
+  await databaseReference
+      .collection("USERDATA")
+      .doc(userId)
+      .collection("PRS")
+      .doc(lift.toLowerCase())
+      .collection("ALL_PRS")
+      .add(data);
+}
+
+Future<void> setRepPRCloud(
+    {@required context,
+    @required String userId,
+    @required ExerciseSet lift}) async {
+  final databaseReference = FirebaseFirestore.instance;
+  //var exercise = Provider.of<ExerciseDay>(context, listen: false);
+  Map data = Map<String, dynamic>();
+  data["weight"] = lift.weight;
+  data["reps"] = lift.reps;
+  data["dateTime"] = lift.dateTime;
+  // first, write this PR to the collection of all PRs
+  await addToAllPRsCloud(data: data, userId: userId, lift: lift.title);
+  // then, update the new rep PR
+  await databaseReference
+      .collection("USERDATA")
+      .doc(userId)
+      .collection("PRS")
+      .doc(lift.title.toLowerCase())
+      .collection("CURRENT_PRS")
+      .doc(lift.reps.toString() + "RepPR")
+      .set(data);
+}
+
+Future<void> setWeightPRCloud(
+    {@required context,
+    @required String userId,
+    @required ExerciseSet lift}) async {
+  final databaseReference = FirebaseFirestore.instance;
+  //var exercise = Provider.of<ExerciseDay>(context, listen: false);
+  Map data = Map<String, dynamic>();
+  data["weight"] = lift.weight;
+  data["dateTime"] = lift.dateTime;
+  data["reps"] = lift.reps;
+  // first, write this PR to the collection of all PRs
+  await addToAllPRsCloud(data: data, userId: userId, lift: lift.title);
+  // then, update the new rep PR
+  await databaseReference
+      .collection("USERDATA")
+      .doc(userId)
+      .collection("PRS")
+      .doc(lift.title.toLowerCase())
+      .collection("CURRENT_PRS")
+      .doc(lift.weight.toString() + "WeightPR")
+      .set(data);
 }
 
 void getPlatesCloud({@required context, @required String userID}) async {
