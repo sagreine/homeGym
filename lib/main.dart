@@ -21,7 +21,7 @@ import 'package:provider/provider.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter/foundation.dart' as Foundation;
-import 'package:camera/camera.dart';
+//import 'package:camera/camera.dart';
 import 'package:adaptive_theme/adaptive_theme.dart';
 // BLoC for each page
 // complex page-children should have their own block, parent subscribes to state changes
@@ -41,18 +41,18 @@ import 'package:adaptive_theme/adaptive_theme.dart';
 
 //flutter pub run build_runner watch
 
-List<CameraDescription> cameras;
-int temp = 1;
+//List<CameraDescription> cameras;
+//int temp = 1;
 // this is bad practice :(
 bool firstPull;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  try {
+  /*try {
     cameras = await availableCameras();
   } on CameraException catch (e) {
     print('Error: $e.code\nError Message: $e.message');
-  }
+  }*/
   await Firebase.initializeApp();
   // TODO if we stop using this plugin, remove this. at least
   await FlutterDownloader.initialize(
@@ -65,11 +65,13 @@ void main() async {
   firstPull = false;
   //Admob.initialize();
   //Admob.initialize(testDeviceIds: ['54ce071a-af3d-401e-8ee4-e5b7507bd021']);
-  if (Foundation.kDebugMode) {
+  /*if (Foundation.kDebugMode) {
     Admob.initialize(testDeviceIds: ['C3484AC7A3D0D8EA2FB46B94EE1F98A5']);
   } else {
     Admob.initialize();
-  }
+  }*/
+  Admob.initialize();
+
   // TODO: these don't all need this much scope....
   runApp(MultiProvider(providers: [
     ChangeNotifierProvider(
@@ -224,13 +226,12 @@ class MyApp extends StatelessWidget {
               '/pick_day': (context) => PickDayView(),
               '/profile': (context) => ProfileView(),
               '/programs': (context) => ProgramsView(),
-              '/settings': (context) =>
-                  SettingsView(savedThemeMode: savedThemeMode),
+              '/settings': (context) => SettingsView(
+                  savedThemeMode: savedThemeMode ?? AdaptiveThemeMode.dark),
               '/intro_screen': (context) => IntroScreenView(),
               '/excerciseday': (context) => ExcerciseDayView(),
               "/lifter_videos": (context) => OldVideosView(),
-              //'/form_check': (context) => FormCheckView(),
-              '/form_check_copy': (context) => HomePage(cameras),
+              //'/form_check_copy': (context) => HomePage(cameras),
               '/today': (context) => TodayView(),
               '/prs': (context) => PrsView(),
             },

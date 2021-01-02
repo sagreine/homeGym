@@ -12,10 +12,11 @@ class PickDayView extends StatefulWidget {
 
 class _PickDayViewState extends State<PickDayView> {
   PickDayController pickDayController = PickDayController();
-  AdmobBannerSize bannerSize = AdmobBannerSize.LARGE_BANNER;
+  AdmobBannerSize bannerSize; 
 
   @override
   Widget build(BuildContext context) {
+    bannerSize = AdmobBannerSize.SMART_BANNER(context);
     // somewhat sketchy, but this is used to populate childAspectRatio and allow us to
     // size for both phone orientations.
     var size = MediaQuery.of(context).size;

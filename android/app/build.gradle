@@ -45,7 +45,8 @@ android {
     }
 
     lintOptions {
-        disable 'InvalidPackage'
+        //disable 'InvalidPackage'
+        checkReleaseBuilds false
     }
 
     defaultConfig {        
@@ -55,9 +56,11 @@ android {
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
         multiDexEnabled true
+        //ndk.abiFilters 'armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64'
     }
     signingConfigs {
        release {
+           
            keyAlias keystoreProperties['keyAlias']
            keyPassword keystoreProperties['keyPassword']
            storeFile keystoreProperties['storeFile'] ? file(keystoreProperties['storeFile']) : null
@@ -70,6 +73,7 @@ android {
             // Signing with the debug keys for now, so `flutter run --release` works.
             //signingConfig signingConfigs.debug
             signingConfig signingConfigs.release
+            //minifyEnabled false
         }
     }
 }

@@ -1,4 +1,4 @@
-import 'package:camera/camera.dart'; // as cm;
+/*import 'package:camera/camera.dart'; // as cm;
 //import 'package:camera/new/camera.dart';
 import 'package:flutter/material.dart';
 //import 'package:camera/camera.dart';
@@ -395,4 +395,4 @@ class _CameraState extends State<Camera> {
       child: CameraPreview(controller),
     );
   }
-}
+}*/

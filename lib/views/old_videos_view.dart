@@ -45,7 +45,7 @@ class OldVideosViewState extends State<OldVideosView> {
     //_streamController.close();
   }
 
-  Future<void> _loadAdMobReward() {
+  _loadAdMobReward() {
     rewardAd = new AdmobReward(
       adUnitId: Provider.of<OldVideos>(context, listen: false)
           .getRewardBasedVideoAdUnitId(),

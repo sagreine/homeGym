@@ -18,7 +18,6 @@ class ReusableWidgets {
   static getDrawer(BuildContext context) {
     bool isNewRouteSameAsCurrent = false;
     String newRouteName;
-    bool jankLogoutTracker = false;
 
     return Consumer<Muser>(builder: (context, user, child) {
       return Drawer(

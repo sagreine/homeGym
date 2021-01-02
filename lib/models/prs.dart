@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
-import 'package:json_annotation/json_annotation.dart';
+//import 'package:json_annotation/json_annotation.dart';
 
 class Pr {
   String lift;
