@@ -90,10 +90,14 @@ class SettingsViewState extends State<SettingsView> {
                     SwitchListTile.adaptive(
                       value: settings.timerVibrate ?? true,
                       onChanged: (value) {
-                        settingsController.updateBoolVal(
-                            context: context,
-                            key: "timerVibrate",
-                            value: value);
+                        try {
+                          settingsController.updateBoolVal(
+                              context: context,
+                              key: "timerVibrate",
+                              value: value);
+                        } catch (err) {
+                          throw Exception("error setting vibrate. Error: $err");
+                        }
                       },
                       secondary: Icon(Icons.vibration),
                       title: Text("Vibrate at timer end"),

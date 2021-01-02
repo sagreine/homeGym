@@ -12,7 +12,7 @@ class PickDayView extends StatefulWidget {
 
 class _PickDayViewState extends State<PickDayView> {
   PickDayController pickDayController = PickDayController();
-  AdmobBannerSize bannerSize; 
+  AdmobBannerSize bannerSize;
 
   @override
   Widget build(BuildContext context) {
