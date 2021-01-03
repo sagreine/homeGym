@@ -107,6 +107,9 @@ class SettingsViewState extends State<SettingsView> {
                           (widget.savedThemeMode == AdaptiveThemeMode.dark) ??
                           true,
                       onChanged: (value) {
+                        /*Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text("This may take a moement"),
+                        ));*/
                         settingsController.updateBoolVal(
                             context: context, key: "darkTheme", value: value);
                       },

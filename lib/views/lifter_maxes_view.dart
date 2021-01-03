@@ -86,88 +86,92 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
         Column(children: <Widget>[
           Screenshot(
             controller: screenshotController,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    "Your Estimated One Rep Maxes",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                  ),
-                  // this is not yet 'controlled' of course and doesn't use real data yet.
-                  Consumer<LifterMaxes>(
-                    builder: (context, liftMaxes, child) {
-                      return DataTable(
-                        sortColumnIndex: 0,
-                        sortAscending: true,
-                        columns: [
-                          DataColumn(label: Text('Lift'), numeric: true),
-                          DataColumn(label: Text('Max'), numeric: true),
-                        ],
-                        rows: [
-                          DataRow(selected: true, cells: [
-                            DataCell(Text('Deadlift',
-                                style: TextStyle(fontSize: 14))),
-                            _buildMaxValues(
-                                liftMaxes.deadliftMax.toString(), "deadlift"),
-                          ]),
-                          DataRow(cells: [
-                            DataCell(
-                              Text('Bench', style: TextStyle(fontSize: 14)),
-                            ),
-                            _buildMaxValues(
-                                liftMaxes.benchMax.toString(), "bench"),
-                          ]),
-                          DataRow(cells: [
-                            DataCell(
-                              Text('Squat', style: TextStyle(fontSize: 14)),
-                            ),
-                            _buildMaxValues(
-                                liftMaxes.squatMax.toString(), "squat"),
-                          ]),
-                          DataRow(cells: [
-                            DataCell(
-                              Text('Press', style: TextStyle(fontSize: 14)),
-                            ),
-                            _buildMaxValues(
-                                liftMaxes.pressMax.toString(), "press"),
-                          ]),
-                          DataRow(cells: [
-                            DataCell(
-                              Text('Total: ', style: TextStyle(fontSize: 14)),
-                            ),
-                            DataCell(Text("${liftMaxes.total.toString()}",
-                                style: TextStyle(fontSize: 14)))
-                          ]),
-                        ],
-                      );
-                    },
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
+            child: Container(
+              color: Theme.of(context).canvasColor,
+              child: Column(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisSize: MainAxisSize.min,
+                  children: <Widget>[
+                    Text(
+                      "Your Estimated One Rep Maxes",
+                      style:
+                          TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                    ),
+                    // this is not yet 'controlled' of course and doesn't use real data yet.
+                    Consumer<LifterMaxes>(
+                      builder: (context, liftMaxes, child) {
+                        return DataTable(
+                          sortColumnIndex: 0,
+                          sortAscending: true,
+                          columns: [
+                            DataColumn(label: Text('Lift'), numeric: true),
+                            DataColumn(label: Text('Max'), numeric: true),
+                          ],
+                          rows: [
+                            DataRow(selected: true, cells: [
+                              DataCell(Text('Deadlift',
+                                  style: TextStyle(fontSize: 14))),
+                              _buildMaxValues(
+                                  liftMaxes.deadliftMax.toString(), "deadlift"),
+                            ]),
+                            DataRow(cells: [
+                              DataCell(
+                                Text('Bench', style: TextStyle(fontSize: 14)),
+                              ),
+                              _buildMaxValues(
+                                  liftMaxes.benchMax.toString(), "bench"),
+                            ]),
+                            DataRow(cells: [
+                              DataCell(
+                                Text('Squat', style: TextStyle(fontSize: 14)),
+                              ),
+                              _buildMaxValues(
+                                  liftMaxes.squatMax.toString(), "squat"),
+                            ]),
+                            DataRow(cells: [
+                              DataCell(
+                                Text('Press', style: TextStyle(fontSize: 14)),
+                              ),
+                              _buildMaxValues(
+                                  liftMaxes.pressMax.toString(), "press"),
+                            ]),
+                            DataRow(cells: [
+                              DataCell(
+                                Text('Total: ', style: TextStyle(fontSize: 14)),
+                              ),
+                              DataCell(Text("${liftMaxes.total.toString()}",
+                                  style: TextStyle(fontSize: 14)))
+                            ]),
+                          ],
+                        );
+                      },
+                    ),
+                    SizedBox(
+                      height: 15,
+                    ),
 
-                  Padding(
-                    padding: EdgeInsets.all(10),
-                    child: Center(
-                      child: Text(
-                        quote,
-                        textAlign: TextAlign.center,
+                    Padding(
+                      padding: EdgeInsets.all(10),
+                      child: Center(
+                        child: Text(
+                          quote,
+                          textAlign: TextAlign.center,
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
+                    SizedBox(
+                      height: 15,
+                    ),
 
-                  Visibility(
-                      child: Text(
-                          "HomeGymTV"), //Image.asset("assets/images/fc_logo.png"),
-                      visible: isScreenshotting),
-                  SizedBox(
-                    height: 15,
-                  ),
-                ]),
+                    Visibility(
+                        child: Text(
+                            "HomeGymTV"), //Image.asset("assets/images/fc_logo.png"),
+                        visible: isScreenshotting),
+                    SizedBox(
+                      height: 15,
+                    ),
+                  ]),
+            ),
           ),
           Consumer<Muser>(
             builder: (context, user, child) {

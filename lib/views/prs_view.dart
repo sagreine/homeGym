@@ -408,7 +408,7 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    _buildPRCells(thisLiftPrs, tabName);
+    //_buildPRCells(thisLiftPrs, tabName);
 
     return Scaffold(
         key: scaffoldKey,
@@ -419,31 +419,34 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
             : ReusableWidgets.getAppBar(tabController: null, tabs: myTabs),
         body: Screenshot(
             controller: screenshotController,
-            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              Expanded(
-                child: TabBarView(
-                  controller: this.defaultTabController,
-                  children: [
-                    _buildTab("Rep"),
-                    _buildTab("Weight"),
-                  ],
-                ),
-              ),
-              Visibility(
-                  child: Text(
-                      "HomeGymTV"), //Image.asset("assets/images/fc_logo.png"),
-                  visible: isScreenshotting),
-              IconButton(
-                  icon: Image.asset("assets/images/Instagram_Logo.png"),
-                  onPressed: () async {
-                    // because we can't share app data outside of the app, need to save to external storage
-                    final directory = (await getExternalStorageDirectory())
-                        .path; //from path_provide package
-                    String fileName = DateTime.now().toIso8601String();
-                    var path = '$directory/$fileName.png';
-                    await doScreenshot(path);
-                  })
-            ])));
+            child: Container(
+                color: Theme.of(context).canvasColor,
+                child:
+                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                  Expanded(
+                    child: TabBarView(
+                      controller: this.defaultTabController,
+                      children: [
+                        _buildTab("Rep"),
+                        _buildTab("Weight"),
+                      ],
+                    ),
+                  ),
+                  Visibility(
+                      child: Text(
+                          "HomeGymTV"), //Image.asset("assets/images/fc_logo.png"),
+                      visible: isScreenshotting),
+                  IconButton(
+                      icon: Image.asset("assets/images/Instagram_Logo.png"),
+                      onPressed: () async {
+                        // because we can't share app data outside of the app, need to save to external storage
+                        final directory = (await getExternalStorageDirectory())
+                            .path; //from path_provide package
+                        String fileName = DateTime.now().toIso8601String();
+                        var path = '$directory/$fileName.png';
+                        await doScreenshot(path);
+                      })
+                ]))));
 
     //]));
   }
