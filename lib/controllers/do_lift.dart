@@ -172,13 +172,14 @@ class HomeController {
     return toReturn;
   }
 
-  void displayInExerciseInfo({ExerciseSet exercise}) {
+  void displayInExerciseInfo(
+      {ExerciseSet exercise, @required bool justRemovedPR}) {
     //var exercise = Provider.of<ExerciseSet>(context, listen: false);
     formControllerTitle.text = exercise.title;
     formControllerDescription.text = exercise.description;
 
     formControllerReps.text = exercise.reps.toString();
-    if (exercise.thisSetPRSet) {
+    if (exercise.thisSetPRSet && !justRemovedPR) {
       formControllerReps.text += "xPR";
     }
     formControllerWeight.text = exercise.weight.toString();
@@ -493,7 +494,7 @@ class HomeController {
     // no need to ask about REPS if not recording video, because they can just edit it directly in the form
     // before hitting the button. a bit annoying i guess, and not expected.
     //show the next execise
-    displayInExerciseInfo(exercise: nextSet);
+    displayInExerciseInfo(exercise: nextSet, justRemovedPR: false);
 
     // at this point we have a URL (possibly garbage though?) for the video, so update the cloud record with that information
     //....so could check for the garbage (default) URLs before updating this..

@@ -52,6 +52,7 @@ class _DoLiftViewState extends State<DoLiftView>
   bool _noDayPickedOnEntry;
   bool hasVibration;
   bool hasCustomVibration;
+  bool justRemovedPR = false; //afal;//'fff
 
   //Container banner;
 
@@ -241,7 +242,8 @@ class _DoLiftViewState extends State<DoLiftView>
       exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     }
     exercise = exerciseDay.exercises[exerciseDay.currentSet];
-    homeController.displayInExerciseInfo(exercise: exercise);
+    homeController.displayInExerciseInfo(
+        exercise: exercise, justRemovedPR: false);
   }
 
   @override
@@ -365,6 +367,10 @@ class _DoLiftViewState extends State<DoLiftView>
   @override
   Widget build(BuildContext context) {
     super.build(context);
+    bool startBuildWithPR = false;
+    if (homeController.formControllerReps.text.contains("PR")) {
+      startBuildWithPR = true;
+    }
     //Vibration.vibrate(pattern: [500, 1000, 500, 2000], intensities: [1, 255]);
     //var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     //exercise = exerciseDay.exercises[exerciseDay.currentSet];
@@ -399,8 +405,14 @@ class _DoLiftViewState extends State<DoLiftView>
                 // manually because the controllers are not part of the model but hold the text values that are displayed here.
                 // sure i guess. almost 10000% certainly this is repeating work. multiple times on each build, and then re-building when-
                 // -ever we build anything at all on the page is gigantically wasteful. just text i guess.. is what we'll tell ourselves.
-                exercise = exerciseDay.exercises[exerciseDay.currentSet];
-                homeController.displayInExerciseInfo(exercise: exercise);
+                // but having this check up front prevents us from re-pulling the exercise info just because of changes we made on this page
+                // we could do that, but it moves the cursor if you are rebuilding because you clicked into editing a form field, which is annoying
+                // also it would be very wasteful.
+                if (exercise != exerciseDay.exercises[exerciseDay.currentSet]) {
+                  exercise = exerciseDay.exercises[exerciseDay.currentSet];
+                  homeController.displayInExerciseInfo(
+                      exercise: exercise, justRemovedPR: justRemovedPR); //. ;
+                }
                 return Column(
                   children: <Widget>[
                     // if they didn't pick a day on the way in, yell at them about it here.
@@ -485,8 +497,14 @@ class _DoLiftViewState extends State<DoLiftView>
                                     inputFormatters: <TextInputFormatter>[
                                       WhitelistingTextInputFormatter.digitsOnly,
                                     ],
-                                    onChanged: (value) =>
-                                        exercise.reps = int.parse(value),
+                                    onChanged: (value) {
+                                      // if when we built this we had PR and now we don't, we don't want to add it back in.
+                                      if (!value.contains("PR") &&
+                                          startBuildWithPR) {
+                                        justRemovedPR = true;
+                                      }
+                                      exercise.reps = int.parse(value);
+                                    },
                                     enableSuggestions: true,
                                     controller:
                                         homeController.formControllerReps,
