@@ -595,6 +595,18 @@ class _DoLiftViewState extends State<DoLiftView>
                         ),
                       ),
                       SizedBox(height: 16),
+                      Consumer<Prs>(builder: (context, prs, child) {
+                        var prsPulled = prs.bothLocalPR(lift: exercise);
+                        return Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Text(
+                                "PR for ${exercise.reps} reps: ${prsPulled["Rep"].weight}"),
+                            Text(
+                                "PR for weight of ${exercise.weight}: ${prsPulled["Weight"].reps}")
+                          ],
+                        );
+                      }),
                       // this should be in a controller
                       Consumer<Muser>(builder: (context, user, child) {
                         return SwitchListTile.adaptive(
