@@ -619,7 +619,7 @@ class _DoLiftViewState extends State<DoLiftView>
                               _oldDoCast = false;
                             }*/
                             var testIfPicked = true;
-                            ;
+                            
                             if (newValue && user.isNewUser) {
                               await showNewUserFlingDialog();
                             }
@@ -673,13 +673,20 @@ class _DoLiftViewState extends State<DoLiftView>
                                       if (_formkey.currentState.validate()) {
                                         print("valid form");
                                         // make any updates that are necessary, check we have a fling device, then cast
-
+                                        //var testIfPicked = true;
                                         if (doCast &&
                                             (flingy.selectedPlayer == null ||
                                                 flingy.flingDevices == null ||
                                                 flingy.flingDevices.length ==
                                                     0)) {
                                           await showCastDevicePickerDialog();
+                                          // if we elected to cast but there was no device so we repicked, then after being
+                                          // given options we didn't like any of them, cancel all this and reset doCast
+                                          if(!doCast) 
+                                          {
+                                            setState(() {});
+                                            return;
+                                          }
                                         }
 
                                         // if we made manual updates via the form, put them in!
