@@ -39,10 +39,55 @@ class LoginController {
     getPlatesCloud(context: context, userID: user.fAuthUser.uid);
   }
 
-  void getRepPRs(BuildContext context) async {
+  void getPRs(BuildContext context) async {
     var user = Provider.of<Muser>(context, listen: false);
     var prs = Provider.of<Prs>(context, listen: false);
-    prs.getCurrentPrs(
+    prs.createOrPopulateCurrentPrs(
+        squatPRs: await getCurrentRepsPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Squat",
+            isRep: false),
+        pressPRs: await getCurrentRepsPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Press",
+            isRep: false),
+        deadliftPRs: await getCurrentRepsPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Deadlift",
+            isRep: false),
+        benchPRs: await getCurrentRepsPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Bench",
+            isRep: false),
+        isRep: false);
+    prs.createOrPopulateCurrentPrs(
+        squatPRs: await getCurrentRepsPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Squat",
+            isRep: true),
+        pressPRs: await getCurrentRepsPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Press",
+            isRep: true),
+        deadliftPRs: await getCurrentRepsPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Deadlift",
+            isRep: true),
+        benchPRs: await getCurrentRepsPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Bench",
+            isRep: true),
+        isRep: true);
+    // get all prs, once we have something to do with them (graph etc.)
+    /*prs.createOrPopulateAllPrsWeight(
       squatPRs: await getCurrentPRsCloud(
           context: context, userId: user.fAuthUser.uid, lift: "Squat"),
       pressPRs: await getCurrentPRsCloud(
@@ -51,6 +96,6 @@ class LoginController {
           context: context, userId: user.fAuthUser.uid, lift: "Deadlift"),
       benchPRs: await getCurrentPRsCloud(
           context: context, userId: user.fAuthUser.uid, lift: "Bench"),
-    );
+    );*/
   }
 }

@@ -520,14 +520,24 @@ class HomeController {
 
     // check for PRs and upload them if so.
     await prsController
-        .setPotentialPR(
-      context: context,
-      lift: exercise,
-    )
+        .setPotentialPR(context: context, lift: exercise, isRep: true)
         .then((value) {
       if (value) {
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text("New ${exercise.title} rep record set!"),
+        ));
+      }
+    });
+
+    /// TODO: TEST WITH 5XPR
+    /// - TRY SBUMITTING WITH IT.
+    /// - ALSO, WHEN YOU SUBMIT, IT ADDS XPR BACK IN
+    await prsController
+        .setPotentialPR(context: context, lift: exercise, isRep: false)
+        .then((value) {
+      if (value) {
+        Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text("New ${exercise.title} weight record set!"),
         ));
       }
     });

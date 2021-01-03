@@ -253,14 +253,18 @@ void getMaxesCloud(
           : 90);
 }
 
-Future<List<Pr>> getCurrentPRsCloud(
-    {@required context, @required String userId, @required String lift}) async {
+Future<List<Pr>> getCurrentRepsPRsCloud(
+    {@required context,
+    @required String userId,
+    @required String lift,
+    @required bool isRep}) async {
+  // get rep RPS
   QuerySnapshot prs = await FirebaseFirestore.instance
       .collection("USERDATA")
       .doc(userId)
       .collection("PRS")
       .doc(lift.toLowerCase())
-      .collection("CURRENT_PRS")
+      .collection(isRep ? "CURRENT_REP_PRS" : "CURRENT_WEIGHT_PRS")
       //.orderBy("weight", descending: true)
       //.limit(1)
       .get();
@@ -288,13 +292,14 @@ Future<QuerySnapshot> getWhereQueriedAllPRsCloud(
     {@required context,
     @required String userId,
     @required String lift,
-    @required String query}) async {
+    @required String query,
+    @required bool isRep}) async {
   QuerySnapshot prs = await FirebaseFirestore.instance
       .collection("USERDATA")
       .doc(userId)
       .collection("PRS")
       .doc(lift.toLowerCase())
-      .collection("ALL_PRS")
+      .collection(isRep ? "ALL_REP_PRS" : "ALL_WEIGHT_PRS")
       .where(query)
       .get();
   return prs;
@@ -304,7 +309,8 @@ Future<QuerySnapshot> getWhereQueriedAllPRsCloud(
 Future<void> addToAllPRsCloud(
     {@required String lift,
     @required String userId,
-    @required Map<String, dynamic> data}) async {
+    @required Map<String, dynamic> data,
+    @required bool isRep}) async {
   final databaseReference = FirebaseFirestore.instance;
   /*
   data["weight"] = lift.weight;
@@ -316,14 +322,15 @@ Future<void> addToAllPRsCloud(
       .doc(userId)
       .collection("PRS")
       .doc(lift.toLowerCase())
-      .collection("ALL_PRS")
+      .collection(isRep ? "ALL_REP_PRS" : "ALL_WEIGHT_PRS")
       .add(data);
 }
 
-Future<void> setRepPRCloud(
+Future<void> setPRCloud(
     {@required context,
     @required String userId,
-    @required ExerciseSet lift}) async {
+    @required ExerciseSet lift,
+    @required bool isRep}) async {
   final databaseReference = FirebaseFirestore.instance;
   //var exercise = Provider.of<ExerciseDay>(context, listen: false);
   Map data = Map<String, dynamic>();
@@ -331,22 +338,28 @@ Future<void> setRepPRCloud(
   data["reps"] = lift.reps;
   data["dateTime"] = lift.dateTime;
   // first, write this PR to the collection of all PRs
-  await addToAllPRsCloud(data: data, userId: userId, lift: lift.title);
+  await addToAllPRsCloud(
+      data: data, userId: userId, lift: lift.title, isRep: isRep);
   // then, update the new rep PR
   await databaseReference
       .collection("USERDATA")
       .doc(userId)
       .collection("PRS")
       .doc(lift.title.toLowerCase())
-      .collection("CURRENT_PRS")
-      .doc(lift.reps.toString() + "RepPR")
+      .collection("CURRENT_${isRep ? 'REP' : 'WEIGHT'}_PRS")
+      .doc((isRep
+              ? (lift.reps.toString() + "Rep")
+              : (lift.weight.toString() + "Weight")) +
+          "PR")
       .set(data);
 }
 
+/*
 Future<void> setWeightPRCloud(
     {@required context,
     @required String userId,
-    @required ExerciseSet lift}) async {
+    @required ExerciseSet lift,
+    @required bool isRep}) async {
   final databaseReference = FirebaseFirestore.instance;
   //var exercise = Provider.of<ExerciseDay>(context, listen: false);
   Map data = Map<String, dynamic>();
@@ -354,18 +367,19 @@ Future<void> setWeightPRCloud(
   data["dateTime"] = lift.dateTime;
   data["reps"] = lift.reps;
   // first, write this PR to the collection of all PRs
-  await addToAllPRsCloud(data: data, userId: userId, lift: lift.title);
+  await addToAllPRsCloud(
+      data: data, userId: userId, lift: lift.title, isRep: isRep);
   // then, update the new rep PR
   await databaseReference
       .collection("USERDATA")
       .doc(userId)
       .collection("PRS")
       .doc(lift.title.toLowerCase())
-      .collection("CURRENT_PRS")
+      .collection("CURRENT_${isRep ? 'REP' : 'WEIGHT'}REP_PRS")
       .doc(lift.weight.toString() + "WeightPR")
       .set(data);
 }
-
+*/
 void getPlatesCloud({@required context, @required String userID}) async {
   LifterWeightsController lifterWeightsController =
       new LifterWeightsController();

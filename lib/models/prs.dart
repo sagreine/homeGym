@@ -11,86 +11,210 @@ class Pr {
   Pr({this.reps, this.weight, this.dateTime, this.lift});
 }
 
+// TODO: just use a map of list<pr> ...
 class Prs extends ChangeNotifier {
-  List<Pr> prs;
+  //List<Pr> prsRep;
+  //List<Pr> prsWeight;
+  Map<String, List<Pr>> currentPrs;
+  Map<String, List<Pr>> allPrs;
 
-  _getExistingPRIndex({ExerciseSet lift, bool isRep}) {
-    return prs.indexWhere((element) =>
-        (isRep ? element.reps == lift.reps : element.weight == lift.weight) &&
-        element.lift == lift.title);
+  Prs({this.currentPrs, this.allPrs});
+
+  List<Object> get props => [currentPrs, allPrs];
+
+  Map<String, Pr> bothLocalPR({ExerciseSet lift}) {
+    Map<String, Pr> toReturn = Map<String, Pr>();
+    toReturn["Rep"] = _getExistingRepPR(lift);
+    toReturn["Weight"] = _getExistingWeightPR(lift);
+    return toReturn;
   }
 
-  getExistingRepPR(ExerciseSet lift) {
+  _getExistingRepPR(ExerciseSet lift) {
     return _getExistingPR(lift: lift, isRep: true);
   }
 
-  getExistingWeightPR(ExerciseSet lift) {
+  _getExistingWeightPR(ExerciseSet lift) {
     return _getExistingPR(lift: lift, isRep: false);
   }
 
   Pr _getExistingPR({ExerciseSet lift, bool isRep}) {
     var index = _getExistingPRIndex(lift: lift, isRep: isRep);
+    /*var prs;
+    if (isRep) {
+      prs = prsRep;
+    } else {
+      prs = prsWeight;
+    }*/
     if (index == -1) {
       return Pr(dateTime: DateTime.now(), weight: 0, reps: 0);
     } else {
-      return prs[index];
+      return currentPrs[isRep ? "Rep" : "Weight"][index];
     }
   }
+
+  _getExistingPRIndex({ExerciseSet lift, bool isRep}) {
+    /*var prs;
+    if (isRep) {
+      prs = prsRep;
+    } else {
+      prs = prsWeight;
+    }*/
+    return currentPrs[isRep ? "Rep" : "Weight"].indexWhere((element) =>
+        (isRep ? element.reps == lift.reps : element.weight == lift.weight) &&
+        element.lift == lift.title);
+  }
+
+/*
+  // note that there is no "both" here. that is intentional
+  // we don't want callers to have to check that a lift is both a Rep max and a Weight max
+  // and if they do they can just call each of them..
 
   setRepPR(
       {@required context,
       @required String userId,
       @required ExerciseSet lift}) {
+    _setPR(context: context, userId: userId, lift: lift, isRep: true);
+  }
+
+  setWeightPR(
+      {@required context,
+      @required String userId,
+      @required ExerciseSet lift}) {
+    _setPR(context: context, userId: userId, lift: lift, isRep: false);
+  }
+*/
+  // this is done very stupidly and from pointer thinking.
+  setPR(
+      {@required context,
+      @required String userId,
+      @required ExerciseSet lift,
+      @required bool isRep}) {
     var thisPRIndex;
-    if (prs == null) {
-      prs = List<Pr>();
+    /*var prs;
+    if (isRep) {
+      prs = prsRep;
+    } else {
+      prs = prsWeight;
+    }*/
+    if (currentPrs == null) {
+      currentPrs = Map<String, List<Pr>>();
     }
-    thisPRIndex = _getExistingPRIndex(lift: lift, isRep: true);
+    if (currentPrs[isRep ? "Rep" : "Weight"] == null) {
+      currentPrs[isRep ? "Rep" : "Weight"] = List<Pr>();
+    }
+    thisPRIndex = _getExistingPRIndex(lift: lift, isRep: isRep);
     if (thisPRIndex == -1) {
-      prs.add(Pr(
+      currentPrs[isRep ? "Rep" : "Weight"].add(Pr(
         reps: lift.reps,
         weight: lift.weight,
         dateTime: lift.dateTime,
         lift: lift.title,
       ));
     } else {
-      prs[thisPRIndex].lift = lift.title;
-      prs[thisPRIndex].weight = lift.weight;
-      prs[thisPRIndex].dateTime = lift.dateTime;
+      currentPrs[isRep ? "Rep" : "Weight"][thisPRIndex].lift = lift.title;
+      currentPrs[isRep ? "Rep" : "Weight"][thisPRIndex].weight = lift.weight;
+      currentPrs[isRep ? "Rep" : "Weight"][thisPRIndex].dateTime =
+          lift.dateTime;
     }
     // the safety placeholder can be removed at this point.
-    if (prs[0].reps == 0) {
-      prs.removeAt(0);
+    if (currentPrs[isRep ? "Rep" : "Weight"][0].reps == 0) {
+      currentPrs[isRep ? "Rep" : "Weight"].removeAt(0);
     }
+    /*if (isRep) {
+      prsRep = prs;
+    } else {
+      prsWeight = prs;
+    }*/
     notifyListeners();
   }
 
-  Prs({
-    this.prs,
-  });
+// this is not needed because we're pulling from separate tables for Rep, Weight.
+/*
+  void createOrPopulateBothCurrentPrs ({List<Pr> squatPRs,
+      List<Pr> pressPRs,
+      List<Pr> deadliftPRs,
+      List<Pr> benchPRs,}) {
+        _createOrPopulateCurrentPrsRep(benchPRs: benchPRs, squatPRs: squatPRs, pressPRs: pressPRs, deadliftPRs: deadliftPRs);
+        _createOrPopulateCurrentPrsWeight(benchPRs: benchPRs, squatPRs: squatPRs, pressPRs: pressPRs, deadliftPRs: deadliftPRs);
+  }*/
+  /*
+  void createOrPopulateCurrentPrsRep({
+    List<Pr> squatPRs,
+    List<Pr> pressPRs,
+    List<Pr> deadliftPRs,
+    List<Pr> benchPRs,
+  }) {
+    _createOrPopulateCurrentPrs(
+        benchPRs: benchPRs,
+        squatPRs: squatPRs,
+        deadliftPRs: deadliftPRs,
+        pressPRs: pressPRs,
+        isRep: true);
+    _createOrPopulateCurrentPrs(
+        benchPRs: benchPRs,
+        squatPRs: squatPRs,
+        deadliftPRs: deadliftPRs,
+        pressPRs: pressPRs,
+        isRep: false);
+  }
 
-  List<Object> get props => [prs];
+  void createOrPopulateCurrentPrsWeight({
+    List<Pr> squatPRs,
+    List<Pr> pressPRs,
+    List<Pr> deadliftPRs,
+    List<Pr> benchPRs,
+  }) {
+    _createOrPopulateCurrentPrs(
+        benchPRs: benchPRs,
+        squatPRs: squatPRs,
+        deadliftPRs: deadliftPRs,
+        pressPRs: pressPRs,
+        isRep: false);
+    _createOrPopulateCurrentPrs(
+        benchPRs: benchPRs,
+        squatPRs: squatPRs,
+        deadliftPRs: deadliftPRs,
+        pressPRs: pressPRs,
+        isRep: true);
+  }*/
+
   //TODO: this is terribly named
-  void getCurrentPrs(
+  void createOrPopulateCurrentPrs(
       {List<Pr> squatPRs,
       List<Pr> pressPRs,
       List<Pr> deadliftPRs,
-      List<Pr> benchPRs}) {
-    if (prs == null) {
-      prs = List<Pr>();
+      List<Pr> benchPRs,
+      @required bool isRep}) {
+    /*var prs;
+    if (isRep) {
+      prsRep = prs;
+    } else {
+      prsWeight = prs;
+    }*/
+    if (currentPrs == null) {
+      currentPrs = Map<String, List<Pr>>();
+    }
+    if (currentPrs[isRep ? "Rep" : "Weight"] == null) {
+      currentPrs[isRep ? "Rep" : "Weight"] = List<Pr>();
     }
     if (squatPRs != null) {
-      prs.addAll(squatPRs);
+      currentPrs[isRep ? "Rep" : "Weight"].addAll(squatPRs);
     }
     if (pressPRs != null) {
-      prs.addAll(pressPRs);
+      currentPrs[isRep ? "Rep" : "Weight"].addAll(pressPRs);
     }
     if (deadliftPRs != null) {
-      prs.addAll(deadliftPRs);
+      currentPrs[isRep ? "Rep" : "Weight"].addAll(deadliftPRs);
     }
     if (benchPRs != null) {
-      prs.addAll(benchPRs);
+      currentPrs[isRep ? "Rep" : "Weight"].addAll(benchPRs);
     }
+    /*
+    if (isRep) {
+      prsRep = prs;
+    } else {
+      prsWeight = prs;
+    }*/
     /*if (squatPRs == null &&
         pressPRs == null &&
         deadliftPRs == null &&

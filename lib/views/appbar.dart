@@ -347,11 +347,11 @@ class ReusableWidgets {
                   // wait while we log the user out.
                   var exerciseDay =
                       Provider.of<ExerciseDay>(context, listen: false);
-                  var prs = Provider.of<Prs>(context, listen: false);
+                  /*var prs = Provider.of<Prs>(context, listen: false);
                   if (prs.prs != null) {
                     prs.prs.clear();
                   }
-                  prs.prs = null;
+                  prs.prs = null;*/
                   exerciseDay.lift = null;
 
                   await user.logout();

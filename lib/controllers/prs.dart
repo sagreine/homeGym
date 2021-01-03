@@ -4,17 +4,20 @@ import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 
 class PrsController {
-  setRepPR({@required context, @required ExerciseSet lift}) {
+  _setPR(
+      {@required context, @required ExerciseSet lift, @required bool isRep}) {
     var prs = Provider.of<Prs>(context, listen: false);
     var user = Provider.of<Muser>(context, listen: false);
     // first update locally
-    prs.setRepPR(context: context, userId: user.fAuthUser.uid, lift: lift);
+    prs.setPR(
+        context: context, userId: user.fAuthUser.uid, lift: lift, isRep: isRep);
     // then tell the cloud about this, which updates current and adds to historical
-    setRepPRCloud(context: context, userId: user.fAuthUser.uid, lift: lift);
+    setPRCloud(
+        context: context, userId: user.fAuthUser.uid, lift: lift, isRep: isRep);
   }
 
   Future<bool> setPotentialPR(
-      {@required context, @required ExerciseSet lift}) async {
+      {@required context, @required ExerciseSet lift, @required isRep}) async {
     var prs = Provider.of<Prs>(context, listen: false);
 
     // we only set PRs for the main lifts.
@@ -24,12 +27,11 @@ class PrsController {
       return false;
     }
 
-    var currentPR = prs.getExistingRepPR(lift);
-    if (currentPR.weight < lift.weight) {
-      setRepPR(
-        context: context,
-        lift: lift,
-      );
+    Pr currentPR = prs.bothLocalPR(lift: lift)[isRep ? "Rep" : "Weight"];
+    // getExistingRepPR(lift);
+    if ((isRep && currentPR.weight < lift.weight) ||
+        (!isRep && currentPR.reps < lift.reps)) {
+      _setPR(context: context, lift: lift, isRep: isRep);
       return true;
     }
     return false;

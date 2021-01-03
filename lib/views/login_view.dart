@@ -140,7 +140,7 @@ class _LoginViewState extends State<LoginView> {
         loginController.getMaxes(context);
         loginController.getBarWeights(context);
         loginController.getPlates(context);
-        loginController.getRepPRs(context);
+        loginController.getPRs(context);
 
         if (_user.getPhotoURL() != null && _user.getPhotoURL().isNotEmpty) {
           precacheImage(new NetworkImage(_user.getPhotoURL()), context);
