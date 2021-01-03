@@ -30,12 +30,19 @@ class LifterMaxes extends ChangeNotifier {
     notifyListeners();
   }
 
-  calculateMax() {
+  double calculateE1RM({@required int reps, @required int weight}) {
+    if (reps != null && reps > 0 && weight != null && weight > 0) {
+      return weight * (1 + reps / 40);
+    } else
+      return null;
+  }
+
+  void calculateMax() {
     if (_calculatorReps != null &&
         _calculatorReps > 0 &&
         _calculatorWeight != null &&
         _calculatorWeight > 0) {
-      var tmp = _calculatorWeight * (1 + _calculatorReps / 40);
+      var tmp = calculateE1RM(reps: _calculatorReps, weight: _calculatorWeight);
       calculatedMax = tmp.toInt();
     } else {
       calculatedMax = null;

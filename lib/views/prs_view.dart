@@ -91,7 +91,7 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
               Text(
                 tabName == "Rep"
                     ? "${element.reps.toString()}RM"
-                    : "${element.weight.toString()}RM",
+                    : "${element.weight.toString()}WM",
               ),
               showEditIcon: false),
           DataCell(
@@ -101,8 +101,15 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
             showEditIcon: false,
           ),
           DataCell(
+            Text(Provider.of<LifterMaxes>(context, listen: false)
+                .calculateE1RM(reps: element.reps, weight: element.weight)
+                .toInt()
+                .toString()),
+            showEditIcon: false,
+          ),
+          DataCell(
               Text(
-                "${element.dateTime.day.toString()}/${element.dateTime.month.toString()}/${element.dateTime.year.toString()}",
+                "${element.dateTime.month.toString()}/${element.dateTime.day.toString()}/${element.dateTime.year.toString()}",
               ),
               showEditIcon: false),
         ]));
@@ -141,53 +148,65 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
         SizedBox(
           height: 12,
         ),
-        DataTable(
-          sortColumnIndex: 0,
-          sortAscending: true,
-          columns: [
-            DataColumn(
-                //onSort: (columnIndex, ascending) {
-                /*setState(() {
+        Expanded(
+          child: ListView(
+            shrinkWrap: true,
+            children: [
+              DataTable(
+                sortColumnIndex: 0,
+                sortAscending: true,
+                columns: [
+                  DataColumn(
+                      //onSort: (columnIndex, ascending) {
+                      /*setState(() {
                             if (ascending) {
                               thisLiftPrs.sort((row1, row2) {
                                 return row1.reps.compareTo(row2.reps);*/
 
-                //.forEach((element)
+                      //.forEach((element)
 
-                /*return thisLiftPrs[thisLiftPrs.indexOf(row1)]
+                      /*return thisLiftPrs[thisLiftPrs.indexOf(row1)]
                                   .reps
                                   .compareTo(
                                       thisLiftPrs[thisLiftPrs.indexOf(row2)]
                                           .reps);*/
-                /*});
+                      /*});
                             } else if (!ascending) {
                               thisLiftPrs.sort((row1, row2) {
                                 return row1.reps.compareTo(row2.reps);*/
-                //thisLiftPrs = thisLiftPrs.reversed.toList();
-                /*thisLiftPrs.sort((row1, row2) {
+                      //thisLiftPrs = thisLiftPrs.reversed.toList();
+                      /*thisLiftPrs.sort((row1, row2) {
                                 return row2.reps.compareTo(row1.reps);*/
 
-                /*prs.prs.sort((row1, row2) {
+                      /*prs.prs.sort((row1, row2) {
                               return thisLiftPrs[thisLiftPrs.indexOf(row2)]
                                   .reps
                                   .compareTo(
                                       thisLiftPrs[thisLiftPrs.indexOf(row1)]
                                           .reps);*/
-                //});
-                /* });
+                      //});
+                      /* });
                             }
                           });*/
-                //},
-                label: Text('$tabName Max'),
-                numeric: true),
-            DataColumn(
-                label: Text(tabName == "Rep" ? 'Weight' : "Reps"),
-                numeric: true),
-            DataColumn(label: Text('Date'), numeric: true),
-          ],
-          rows: dr, //_buildPRCells(prs),
+                      //},
+                      label: Text('$tabName Max'),
+                      numeric: true),
+                  DataColumn(
+                      label: Text(tabName == "Rep" ? 'Weight' : "Reps"),
+                      numeric: true),
+                  DataColumn(
+                    label: Text(
+                      'e1RM',
+                    ),
+                  ),
+                  DataColumn(label: Text('Date'), numeric: true),
+                ],
+                rows: dr, //_buildPRCells(prs),
 
-          // prs.prs.forEach((element) { _buildPRCells(value.prs[element]);})
+                // prs.prs.forEach((element) { _buildPRCells(value.prs[element]);})
+              ),
+            ],
+          ),
         ),
         SizedBox(
           height: 15,
