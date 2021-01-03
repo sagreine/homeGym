@@ -221,7 +221,12 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                 InkWell(
                                                   child: Icon(
                                                     Icons.delete_sweep,
-                                                    color: Colors.red,
+                                                    // for disabled ones, gray them out a little
+                                                    color: i >
+                                                            currentSet * 2 - 1
+                                                        ? Colors.red
+                                                        : Colors.red
+                                                            .withOpacity(0.6),
                                                     size: 35,
                                                   ),
                                                   //onTap: () {
