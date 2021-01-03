@@ -45,131 +45,169 @@ class HelpViewState extends State<HelpView> {
       drawer: ReusableWidgets.getDrawer(context),
       body: ListView(
         children: <Widget>[
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: <Widget>[
-              Text("Help Page"),
-              Divider(
-                height: 10,
-                thickness: 8,
-                color: Colors.blueGrey,
-                indent: 20,
-                endIndent: 20,
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 8),
-              ),
-              Text(
-                "Instructional Screens",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
-                child: Text(
-                  "When you opened the app for the very first time you were shown these screens. Click to show them again",
-                  style: TextStyle(fontSize: 12),
+          Padding(
+            padding: EdgeInsets.only(left: 4, right: 4),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: <Widget>[
+                Text("Help Page"),
+                Divider(
+                  height: 10,
+                  thickness: 8,
+                  color: Colors.blueGrey,
+                  indent: 20,
+                  endIndent: 20,
                 ),
-              ),
-              RaisedButton(
-                child: Text("See Instructions"),
-                onPressed: () {
-                  print("pressed for help!");
-                  Navigator.pushNamed(context, '/intro_screen');
-                },
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                      style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyText1.color),
-                      text:
-                          "To cast: First, use your phone or computer to download the free companion TV app HomeGymTV available in the Amazon App Store. For FireStick: ",
-                    ),
-                    TextSpan(
-                      style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          color: Colors.blue),
-                      text: "click this link ",
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () async {
-                          final url =
-                              'https://www.amazon.com/dp/B08P9TKSPL/ref=mp_s_a_1_1?dchild=1&keywords=homegymtv&qid=1608494257&s=mobile-apps&sr=1-1 ';
-                          if (await canLaunch(url)) {
-                            await launch(
-                              url,
-                              forceSafariVC: false,
-                            );
-                          }
-                        },
-                    ),
-                    TextSpan(
-                      style: TextStyle(
-                          color: Theme.of(context).textTheme.bodyText1.color),
-                      text:
-                          " then go to settings and click Search. In the future, you should be able to select the FireStick simply by toggling the Cast button on the main lifting page.",
-                    ),
-                  ],
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 8),
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              RichText(
-                text: TextSpan(
-                  children: [
-                    TextSpan(
-                        text: "Refer to ",
+                Text(
+                  "Instructional Screens",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 8),
+                  child: Text(
+                    "When you opened the app for the very first time you were shown these screens. Click to show them again",
+                    //style: TextStyle(fontSize: 12),
+                  ),
+                ),
+                RaisedButton(
+                  child: Text("See Instructions"),
+                  onPressed: () {
+                    print("pressed for help!");
+                    Navigator.pushNamed(context, '/intro_screen');
+                  },
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
                         style: TextStyle(
-                            color:
-                                Theme.of(context).textTheme.bodyText1.color)),
-                    TextSpan(
-                      style: TextStyle(
-                          decoration: TextDecoration.underline,
-                          color: Colors.blue),
-                      text: "https://sagrehomegym.web.app/",
-                      recognizer: TapGestureRecognizer()
-                        ..onTap = () async {
-                          final url = 'https://sagrehomegym.web.app/';
-                          if (await canLaunch(url)) {
-                            await launch(
-                              url,
-                              forceSafariVC: false,
-                            );
-                          }
-                        },
-                    ),
-                    TextSpan(
-                        text: " for user manual with further instructions",
+                            color: Theme.of(context).textTheme.bodyText1.color),
+                        text:
+                            "To cast: First, use your phone or computer to download the free companion TV app HomeGymTV available in the Amazon App Store. For FireStick: ",
+                      ),
+                      TextSpan(
                         style: TextStyle(
-                            color:
-                                Theme.of(context).textTheme.bodyText1.color)),
-                  ],
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue),
+                        text: "click this link ",
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            final url =
+                                'https://www.amazon.com/dp/B08P9TKSPL/ref=mp_s_a_1_1?dchild=1&keywords=homegymtv&qid=1608494257&s=mobile-apps&sr=1-1 ';
+                            if (await canLaunch(url)) {
+                              await launch(
+                                url,
+                                forceSafariVC: false,
+                              );
+                            }
+                          },
+                      ),
+                      TextSpan(
+                        style: TextStyle(
+                            color: Theme.of(context).textTheme.bodyText1.color),
+                        text:
+                            " then go to settings and click Search. In the future, you should be able to select the FireStick simply by toggling the Cast button on the main lifting page.",
+                      ),
+                    ],
+                  ),
                 ),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              RaisedButton(
-                onPressed: () async {
-                  PackageInfo packageInfo = await PackageInfo.fromPlatform();
-                  showAboutDialog(
-                      context: context,
-                      children: [
-                        Column(mainAxisSize: MainAxisSize.min, children: [
-                          Text("Please don't sue me"),
-                          Container(
-                            height: 160,
-                            child: SingleChildScrollView(
-                              child: Container(
-                                height: 180,
+                SizedBox(
+                  height: 10,
+                ),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                          text: "Refer to ",
+                          style: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodyText1.color)),
+                      TextSpan(
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue),
+                        text: "the app website",
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            final url = 'https://sagrehomegym.web.app/';
+                            if (await canLaunch(url)) {
+                              await launch(
+                                url,
+                                forceSafariVC: false,
+                              );
+                            }
+                          },
+                      ),
+                      TextSpan(
+                          text: " for user manual with further instructions",
+                          style: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodyText1.color)),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                RichText(
+                  text: TextSpan(
+                    children: [
+                      TextSpan(
+                          text: "View this app in ",
+                          style: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodyText1.color)),
+                      TextSpan(
+                        style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.blue),
+                        text: "the play store",
+                        recognizer: TapGestureRecognizer()
+                          ..onTap = () async {
+                            final url =
+                                'https://play.google.com/store/apps/details?id=com.sagre1.home_gym';
+                            if (await canLaunch(url)) {
+                              await launch(
+                                url,
+                                forceSafariVC: false,
+                              );
+                            }
+                          },
+                      ),
+                      TextSpan(
+                          text: " for user manual with further instructions",
+                          style: TextStyle(
+                              color:
+                                  Theme.of(context).textTheme.bodyText1.color)),
+                    ],
+                  ),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                RaisedButton(
+                  onPressed: () async {
+                    PackageInfo packageInfo = await PackageInfo.fromPlatform();
+                    showAboutDialog(
+                        context: context,
+                        children: [
+                          Column(mainAxisSize: MainAxisSize.min, children: [
+                            Text("Please don't sue me"),
+                            Container(
+                              height: 160,
+                              child: SingleChildScrollView(
+                                child: Container(
+                                  height: 180,
 
-                                /*
+                                  /*
                                 child: WebviewScaffold(
                                   url: 'public/index.html',
                                   
@@ -182,35 +220,36 @@ class HelpViewState extends State<HelpView> {
                                   hidden: true,
                                 ),*/
 
-                                child: WebView(
-                                  initialUrl: "",
-                                  javascriptMode: JavascriptMode.unrestricted,
-                                  gestureRecognizers: [
-                                    Factory(() =>
-                                        PlatformViewVerticalGestureRecognizer()),
-                                  ].toSet(),
-                                  //"file:///android_asset/flutter_assets/assets/index.html",
-                                  onWebViewCreated: (WebViewController
-                                      webViewController) async {
-                                    _controller = webViewController;
-                                    await loadHtmlFromAssets(
-                                        'public/index.html', _controller);
-                                  },
+                                  child: WebView(
+                                    initialUrl: "",
+                                    javascriptMode: JavascriptMode.unrestricted,
+                                    gestureRecognizers: [
+                                      Factory(() =>
+                                          PlatformViewVerticalGestureRecognizer()),
+                                    ].toSet(),
+                                    //"file:///android_asset/flutter_assets/assets/index.html",
+                                    onWebViewCreated: (WebViewController
+                                        webViewController) async {
+                                      _controller = webViewController;
+                                      await loadHtmlFromAssets(
+                                          'public/index.html', _controller);
+                                    },
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ]),
-                      ],
-                      applicationVersion: packageInfo.version,
-                      applicationName: packageInfo.appName,
-                      applicationLegalese: "",
-                      applicationIcon:
-                          ImageIcon(AssetImage("assets/images/pos_icon.png")));
-                },
-                child: Text("About, and Legalese for masochists"),
-              )
-            ],
+                          ]),
+                        ],
+                        applicationVersion: packageInfo.version,
+                        applicationName: packageInfo.appName,
+                        applicationLegalese: "",
+                        applicationIcon: ImageIcon(
+                            AssetImage("assets/images/pos_icon.png")));
+                  },
+                  child: Text("About, and Legalese for masochists"),
+                )
+              ],
+            ),
           ),
         ],
       ),
