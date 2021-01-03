@@ -9,6 +9,11 @@ import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:social_share_plugin/social_share_plugin.dart';
 
+import 'package:direct_select_flutter/generated/i18n.dart';
+import 'package:direct_select_flutter/direct_select_container.dart';
+import 'package:direct_select_flutter/direct_select_item.dart';
+import 'package:direct_select_flutter/direct_select_list.dart';
+
 class PrsView extends StatefulWidget {
   @override
   PrsViewState createState() => PrsViewState();

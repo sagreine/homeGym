@@ -327,33 +327,48 @@ class _TimelineStepsChild extends StatelessWidget {
         padding: const EdgeInsets.all(4.0),
         height: 200,
         child: ListTile(
-          leading: Text(activity.title,
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                //color: Colors.white,
-                fontWeight: FontWeight.bold,
-              )),
-          title: Text(
-              activity.reps.toString() +
-                  // if the weight is zero, don't display any weight and display 'reps' instead
-                  (activity.weight != 0
-                      ? "x" +
-                          (activity.thisSetPRSet ? "PRx" : "") +
-                          activity.weight.toString()
-                      : " reps"),
-              textAlign: TextAlign.left,
-              style: TextStyle(
-                //color: Colors.white,
-                fontWeight: FontWeight.bold,
-              )),
-          subtitle: Text(activity.description),
-          trailing: thisSetProgressSet
-              ? Icon(Icons.star)
-              : Container(
-                  height: 0,
-                  width: 0,
+            leading: Text(activity.title,
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  //color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                )),
+            title: Text(
+                activity.reps.toString() +
+                    // if the weight is zero, don't display any weight and display 'reps' instead
+                    (activity.weight != 0
+                        ? "x" +
+                            (activity.thisSetPRSet ? "PRx" : "") +
+                            activity.weight.toString()
+                        : " reps"),
+                textAlign: TextAlign.left,
+                style: TextStyle(
+                  //color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                )),
+            subtitle: Text(activity.description),
+            trailing: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Visibility(
+                        child: Text("RPR!"),
+                        visible: activity.wasRepPRSet ?? false),
+                    Visibility(
+                        child: Text("WPR!"),
+                        visible: activity.wasWeightPRSet ?? false),
+                  ],
                 ),
-        ),
+                thisSetProgressSet
+                    ? Icon(Icons.star)
+                    : Container(
+                        height: 0,
+                        width: 0,
+                      ),
+              ],
+            )),
       ),
     );
   }

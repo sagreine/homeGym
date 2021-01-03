@@ -524,6 +524,7 @@ class HomeController {
         .setPotentialPR(context: context, lift: exercise, isRep: true)
         .then((value) {
       if (value) {
+        exercise.wasRepPRSet = true;
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text("New ${exercise.title} rep record set!"),
         ));
@@ -537,6 +538,7 @@ class HomeController {
         .setPotentialPR(context: context, lift: exercise, isRep: false)
         .then((value) {
       if (value) {
+        exercise.wasWeightPRSet = true;
         Scaffold.of(context).showSnackBar(SnackBar(
           content: Text("New ${exercise.title} weight record set!"),
         ));

@@ -73,6 +73,7 @@ dependencies:
   vibration: ^1.7.3
   package_info: ^0.4.3+2
   admob_flutter: ^1.0.1
+  direct_select_flutter: ^1.0.7
 
 
   # The following adds the Cupertino Icons font to your application.

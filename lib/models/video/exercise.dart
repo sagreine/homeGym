@@ -25,6 +25,8 @@ class ExerciseSet extends ChangeNotifier {
   DateTime dateTime;
   bool thisSetPRSet;
   bool thisSetProgressSet;
+  bool wasWeightPRSet;
+  bool wasRepPRSet;
 
   // for searching, we'll popluate with keywords based on lift title
   static List<String> makeKeywords(String name) {
@@ -54,6 +56,8 @@ class ExerciseSet extends ChangeNotifier {
     this.aspectRatio,
     this.dateTime,
     this.thisSetProgressSet,
+    this.wasWeightPRSet,
+    this.wasRepPRSet,
   }) : prescribedReps = reps {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
@@ -186,5 +190,7 @@ class ExerciseSet extends ChangeNotifier {
         thisSetProgressSet,
         prescribedReps,
         keywords,
+        wasRepPRSet,
+        wasWeightPRSet
       ];
 }
