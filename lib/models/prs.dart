@@ -5,6 +5,7 @@ import 'package:home_gym/models/models.dart';
 class Pr {
   String lift;
   int reps;
+  //int prescribedReps;
   int weight;
   DateTime dateTime;
 
@@ -106,12 +107,14 @@ class Prs extends ChangeNotifier {
     if (thisPRIndex == -1) {
       currentPrs[isRep ? "Rep" : "Weight"].add(Pr(
         reps: lift.reps,
+        //prescribedReps: lift.prescribedReps,
         weight: lift.weight,
         dateTime: lift.dateTime,
         lift: lift.title,
       ));
     } else {
       currentPrs[isRep ? "Rep" : "Weight"][thisPRIndex].lift = lift.title;
+      //currentPrs[isRep ? "Rep" : "Weight"][thisPRIndex].prescribedReps = lift.prescribedReps;
       currentPrs[isRep ? "Rep" : "Weight"][thisPRIndex].weight = lift.weight;
       currentPrs[isRep ? "Rep" : "Weight"][thisPRIndex].dateTime =
           lift.dateTime;

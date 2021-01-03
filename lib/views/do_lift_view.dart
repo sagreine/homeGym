@@ -261,17 +261,15 @@ class _DoLiftViewState extends State<DoLiftView>
   Future showCastDevicePickerDialog() {
     return showDialog(
         context: context,
-        barrierDismissible: false,
+        barrierDismissible: true,
         builder: (BuildContext context) {
           return Consumer<FlingMediaModel>(builder: (context, flingy, child) {
             return WillPopScope(
-                // I think you just return true, not pop yourself....
                 onWillPop: () async {
-                  setState(() {
-                    doCast = false;
-                  });
+                  doCast = false;
+                  Navigator.of(context).pop(true);
                   return true;
-                }, // async => false,
+                },
                 child: AlertDialog(
                     scrollable: true,
                     title: Text("Cast to"),
@@ -294,9 +292,9 @@ class _DoLiftViewState extends State<DoLiftView>
                                   // or check here before we let them select it..
                                   flingController.selectPlayer(context,
                                       flingy.flingDevices.elementAt(index));
-                                  setState(() {
-                                    doCast = true;
-                                  });
+                                  //setState(() {
+                                  doCast = true;
+                                  //});
                                   Navigator.of(context).pop();
                                 },
                               );
@@ -307,9 +305,9 @@ class _DoLiftViewState extends State<DoLiftView>
                       FlatButton(
                         child: Text("Don't cast"),
                         onPressed: () {
-                          setState(() {
-                            doCast = false;
-                          });
+                          //setState(() {
+                          doCast = false;
+                          //});
                           Navigator.of(context).pop();
                         },
                       )
@@ -615,6 +613,13 @@ class _DoLiftViewState extends State<DoLiftView>
                           // that's what other apps do.... annoying to otherwise have to go to settings
                           // vs. annoying bcuz people probably only have 1 cast device.
                           onChanged: (newValue) async {
+                            /* var _oldDoCast = doCast;
+
+                            if (newValue == false) {
+                              _oldDoCast = false;
+                            }*/
+                            var testIfPicked = true;
+                            ;
                             if (newValue && user.isNewUser) {
                               await showNewUserFlingDialog();
                             }
@@ -628,10 +633,11 @@ class _DoLiftViewState extends State<DoLiftView>
                               }
                               if (flingy.selectedPlayer == null || showPicker) {
                                 await showCastDevicePickerDialog();
+                                testIfPicked = doCast;
                               }
                             }
                             setState(() {
-                              doCast = newValue;
+                              doCast = newValue && testIfPicked;
                             });
                           },
                           secondary: doCast
