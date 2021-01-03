@@ -683,12 +683,16 @@ class _DoLiftViewState extends State<DoLiftView>
                                         // then get the next exercise's info into the form (not fully implemented of course)
                                         //homeController.updateExercise(context);
                                         // may need to await this, if it is updating our exercise that we're sending....
-                                        await homeController.castMediaTo(
-                                            player: flingy.selectedPlayer,
-                                            context: context,
-                                            doCast: doCast,
-                                            doVideo: doVideo,
-                                            exercise: exercise);
+                                        // a false here means they did not record the exercise and should not advance, e.g. video was canceled
+                                        if (await homeController.castMediaTo(
+                                                player: flingy.selectedPlayer,
+                                                context: context,
+                                                doCast: doCast,
+                                                doVideo: doVideo,
+                                                exercise: exercise) ==
+                                            false) {
+                                          return;
+                                        }
 
                                         // TODO: this is a consequence of not using a model. the controller progresses but nobody told the UI's data
                                         // so we have to tell it too. that's pretty stupid, eh? do it right instead and you won't have to worry about it.
@@ -708,7 +712,8 @@ class _DoLiftViewState extends State<DoLiftView>
                                           Scaffold.of(context).showSnackBar(
                                               _lastSetShareSnackBar());
                                         }
-                                        if (startController) {
+                                        if (startController &&
+                                            !exerciseDay.justDidLastSet) {
                                           _countDownController.restart(
                                               duration: int.parse(homeController
                                                       .formControllerRestInterval

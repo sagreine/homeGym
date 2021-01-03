@@ -211,7 +211,7 @@ class HomeController {
 
   // or just don't wait? once we send the video there's nothing
   // stoppping us from retrieving and updating the app right?
-  castMediaTo({
+  Future<bool> castMediaTo({
     RemoteMediaPlayer player,
     BuildContext context,
     @required bool doCast,
@@ -254,6 +254,16 @@ class HomeController {
     ///
     ///
     bool firstExercise = thisDay.currentSet == 0;
+    var pickedFile;
+    // if we didn't record the video and said we were going to, like by pressing back, back all the way out
+    if (doVideo) {
+      // 1a) get video
+      pickedFile = await getVideo(context);
+      // if we didn't record the video and said we were going to, like by pressing back, back all the way out
+      if (pickedFile == null) {
+        return false;
+      }
+    }
     ExerciseSet nextSet = getNextExercise(context: context);
     String nextExercise = json.encode(nextSet.toJson());
     // will tell the TV if we need to start a timer on fling
@@ -271,7 +281,11 @@ class HomeController {
     // 6) if they want us to, save to local and or cloud
     if (doVideo) {
       // 1a) get video
-      var pickedFile = await getVideo(context);
+      /*var pickedFile = await getVideo(context);
+      
+      if (pickedFile == null) {
+        return false;
+      }*/
       // 1c)
       showDialog(
           barrierDismissible: false,
@@ -390,11 +404,6 @@ class HomeController {
                 },
               ));
 
-      // 2a)
-      // if we didn't record the video, like by pressing back, back all the way out
-      if (pickedFile == null) {
-        return;
-      }
       // 2b cast placeholder - ONLY send firstExercise exactly once, so only sending it here.
       if (doCast) {
         cast(
@@ -558,5 +567,6 @@ class HomeController {
           progression: true,
           updateCloud: true);
     }
+    return true;
   }
 }
