@@ -15,9 +15,10 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   AdmobBannerSize bannerSize;
 
   @override
-  void initState() {
-    super.initState();
-    bannerSize = AdmobBannerSize.FULL_BANNER;
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    bannerSize = AdmobBannerSize.ADAPTIVE_BANNER(
+        width: (MediaQuery.of(context).size.width).toInt());
   }
 
   Widget _pickChild({
@@ -245,7 +246,8 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                           ),
                         ),
                         Container(
-                          margin: EdgeInsets.only(bottom: 20.0),
+                          alignment: Alignment.center,
+                          margin: EdgeInsets.only(top: 5, bottom: 10.0),
                           child: AdmobBanner(
                             adUnitId:
                                 Provider.of<OldVideos>(context, listen: false)
