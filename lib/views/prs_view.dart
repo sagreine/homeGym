@@ -68,7 +68,10 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
     if (prs[isRep ? "Rep" : "Weight"] != null) {
       thisLiftPrs = prs[isRep ? "Rep" : "Weight"]
           .where((element) => element.lift == lift)
-          .toList();
+          .toList()
+            ..sort((element1, element2) => isRep
+                ? element1.reps.compareTo(element2.reps)
+                : element2.weight.compareTo(element1.weight));
     }
   }
 
@@ -110,7 +113,9 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
   }
 
   _buildTab(String tabName) {
+    updateThisLifPrs(prs: fullCurrentPrs, isRep: tabName == "Rep");
     _buildPRCells(thisLiftPrs, tabName);
+
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       mainAxisSize: MainAxisSize.min,
