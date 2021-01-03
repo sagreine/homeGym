@@ -45,6 +45,13 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
   //var prs;
   //Prs prs;
   Map<String, List<Pr>> fullCurrentPrs;
+  List<String> _lifts = [
+    "Squat",
+    "Press",
+    "Deadlift",
+    "Bench",
+  ];
+  final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   // = ScreenshotController();
 
@@ -124,112 +131,195 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
     }
   }
 
+  DirectSelectItem<String> getDropDownMenuItem(String value) {
+    return DirectSelectItem<String>(
+        itemHeight: 56,
+        value: value,
+        itemBuilder: (context, value) {
+          return Text(value);
+        });
+  }
+
+  void _showScaffold() {
+    final snackBar = SnackBar(content: Text('Hold and drag instead of tap'));
+    scaffoldKey.currentState.showSnackBar(snackBar);
+  }
+
+  _getDslDecoration() {
+    return BoxDecoration(
+      border: BorderDirectional(
+        bottom: BorderSide(width: 1, color: Colors.black12),
+        top: BorderSide(width: 1, color: Colors.black12),
+      ),
+    );
+  }
+
   _buildTab(String tabName) {
     updateThisLifPrs(prs: fullCurrentPrs, isRep: tabName == "Rep");
     _buildPRCells(thisLiftPrs, tabName);
 
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.start,
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Text(
-          "Your $tabName PRs",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        DropdownButton(
-            value: lift,
-            items: [
-              DropdownMenuItem(child: Text("Squat"), value: "Squat"),
-              DropdownMenuItem(child: Text("Press"), value: "Press"),
-              DropdownMenuItem(child: Text("Deadlift"), value: "Deadlift"),
-              DropdownMenuItem(child: Text("Bench"), value: "Bench"),
-            ],
-            onChanged: (value) {
-              setState(() {
-                lift = value;
-                updateThisLifPrs(prs: fullCurrentPrs, isRep: tabName == "Rep");
-              });
-            }),
-        SizedBox(
-          height: 12,
-        ),
-        Expanded(
-          child: ListView(
-            shrinkWrap: true,
-            children: [
-              DataTable(
-                sortColumnIndex: 0,
-                sortAscending: true,
-                columns: [
-                  DataColumn(
-                      //onSort: (columnIndex, ascending) {
-                      /*setState(() {
+    return DirectSelectContainer(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Text(
+            "Your $tabName PRs",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          //SingleChildScrollView(
+          //child: Column(
+          //mainAxisSize: MainAxisSize.min,
+          //children: [
+          //MealSelector(data: _lifts, label: "Select lift"),
+          Padding(
+            padding: EdgeInsets.fromLTRB(0, 8, 0, 0),
+            child: Container(
+              decoration: BoxDecoration(
+                boxShadow: <BoxShadow>[
+                  new BoxShadow(
+                    color: Colors.black.withOpacity(0.06),
+                    spreadRadius: 4,
+                    offset: new Offset(0.0, 0.0),
+                    blurRadius: 15.0,
+                  ),
+                ],
+              ),
+              child: Card(
+                  child: Row(
+                mainAxisSize: MainAxisSize.max,
+                children: <Widget>[
+                  Expanded(
+                      child: Padding(
+                          child: DirectSelectList<String>(
+                              values: _lifts,
+                              onUserTappedListener: () {
+                                _showScaffold();
+                              },
+                              defaultItemIndex: _lifts.indexOf(lift),
+                              itemBuilder: (String value) =>
+                                  getDropDownMenuItem(value),
+                              focusedItemDecoration: _getDslDecoration(),
+                              onItemSelectedListener: (item, index, context) {
+                                setState(() {
+                                  lift = _lifts[index];
+                                  updateThisLifPrs(
+                                      prs: fullCurrentPrs,
+                                      isRep: tabName == "Rep");
+                                });
+                              }),
+                          padding: EdgeInsets.only(left: 22))),
+                  Padding(
+                      padding: EdgeInsets.only(right: 8),
+                      child: Icon(
+                        Icons.unfold_more,
+                        color: Colors.blueAccent,
+                      ))
+                ],
+              )),
+            ),
+          ),
+          /*
+          DropdownButton(
+              value: lift,
+              items: [
+                DropdownMenuItem(child: Text("Squat"), value: "Squat"),
+                DropdownMenuItem(child: Text("Press"), value: "Press"),
+                DropdownMenuItem(child: Text("Deadlift"), value: "Deadlift"),
+                DropdownMenuItem(child: Text("Bench"), value: "Bench"),
+              ],
+              onChanged: (value) {
+                setState(() {
+                  lift = value;
+                  updateThisLifPrs(
+                      prs: fullCurrentPrs, isRep: tabName == "Rep");
+                });
+              }),*/
+          SizedBox(
+            height: 12,
+          ),
+          Expanded(
+            child: ListView(
+              shrinkWrap: true,
+              children: [
+                DataTable(
+                  sortColumnIndex: 0,
+                  sortAscending: true,
+                  columns: [
+                    DataColumn(
+                        //onSort: (columnIndex, ascending) {
+                        /*setState(() {
                             if (ascending) {
                               thisLiftPrs.sort((row1, row2) {
                                 return row1.reps.compareTo(row2.reps);*/
 
-                      //.forEach((element)
+                        //.forEach((element)
 
-                      /*return thisLiftPrs[thisLiftPrs.indexOf(row1)]
+                        /*return thisLiftPrs[thisLiftPrs.indexOf(row1)]
                                   .reps
                                   .compareTo(
                                       thisLiftPrs[thisLiftPrs.indexOf(row2)]
                                           .reps);*/
-                      /*});
+                        /*});
                             } else if (!ascending) {
                               thisLiftPrs.sort((row1, row2) {
                                 return row1.reps.compareTo(row2.reps);*/
-                      //thisLiftPrs = thisLiftPrs.reversed.toList();
-                      /*thisLiftPrs.sort((row1, row2) {
+                        //thisLiftPrs = thisLiftPrs.reversed.toList();
+                        /*thisLiftPrs.sort((row1, row2) {
                                 return row2.reps.compareTo(row1.reps);*/
 
-                      /*prs.prs.sort((row1, row2) {
+                        /*prs.prs.sort((row1, row2) {
                               return thisLiftPrs[thisLiftPrs.indexOf(row2)]
                                   .reps
                                   .compareTo(
                                       thisLiftPrs[thisLiftPrs.indexOf(row1)]
                                           .reps);*/
-                      //});
-                      /* });
+                        //});
+                        /* });
                             }
                           });*/
-                      //},
-                      label: Text('$tabName Max'),
-                      numeric: true),
-                  DataColumn(
-                      label: Text(tabName == "Rep" ? 'Weight' : "Reps"),
-                      numeric: true),
-                  DataColumn(
-                    label: Text(
-                      'e1RM',
+                        //},
+                        label: Text('$tabName Max'),
+                        numeric: true),
+                    DataColumn(
+                        label: Text(tabName == "Rep" ? 'Weight' : "Reps"),
+                        numeric: true),
+                    DataColumn(
+                      label: Text(
+                        'e1RM',
+                      ),
                     ),
-                  ),
-                  DataColumn(label: Text('Date'), numeric: true),
-                ],
-                rows: dr, //_buildPRCells(prs),
+                    DataColumn(label: Text('Date'), numeric: true),
+                  ],
+                  rows: dr, //_buildPRCells(prs),
 
-                // prs.prs.forEach((element) { _buildPRCells(value.prs[element]);})
-              ),
-            ],
-          ),
-        ),
-        SizedBox(
-          height: 15,
-        ),
-        Padding(
-          padding: EdgeInsets.all(10),
-          child: Center(
-            child: Text(
-              quote,
-              textAlign: TextAlign.center,
+                  // prs.prs.forEach((element) { _buildPRCells(value.prs[element]);})
+                ),
+              ],
             ),
           ),
-        ),
-        SizedBox(
-          height: 15,
-        ),
-      ],
+          SizedBox(
+            height: 15,
+          ),
+          Padding(
+            padding: EdgeInsets.all(10),
+            child: Center(
+              child: Text(
+                quote,
+                textAlign: TextAlign.center,
+              ),
+            ),
+          ),
+          SizedBox(
+            height: 15,
+          ),
+        ],
+      ),
+      //),
+      //),
     );
+    //  );
+
     //]);
   }
 /*
@@ -307,7 +397,7 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
 
     //await Future.delayed(Duration(seconds: 1))
     await screenshotController
-        .capture(path: path, delay: Duration(milliseconds: 20))
+        .capture(path: path, delay: Duration(milliseconds: 20), pixelRatio: 1.5)
         .then((File image) async {
       await SocialSharePlugin.shareToFeedInstagram(path: image.path);
     });
@@ -321,6 +411,7 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
     _buildPRCells(thisLiftPrs, tabName);
 
     return Scaffold(
+        key: scaffoldKey,
         drawer: ReusableWidgets.getDrawer(context),
         appBar: MediaQuery.of(context).orientation == Orientation.portrait
             ? ReusableWidgets.getAppBar(
@@ -357,3 +448,100 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
     //]));
   }
 }
+/*
+class MealSelector extends StatelessWidget {
+  final buttonPadding = const EdgeInsets.fromLTRB(0, 8, 0, 0);
+
+  final List<String> data;
+  final String label;
+
+  MealSelector({@required this.data, @required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Container(
+            alignment: AlignmentDirectional.centerStart,
+            margin: EdgeInsets.only(left: 4),
+            child: Text(label)),
+        Padding(
+          padding: buttonPadding,
+          child: Container(
+            decoration: _getShadowDecoration(),
+            child: Card(
+                child: Row(
+              mainAxisSize: MainAxisSize.max,
+              children: <Widget>[
+                Expanded(
+                    child: Padding(
+                        child: DirectSelectList<String>(
+                          values: data,
+                          defaultItemIndex: 0,
+                          itemBuilder: (String value) =>
+                              getDropDownMenuItem(value),
+                          focusedItemDecoration: _getDslDecoration(),
+                        ),
+                        padding: EdgeInsets.only(left: 12))),
+                Padding(
+                  padding: EdgeInsets.only(right: 8),
+                  child: _getDropdownIcon(),
+                )
+              ],
+            )),
+          ),
+        ),
+      ],
+    );
+  }
+
+  DirectSelectItem<String> getDropDownMenuItem(String value) {
+    return DirectSelectItem<String>(
+        itemHeight: 56,
+        value: value,
+        itemBuilder: (context, value) {
+          return Text(value);
+        });
+  }
+
+ 
+
+  BoxDecoration _getShadowDecoration() {
+    return BoxDecoration(
+      boxShadow: <BoxShadow>[
+        new BoxShadow(
+          color: Colors.black.withOpacity(0.06),
+          spreadRadius: 4,
+          offset: new Offset(0.0, 0.0),
+          blurRadius: 15.0,
+        ),
+      ],
+    );
+  }
+
+  Icon _getDropdownIcon() {
+    return Icon(
+      Icons.unfold_more,
+      color: Colors.blueAccent,
+    );
+  }
+}
+
+DirectSelectItem<String> getDropDownMenuItem(String value) {
+  return DirectSelectItem<String>(
+      itemHeight: 56,
+      value: value,
+      itemBuilder: (context, value) {
+        return Text(value);
+      });
+}
+
+_getDslDecoration() {
+  return BoxDecoration(
+    border: BorderDirectional(
+      bottom: BorderSide(width: 1, color: Colors.black12),
+      top: BorderSide(width: 1, color: Colors.black12),
+    ),
+  );
+}
+*/

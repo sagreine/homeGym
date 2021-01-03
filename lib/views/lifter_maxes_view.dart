@@ -68,7 +68,7 @@ class LifterMaxesViewState extends State<LifterMaxesView> {
     });
     //await Future.delayed(Duration(seconds: 1))
     await screenshotController
-        .capture(path: path, delay: Duration(milliseconds: 20))
+        .capture(path: path, delay: Duration(milliseconds: 20), pixelRatio: 1.5)
         .then((File image) async {
       await SocialSharePlugin.shareToFeedInstagram(path: image.path);
     });
