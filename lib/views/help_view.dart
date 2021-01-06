@@ -182,11 +182,6 @@ class HelpViewState extends State<HelpView> {
                             }
                           },
                       ),
-                      TextSpan(
-                          text: " for user manual with further instructions",
-                          style: TextStyle(
-                              color:
-                                  Theme.of(context).textTheme.bodyText1.color)),
                     ],
                   ),
                 ),
