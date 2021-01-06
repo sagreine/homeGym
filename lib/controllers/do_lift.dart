@@ -34,6 +34,7 @@ class HomeController {
 
   ConfettiController confettiController =
       ConfettiController(duration: const Duration(seconds: 1));
+
   //var thumbnail;
   File targetFile;
   bool justDidLastSet = false;
@@ -468,6 +469,7 @@ class HomeController {
             await uploadThumbnailToCloud(context, targetFilePath);
         var mediaInfo = await VideoCompress.getMediaInfo(targetFilePath);
         exercise.aspectRatio = mediaInfo.height / mediaInfo.width;
+        exercise.duration = mediaInfo.duration;
         print(exercise.videoPath);
       }
       if (settings.saveLocal) {

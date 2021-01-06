@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/material.dart';
+import 'package:gallery_saver/gallery_saver.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:path_provider/path_provider.dart';
@@ -254,6 +255,7 @@ class OldVideosViewState extends State<OldVideosView> {
                             url: ""); //video.videoPath ?? "");
                       },
                     ),
+                    // just use a visibility
                     // TODO need to limit to videos < 60 seconds long for instagram's requirements.
                     // only let them share on instagram if there is a video - can't pass a quote so no value in it
                     // TODO: if you later can pass a quote, consider posting the logo from assets + quote.
@@ -282,6 +284,33 @@ class OldVideosViewState extends State<OldVideosView> {
                         : Container(),
                   ],
                 ),
+                video.videoPath != null
+                    ? Text(
+                        "Save to gallery",
+                        textScaleFactor: 1.2,
+                      )
+                    : Container(),
+                video.videoPath != null
+                    ? IconButton(
+                        icon: Icon(Icons.save),
+                        onPressed: () async {
+                          if (video.videoPath != null) {
+                            final saveDir =
+                                (await getExternalStorageDirectory()).path;
+                            await FlutterDownloader.enqueue(
+                              url: video.videoPath,
+                              savedDir: saveDir,
+                              fileName: video.title + video.dateTime.toString(),
+                              showNotification: true,
+                              openFileFromNotification: true,
+                            );
+                            await FlutterDownloader.loadTasks();
+                            await GallerySaver.saveVideo(
+                                "$saveDir/${video.title + video.dateTime.toString()}.mp4",
+                                albumName: "HomeGymTV Lifts");
+                          }
+                        })
+                    : Container(),
               ],
             ),
           ]),

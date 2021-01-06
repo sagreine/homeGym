@@ -21,6 +21,9 @@ ExerciseSet _$ExerciseSetFromJson(Map<String, dynamic> json) {
         ? null
         : DateTime.parse(json['dateTime'] as String),
     thisSetProgressSet: json['thisSetProgressSet'] as bool,
+    wasWeightPRSet: json['wasWeightPRSet'] as bool,
+    wasRepPRSet: json['wasRepPRSet'] as bool,
+    duration: (json['duration'] as num)?.toDouble(),
   )
     ..type = json['type'] as String
     ..keywords = (json['keywords'] as List)?.map((e) => e as String)?.toList();
@@ -37,8 +40,11 @@ Map<String, dynamic> _$ExerciseSetToJson(ExerciseSet instance) =>
       'restPeriodAfter': instance.restPeriodAfter,
       'weight': instance.weight,
       'reps': instance.reps,
+      'duration': instance.duration,
       'keywords': instance.keywords,
       'dateTime': instance.dateTime?.toIso8601String(),
       'thisSetPRSet': instance.thisSetPRSet,
       'thisSetProgressSet': instance.thisSetProgressSet,
+      'wasWeightPRSet': instance.wasWeightPRSet,
+      'wasRepPRSet': instance.wasRepPRSet,
     };

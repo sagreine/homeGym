@@ -21,6 +21,7 @@ class ExerciseSet extends ChangeNotifier {
   int weight;
   int reps;
   final int prescribedReps;
+  double duration;
   List<String> keywords;
   DateTime dateTime;
   bool thisSetPRSet;
@@ -58,6 +59,7 @@ class ExerciseSet extends ChangeNotifier {
     this.thisSetProgressSet,
     this.wasWeightPRSet,
     this.wasRepPRSet,
+    this.duration,
   }) : prescribedReps = reps {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
@@ -191,6 +193,7 @@ class ExerciseSet extends ChangeNotifier {
         prescribedReps,
         keywords,
         wasRepPRSet,
-        wasWeightPRSet
+        wasWeightPRSet,
+        duration
       ];
 }
