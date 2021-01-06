@@ -51,7 +51,10 @@ class Quotes {
     "It's going to be awkward for both of us when you have to apologize to me.",
     "King Kong just needed me to get at Denzel.",
     "'I never thought you would get there' Yeah well that makes one of us.",
-    "Get you some."
+    "Get you some.",
+    "BRB, Cutting the sleeves off of every shirt I own",
+    "I put my pants on two legs at a time"
+    
   ];
   static List<String> _failure = [
     "First time lifting, eh?",
