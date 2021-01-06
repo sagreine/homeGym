@@ -102,9 +102,9 @@ class HomeController {
     var user = Provider.of<Muser>(context, listen: false);
     // restrict to videos under a certain size for a given set - this is ~6 min video on my camera
     // but obviously we need to be careful here.
-    print(File(File(filePath).resolveSymbolicLinksSync())
+    /*print(File(File(filePath).resolveSymbolicLinksSync())
         .lengthSync()
-        .toString());
+        .toString());*/
     if (File(File(filePath).resolveSymbolicLinksSync()).lengthSync() <
         983977033) {
       //cloudUrl =
@@ -115,6 +115,10 @@ class HomeController {
       );
     } else {
       //cloudUrl = "https://i.imgur.com/ACgwkoh.mp4";
+      GallerySaver.saveVideo(filePath);
+      Scaffold.of(context).showSnackBar(SnackBar(
+          content: Text(
+              "This video is too big for us to store in the cloud right now :(. Storing it locally on your phone")));
       print("SAGREHOMEGYM: You elected to record a video, but it is too large");
     }
     return url;
