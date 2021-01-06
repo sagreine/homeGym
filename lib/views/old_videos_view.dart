@@ -362,7 +362,7 @@ class OldVideosViewState extends State<OldVideosView> {
                 ),
                 video.videoPath != null
                     ? Text(
-                        "Save to gallery",
+                        "Save local",
                         textScaleFactor: 1.2,
                       )
                     : Container(),
@@ -384,7 +384,7 @@ class OldVideosViewState extends State<OldVideosView> {
                             //await ImageGallerySaver.saveFile(full);
                             //var appDocDir = await getTemporaryDirectory();
                             //String savePath = appDocDir.path + "/temp.mp4";
-                            String fileUrl = video.videoPath;
+                            //String fileUrl = video.videoPath;
                             /*final download = await Dio().download(fileUrl, full,
                                 onReceiveProgress: (count, total) {
                               //print((count / total * 100).toStringAsFixed(0) + "%");
