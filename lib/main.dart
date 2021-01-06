@@ -128,7 +128,7 @@ void _getInitialPull(BuildContext context) async {
 void _getSharedPrerferences(BuildContext context) async {
   var settings = Provider.of<Settings>(context, listen: false);
   final prefs = await SharedPreferences.getInstance();
-  settings.saveLocal = prefs.getBool("saveLocal") ?? false;
+  settings.saveLocal = prefs.getBool("saveLocal") ?? true;
   settings.saveCloud = prefs.getBool("saveCloud") ?? true;
   settings.meanQuotes = prefs.getBool("meanQuotes") ?? true;
   settings.timerVibrate = prefs.getBool("timerVibrate") ?? true;
