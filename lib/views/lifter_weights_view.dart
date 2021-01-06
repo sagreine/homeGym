@@ -29,6 +29,64 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
   //SettingsController settingsController = SettingsController();
   LifterWeightsController lifterWeightsController = LifterWeightsController();
 
+  _buildDataTable(
+      {/*bool isKg,*/ List<double> platesAsList, LifterWeights lifterweights}) {
+    //var _platesAsList = platesAsList.where((element) => (element/2.5).truncateToDouble() == element/2.5);
+    // this is unnecessary since it is already done above...
+    // this is not yet 'controlled' of course and doesn't use real data yet.
+    return DataTable(
+        sortColumnIndex: 0,
+        sortAscending: true,
+        columns: [
+          DataColumn(label: Text('Weight'), numeric: true),
+          DataColumn(label: Text('# Plates'), numeric: true),
+        ],
+        // will build rows dynamically here, so no error checking up front.
+        // will deprecate this for now in favor of hardcoded plates (customizable counts).
+        // don't have to let them add new, don't have to let them customize the weight..
+        rows: lifterweights.plates == null
+            ? [
+                DataRow(cells: [
+                  DataCell(Text("add your plates!")),
+                  DataCell(Text("add your plates count!"))
+                ])
+              ]
+            : platesAsList
+                .map((
+                  plate,
+                ) =>
+                    DataRow(
+                      cells: [
+                        // the weight of the plate (double)
+                        DataCell(
+                            Text("$plate", style: TextStyle(fontSize: 14))),
+                        // the count of how many we have of that plate
+                        DataCell(
+                            TextFormField(
+                              initialValue:
+                                  lifterweights.plates[plate].toString(),
+                              style: TextStyle(fontSize: 14),
+                              keyboardType: TextInputType.numberWithOptions(
+                                signed: false,
+                                decimal: false,
+                              ),
+                              validator: numberValidator,
+                              inputFormatters: <TextInputFormatter>[
+                                WhitelistingTextInputFormatter.digitsOnly
+                              ],
+                              onFieldSubmitted: (val) {
+                                lifterWeightsController.updatePlate(
+                                    context: context,
+                                    plate: plate,
+                                    plateCount: int.parse(val));
+                              },
+                            ),
+                            showEditIcon: true),
+                      ],
+                    ))
+                .toList());
+  }
+
   _barWeightWidget(LifterWeights lifterweights, String lift) {
     var barweight;
     switch (lift) {
@@ -169,65 +227,27 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                         },
                         controlAffinity: ListTileControlAffinity.platform,
                       ),
-                      // this is unnecessary since it is already done above...
-                      // this is not yet 'controlled' of course and doesn't use real data yet.
-                      DataTable(
-                          sortColumnIndex: 0,
-                          sortAscending: true,
-                          columns: [
-                            DataColumn(label: Text('Weight'), numeric: true),
-                            DataColumn(label: Text('# Plates'), numeric: true),
-                          ],
-                          // will build rows dynamically here, so no error checking up front.
-                          // will deprecate this for now in favor of hardcoded plates (customizable counts).
-                          // don't have to let them add new, don't have to let them customize the weight..
-                          rows: lifterweights.plates == null
-                              ? [
-                                  DataRow(cells: [
-                                    DataCell(Text("add your plates!")),
-                                    DataCell(Text("add your plates count!"))
-                                  ])
-                                ]
-                              : platesAsList
-                                  .map((
-                                    plate,
-                                  ) =>
-                                      DataRow(
-                                        cells: [
-                                          // the weight of the plate (double)
-                                          DataCell(Text("$plate",
-                                              style: TextStyle(fontSize: 14))),
-                                          // the count of how many we have of that plate
-                                          DataCell(
-                                              TextFormField(
-                                                initialValue: lifterweights
-                                                    .plates[plate]
-                                                    .toString(),
-                                                style: TextStyle(fontSize: 14),
-                                                keyboardType: TextInputType
-                                                    .numberWithOptions(
-                                                  signed: false,
-                                                  decimal: false,
-                                                ),
-                                                validator: numberValidator,
-                                                inputFormatters: <
-                                                    TextInputFormatter>[
-                                                  WhitelistingTextInputFormatter
-                                                      .digitsOnly
-                                                ],
-                                                onFieldSubmitted: (val) {
-                                                  lifterWeightsController
-                                                      .updatePlate(
-                                                          context: context,
-                                                          plate: plate,
-                                                          plateCount:
-                                                              int.parse(val));
-                                                },
-                                              ),
-                                              showEditIcon: true),
-                                        ],
-                                      ))
-                                  .toList()),
+                      // split the kg and lb into separate tables to be easier to look at
+                      Row(
+                        children: [
+                          _buildDataTable(
+                            platesAsList: platesAsList
+                                .where((element) =>
+                                    (element / 2.5).truncateToDouble() ==
+                                    element / 2.5)
+                                .toList(),
+                            lifterweights: lifterweights,
+                          ),
+                          _buildDataTable(
+                            platesAsList: platesAsList
+                                .where((element) =>
+                                    (element / 2.5).truncateToDouble() !=
+                                    element / 2.5)
+                                .toList(),
+                            lifterweights: lifterweights,
+                          ),
+                        ],
+                      ),
                       Consumer<Muser>(
                         builder: (context, user, child) {
                           return Visibility(
