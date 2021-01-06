@@ -1,7 +1,9 @@
 import 'dart:async';
+import 'dart:io';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flappy_search_bar/flappy_search_bar.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:gallery_saver/gallery_saver.dart';
 import 'package:home_gym/models/models.dart';
@@ -14,6 +16,8 @@ import 'package:transparent_image/transparent_image.dart';
 import 'package:social_share_plugin/social_share_plugin.dart';
 import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:admob_flutter/admob_flutter.dart';
+//import 'package:image_gallery_saver/image_gallery_saver.dart';
+import 'package:dio/dio.dart';
 
 class OldVideosView extends StatefulWidget {
   @override
@@ -202,6 +206,45 @@ class OldVideosViewState extends State<OldVideosView> {
     bannerSize = AdmobBannerSize.MEDIUM_RECTANGLE;
   }
 
+/*
+  static void downloadCallback(
+      String id, DownloadTaskStatus status, int progress) async {
+    if (status == DownloadTaskStatus.complete) {
+      await ImageGallerySaver.saveFile(full);
+    }
+
+    /*final SendPort send =
+        IsolateNameServer.lookupPortByName('downloader_send_port');
+    send.send([id, status, progress]);*/
+  */
+  /*var httpClient = new HttpClient();
+  Future<File> _downloadFile(String url, String filename) async {
+    var request = await httpClient.getUrl(Uri.parse(url));
+    var response = await request.close();
+    var bytes = await consolidateHttpClientResponseBytes(response);
+    String dir = (await getTemporaryDirectory()).path;
+    File file = File('$dir$filename');
+    if (!file.existsSync()) {
+      await file.create();
+    }
+    await file.writeAsBytes(bytes);
+    return file;
+  }*/
+
+/*
+  _saveVideo(ExerciseSet video) async {
+    var appDocDir = await getTemporaryDirectory();
+    String savePath = appDocDir.path + "/temp.mp4";
+    String fileUrl = video.videoPath;
+    //"http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4";
+    await Dio().download(fileUrl, savePath, onReceiveProgress: (count, total) {
+      print((count / total * 100).toStringAsFixed(0) + "%");
+    });
+    final result = await ImageGallerySaver.saveFile(savePath);
+    print(result);
+    _toastInfo("$result");
+  }
+*/
   Container _shareBox(ExerciseSet video) {
     return Container(
       width: 260,
@@ -329,6 +372,62 @@ class OldVideosViewState extends State<OldVideosView> {
                         onPressed: () async {
                           if (video.videoPath != null) {
                             final saveDir =
+                                (await getTemporaryDirectory()).path;
+                            final String fileName = video.title +
+                                video.dateTime.day.toString() +
+                                video.reps.toString() +
+                                video.weight.toString() +
+                                ".mp4";
+                            final String full = saveDir + "/" + fileName;
+                            //var result;
+
+                            //await ImageGallerySaver.saveFile(full);
+                            //var appDocDir = await getTemporaryDirectory();
+                            //String savePath = appDocDir.path + "/temp.mp4";
+                            String fileUrl = video.videoPath;
+                            /*final download = await Dio().download(fileUrl, full,
+                                onReceiveProgress: (count, total) {
+                              //print((count / total * 100).toStringAsFixed(0) + "%");
+                            });*/
+
+                            /*File file = await _downloadFile(fileUrl, full);
+
+                            final result =
+                                await GallerySaver.saveVideo(file.path);*/
+                            //ImageGallerySaver.saveFile(file.path);
+
+                            await FlutterDownloader.enqueue(
+                              url: video.videoPath,
+                              savedDir: saveDir,
+                              fileName: fileName,
+                              showNotification: true,
+                              openFileFromNotification: true,
+                            );
+                            //var result;
+                            /*FlutterDownloader.registerCallback(
+                                downloadCallback);*/
+                            //final tasks =
+                            await FlutterDownloader.loadTasks();
+
+                            /*
+    var appDocDir = await getTemporaryDirectory();
+    String savePath = appDocDir.path + "/temp.mp4";
+    String fileUrl =
+        video.videoPath;
+    await Dio().download(fileUrl, savePath, onReceiveProgress: (count, total) {
+      print((count / total * 100).toStringAsFixed(0) + "%");
+    });
+*/
+                            //print(download);
+                            //print(result);
+                            //print(tasks);
+                            //print(result);
+                            //_toastInfo("$result")//
+                            //}
+
+/*
+
+                            final saveDir =
                                 (await getExternalStorageDirectory()).path;
                             await FlutterDownloader.enqueue(
                               url: video.videoPath,
@@ -341,6 +440,10 @@ class OldVideosViewState extends State<OldVideosView> {
                             await GallerySaver.saveVideo(
                                 "$saveDir/${video.title + video.dateTime.toString()}.mp4",
                                 albumName: "HomeGymTV Lifts");
+
+
+
+                                */
                           }
                         })
                     : Container(),

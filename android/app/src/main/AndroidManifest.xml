@@ -12,6 +12,7 @@ xmlns:tools="http://schemas.android.com/tools"
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
 <uses-permission android:name="android.permission.WAKE_LOCK"/> 
 <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+<!-- <application android:requestLegacyExternalStorage="true" >-->
 
     <!-- io.flutter.app.FlutterApplication is an android.app.Application that
          calls FlutterMain.startInitialization(this); in its onCreate method.
@@ -29,7 +30,9 @@ xmlns:tools="http://schemas.android.com/tools"
               />
               <meta-data
       android:name="firebase_performance_logcat_enabled"
-      android:value="true" />
+      android:value="true"
+       
+       />
         
         <activity
             android:name=".MainActivity"
