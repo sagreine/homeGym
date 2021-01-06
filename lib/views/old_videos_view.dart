@@ -277,8 +277,41 @@ class OldVideosViewState extends State<OldVideosView> {
                                 );
                                 await FlutterDownloader.loadTasks();
                                 await SocialSharePlugin.shareToFeedInstagram(
-                                    type: 'video',
-                                    path: "$saveDir/tempVideo.mp4");
+                                  type: 'video',
+                                  path: "$saveDir/tempVideo.mp4",
+
+                                  /// TODO: none of the below code seems to do anything
+                                  onCancel: () async {
+                                    Scaffold.of(context).showSnackBar(SnackBar(
+                                      content: Text(
+                                          "Looks like Insta didn't happen. Save local copy instead?"),
+                                      action: SnackBarAction(
+                                          label: "Save",
+                                          onPressed: () async {
+                                            await GallerySaver.saveVideo(
+                                                    "$saveDir/tempVideo.mp4",
+                                                    albumName:
+                                                        "HomeGymTV Lifts")
+                                                .then((_) {
+                                              return;
+                                            });
+                                          }),
+                                    ));
+                                  },
+                                ).catchError((error) {
+                                  print("Error sharing to instagram: $error");
+                                  Scaffold.of(context).showSnackBar(SnackBar(
+                                    content: Text(
+                                        "Looks like Insta didn't happen. Save local copy instead?"),
+                                    action: SnackBarAction(
+                                        label: "Save",
+                                        onPressed: () async {
+                                          await GallerySaver.saveVideo(
+                                              "$saveDir/tempVideo.mp4",
+                                              albumName: "HomeGymTV Lifts");
+                                        }),
+                                  ));
+                                });
                               }
                             })
                         : Container(),
