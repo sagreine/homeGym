@@ -38,11 +38,20 @@ class _ProgramsState extends State<ProgramsView> {
         }
         // once we have data put it in.
         return ListView.builder(
-            itemCount: programSnap.data.length * 2,
+            itemCount: programSnap.data.length * 2 + 1,
             padding: EdgeInsets.all(16.0),
             itemBuilder: (context, i) {
+              if (i == 0) {
+                return ListTile(
+                    onTap: () async {
+                      //Navigator.pop(context, programSnap.data[index]);
+                    },
+                    title:
+                        Text("Make your own! <this feature isn't built yet>"));
+              }
+
               if (i.isOdd) return Divider();
-              final index = i ~/ 2;
+              final index = (i - 1) ~/ 2;
               // default to the 1st week, but only for programs that don't have weeks specified (those get nulled if they don't pick a week)
               PickedProgram returnProgram = PickedProgram();
               returnProgram.program = programSnap.data[index].program;
