@@ -354,6 +354,10 @@ class _TimelineStepsChild extends StatelessWidget {
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     Visibility(
+                        child: IconButton(
+                            icon: Icon(Icons.mode_edit), onPressed: () {}),
+                        visible: enabled),
+                    Visibility(
                         child: Text("RPR!"),
                         visible: activity.wasRepPRSet ?? false),
                     Visibility(
