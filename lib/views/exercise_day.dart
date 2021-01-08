@@ -11,7 +11,7 @@ class ExcerciseDayView extends StatefulWidget {
 }
 
 class _ExcerciseDayViewState extends State<ExcerciseDayView> {
-  ExerciseDay thisDay;
+  //ExerciseDay thisDay;
   AdmobBannerSize bannerSize;
 
   @override
@@ -24,10 +24,12 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   Widget _pickChild({
     @required int index,
     @required bool enabled,
+    @required ExerciseDay thisDay,
   }) {
     final ExerciseSet step = thisDay.exercises[index];
 
     final child = Container(
+        //height: 550,
         child: _TimelineStepsChild(
       activity: step,
       enabled: enabled,
@@ -68,16 +70,22 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
 
   @override
   Widget build(BuildContext context) {
-    thisDay = Provider.of<ExerciseDay>(context, listen: false);
-    // if we just did the last set we want to reflect that here, otherwise just use what set it says we're on.
-    int currentSet =
-        thisDay.justDidLastSet ? thisDay.currentSet + 1 : thisDay.currentSet;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Expanded(
-          child: Container(
-            /*decoration: const BoxDecoration(
+    // CONSUMER!!!
+
+    //thisDay = Provider.of<ExerciseDay>(context, listen: false);
+    return Consumer<ExerciseDay>(builder: (context, thisDay, child) {
+      // if we just did the last set we want to reflect that here, otherwise just use what set it says we're on.
+      //setState(() {
+
+      //});
+      int currentSet =
+          thisDay.justDidLastSet ? thisDay.currentSet + 1 : thisDay.currentSet;
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: <Widget>[
+          Expanded(
+            child: Container(
+              /*decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -87,23 +95,23 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
           ],
         ),
       ),*/
-            child: Theme(
-              data: Theme.of(context).copyWith(
-                accentColor: const Color(0xFFFCB69F).withOpacity(0.2),
-              ),
-              child: SafeArea(
-                child: Scaffold(
-                  backgroundColor: Colors.transparent,
-                  body: Center(
-                    child: Column(
-                      children: <Widget>[
-                        //_Header(),
-                        Text("Current Set: $currentSet"),
-                        Expanded(
-                          child: ReorderableListView(
-                            onReorder: (_oldIndex, _newIndex) {
-                              if (_newIndex > currentSet * 2 - 1) {
-                                setState(() {
+              child: Theme(
+                data: Theme.of(context).copyWith(
+                  accentColor: const Color(0xFFFCB69F).withOpacity(0.2),
+                ),
+                child: SafeArea(
+                  child: Scaffold(
+                    backgroundColor: Colors.transparent,
+                    body: Center(
+                      child: Column(
+                        children: <Widget>[
+                          //_Header(),
+                          Text("Current Set: $currentSet"),
+                          Expanded(
+                            child: ReorderableListView(
+                              onReorder: (_oldIndex, _newIndex) {
+                                if (_newIndex > currentSet * 2 - 1) {
+                                  //setState(() {
                                   if (_newIndex > _oldIndex) {
                                     _newIndex -= 1;
                                   }
@@ -135,52 +143,53 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
 
                                   /*thisDay.exercises.insert(_newIndex ~/ 2,
                                     thisDay.exercises.removeAt(_oldIndex ~/ 2));*/
-                                });
-                              }
-                            },
-                            children: <Widget>[
-                              for (int i = 0;
-                                  i < thisDay.exercises.length * 2;
-                                  i++)
-                                // put each item and a divider -> the only visible divider is the one that shows
-                                // which set we're currently on.
-                                i.isOdd
-                                    ? Divider(
-                                        key: UniqueKey(),
-                                        thickness: 2,
-                                        height: 1,
-                                        color: i == currentSet * 2 - 1
-                                            ? Colors.blueGrey
-                                            : Colors.transparent,
-                                      )
-                                    : Container(
-                                        /*color: i > thisDay.currentSet * 2 - 1
+                                  //});
+                                }
+                              },
+                              children: <Widget>[
+                                for (int i = 0;
+                                    i < thisDay.exercises.length * 2;
+                                    i++)
+                                  // put each item and a divider -> the only visible divider is the one that shows
+                                  // which set we're currently on.
+                                  i.isOdd
+                                      ? Divider(
+                                          key: UniqueKey(),
+                                          thickness: 2,
+                                          height: 1,
+                                          color: i == currentSet * 2 - 1
+                                              ? Colors.blueGrey
+                                              : Colors.transparent,
+                                        )
+                                      : Container(
+                                          /*color: i > thisDay.currentSet * 2 - 1
                                             ? Colors.transparent
                                             : Colors.grey[500].withOpacity(.7),*/
-                                        height: 75,
-                                        key: UniqueKey(),
-                                        child:
-                                            // this stops them from deleting or reordering the deleted items
-                                            // but need to stop them from dragging not-yet-done items to deleted if we're going to do this.
-                                            IgnorePointer(
-                                          ignoring: i < currentSet * 2 - 1,
-                                          child: Dismissible(
-                                            direction:
-                                                DismissDirection.endToStart,
-                                            // Each Dismissible must contain a Key. Keys allow Flutter to
-                                            // uniquely identify widgets.
-                                            key: UniqueKey(),
-                                            // Provide a function that tells the app
-                                            // what to do after an item has been swiped away.
-                                            // and only allows swipes from not-already-completed items - unnecessary protection if ignorePointer is kept..
-                                            // TODO: could use this to go back to the tab!
-                                            confirmDismiss: (direction) async {
-                                              // Remove the item from the data source.
-                                              if (i >= currentSet * 2 - 1) {
-                                                if (direction ==
-                                                    DismissDirection
-                                                        .endToStart) {
-                                                  setState(() {
+                                          height: 100,
+                                          key: UniqueKey(),
+                                          child:
+                                              // this stops them from deleting or reordering the deleted items
+                                              // but need to stop them from dragging not-yet-done items to deleted if we're going to do this.
+                                              IgnorePointer(
+                                            ignoring: i < currentSet * 2 - 1,
+                                            child: Dismissible(
+                                              direction:
+                                                  DismissDirection.endToStart,
+                                              // Each Dismissible must contain a Key. Keys allow Flutter to
+                                              // uniquely identify widgets.
+                                              key: UniqueKey(),
+                                              // Provide a function that tells the app
+                                              // what to do after an item has been swiped away.
+                                              // and only allows swipes from not-already-completed items - unnecessary protection if ignorePointer is kept..
+                                              // TODO: could use this to go back to the tab!
+                                              confirmDismiss:
+                                                  (direction) async {
+                                                // Remove the item from the data source.
+                                                if (i >= currentSet * 2 - 1) {
+                                                  if (direction ==
+                                                      DismissDirection
+                                                          .endToStart) {
+                                                    //setState(() {
                                                     // sugar for toInt()
                                                     thisDay.remove((i ~/ 2));
                                                     //thisDay.exercises
@@ -192,89 +201,91 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                         thisDay.progressSet) {
                                                       thisDay.progressSet--;
                                                     }
-                                                  });
-                                                  // this would be after it already dismisses, so stop that!
-                                                  // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
+                                                    // });
+                                                    // this would be after it already dismisses, so stop that!
+                                                    // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
+                                                  }
+                                                  return true;
+                                                } else {
+                                                  return false;
                                                 }
-                                                return true;
-                                              } else {
-                                                return false;
-                                              }
 
-                                              //else {
-                                              //widget.callback();
-                                              //}
-                                            },
-                                            // Show a red background as the item is swiped away.
-                                            background:
-                                                Container(color: Colors.red),
+                                                //else {
+                                                //widget.callback();
+                                                //}
+                                              },
+                                              // Show a red background as the item is swiped away.
+                                              background:
+                                                  Container(color: Colors.red),
 
-                                            child: Row(
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: <Widget>[
-                                                Expanded(
-                                                  child: _pickChild(
-                                                    index: i ~/ 2,
-                                                    enabled:
-                                                        i > currentSet * 2 - 1,
+                                              child: Row(
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: <Widget>[
+                                                  Expanded(
+                                                    child: _pickChild(
+                                                      thisDay: thisDay,
+                                                      index: i ~/ 2,
+                                                      enabled: i >
+                                                          currentSet * 2 - 1,
+                                                    ),
                                                   ),
-                                                ),
-                                                InkWell(
-                                                  child: Icon(
-                                                    Icons.delete_sweep,
-                                                    // for disabled ones, gray them out a little
-                                                    color: i >
-                                                            currentSet * 2 - 1
-                                                        ? Colors.red
-                                                        : Colors.red
-                                                            .withOpacity(0.6),
-                                                    size: 35,
+                                                  InkWell(
+                                                    child: Icon(
+                                                      Icons.delete_sweep,
+                                                      // for disabled ones, gray them out a little
+                                                      color: i >
+                                                              currentSet * 2 - 1
+                                                          ? Colors.red
+                                                          : Colors.red
+                                                              .withOpacity(0.6),
+                                                      size: 35,
+                                                    ),
+                                                    //onTap: () {
+                                                    //setState(() {
+                                                    //thisDay.activities.removeAt(i);
+                                                    // snackbar show..
+                                                    //});
+                                                    //},
                                                   ),
-                                                  //onTap: () {
-                                                  //setState(() {
-                                                  //thisDay.activities.removeAt(i);
-                                                  // snackbar show..
-                                                  //});
-                                                  //},
-                                                ),
-                                              ],
+                                                ],
+                                              ),
                                             ),
                                           ),
                                         ),
-                                      ),
-                            ],
+                              ],
+                            ),
                           ),
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          margin: EdgeInsets.only(top: 5, bottom: 10.0),
-                          child: AdmobBanner(
-                            adUnitId:
-                                Provider.of<OldVideos>(context, listen: false)
-                                    .getBannerAdUnitId(),
-                            adSize: bannerSize,
-                            /* listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+                          Container(
+                            alignment: Alignment.center,
+                            margin: EdgeInsets.only(top: 5, bottom: 10.0),
+                            child: AdmobBanner(
+                              adUnitId:
+                                  Provider.of<OldVideos>(context, listen: false)
+                                      .getBannerAdUnitId(),
+                              adSize: bannerSize,
+                              /* listener: (AdmobAdEvent event, Map<String, dynamic> args) {
                   handleEvent(event, args, 'Banner');
                 },*/
-                            onBannerCreated:
-                                (AdmobBannerController controller) {
-                              // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
-                              // Normally you don't need to worry about disposing this yourself, it's handled.
-                              // If you need direct access to dispose, this is your guy!
-                              // controller.dispose();
-                            },
+                              onBannerCreated:
+                                  (AdmobBannerController controller) {
+                                // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
+                                // Normally you don't need to worry about disposing this yourself, it's handled.
+                                // If you need direct access to dispose, this is your guy!
+                                // controller.dispose();
+                              },
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                 ),
               ),
             ),
           ),
-        ),
-      ],
-    );
+        ],
+      );
+    });
   }
 }
 
@@ -322,57 +333,95 @@ class _TimelineStepsChild extends StatelessWidget {
   Widget build(BuildContext context) {
     return Card(
       elevation: 15,
-      child: Container(
-        color: enabled ? Colors.transparent : Colors.grey[500].withOpacity(0.7),
-        padding: const EdgeInsets.all(4.0),
-        height: 200,
-        child: ListTile(
-            leading: Text(activity.title,
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  //color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                )),
-            title: Text(
-                activity.reps.toString() +
-                    // if the weight is zero, don't display any weight and display 'reps' instead
-                    (activity.weight != 0
-                        ? "x" +
-                            (activity.thisSetPRSet ? "PRx" : "") +
-                            activity.weight.toString()
-                        : " reps"),
-                textAlign: TextAlign.left,
-                style: TextStyle(
-                  //color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                )),
-            subtitle: Text(activity.description),
-            trailing: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Visibility(
-                        child: IconButton(
-                            icon: Icon(Icons.mode_edit), onPressed: () {}),
-                        visible: enabled),
-                    Visibility(
-                        child: Text("RPR!"),
-                        visible: activity.wasRepPRSet ?? false),
-                    Visibility(
-                        child: Text("WPR!"),
-                        visible: activity.wasWeightPRSet ?? false),
-                  ],
-                ),
-                thisSetProgressSet
-                    ? Icon(Icons.star)
-                    : Container(
-                        height: 0,
-                        width: 0,
-                      ),
-              ],
-            )),
+      child: ClipPath(
+        clipper: ShapeBorderClipper(
+            shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(5)))),
+        child: Container(
+          decoration: BoxDecoration(
+            //color: Colors.orange,
+            border: thisSetProgressSet
+                ? Border.all(
+                    //bottom: BorderSide(
+                    color: Theme.of(context).brightness == Brightness.dark
+                        ? Colors.green[900]
+                        : Colors.greenAccent,
+                    //Color.fromRGBO(0, 83, 79, 1),
+                    width: 3.0 //, width: 7.0)//,
+                    //top: BorderSide(
+                    //  color: Color.fromRGBO(0, 83, 79, 1), width: 7.0),
+                    )
+                : null,
+            color: enabled
+                ? Colors.transparent
+                : Colors.grey[500].withOpacity(0.7),
+          ),
+          padding: const EdgeInsets.all(2.0),
+          height: 95,
+          child: ListTile(
+              isThreeLine: true,
+              leading: Text(activity.title,
+                  textAlign: TextAlign.left,
+                  style: TextStyle(
+                    //color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  )),
+              title: Text(
+                  activity.reps.toString() +
+                      // if the weight is zero, don't display any weight and display 'reps' instead
+                      (activity.weight != 0
+                          ? "x" +
+                              (activity.thisSetPRSet ? "PRx" : "") +
+                              activity.weight.toString()
+                          : " reps"),
+                  textAlign: TextAlign.left,
+                  softWrap: false,
+                  style: TextStyle(
+                    //color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  )),
+              subtitle: Text(activity.description),
+              trailing: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Visibility(
+                      child: IconButton(
+                          //
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.pushNamed(context, '/exercise',
+                                arguments: activity);
+                          }),
+                      visible: enabled),
+                  Visibility(
+                    child: IconButton(
+                        icon: Icon(Icons.content_copy),
+                        onPressed: () {
+                          var thisDay =
+                              Provider.of<ExerciseDay>(context, listen: false);
+                          thisDay.insert(thisDay.exercises.indexOf(activity),
+                              ExerciseSet.fromJson(activity.toJson()));
+                          /*thisDay.exercises.insert(
+                              thisDay.exercises.indexOf(activity), activity);*/
+                        }),
+                    visible: enabled,
+                  ),
+                  Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Visibility(
+                          child: Text("RPR!"),
+                          visible: activity.wasRepPRSet ?? false),
+                      Visibility(
+                          child: Text("WPR!"),
+                          visible: activity.wasWeightPRSet ?? false),
+                    ],
+                  ),
+                ],
+              )),
+        ),
       ),
     );
   }

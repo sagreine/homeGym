@@ -182,6 +182,7 @@ class HomeController {
     //var exercise = Provider.of<ExerciseSet>(context, listen: false);
     formControllerTitle.text = exercise.title;
     formControllerDescription.text = exercise.description;
+    formControllerRestInterval.text = exercise.restPeriodAfter.toString();
 
     formControllerReps.text = exercise.reps.toString();
     if (exercise.thisSetPRSet && !justRemovedPR) {

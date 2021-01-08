@@ -14,6 +14,26 @@ class LifterWeights extends ChangeNotifier {
   PlateFinder _plateFinder;
   bool bumpers;
 
+  // TODO this isn't safe from e.g. null values
+  int getbarWeight(@required String lift) {
+    switch (lift) {
+      case "Squat":
+        return squatBarWeight;
+        break;
+      case "Deadlift":
+        return deadliftBarWeight;
+        break;
+      case "Press":
+        return pressBarWeight;
+        break;
+      case "Bench":
+        return benchBarWeight;
+        break;
+      default:
+        return -1;
+    }
+  }
+
   LifterWeights(
       {this.squatBarWeight,
       this.deadliftBarWeight,
@@ -76,7 +96,8 @@ class LifterWeights extends ChangeNotifier {
   String deadliftWeightAdjustmentPrefix = "";
   String deadliftWeightAdjustmentSuffix = "";
 
-  void _calculatePlates({int targetWeight, @required String lift}) {
+  void _calculatePlates(
+      {int targetWeight, @required String lift, bool notActuallyThisLift}) {
     // TODO: expose this as a function getBarWeight(lift);
     var barweight;
     switch (lift) {
@@ -106,7 +127,9 @@ class LifterWeights extends ChangeNotifier {
       }*/
     // if you're doing deadlife and don't own bumpers, the least you can do is
     // a 45 pounder on each side (unless you have some boxes)
-    if (bumpers == false && lift.toLowerCase() == "deadlift") {
+    if (bumpers == false &&
+        lift.toLowerCase() == "deadlift" &&
+        (notActuallyThisLift ?? false) == false) {
       // if they don't have bumpers and they don't have 45s, don't adjust, but complain.
       // this might throw, the second condition?
       if (!plates.containsKey(45.0) || plates[45.0] < 2) {
@@ -130,7 +153,7 @@ class LifterWeights extends ChangeNotifier {
 
     // if not initiated or initiated with a different weight OR we no longer / now need a 45 but didn't last time.
     if (_plateFinder == null ||
-        _plateFinder.targetWeight.toInt() != oneSidePlateWeight.toInt() ||
+        _plateFinder.targetWeight != oneSidePlateWeight ||
         _plateFinder.require45 != require45) {
       _plateFinder = PlateFinder(
           plates: plates,
@@ -139,18 +162,29 @@ class LifterWeights extends ChangeNotifier {
     }
   }
 
-  String getPickedPlatesAsString({int targetWeight, @required String lift}) {
-    _calculatePlates(targetWeight: targetWeight, lift: lift);
+  String getPickedPlatesAsString(
+      {@required int targetWeight,
+      @required String lift,
+      bool notActuallyThisLift}) {
+    _calculatePlates(
+        targetWeight: targetWeight,
+        lift: lift,
+        notActuallyThisLift: notActuallyThisLift);
 
     return _plateFinder.platesAsStrings() + deadliftWeightAdjustmentSuffix;
   }
 
-  double getPickedPlatesTotal({int targetWeight, @required String lift}) {
-    _calculatePlates(targetWeight: targetWeight, lift: lift);
+  double getPickedPlatesTotal(
+      {int targetWeight, @required String lift, bool notActuallyThisLift}) {
+    _calculatePlates(
+        targetWeight: targetWeight,
+        lift: lift,
+        notActuallyThisLift: notActuallyThisLift);
     return _plateFinder.valueOfFoundPlates;
   }
 
-  double getPickedOverallTotal({int targetWeight, @required String lift}) {
+  double getPickedOverallTotal(
+      {int targetWeight, @required String lift, bool notActuallyThisLift}) {
     var barweight;
     switch (lift) {
       case "Squat":
@@ -167,8 +201,15 @@ class LifterWeights extends ChangeNotifier {
         break;
       default:
     }
-    _calculatePlates(targetWeight: targetWeight, lift: lift);
-    return getPickedPlatesTotal(targetWeight: targetWeight, lift: lift) * 2 +
+    _calculatePlates(
+        targetWeight: targetWeight,
+        lift: lift,
+        notActuallyThisLift: notActuallyThisLift);
+    return getPickedPlatesTotal(
+                targetWeight: targetWeight,
+                lift: lift,
+                notActuallyThisLift: notActuallyThisLift) *
+            2 +
         barweight;
   }
 

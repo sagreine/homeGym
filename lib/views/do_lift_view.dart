@@ -619,7 +619,7 @@ class _DoLiftViewState extends State<DoLiftView>
                               _oldDoCast = false;
                             }*/
                             var testIfPicked = true;
-                            
+
                             if (newValue && user.isNewUser) {
                               await showNewUserFlingDialog();
                             }
@@ -682,8 +682,7 @@ class _DoLiftViewState extends State<DoLiftView>
                                           await showCastDevicePickerDialog();
                                           // if we elected to cast but there was no device so we repicked, then after being
                                           // given options we didn't like any of them, cancel all this and reset doCast
-                                          if(!doCast) 
-                                          {
+                                          if (!doCast) {
                                             setState(() {});
                                             return;
                                           }
@@ -743,9 +742,17 @@ class _DoLiftViewState extends State<DoLiftView>
                             leading: doCast
                                 ? Icon(Icons.cast_connected)
                                 : SizedBox(width: 5),
-                            title: Text("Record and cast"),
+                            title: Text(
+                              "Record and cast",
+                            ),
                             trailing: exercise.thisSetProgressSet
-                                ? Icon(Icons.star)
+                                ? Icon(
+                                    Icons.star,
+                                    color: Theme.of(context).brightness ==
+                                            Brightness.dark
+                                        ? Colors.green[900]
+                                        : Colors.greenAccent,
+                                  )
                                 : Container(
                                     height: 0,
                                     width: 0,

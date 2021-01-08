@@ -188,6 +188,7 @@ class MyApp extends StatelessWidget {
           brightness: Brightness.dark,
           primaryColor: Color(0xFF282828),
           accentColor: Color.fromRGBO(72, 74, 126, 1),
+
           //primarySwatch: Colors.red,
           //accentColor: Colors.amber,
         ),
@@ -201,6 +202,7 @@ class MyApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: theme,
             darkTheme: darkTheme,
+
             /*ThemeData(
         //primaryColor: Color(0xFF282828), //Color.fromRGBO(109, 234, 255, 1),
         //accentColor: Color.fromRGBO(72, 74, 126, 1),
@@ -234,6 +236,7 @@ class MyApp extends StatelessWidget {
               //'/form_check_copy': (context) => HomePage(cameras),
               '/today': (context) => TodayView(),
               '/prs': (context) => PrsView(),
+              '/exercise': (context) => ExerciseView(),
             },
           );
         });

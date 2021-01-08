@@ -165,6 +165,9 @@ class ExerciseSet extends ChangeNotifier {
     if (thisSetProgressSet != null) {
       this.thisSetProgressSet = thisSetProgressSet;
     }
+    if (this.restPeriodAfter == null) {
+      this.restPeriodAfter = 90;
+    }
 
     this.type = "video/";
     this.dateTime = DateTime.now();

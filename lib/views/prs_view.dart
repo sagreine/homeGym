@@ -45,6 +45,7 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
   //var prs;
   //Prs prs;
   Map<String, List<Pr>> fullCurrentPrs;
+  // TODO use static
   List<String> _lifts = [
     "Squat",
     "Press",
