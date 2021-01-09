@@ -644,6 +644,7 @@ class ExerciseForm {
                 //exerciseSet.weight = int.parse(weightController.text);
                 //},
                 );
+            exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
             //onValueUpdate(value);
 
           }
@@ -696,6 +697,7 @@ class ExerciseForm {
                 //exerciseSet.weight = int.parse(weightController.text);
                 //},
                 );
+            exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
           },
           onFieldSubmitted: //(value) => exerciseSet.weight = int.parse(value),
               (value) {
@@ -705,6 +707,7 @@ class ExerciseForm {
                 //value: value,
                 updatingFromSubmit: true,
                 updateFunction: onValueUpdate);
+            exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
             //onValueUpdate(value);
           },
           enableSuggestions: true,

@@ -113,6 +113,8 @@ class _ExerciseViewState extends State<ExerciseView> {
                     onChanged: (newValue) {
                       setState(() {
                         exerciseSet.thisSetPRSet = newValue;
+                        // TODO: this is likely something we want, just not right now.
+                        //exerciseSet.updateExercise(thisSetPRSet: newValue);
                       });
                     }),
                 SwitchListTile.adaptive(

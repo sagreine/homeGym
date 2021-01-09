@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_fling/flutter_fling.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:confetti/confetti.dart';
@@ -346,9 +347,6 @@ class _DoLiftViewState extends State<DoLiftView>
                             }
                           },
                       ),
-                      TextSpan(
-                        text: " for user manual with further instructions",
-                      ),
                     ],
                   ),
                 ),
@@ -406,11 +404,11 @@ class _DoLiftViewState extends State<DoLiftView>
                 // but having this check up front prevents us from re-pulling the exercise info just because of changes we made on this page
                 // we could do that, but it moves the cursor if you are rebuilding because you clicked into editing a form field, which is annoying
                 // also it would be very wasteful.
-                if (exercise != exerciseDay.exercises[exerciseDay.currentSet]) {
-                  exercise = exerciseDay.exercises[exerciseDay.currentSet];
-                  homeController.displayInExerciseInfo(
-                      exercise: exercise, justRemovedPR: justRemovedPR); //. ;
-                }
+                //if (exercise != exerciseDay.exercises[exerciseDay.currentSet]) {
+                exercise = exerciseDay.exercises[exerciseDay.currentSet];
+                homeController.displayInExerciseInfo(
+                    exercise: exercise, justRemovedPR: justRemovedPR); //. ;
+                //}
                 return Column(
                   children: <Widget>[
                     // if they didn't pick a day on the way in, yell at them about it here.
@@ -593,18 +591,23 @@ class _DoLiftViewState extends State<DoLiftView>
                         ),
                       ),
                       SizedBox(height: 16),
-                      Consumer<Prs>(builder: (context, prs, child) {
-                        var prsPulled = prs.bothLocalPR(lift: exercise);
-                        return Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Text(
-                                "PR for ${exercise.reps} reps: ${prsPulled["Rep"].weight}"),
-                            Text(
-                                "PR for weight of ${exercise.weight}: ${prsPulled["Weight"].reps}")
-                          ],
-                        );
-                      }),
+                      Visibility(
+                        visible: ReusableWidgets.lifts.contains(
+                          exercise.title,
+                        ),
+                        child: Consumer<Prs>(builder: (context, prs, child) {
+                          var prsPulled = prs.bothLocalPR(lift: exercise);
+                          return Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Text(
+                                  "PR for ${exercise.reps} reps: ${prsPulled["Rep"].weight}"),
+                              Text(
+                                  "PR for weight of ${exercise.weight}: ${prsPulled["Weight"].reps}")
+                            ],
+                          );
+                        }),
+                      ),
                       // this should be in a controller
                       Consumer<Muser>(builder: (context, user, child) {
                         return SwitchListTile.adaptive(

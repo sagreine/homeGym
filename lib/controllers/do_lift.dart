@@ -180,15 +180,25 @@ class HomeController {
   void displayInExerciseInfo(
       {ExerciseSet exercise, @required bool justRemovedPR}) {
     //var exercise = Provider.of<ExerciseSet>(context, listen: false);
-    formControllerTitle.text = exercise.title;
-    formControllerDescription.text = exercise.description;
-    formControllerRestInterval.text = exercise.restPeriodAfter.toString();
-
-    formControllerReps.text = exercise.reps.toString();
+    if (formControllerTitle.text != exercise.title) {
+      formControllerTitle.text = exercise.title;
+    }
+    if (formControllerDescription.text != exercise.description) {
+      formControllerDescription.text = exercise.description;
+    }
+    if (formControllerRestInterval.text !=
+        exercise.restPeriodAfter.toString()) {
+      formControllerRestInterval.text = exercise.restPeriodAfter.toString();
+    }
+    if (formControllerReps.text != exercise.reps.toString()) {
+      formControllerReps.text = exercise.reps.toString();
+    }
+    if (formControllerWeight.text != exercise.weight.toString()) {
+      formControllerWeight.text = exercise.weight.toString();
+    }
     if (exercise.thisSetPRSet && !justRemovedPR) {
       formControllerReps.text += "xPR";
     }
-    formControllerWeight.text = exercise.weight.toString();
   }
 
   // why is this here and why aren't we try catching it or at least handling errors..

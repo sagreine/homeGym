@@ -67,8 +67,8 @@ class ExerciseSet extends ChangeNotifier {
       this.dateTime = DateTime.now();
     }
     this.type = "/video";
-    this.thisSetPRSet = false;
-    this.thisSetProgressSet = false;
+    this.thisSetPRSet = thisSetPRSet ?? false;
+    this.thisSetProgressSet = thisSetProgressSet ?? false;
     //this.prescribedReps = reps;
   }
 
@@ -155,8 +155,12 @@ class ExerciseSet extends ChangeNotifier {
     if (restPeriodAfter != null) {
       this.restPeriodAfter = restPeriodAfter;
     }
-    this.weight = weight;
-    this.reps = reps;
+    if (weight != null) {
+      this.weight = weight;
+    }
+    if (reps != null) {
+      this.reps = reps;
+    }
     if (thisSetPRSet != null) {
       this.thisSetPRSet = thisSetPRSet;
     } else {
@@ -165,7 +169,7 @@ class ExerciseSet extends ChangeNotifier {
     if (thisSetProgressSet != null) {
       this.thisSetProgressSet = thisSetProgressSet;
     }
-    if (this.restPeriodAfter == null) {
+    if (restPeriodAfter == null) {
       this.restPeriodAfter = 90;
     }
 
@@ -173,6 +177,8 @@ class ExerciseSet extends ChangeNotifier {
     this.dateTime = DateTime.now();
     notifyListeners();
   }
+
+  void tempNotify() {}
 
   factory ExerciseSet.fromJson(Map<String, dynamic> json) =>
       _$ExerciseSetFromJson(json);
