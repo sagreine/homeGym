@@ -442,6 +442,7 @@ class ReusableWidgets {
   }
 }
 
+// why not just extend form? whatevs
 class ExerciseForm {
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
@@ -466,9 +467,9 @@ class ExerciseForm {
     @required GlobalKey key,
     @required BuildContext context,
     @required Function onValueUpdate,
-    String barbellLift,
-    bool readOnlyTitle,
-    bool usingBarbell,
+    @required String barbellLift,
+    @required bool readOnlyTitle,
+    @required bool usingBarbell,
     @required this.titleController,
     @required this.descriptionController,
     @required this.repsController,
@@ -491,7 +492,7 @@ class ExerciseForm {
     this.restController = restController;*/
   }
 
-  void _finalizeWeightsAndDescription({
+  void finalizeWeightsAndDescription({
     @required BuildContext context,
     @required ExerciseSet exerciseSet,
     @required bool usingBarbell,
@@ -525,7 +526,8 @@ class ExerciseForm {
         lifterWeights.getbarWeight(barbellLift ?? "Squat")) {
       exerciseSet.weight = lifterWeights.getbarWeight(barbellLift ?? "Squat");
 
-      // TODO this doesn't show because we close right afterwards.
+      // TODO this doesn't show on FAB press because we close right afterwards. make this function return a bool
+      // and then either pass that to the Navigator or just delay and do it there.
       scaffoldKey.currentState.showSnackBar(
         //Scaffold.of(context).showSnackBar(
         SnackBar(
@@ -842,7 +844,7 @@ class ExerciseForm {
                   field: "Weight",
                   onValueUpdate: () {
                     exerciseSet.weight = int.parse(weightController.text);
-                    _finalizeWeightsAndDescription(
+                    finalizeWeightsAndDescription(
                         context: context,
                         exerciseSet: exerciseSet,
                         usingBarbell: usingBarbell,

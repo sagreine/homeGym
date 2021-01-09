@@ -14,15 +14,7 @@ class _ExerciseViewState extends State<ExerciseView> {
   //ProgramController programsController = ProgramController();
   bool firstBuild;
   String barbellLift;
-  Form _form;
-
-  @override
-  void initState() {
-    //programsController.updateProgramList();
-    super.initState();
-    firstBuild = true;
-  }
-
+  //Form _form;
   final _formEditKey = GlobalKey<FormState>();
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 //_formEditKey.
@@ -31,74 +23,11 @@ class _ExerciseViewState extends State<ExerciseView> {
   ExerciseSet exerciseSet;
   ExerciseForm fullForm;
 
-  // TODO this is so terrible. just use provider.
-  bool _updateToMinBarbellWeight(BuildContext context, bool usingBarbell) {
-    /*if (exerciseSet.weight != int.parse(fullForm.weightController.text)) {
-      exerciseSet.weight = int.parse(fullForm.weightController.text);
-    }
-    if (exerciseSet.reps != int.parse(fullForm.repsController.text)) {
-      exerciseSet.reps = int.parse(fullForm.repsController.text);
-    }
-    if (exerciseSet.restPeriodAfter !=
-        int.parse(fullForm.restController.text)) {
-      exerciseSet.restPeriodAfter = int.parse(fullForm.restController.text);
-    }
-    if (exerciseSet.title != fullForm.titleController.text) {
-      exerciseSet.title = fullForm.titleController.text;
-    }
-    if (exerciseSet.description != fullForm.descriptionController.text) {
-      exerciseSet.description = fullForm.descriptionController.text;
-    }*/
-
-    // we dont need to update anything about barbells if they aren't using a barbell
-    if (!usingBarbell) {
-      return false;
-    }
-    // we dont need to update the description always, and we dont have to because the weight is the barbell at this point
-    var lifterWeights = Provider.of<LifterWeights>(context, listen: false);
-    if (exerciseSet.weight <
-        lifterWeights.getbarWeight(barbellLift ?? "Squat")) {
-      setState(() {
-        exerciseSet.weight = lifterWeights.getbarWeight(barbellLift ?? "Squat");
-      });
-
-      // TODO this doesn't show because we close right afterwards.
-      scaffoldKey.currentState.showSnackBar(
-        //Scaffold.of(context).showSnackBar(
-        SnackBar(
-            content: Text(
-                "Weight was less than weight to weight of the $barbellLift bar and you're using a bar, so set weight equal to it")),
-      );
-      return true;
-    }
-    // if we set weights and barbells, need to adjust because we might not be able to get that exact weight.
-    // so, take care of that here
-    // first, update the weights and then, we may need to update the description. Both are affected based on the bar we chose
-    setState(() {
-      var lifterWeights = Provider.of<LifterWeights>(context, listen: false);
-      // TODO: if we really wanted to, we could populate all 'we can get this weight' up front (on login) and store it and query it here
-      // to reduce latency, rather than doing it lazily
-      var closestWeight = lifterWeights.getPickedOverallTotal(
-          lift: barbellLift,
-          targetWeight: exerciseSet.weight,
-          notActuallyThisLift: true);
-      if (exerciseSet.weight != closestWeight.floor()) {
-        exerciseSet.weight = closestWeight.floor();
-        scaffoldKey.currentState.showSnackBar(
-          //Scaffold.of(context).showSnackBar(
-          SnackBar(
-              content: Text(
-                  "Weight modified to meet plates you have. If not a barbell lift, change that first!")),
-        );
-      }
-
-      exerciseSet.description = "Plates: " +
-          lifterWeights.getPickedPlatesAsString(
-              lift: barbellLift,
-              targetWeight: exerciseSet.weight,
-              notActuallyThisLift: true);
-    });
-    return false;
+  @override
+  void initState() {
+    //programsController.updateProgramList();
+    super.initState();
+    firstBuild = true;
   }
 
   FloatingActionButton _getDoneButton(BuildContext context) {
@@ -157,7 +86,7 @@ class _ExerciseViewState extends State<ExerciseView> {
           });
         });
 
-    _form = fullForm.form;
+    //_form = fullForm.form;
     firstBuild = false;
 
     //TextEditingController titleEditingController = TextEditingController();
@@ -175,7 +104,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                 //Consumer<ExerciseSet>(
                 //builder: (context, value, child) {
                 //return
-                _form,
+                fullForm.form,
                 //},
                 //),
                 SwitchListTile.adaptive(
@@ -204,7 +133,8 @@ class _ExerciseViewState extends State<ExerciseView> {
                           // if they changed their mind, we don't want to use a barbell in calculating weights so disable that.
                           //exerciseSet.weight = 0;
                         }
-                        _updateToMinBarbellWeight(context, newValue);
+                        //_updateToMinBarbellWeight(context, newValue);
+                        _formEditKey.currentState.save();
                       });
                     }),
 
@@ -233,11 +163,10 @@ class _ExerciseViewState extends State<ExerciseView> {
                                 scaffoldKey: scaffoldKey,
                                 lift: barbellLift ?? "Squat",
                                 onItemSelectedListener: (item, index, context) {
-                                  setState(() {
-                                    barbellLift = item;
-                                    _updateToMinBarbellWeight(
-                                        context, showBarbellPicker);
-                                    /*
+                                  barbellLift = item;
+                                  //_updateToMinBarbellWeight(context, showBarbellPicker);
+
+                                  /*
                                     var lifterWeights =
                                         Provider.of<LifterWeights>(context,
                                             listen: false);
@@ -252,12 +181,20 @@ class _ExerciseViewState extends State<ExerciseView> {
                                                 "Weight was less than weight to weight of the $item bar, now equal to it")),
                                       );
                                     }*/
-                                    // call to the model of exercise here...
+                                  // call to the model of exercise here...
 
-                                    //lift = ReusableWidgets.lifts[index];
-                                    /*updateThisLifPrs(
+                                  //lift = ReusableWidgets.lifts[index];
+                                  /*updateThisLifPrs(
                             prs: fullCurrentPrs, isRep: tabName == "Rep");*/
-                                  });
+                                  //setState(() {});
+                                  //_formEditKey.currentState.save();
+                                  fullForm.finalizeWeightsAndDescription(
+                                      context: context,
+                                      exerciseSet: exerciseSet,
+                                      usingBarbell: showBarbellPicker,
+                                      barbellLift: barbellLift,
+                                      scaffoldKey: scaffoldKey);
+                                  setState(() {});
                                 })),
                       ),
                       // TODO this will let us update the rep and weight maxes as the forms change
