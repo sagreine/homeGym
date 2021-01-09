@@ -369,13 +369,14 @@ class _TimelineStepsChild extends StatelessWidget {
                 widthFactor: 0.25,
                 child: Text(
                   activity.title,
+                  maxLines: 4,
                   textAlign: TextAlign.left,
                   //textWidthBasis: TextWidthBasis.parent,
                   style: TextStyle(
                     //color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
-                  overflow: TextOverflow.clip,
+                  overflow: TextOverflow.fade,
                 ),
               ),
               title: Text(
@@ -394,7 +395,11 @@ class _TimelineStepsChild extends StatelessWidget {
                 ),
                 overflow: TextOverflow.visible,
               ),
-              subtitle: Text(activity.description),
+              subtitle: Text(
+                activity.description,
+                maxLines: 4,
+                overflow: TextOverflow.fade,
+              ),
               trailing: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 mainAxisSize: MainAxisSize.min,
