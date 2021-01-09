@@ -359,27 +359,41 @@ class _TimelineStepsChild extends StatelessWidget {
           padding: const EdgeInsets.all(2.0),
           height: 95,
           child: ListTile(
+              //visualDensity: ,
               isThreeLine: true,
-              leading: Text(activity.title,
+              // put in a container to force the text to wrap, not take the whole thing
+              leading:
+                  //ConstrainedBox(
+                  //constraints: const BoxConstraints.tightFor(width: 130),
+                  FractionallySizedBox(
+                widthFactor: 0.25,
+                child: Text(
+                  activity.title,
                   textAlign: TextAlign.left,
+                  //textWidthBasis: TextWidthBasis.parent,
                   style: TextStyle(
                     //color: Colors.white,
                     fontWeight: FontWeight.bold,
-                  )),
+                  ),
+                  overflow: TextOverflow.clip,
+                ),
+              ),
               title: Text(
-                  activity.reps.toString() +
-                      // if the weight is zero, don't display any weight and display 'reps' instead
-                      (activity.weight != 0
-                          ? "x" +
-                              (activity.thisSetPRSet ? "PRx" : "") +
-                              activity.weight.toString()
-                          : " reps"),
-                  textAlign: TextAlign.left,
-                  softWrap: false,
-                  style: TextStyle(
-                    //color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  )),
+                activity.reps.toString() +
+                    // if the weight is zero, don't display any weight and display 'reps' instead
+                    (activity.weight != 0
+                        ? "x" +
+                            (activity.thisSetPRSet ? "PRx" : "") +
+                            activity.weight.toString()
+                        : " reps"),
+                textAlign: TextAlign.left,
+                softWrap: false,
+                style: TextStyle(
+                  //color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                ),
+                overflow: TextOverflow.visible,
+              ),
               subtitle: Text(activity.description),
               trailing: Row(
                 mainAxisAlignment: MainAxisAlignment.end,
