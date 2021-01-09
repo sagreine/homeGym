@@ -580,9 +580,8 @@ class ExerciseForm {
       bool returnExerciseSetVariable}) {
     switch (lift.toUpperCase()) {
       case "WEIGHT":
-        if (updateFunction != null) {
-          updateFunction();
-        }
+        updateFunction?.call();
+
         if (returnController ?? false) {
           return weightController;
         }
@@ -592,17 +591,13 @@ class ExerciseForm {
 
         break;
       case "REPS":
-        if (updateFunction != null) {
-          updateFunction();
-        }
+        updateFunction?.call();
         if (returnController ?? false) {
           return repsController;
         }
         break;
       case "REST":
-        if (updateFunction != null) {
-          updateFunction();
-        }
+        updateFunction?.call();
         if (returnController ?? false) {
           return restController;
         }
