@@ -178,7 +178,7 @@ class ExerciseSet extends ChangeNotifier {
       _$ExerciseSetFromJson(json);
 
   Map<String, dynamic> toJson() => _$ExerciseSetToJson(this);
-
+//
   //@override
   List<Object> get props => [
         videoPath,

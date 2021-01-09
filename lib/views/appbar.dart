@@ -448,22 +448,119 @@ class ExerciseForm {
   TextEditingController repsController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   TextEditingController restController = TextEditingController();
-  Form form;
 
-  ExerciseForm(
-      {@required ExerciseSet exerciseSet,
-      @required GlobalKey key,
-      @required BuildContext context,
-      @required Function onValueUpdate,
-      String barbellLift,
-      bool readOnlyTitle}) {
+  Form form;
+  //ExerciseSet _exerciseSet;
+
+  /*void dispose() {
+    titleController.dispose();
+    descriptionController.dispose();
+    repsController.dispose();
+    weightController.dispose();
+    restController.dispose();
+  }*/
+
+  ExerciseForm({
+    @required ExerciseSet exerciseSet,
+    @required GlobalKey<ScaffoldState> scaffoldKey,
+    @required GlobalKey key,
+    @required BuildContext context,
+    @required Function onValueUpdate,
+    String barbellLift,
+    bool readOnlyTitle,
+    bool usingBarbell,
+    @required this.titleController,
+    @required this.descriptionController,
+    @required this.repsController,
+    @required this.weightController,
+    @required this.restController,
+  }) {
     form = _getExerciseForm(
         exerciseSet: exerciseSet,
+        scaffoldKey: scaffoldKey,
         key: key,
         context: context,
+        usingBarbell: usingBarbell,
         barbellLift: barbellLift,
         onValueUpdate: onValueUpdate,
         readOnlyTitle: readOnlyTitle);
+    /*this.titleController = titleController;
+    this.descriptionController = descriptionController;
+    this.repsController = repsController;
+    this.weightController = weightController;
+    this.restController = restController;*/
+  }
+
+  void _finalizeWeightsAndDescription({
+    @required BuildContext context,
+    @required ExerciseSet exerciseSet,
+    @required bool usingBarbell,
+    @required String barbellLift,
+    @required GlobalKey<ScaffoldState> scaffoldKey,
+  }) {
+    if (exerciseSet.weight != int.parse(weightController.text)) {
+      exerciseSet.weight = int.parse(weightController.text);
+    }
+
+    /*if (_exerciseSet.reps != int.parse(repsController.text)) {
+      _exerciseSet.reps = int.parse(repsController.text);
+    }
+    if (_exerciseSet.restPeriodAfter != int.parse(restController.text)) {
+      _exerciseSet.restPeriodAfter = int.parse(restController.text);
+    }
+    if (_exerciseSet.title != titleController.text) {
+      _exerciseSet.title = titleController.text;
+    }
+    if (_exerciseSet.description != descriptionController.text) {
+      _exerciseSet.description = descriptionController.text;
+    }*/
+
+    // we dont need to update anything about barbells if they aren't using a barbell
+    if (!usingBarbell) {
+      return;
+    }
+    // we dont need to update the description always, and we dont have to because the weight is the barbell at this point
+    var lifterWeights = Provider.of<LifterWeights>(context, listen: false);
+    if (exerciseSet.weight <
+        lifterWeights.getbarWeight(barbellLift ?? "Squat")) {
+      exerciseSet.weight = lifterWeights.getbarWeight(barbellLift ?? "Squat");
+
+      // TODO this doesn't show because we close right afterwards.
+      scaffoldKey.currentState.showSnackBar(
+        //Scaffold.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                "Weight was less than weight to weight of the $barbellLift bar and you're using a bar, so set weight equal to it")),
+      );
+      return;
+    }
+    // if we set weights and barbells, need to adjust because we might not be able to get that exact weight.
+    // so, take care of that here
+    // first, update the weights and then, we may need to update the description. Both are affected based on the bar we chose
+
+    // TODO: if we really wanted to, we could populate all 'we can get this weight' up front (on login) and store it and query it here
+    // to reduce latency, rather than doing it lazily
+    var closestWeight = lifterWeights.getPickedOverallTotal(
+        lift: barbellLift,
+        targetWeight: exerciseSet.weight,
+        notActuallyThisLift: true);
+    if (exerciseSet.weight != closestWeight.floor()) {
+      exerciseSet.weight = closestWeight.floor();
+      scaffoldKey.currentState.showSnackBar(
+        //Scaffold.of(context).showSnackBar(
+        SnackBar(
+            content: Text(
+                "Weight modified to meet plates you have. If not a barbell lift, change that first!")),
+      );
+    }
+
+    exerciseSet.description = "Plates: " +
+        lifterWeights.getPickedPlatesAsString(
+            lift: barbellLift,
+            targetWeight: exerciseSet.weight,
+            notActuallyThisLift: true);
+
+    //return false;
   }
 
   _pickAnything(
@@ -477,7 +574,8 @@ class ExerciseForm {
               String value,
               bool updateFromSubmit})*/
           updateFunction,
-      bool returnController}) {
+      bool returnController,
+      bool returnExerciseSetVariable}) {
     switch (lift.toUpperCase()) {
       case "WEIGHT":
         if (updateFunction != null) {
@@ -486,6 +584,9 @@ class ExerciseForm {
         if (returnController ?? false) {
           return weightController;
         }
+        /*if(returnExerciseSetVariable ?? false) {
+          return _exerciseSet.weight;
+        }*/
 
         break;
       case "REPS":
@@ -509,6 +610,9 @@ class ExerciseForm {
   TextEditingController _pickController(String lift) {
     return _pickAnything(lift: lift, returnController: true);
   }
+  /*dynamic _pickExerciseSetVariable(String lift) {
+    return _pickAnything(lift: lift, returnController: false, returnExerciseSetVariable = true);
+  }*/
 
   _updateValue(
       {String field,
@@ -517,45 +621,6 @@ class ExerciseForm {
       bool updatingFromSubmit,
       Function updateFunction}) {
     _pickAnything(lift: field, updateFunction: updateFunction);
-
-/*
-    switch (field.toUpperCase()) {
-      case "WEIGHT":
-        if (updatingFromSubmit) {
-          exerciseSet.weight = int.parse(value);
-        } else {
-          exerciseSet.weight = int.parse(weightController.text);
-        }
-        break;
-      case "REPS":
-        if (updatingFromSubmit) {
-          exerciseSet.reps = int.parse(value);
-        } else {
-          exerciseSet.reps = int.parse(repsController.text);
-        }
-        break;
-      case "REST":
-        if (updatingFromSubmit) {
-          exerciseSet.restPeriodAfter = int.parse(value);
-        } else {
-          exerciseSet.restPeriodAfter = int.parse(restController.text);
-        }
-        break;
-        /*case "Title":
-        if (updatingFromSubmit) {
-          exerciseSet.title = value;
-        } else {
-          exerciseSet.title = titleController.text;
-        }
-        break;
-      case "Description":
-        if (updatingFromSubmit) {
-          exerciseSet.description = value;
-        } else {
-          exerciseSet.description = descriptionController.text;
-        }*/
-        break;
-    }*/
   }
 
   _buildFormField(
@@ -574,26 +639,9 @@ class ExerciseForm {
                 );
             //onValueUpdate(value);
 
-            // do stuff
-            /*switch (field) {
-              case "weight":
-                exerciseSet.weight = int.parse(weightController.text);
-                break;
-              case "reps":
-                exerciseSet.reps = int.parse(value);
-                break;
-              case "rest":
-                exerciseSet.restPeriodAfter = int.parse(value),
-                break;
-              case "title":
-                exerciseSet.weight = int.parse(weightController.text);
-                break;
-              case "description":
-                exerciseSet.weight = int.parse(weightController.text);
-                break;
-            }*/
           }
         },
+        //TextField
         child: TextFormField(
           //key: Key(exerciseSet.weight.toString()),
           decoration: new InputDecoration(
@@ -615,6 +663,33 @@ class ExerciseForm {
           ],
           //initialValue: exerciseSet.weight.toString(),
           controller: _pickController(field),
+          // here we directly update the value of exerciseSet as the field is changed
+          // but we don't call any callbacks. that's why submitted and onfocus are necessary -
+          // the callback is where we check the weight against available weights + description.
+          // we have to do this, and not just do the validation withhin the form because they could change the form field
+          // and hit the FAB to be done without saving, which doesn't fire onSubmit nor onFocusLost and we don't want that to lose changes.
+          // using built-in form save we will have the same problem - how to pick the field from exerciseSet to update in each call of this func?
+          // and if we're doing that already why not just do it first in onChanged too (except not overriding weight there)
+          /*onChanged: (value) {
+            _updateValue(
+                //exerciseSet: exerciseSet,
+                field: field,
+                //value: value,
+                updatingFromSubmit: false,
+                updateFunction: (value) {
+                  _pickController(field).text;
+                });
+          },*/
+          onSaved: (value) {
+            _updateValue(
+                //exerciseSet: exerciseSet,
+                field: field,
+                updatingFromSubmit: false,
+                updateFunction: onValueUpdate //() {
+                //exerciseSet.weight = int.parse(weightController.text);
+                //},
+                );
+          },
           onFieldSubmitted: //(value) => exerciseSet.weight = int.parse(value),
               (value) {
             _updateValue(
@@ -623,28 +698,9 @@ class ExerciseForm {
                 //value: value,
                 updatingFromSubmit: true,
                 updateFunction: onValueUpdate);
-            /*() {
-                  exerciseSet.weight = int.parse(weightController.text);
-                });*/
-/*
-                    exerciseSet.updateExerciseFull(
-                      context: context,
-                      setPct
-                      reps:
-        // reps is a straight pull
-        //reps: reps,
-        //thisSetPRSet: thisSetPRSet,
-        //thisSetProgressSet: thisSetProgressSet,
-        weight: int.parse(value),
-        description: "Plates: " +
-            (thisWeights.getPickedPlatesAsString(
-                targetWeight: targetWeight, lift: exerciseSet.title)));
-*/
-            onValueUpdate(value);
+            //onValueUpdate(value);
           },
           enableSuggestions: true,
-          /*controller:
-                                        homeController.formControllerWeight,*/
           validator: (value) {
             if (value.isEmpty) {
               return "$field can't be blank";
@@ -659,21 +715,39 @@ class ExerciseForm {
 // NOTE
 // Description and Text are set to update when on changed.
 // TODO: test that this isn't terrible given the controllers, or just remove the controllers entirely
-  _getExerciseForm(
+  Form _getExerciseForm(
       {@required ExerciseSet exerciseSet,
-      @required GlobalKey key,
+      @required GlobalKey<FormState> key,
+      @required GlobalKey<ScaffoldState> scaffoldKey,
       @required BuildContext context,
       @required Function onValueUpdate,
+      bool usingBarbell,
       String barbellLift,
       bool readOnlyTitle}) {
-    titleController.text = exerciseSet.title;
-    descriptionController.text = exerciseSet.description;
-    repsController.text = exerciseSet.reps.toString();
-    weightController.text = exerciseSet.weight.toString();
-    restController.text = exerciseSet.restPeriodAfter.toString();
+    /*if (_exerciseSet != exerciseSet) {
+      _exerciseSet = exerciseSet;
+    }*/
+    if (titleController.text != exerciseSet.title) {
+      titleController.text = exerciseSet.title;
+    }
+    if (descriptionController.text != exerciseSet.description) {
+      descriptionController.text = exerciseSet.description;
+    }
+    if (repsController.text != exerciseSet.reps.toString()) {
+      repsController.text = exerciseSet.reps.toString();
+    }
+    if (weightController.text != exerciseSet.weight.toString()) {
+      weightController.text = exerciseSet.weight.toString();
+    }
+    if (restController.text != exerciseSet.restPeriodAfter.toString()) {
+      restController.text = exerciseSet.restPeriodAfter.toString();
+    }
+
     //Consumer<ExerciseSet>(builder: (context, exerciseSet, child) {
+
     return form = Form(
       autovalidate: true,
+
       key: key,
       // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...
       child: Column(
@@ -752,54 +826,12 @@ class ExerciseForm {
           SizedBox(height: 8.0),
           Row(
             children: <Widget>[
-              /*Expanded(
-                  child: TextFormField(
-                    decoration: new InputDecoration(
-                        focusedBorder: OutlineInputBorder(
-                          borderSide: BorderSide(
-                            color: Colors.greenAccent,
-                            width: 1.0,
-                            style: BorderStyle.solid,
-                          ),
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Colors.blueGrey, width: 1.0),
-                        ),
-                        labelText: "Reps"),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      WhitelistingTextInputFormatter.digitsOnly,
-                    ],
-                    //initialValue: exerciseSet.reps.toString(),
-                    controller: repsController,
-                    onChanged: (value) {
-                      // if when we built this we had PR and now we don't, we don't want to add it back in.
-                      /*if (!value.contains("PR") &&
-                                          startBuildWithPR) {
-                                        justRemovedPR = true;
-                                      }*/
-                      exerciseSet.reps = int.parse(value);
-                      onValueUpdate(value);
-                    },
-                    enableSuggestions: true,
-                    /*controller:
-                                        homeController.formControllerReps,*/
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return "Reps can't be blank";
-                      }
-                      return null;
-                    },
-                  ),
-                ),*/
               _buildFormField(
                   exerciseSet: exerciseSet,
                   field: "Reps",
                   onValueUpdate: () {
                     exerciseSet.reps = int.parse(repsController.text);
                     // TODO:
-                    //exerciseSet.prescribedReps = int.parse(repsController.text);
                     onValueUpdate();
                   }),
               SizedBox(
@@ -810,7 +842,13 @@ class ExerciseForm {
                   field: "Weight",
                   onValueUpdate: () {
                     exerciseSet.weight = int.parse(weightController.text);
-                    if (barbellLift != null) {
+                    _finalizeWeightsAndDescription(
+                        context: context,
+                        exerciseSet: exerciseSet,
+                        usingBarbell: usingBarbell,
+                        scaffoldKey: scaffoldKey,
+                        barbellLift: barbellLift);
+                    /*if (barbellLift != null) {
                       var lifterWeights =
                           Provider.of<LifterWeights>(context, listen: false);
                       var closestWeight = lifterWeights.getPickedOverallTotal(
@@ -826,13 +864,9 @@ class ExerciseForm {
                               lift: barbellLift,
                               targetWeight: exerciseSet.weight,
                               notActuallyThisLift: true);
-                      /*exerciseSet.description = "Plates: " +
-                          Provider.of<LifterWeights>(context, listen: false)
-                              .getPickedPlatesAsString(
-                                  lift: barbellLift,
-                                  targetWeight: exerciseSet.weight);*/
-                      onValueUpdate();
-                    }
+                      
+                    }*/
+                    onValueUpdate();
                   }),
               SizedBox(
                 width: 2,
@@ -845,48 +879,10 @@ class ExerciseForm {
                         int.parse(restController.text);
                     onValueUpdate();
                   }),
-
-              /*Expanded(
-                  child: TextFormField(
-                    decoration: new InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.greenAccent,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.blueGrey, width: 1.0),
-                      ),
-                      labelText: "Rest after",
-                    ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      WhitelistingTextInputFormatter.digitsOnly,
-                    ],
-                    //initialValue: exerciseSet.restPeriodAfter.toString() ?? "40",
-                    controller: restController,
-                    onChanged: (value) =>
-                        exerciseSet.restPeriodAfter = int.parse(value),
-                    autocorrect: true,
-                    enableSuggestions: true,
-                    /*controller: homeController
-                                        .formControllerRestInterval,*/
-                    validator: (value) {
-                      if (value.isEmpty) {
-                        return "Can't be blank";
-                      }
-                      return null;
-                    },
-                  ),
-                ),*/
             ],
           ),
         ],
       ),
     );
-    //});
   }
 }

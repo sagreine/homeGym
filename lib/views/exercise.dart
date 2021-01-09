@@ -33,7 +33,7 @@ class _ExerciseViewState extends State<ExerciseView> {
 
   // TODO this is so terrible. just use provider.
   bool _updateToMinBarbellWeight(BuildContext context, bool usingBarbell) {
-    if (exerciseSet.weight != int.parse(fullForm.weightController.text)) {
+    /*if (exerciseSet.weight != int.parse(fullForm.weightController.text)) {
       exerciseSet.weight = int.parse(fullForm.weightController.text);
     }
     if (exerciseSet.reps != int.parse(fullForm.repsController.text)) {
@@ -48,7 +48,7 @@ class _ExerciseViewState extends State<ExerciseView> {
     }
     if (exerciseSet.description != fullForm.descriptionController.text) {
       exerciseSet.description = fullForm.descriptionController.text;
-    }
+    }*/
 
     // we dont need to update anything about barbells if they aren't using a barbell
     if (!usingBarbell) {
@@ -76,6 +76,8 @@ class _ExerciseViewState extends State<ExerciseView> {
     // first, update the weights and then, we may need to update the description. Both are affected based on the bar we chose
     setState(() {
       var lifterWeights = Provider.of<LifterWeights>(context, listen: false);
+      // TODO: if we really wanted to, we could populate all 'we can get this weight' up front (on login) and store it and query it here
+      // to reduce latency, rather than doing it lazily
       var closestWeight = lifterWeights.getPickedOverallTotal(
           lift: barbellLift,
           targetWeight: exerciseSet.weight,
@@ -107,14 +109,24 @@ class _ExerciseViewState extends State<ExerciseView> {
         //color: Colors.red,
       ),
       onPressed: () async {
-        if (_updateToMinBarbellWeight(context, showBarbellPicker)) {
+        _formEditKey.currentState.validate();
+        _formEditKey.currentState.save();
+        //_form.key
+        //fullForm.saveForm(showBarbellPicker);
+        /*if (_updateToMinBarbellWeight(context, showBarbellPicker)) {
           await Future.delayed(Duration(seconds: 1));
-        }
+        }*/
         //;
         Navigator.of(context).pop();
       },
     );
   }
+
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  TextEditingController repsController = TextEditingController();
+  TextEditingController weightController = TextEditingController();
+  TextEditingController restController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -127,16 +139,24 @@ class _ExerciseViewState extends State<ExerciseView> {
       }
     }
     fullForm = ExerciseForm(
+        titleController: titleController,
+        descriptionController: descriptionController,
+        repsController: repsController,
+        weightController: weightController,
+        restController: restController,
         context: context,
         readOnlyTitle: false,
         exerciseSet: exerciseSet,
+        scaffoldKey: scaffoldKey,
         key: _formEditKey,
+        usingBarbell: showBarbellPicker,
         barbellLift: barbellLift,
         onValueUpdate: () {
           setState(() {
-            _updateToMinBarbellWeight(context, showBarbellPicker);
+            //_updateToMinBarbellWeight(context, showBarbellPicker);
           });
         });
+
     _form = fullForm.form;
     firstBuild = false;
 
