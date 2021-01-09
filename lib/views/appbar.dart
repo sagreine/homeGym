@@ -492,6 +492,16 @@ class ExerciseForm {
     this.restController = restController;*/
   }
 
+  /// This should not be your default. Consider using _formEditKey.currentState.save() instead
+  /// Only use this if that doesn't work for you, due to building/rebuilding outside of the form
+  ///
+  /// For example, if you just need to update form values based on other values in the form, then rebuild
+  /// that function will safely do that for you.
+  ///
+  /// However, if for some reason you need to rebuild, then finalize weight and description, use this.
+  /// An example of both of these is seen in exercise.dart. When we close the form, we use .save().
+  /// But, when we need to update the form based on a value outside of the form, we have to reach
+  /// into the form to call this function before rebuildling.
   void finalizeWeightsAndDescription({
     @required BuildContext context,
     @required ExerciseSet exerciseSet,
