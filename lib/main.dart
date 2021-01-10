@@ -182,12 +182,16 @@ class MyApp extends StatelessWidget {
         light: ThemeData(
           brightness: Brightness.light,
           primarySwatch: Colors.red,
-          accentColor: Colors.amber,
+          accentColor: //Colors.amber,
+              Color(0xff12c2e9).withOpacity(0.4),
+          hoverColor: Color(0xffc471ed).withOpacity(0.4),
         ),
         dark: ThemeData(
           brightness: Brightness.dark,
           primaryColor: Color(0xFF282828),
-          accentColor: Color.fromRGBO(72, 74, 126, 1),
+          accentColor: Color(0xff2c274c), //Color.fromRGBO(72, 74, 126, 1),
+          hoverColor: Color(0xff46426c),
+          //Color(0xff46426c),
 
           //primarySwatch: Colors.red,
           //accentColor: Colors.amber,

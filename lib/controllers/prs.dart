@@ -4,6 +4,119 @@ import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 
 class PrsController {
+  Future<void> getAllPRs(BuildContext context) async {
+    var user = Provider.of<Muser>(context, listen: false);
+    var prs = Provider.of<Prs>(context, listen: false);
+
+    List<Pr> repPrs = List<Pr>();
+    List<Pr> weightPrs = List<Pr>();
+
+    await Future.wait([
+      getAllPRsCloud(
+              context: context,
+              userId: user.fAuthUser.uid,
+              lift: "Squat",
+              isRep: true)
+          .then((value) => repPrs.addAll(value)),
+      getAllPRsCloud(
+              context: context,
+              userId: user.fAuthUser.uid,
+              lift: "Deadlift",
+              isRep: true)
+          .then((value) => repPrs.addAll(value)),
+      getAllPRsCloud(
+              context: context,
+              userId: user.fAuthUser.uid,
+              lift: "Bench",
+              isRep: true)
+          .then((value) => repPrs.addAll(value)),
+      getAllPRsCloud(
+              context: context,
+              userId: user.fAuthUser.uid,
+              lift: "Press",
+              isRep: true)
+          .then((value) => repPrs.addAll(value)),
+      getAllPRsCloud(
+              context: context,
+              userId: user.fAuthUser.uid,
+              lift: "Squat",
+              isRep: false)
+          .then((value) => weightPrs.addAll(value)),
+      getAllPRsCloud(
+              context: context,
+              userId: user.fAuthUser.uid,
+              lift: "Deadlift",
+              isRep: false)
+          .then((value) => weightPrs.addAll(value)),
+      getAllPRsCloud(
+              context: context,
+              userId: user.fAuthUser.uid,
+              lift: "Press",
+              isRep: false)
+          .then((value) => weightPrs.addAll(value)),
+      getAllPRsCloud(
+              context: context,
+              userId: user.fAuthUser.uid,
+              lift: "Bench",
+              isRep: false)
+          .then((value) => weightPrs.addAll(value)),
+    ]);
+
+    prs.createOrPopulateAllPrs(
+      repPrs: repPrs,
+      weightPrs: weightPrs,
+    );
+  }
+
+  void getCurrentPRs(BuildContext context) async {
+    var user = Provider.of<Muser>(context, listen: false);
+    var prs = Provider.of<Prs>(context, listen: false);
+    prs.createOrPopulateCurrentPrs(
+        squatPRs: await getCurrentPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Squat",
+            isRep: false),
+        pressPRs: await getCurrentPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Press",
+            isRep: false),
+        deadliftPRs: await getCurrentPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Deadlift",
+            isRep: false),
+        benchPRs: await getCurrentPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Bench",
+            isRep: false),
+        isRep: false);
+    prs.createOrPopulateCurrentPrs(
+        squatPRs: await getCurrentPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Squat",
+            isRep: true),
+        pressPRs: await getCurrentPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Press",
+            isRep: true),
+        deadliftPRs: await getCurrentPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Deadlift",
+            isRep: true),
+        benchPRs: await getCurrentPRsCloud(
+            context: context,
+            userId: user.fAuthUser.uid,
+            lift: "Bench",
+            isRep: true),
+        isRep: true);
+  }
+
   _setPR(
       {@required context, @required ExerciseSet lift, @required bool isRep}) {
     var prs = Provider.of<Prs>(context, listen: false);
@@ -27,7 +140,8 @@ class PrsController {
       return false;
     }
 
-    Pr currentPR = prs.bothLocalPR(lift: lift)[isRep ? "Rep" : "Weight"];
+    Pr currentPR =
+        prs.bothLocalExistingPR(lift: lift)[isRep ? "Rep" : "Weight"];
     // getExistingRepPR(lift);
     if ((isRep && currentPR.weight < lift.weight) ||
         (!isRep && currentPR.reps < lift.reps)) {

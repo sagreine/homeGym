@@ -596,7 +596,8 @@ class _DoLiftViewState extends State<DoLiftView>
                           exercise.title,
                         ),
                         child: Consumer<Prs>(builder: (context, prs, child) {
-                          var prsPulled = prs.bothLocalPR(lift: exercise);
+                          var prsPulled =
+                              prs.bothLocalExistingPR(lift: exercise);
                           return Row(
                             mainAxisAlignment: MainAxisAlignment.spaceAround,
                             children: [

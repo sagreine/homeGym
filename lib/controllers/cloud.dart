@@ -253,7 +253,7 @@ void getMaxesCloud(
           : 90);
 }
 
-Future<List<Pr>> getCurrentRepsPRsCloud(
+Future<List<Pr>> getCurrentPRsCloud(
     {@required context,
     @required String userId,
     @required String lift,
@@ -288,11 +288,11 @@ Future<List<Pr>> getCurrentRepsPRsCloud(
 }
 
 // TODO: untested. obvviously not the right way to do this either, but fix it later.
-Future<QuerySnapshot> getWhereQueriedAllPRsCloud(
+Future<List<Pr>> getAllPRsCloud(
     {@required context,
     @required String userId,
     @required String lift,
-    @required String query,
+    //@required String query,
     @required bool isRep}) async {
   QuerySnapshot prs = await FirebaseFirestore.instance
       .collection("USERDATA")
@@ -300,9 +300,23 @@ Future<QuerySnapshot> getWhereQueriedAllPRsCloud(
       .collection("PRS")
       .doc(lift.toLowerCase())
       .collection(isRep ? "ALL_REP_PRS" : "ALL_WEIGHT_PRS")
-      .where(query)
+      //.where(query)
       .get();
-  return prs;
+  List<QueryDocumentSnapshot> list = new List.from(prs.docs.toList());
+  var toReturn = new List<Pr>.generate(list.length, (index) {
+    Pr _pr = Pr();
+    _pr.reps = list[index].data()["reps"] ??
+        0; //int.parse(list[index].id.substring(1, 2));
+    // we'll default to 0 if this value isn't set.
+    _pr.weight = list[index].data()["weight"] ?? 0;
+    // becaus we dont need to store this in firestore but need it (for convenience) later
+    // or i guess we could just have lift-specific PRs...
+    _pr.lift = lift;
+    _pr.dateTime = list[index].data()["dateTime"]?.toDate() ?? DateTime.now();
+    return _pr;
+  })
+    ..sort((e, f) => e.reps.compareTo(f.reps));
+  return toReturn;
 }
 
 // would make this private to this library/class

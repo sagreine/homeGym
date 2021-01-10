@@ -350,6 +350,7 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
   final List<Tab> myTabs = <Tab>[
     new Tab(text: 'Rep PRs'),
     new Tab(text: 'Weight PRs'),
+    new Tab(text: 'Pretty Graphs'),
   ];
 
 //  String quote;
@@ -366,7 +367,7 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
     super.initState();
     //var currentDay = Provider.of<ExerciseDay>(context, listen: false);
     defaultTabController =
-        TabController(initialIndex: 0, length: 2, vsync: this);
+        TabController(initialIndex: 0, length: 3, vsync: this);
     // start by showing the rep PRs
 //    tabName = "Rep";
 
@@ -430,23 +431,39 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
                       children: [
                         _buildTab("Rep"),
                         _buildTab("Weight"),
+                        ChangeNotifierProvider(
+                          create: (context) => PrettyPRGraphs(
+                            prs: Provider.of<Prs>(context, listen: false),
+                            selectedLift: lift,
+                            //barBackgroundColor: Theme.of(context).accentColor
+                            /*isScreenshotting: isScreenshotting*/
+                          ),
+                          child: PrettyPRGraphsView(
+                              isScreenshotting:
+                                  isScreenshotting), //context: context),
+                        ),
                       ],
                     ),
                   ),
                   Visibility(
-                      child: Text(
-                          "HomeGymTV"), //Image.asset("assets/images/fc_logo.png"),
+                      child: Padding(
+                        padding: EdgeInsets.only(bottom: 10),
+                        child: Text("HomeGymTV"),
+                      ), //Image.asset("assets/images/fc_logo.png"),
                       visible: isScreenshotting),
-                  IconButton(
-                      icon: Image.asset("assets/images/Instagram_Logo.png"),
-                      onPressed: () async {
-                        // because we can't share app data outside of the app, need to save to external storage
-                        final directory = (await getExternalStorageDirectory())
-                            .path; //from path_provide package
-                        String fileName = DateTime.now().toIso8601String();
-                        var path = '$directory/$fileName.png';
-                        await doScreenshot(path);
-                      })
+                  Visibility(
+                      child: IconButton(
+                          icon: Image.asset("assets/images/Instagram_Logo.png"),
+                          onPressed: () async {
+                            // because we can't share app data outside of the app, need to save to external storage
+                            final directory =
+                                (await getExternalStorageDirectory())
+                                    .path; //from path_provide package
+                            String fileName = DateTime.now().toIso8601String();
+                            var path = '$directory/$fileName.png';
+                            await doScreenshot(path);
+                          }), //Image.asset("assets/images/fc_logo.png"),
+                      visible: !isScreenshotting),
                 ]))));
 
     //]));

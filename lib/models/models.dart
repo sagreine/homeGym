@@ -9,3 +9,4 @@ export 'package:home_gym/models/settings.dart';
 export 'package:home_gym/models/greatness_quotes.dart';
 export 'package:home_gym/models/old_videos.dart';
 export 'package:home_gym/models/prs.dart';
+export 'package:home_gym/models/pretty_pr_graphs.dart';

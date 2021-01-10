@@ -208,7 +208,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                             // temporarily set this lift to the barbell we chose
                             var currentTitleForm = exerciseSet.title;
                             exerciseSet.title = barbellLift;
-                            var _prs = prs.bothLocalPR(lift: exerciseSet
+                            var _prs = prs.bothLocalExistingPR(lift: exerciseSet
                                 /*ExerciseSet(
                               title: barbellLift ?? "Squat",
                               reps: exerciseSet.reps,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/cloud.dart';
+import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 
@@ -39,8 +40,9 @@ class LoginController {
     getPlatesCloud(context: context, userID: user.fAuthUser.uid);
   }
 
-  void getPRs(BuildContext context) async {
-    var user = Provider.of<Muser>(context, listen: false);
+  void getCurrentPRs(BuildContext context) async {
+    PrsController().getCurrentPRs(context);
+    /*var user = Provider.of<Muser>(context, listen: false);
     var prs = Provider.of<Prs>(context, listen: false);
     prs.createOrPopulateCurrentPrs(
         squatPRs: await getCurrentRepsPRsCloud(
@@ -85,8 +87,10 @@ class LoginController {
             userId: user.fAuthUser.uid,
             lift: "Bench",
             isRep: true),
-        isRep: true);
+        isRep: true);*/
     // get all prs, once we have something to do with them (graph etc.)
+    // alternatively we can wait to do this lazily since not everyone will look at this every time and it isn't
+    // used anywhere else... let's do that.
     /*prs.createOrPopulateAllPrsWeight(
       squatPRs: await getCurrentPRsCloud(
           context: context, userId: user.fAuthUser.uid, lift: "Squat"),

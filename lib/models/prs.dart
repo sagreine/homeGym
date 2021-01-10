@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 //import 'package:json_annotation/json_annotation.dart';
 
+// TODO there's a lot of duplication here because we built these at different times.
+// basically, every function can just pick currentPRs or Allprs not a function for each..
+
 class Pr {
   String lift;
   int reps;
@@ -23,11 +26,35 @@ class Prs extends ChangeNotifier {
 
   List<Object> get props => [currentPrs, allPrs];
 
-  Map<String, Pr> bothLocalPR({ExerciseSet lift}) {
+  Map<String, Pr> bothLocalExistingPR({ExerciseSet lift}) {
     Map<String, Pr> toReturn = Map<String, Pr>();
     toReturn["Rep"] = _getExistingRepPR(lift);
     toReturn["Weight"] = _getExistingWeightPR(lift);
     return toReturn;
+  }
+
+  Map<String, List<Pr>> bothLocalAllPR(
+      {String liftTitle, @required Map<String, List<Pr>> prs}) {
+    Map<String, List<Pr>> toReturn = Map<String, List<Pr>>();
+    toReturn["Rep"] =
+        _getExistingAllPR(liftTitle: liftTitle, isRep: true, prs: prs);
+    toReturn["Weight"] =
+        _getExistingAllPR(liftTitle: liftTitle, isRep: false, prs: prs);
+    return toReturn;
+  }
+
+  _getExistingAllPR(
+      {@required String liftTitle,
+      @required bool isRep,
+      @required Map<String, List<Pr>> prs}) {
+    List<Pr> repOrWeight = prs[isRep ? "Rep" : "Weight"];
+
+    return repOrWeight.where((element) => element.lift == liftTitle).toList();
+
+    /*[
+      allPrs[isRep ? "Rep" : "Weight"]
+          .indexWhere((element) => element.lift == liftTitle)
+    ];*/
   }
 
   _getExistingRepPR(ExerciseSet lift) {
@@ -40,12 +67,6 @@ class Prs extends ChangeNotifier {
 
   Pr _getExistingPR({ExerciseSet lift, bool isRep}) {
     var index = _getExistingPRIndex(lift: lift, isRep: isRep);
-    /*var prs;
-    if (isRep) {
-      prs = prsRep;
-    } else {
-      prs = prsWeight;
-    }*/
     if (index == -1) {
       return Pr(dateTime: DateTime.now(), weight: 0, reps: 0);
     } else {
@@ -180,6 +201,19 @@ class Prs extends ChangeNotifier {
         pressPRs: pressPRs,
         isRep: true);
   }*/
+  void createOrPopulateAllPrs({List<Pr> repPrs, List<Pr> weightPrs}) {
+    if (allPrs == null) {
+      allPrs = Map<String, List<Pr>>();
+      allPrs["Rep"] = List<Pr>();
+      allPrs["Weight"] = List<Pr>();
+    }
+    if (repPrs != null) {
+      allPrs["Rep"].addAll(repPrs);
+    }
+    if (weightPrs != null) {
+      allPrs["Weight"].addAll(weightPrs);
+    }
+  }
 
   //TODO: this is terribly named
   void createOrPopulateCurrentPrs(
