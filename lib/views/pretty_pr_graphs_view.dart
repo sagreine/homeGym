@@ -33,7 +33,7 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(18)),
         color: Theme.of(context).brightness == Brightness.light
             ? Color(0xff81e5cd)
-            : Colors.deepOrangeAccent,
+            : Color(0xff06916f),
         child: Stack(
           children: <Widget>[
             Align(
@@ -56,7 +56,11 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                     child: Text(
                       '${model.selectedLift}',
                       style: TextStyle(
-                          color: const Color(0xff0f4a3c),
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyText2
+                              .color
+                              .withOpacity(0.8),
                           fontSize: 24,
                           fontWeight: FontWeight.bold),
                     ),
@@ -72,7 +76,11 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                           ? "Rep Maxes"
                           : "Weight Maxes",
                       style: TextStyle(
-                          color: const Color(0xff379982),
+                          color: Theme.of(context)
+                              .textTheme
+                              .bodyText2
+                              .color
+                              .withOpacity(0.4),
                           fontSize: 18,
                           fontWeight: FontWeight.bold),
                     ),
@@ -124,10 +132,12 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                   onPressed: () {
                     setState(() {
                       isPlaying = !isPlaying;
-                      if (isPlaying) {
-                        refreshState();
-                      }
+                      model.currentIteratorDistinctPrs = 0;
+                      refreshState(model);
                     });
+                    /*if (model.currentIteratorDistinctPrs ==
+                        model.maxDistinctPrsInAnyBucket)
+                      model.currentIteratorDistinctPrs = 0;*/
                   },
                 ),
               ),
@@ -227,6 +237,7 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
           onPressed: () {
             setState(() {
               model.nextLift();
+              isPlaying = false;
             });
           },
         ));
@@ -258,11 +269,19 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                 SwitchListTile.adaptive(
                     title: Text("Chart Type"),
                     value: model.chartTypeIsLine ?? false,
-                    onChanged: (newValue) => model.chartTypeIsLine = newValue),
+                    onChanged: (newValue) {
+                      model.chartTypeIsLine = newValue;
+                      isPlaying = false;
+                      setState(() {});
+                    }),
                 SwitchListTile.adaptive(
                     title: Text("Rep Max not Weight Max"),
                     value: model.isRepNotWeight ?? false,
-                    onChanged: (newValue) => model.isRepNotWeight = newValue),
+                    onChanged: (newValue) {
+                      model.isRepNotWeight = newValue;
+                      isPlaying = false;
+                      setState(() {});
+                    }),
               ]),
             ),
             // see if it already exists. if it does, just build the chart. otherwise, futurebuild it.
@@ -286,12 +305,25 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
     });
   }
 
-  Future<dynamic> refreshState() async {
+  Future<dynamic> refreshState(model) async {
     setState(() {});
     await Future<dynamic>.delayed(
         animationDuration + const Duration(milliseconds: 50));
     if (isPlaying) {
-      refreshState();
+      model.currentIteratorDistinctPrs++;
+      if (isPlaying &&
+          model.currentIteratorDistinctPrs < model.maxDistinctPrsInAnyBucket) {
+        refreshState(model);
+      }
+      // this sets us back to current PRs. might not be a problem i guess, cuz it should be the same, but
+      // think about it I guess
+      else {
+        isPlaying = false;
+        setState(() {});
+      }
+      /*else {
+        model.currentIteratorDistinctPrs = 0;
+      }*/
     }
   }
 }

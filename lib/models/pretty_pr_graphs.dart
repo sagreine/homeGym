@@ -18,6 +18,8 @@ class PrettyPRGraphs extends ChangeNotifier {
   bool _isRepNotWeight;
   Prs prs;
   int maxPointsToShow = 10;
+  int currentIteratorDistinctPrs = 0;
+  int maxDistinctPrsInAnyBucket = 0;
 
   final Color barBackgroundColor = const Color(0xff72d8bf);
   //Color barBackgroundColor = Colors.yellow;
@@ -78,13 +80,17 @@ class PrettyPRGraphs extends ChangeNotifier {
     selectedLift = ReusableWidgets.lifts[index];
   }
 
-  getPrsList({@required bool currentPrs}) {
+  List<Pr> getPrsList({@required bool currentPrs}) {
     List<Pr> toReturn;
     if (currentPrs) {
       toReturn = prs.bothLocalAllPR(
           liftTitle: selectedLift,
           prs: prs.currentPrs)[_isRepNotWeight ? "Rep" : "Weight"];
     } else {
+      // here we are showing them over time, so we pull every individual PR
+      // The line graph will simply spit these back out
+      // the bar graph over time will instead need to group them by, e.g. "PRs that are 5RM PRs" and cycle through them over time
+      // that will be dealt with outside of here
       toReturn = prs.bothLocalAllPR(
           liftTitle: selectedLift,
           prs: prs.allPrs)[_isRepNotWeight ? "Rep" : "Weight"];
@@ -97,6 +103,113 @@ class PrettyPRGraphs extends ChangeNotifier {
       });
     }
     return toReturn;
+  }
+
+// bad because we have an index to pass in, and then bad because map isn't ordered.
+/*  Map<int, List<Pr>> _buildPRsByType(List<Pr> prs) {
+    List<Pr> prsToReturn = List.from(prs);
+    var map2 = Map<int, List<Pr>>();
+    if (isRepNotWeight) {
+      prsToReturn.sort((item1, item2) {
+        return item2.reps.compareTo(item1.reps);
+      });
+
+      prsToReturn.forEach((pr) {
+        if (map2[pr.reps] == null) {
+          map2[pr.reps] = List<Pr>();
+        }
+        map2[pr.reps].add(pr);
+      });
+    } else {
+      prsToReturn.sort((item1, item2) {
+        return item2.weight.compareTo(item1.weight);
+      });
+      var map2 = Map<int, List<Pr>>();
+      prs.forEach((pr) {
+        if (map2[pr.weight] == null) {
+          map2[pr.weight] = List<Pr>();
+        }
+        map2[pr.weight].add(pr);
+      });
+    }
+    return map2;
+  }*/
+
+  List<List<Pr>> _buildPRsByType(List<Pr> prs) {
+    List<Pr> prsToReturn = List.from(prs);
+    List<List<Pr>> list2 = List<List<Pr>>();
+    if (isRepNotWeight) {
+      // sort
+      /*prsToReturn.sort((item1, item2) {
+        return item2.reps.compareTo(item1.reps);
+      });*/
+
+      //prsToReturn.reduce((value, element) => null)
+      // for every PR we have,
+      for (int i = 0; i < prsToReturn.length; i++) {
+        // see if we have a bucket for it, and add it to that or make a new one if not
+        bool anyBucketFound = false;
+        for (int j = 0; j < list2.length; j++) {
+          // if it does exist, see if it matches reps. if it does, add it to the list if it exists
+          if (list2[j][0].reps == prsToReturn[i].reps) {
+            anyBucketFound = true;
+            list2[j].add(prsToReturn[i]);
+            // we only cycle through as many times as we have MAX records for a given rep/weight max. increment that here
+            maxDistinctPrsInAnyBucket = max(maxDistinctPrsInAnyBucket, j);
+          }
+        }
+        // otherwise if this bucket doesn't exist, add it
+        if (!anyBucketFound) {
+          list2.add(List<Pr>());
+          list2[min(list2.length - 1, i)].add(prsToReturn[i]);
+        }
+      }
+      // Now sort each Rep or Weight max bucket from low to high so it increases over time!
+      list2.forEach((element) {
+        element.sort((subelement1, subelement2) =>
+            subelement1.weight.compareTo(subelement2.weight));
+      });
+    }
+    // TODO: this sort might be necessary though, double check
+    else {
+      /*prsToReturn.sort((item1, item2) {
+        return item2.weight.compareTo(item1.weight);
+      });*/
+      //prsToReturn.reduce((value, element) => null)
+      // for every PR we have,
+      for (int i = 0; i < prsToReturn.length; i++) {
+        // see if we have a bucket for it, and add it to that or make a new one if not
+        bool anyBucketFound = false;
+        for (int j = 0; j < list2.length; j++) {
+          // if it does exist, see if it matches reps. if it does, add it to the list if it exists
+          if (list2[j][0].weight == prsToReturn[i].weight) {
+            anyBucketFound = true;
+            list2[j].add(prsToReturn[i]);
+            // we only cycle through as many times as we have MAX records for a given rep/weight max. increment that here
+            maxDistinctPrsInAnyBucket = max(maxDistinctPrsInAnyBucket, j);
+          }
+        }
+        // otherwise if this bucket doesn't exist, add it
+        if (!anyBucketFound) {
+          list2.add(List<Pr>());
+          list2[min(list2.length - 1, i)].add(prsToReturn[i]);
+        }
+      }
+      list2.forEach((element) {
+        element.sort((subelement1, subelement2) =>
+            subelement1.reps.compareTo(subelement2.reps));
+      });
+    }
+
+    return list2;
+
+    /* mapToPrList.forEach((key, value) { 
+        return 
+        value[
+          min(currentIteratorDistinctPrs,mapToPrList[currentIteratorDistinctPrs].length - 1)
+          ].weight;
+          }
+          )*/
   }
 
   _getMaxY({@required bool currentPrs}) {
@@ -186,7 +299,24 @@ class PrettyPRGraphs extends ChangeNotifier {
     );
   }
 
-  BarChartData dataOverTime() {
+  BarChartData dataOverTime(/*List<Pr> prs*/) {
+    // first get the PRs list
+    var prsList = getPrsList(currentPrs: false);
+    // then we get them into buckets by type e.g. all 5RM PRs in a list to cycle through
+    //var mapToPrList = _buildPRsByType(prsList);
+    var prListOfLists = _buildPRsByType(prsList);
+    // then count the number of distinct buckets to show, if there's enough to show, else 10
+    int numPointsShowing = min(prListOfLists.length, maxPointsToShow);
+    if (numPointsShowing <= 0) {
+      numPointsShowing = 1;
+    }
+    // then get a distinct list of buckets so we can generate titles from it
+    List<Pr> prsListDistinct = List<Pr>();
+
+    prListOfLists.forEach((element) {
+      prsListDistinct.add(element[0]);
+    });
+
     return BarChartData(
       barTouchData: BarTouchData(
         enabled: false,
@@ -199,29 +329,11 @@ class PrettyPRGraphs extends ChangeNotifier {
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
           margin: 16,
           getTitles: (double value) {
+            // TODO: need to pass in the distinct'd list to this?
             return getTitle(
                 index: value.toInt(),
-                prsList: getPrsList(currentPrs: false),
+                prsList: prsListDistinct, //getPrsList(currentPrs: false)//,
                 returnDateNotVals: false);
-            /*
-            switch (value.toInt()) {
-              case 0:
-                return '1RM';
-              case 1:
-                return '2RM';
-              case 2:
-                return '3RM';
-              case 3:
-                return '4RM';
-              case 4:
-                return '5RM';
-              case 5:
-                return '6RM';
-              case 6:
-                return '7RM';
-              default:
-                return '';
-            }*/
           },
         ),
         leftTitles: SideTitles(
@@ -231,9 +343,61 @@ class PrettyPRGraphs extends ChangeNotifier {
       borderData: FlBorderData(
         show: false,
       ),
-      barGroups: List.generate(7, (i) {
-        switch (i) {
+      barGroups: List.generate(numPointsShowing, (i) {
+        var thisBarIndex =
+            min(currentIteratorDistinctPrs, prListOfLists[i].length - 1);
+        //var numPointsShowing = min(prs.length, maxPointsToShow);
+        /*if (numPointsShowing <= 0) {
+          numPointsShowing = 1;
+        }*/
+        return makeGroupData(
+            i,
+            isRepNotWeight
+                ? prListOfLists[i][thisBarIndex].weight
+                : prListOfLists[i][thisBarIndex].reps,
+            barColor:
+                // store the seed somewhere per loop? something like that anyway.
+                availableColors[
+                    Random(thisBarIndex).nextInt(availableColors.length)],
+            width: 220 / numPointsShowing);
+
+        //mapToPrList.entries.map((e) => null)
+        //mapToPrList.entries[0].
+
+        // we can make this work but it isn't going to be ordered nicely
+        /*List.generate(numPointsShowing, (i) {
+      return makeGroupData(
+            i,
+      mapToPrList.forEach((key, value) { 
+        return 
+        value[
+          min(currentIteratorDistinctPrs,mapToPrList[currentIteratorDistinctPrs].length - 1)
+          ].weight;
+          }
+          )
+      
+          //
+        
+        
+            isRepNotWeight
+                ? mapToPrList[i][min(currentIteratorDistinctPrs,
+                        mapToPrList[currentIteratorDistinctPrs].length - 1)]
+                    .weight
+                : mapToPrList[i][min(currentIteratorDistinctPrs,
+                        mapToPrList[currentIteratorDistinctPrs].length - 1)]
+                    .reps,
+            );*/
+
+        // instead of 'random' we'll select either
+        // 1) the next highest number if one exists else
+        // 2) the highest one
+        // this should show us the growth over time for each bucket
+        /*makeGroupData(
+            i, 1 * (isRepNotWeight ? prs[i].weight : prs[i].reps) + 0,
+            isTouched: i == touchedIndex, width: 220 / numPointsShowing);*/
+        /*switch (i) {
           case 0:
+            
             return makeGroupData(
                 0, (Random().nextInt(15).toDouble() + 6).toInt(),
                 barColor:
@@ -264,7 +428,7 @@ class PrettyPRGraphs extends ChangeNotifier {
                     availableColors[Random().nextInt(availableColors.length)]);
           default:
             return null;
-        }
+        }*/
       }),
     );
   }
