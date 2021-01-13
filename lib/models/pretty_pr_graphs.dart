@@ -398,7 +398,7 @@ class PrettyPRGraphs extends ChangeNotifier {
       prsListDistinct.add(element[0]);
     });
 
-    var maxY = _getMaxY(currentPrs: isShowingMainData).toDouble();
+    double maxY = _getMaxY(currentPrs: isShowingMainData).toDouble();
 
     return LineChartData(
       lineTouchData: LineTouchData(
@@ -463,6 +463,7 @@ class PrettyPRGraphs extends ChangeNotifier {
         ),
         leftTitles: SideTitles(
           showTitles: true,
+          interval: max(((maxY * .05) ~/ 10 * 10).toDouble(), 5.0),
           getTextStyles: (value) => const TextStyle(
             color: Color(0xff75729e),
             fontWeight: FontWeight.bold,
@@ -507,7 +508,7 @@ class PrettyPRGraphs extends ChangeNotifier {
       ),
       minX: 0,
       //maxX: 14,
-      maxY: maxY,
+      maxY: maxY.toDouble(),
       minY: 0,
       lineBarsData: oneLiftNotAll
           ? singleLiftLineData(listOfListDistinctDates)
