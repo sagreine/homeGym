@@ -4,10 +4,27 @@ import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/appbar.dart';
+import 'package:intl/intl.dart';
 
 // TODO: a lot of display code is in here for some reason
 // including things about width to show ont he screen that should be
 // set as a function of context (mediaquery etc.) so fix that.
+
+class EasyDate {
+  String formattedDate;
+  String easyBackToDateTimeFormatted;
+  //DateTime originalDate;
+  double daysSinceMin;
+
+  EasyDate({@required DateTime date, DateTime minDateTime}) {
+    //originalDate = date;
+    if (minDateTime != null) {
+      daysSinceMin = date.difference(minDateTime).inDays.toDouble();
+    }
+    formattedDate = DateFormat.yMd().format(date);
+    easyBackToDateTimeFormatted = DateFormat('yyyy-MM-dd').format(date);
+  }
+}
 
 class PrettyPRGraphs extends ChangeNotifier {
   bool isShowingMainData;
@@ -189,6 +206,20 @@ class PrettyPRGraphs extends ChangeNotifier {
     });
 
     return maxSofar;
+  }
+
+  _getMinDateTime({@required List<List<Pr>> prs}) {
+    DateTime minSofar = DateTime.now();
+
+    prs.forEach((list) {
+      list.forEach((element) {
+        if (element.dateTime.compareTo(minSofar) < 0) {
+          minSofar = element.dateTime;
+        }
+      });
+    });
+
+    return minSofar;
   }
 
   String getTitle(
@@ -383,22 +414,92 @@ class PrettyPRGraphs extends ChangeNotifier {
 
     //final reducedList = [];
 
+    // we only want to capture a single PR set in a given day for a given rep or weight
+    Set<Pr> setOfDistinctDates = Set<Pr>();
+    Set<EasyDate> dates = Set<EasyDate>();
     prListOfLists.forEach((list) {
       List<Pr> distinctThisLine = List<Pr>();
+
       list.reduce((value, element) {
-        if (value.dateTime.day != element.dateTime.day)
+        if (!(value.dateTime.difference(element.dateTime).inDays.abs() < 0.5))
           distinctThisLine.add(value);
+        setOfDistinctDates.add(element);
+        dates.add(EasyDate(date: element.dateTime));
+        /*dates.add(element.dateTime.year.toString() +
+            "-" +
+            element.dateTime.month.toString() +
+            "-" +
+            element.dateTime.year.toString());*/
         return element;
       });
       distinctThisLine.add(list.last);
       listOfListDistinctDates.add(distinctThisLine);
     });
 
+    var finaldates = dates.toList()
+      ..sort((date1, date2) {
+        return date1.easyBackToDateTimeFormatted
+            .compareTo(date2.easyBackToDateTimeFormatted);
+      });
+    /*var finaldates = dates.toList()
+      ..sort((date1, date2) {
+        var firstSlash = date1.indexOf("/");
+        var secondSlash = date1.indexOf("/", firstSlash + 1);
+
+        var daypart = date1.substring(0, firstSlash);
+        var monthpart = date1.substring(firstSlash + 1, secondSlash);
+        var yearpart = date1.substring(secondSlash + 1);
+
+        var firstSlash2 = date2.indexOf("/");
+        var secondSlash2 = date2.indexOf("/", firstSlash2 + 1);
+
+        var daypart2 = date2.substring(0, firstSlash2);
+        var monthpart2 = date2.substring(firstSlash2 + 1, secondSlash2);
+        var yearpart2 = date2.substring(secondSlash2 + 1);
+
+        if (int.parse(yearpart2) > int.parse(yearpart)) {
+          return -1;
+        } else if (int.parse(yearpart2) < int.parse(yearpart)) {
+          return 1;
+        } else if (int.parse(yearpart2) == int.parse(yearpart)) {
+          if (int.parse(monthpart2) > int.parse(monthpart)) {
+            return -1;
+          } else if (int.parse(monthpart2) < int.parse(monthpart)) {
+            return 1;
+          } else if (int.parse(monthpart2) == int.parse(monthpart)) {
+            if (int.parse(daypart2) > int.parse(daypart)) {
+              return -1;
+            } else if (int.parse(daypart2) < int.parse(daypart)) {
+              return 1;
+            }
+            if (int.parse(daypart2) == int.parse(daypart)) {
+              return 0;
+            }
+          }
+        }
+        print("somethings gone wrong");
+      });*/
+
+    // now we want a list of all days that a PR was set on
+    /* List<Pr> listOfDistinctDates = setOfDistinctDates.toList()
+      ..sort((element1, element2) =>
+          element1.dateTime.compareTo(element2.dateTime));*/
+
+    // not sure if necessary for htis one
     prListOfLists.forEach((element) {
       prsListDistinct.add(element[0]);
     });
 
     double maxY = _getMaxY(currentPrs: isShowingMainData).toDouble();
+    var minDateTime = _getMinDateTime(prs: listOfListDistinctDates);
+
+    // calculate days since minimum, because that is our x value on the graph
+    finaldates.forEach((element) {
+      element.daysSinceMin = DateTime.parse(element.easyBackToDateTimeFormatted)
+          .difference(minDateTime)
+          .inDays
+          .toDouble();
+    });
 
     return LineChartData(
       lineTouchData: LineTouchData(
@@ -444,12 +545,94 @@ class PrettyPRGraphs extends ChangeNotifier {
           ),
           margin: 10,
           getTitles: (value) {
-            var title = getTitle(
+            // TODO: this is wrong though
+            // listOfListDistinctDates needs to be used somehow. not straight index though...
+            /*var title = getTitle(
                 index: value.toInt(),
-                prsList: prsListDistinct,
-                returnDateNotVals: true);
+                prsList: listOfDistinctDates,
+                returnDateNotVals: true);*/
+            //if(value.toInt()
+
+            finaldates.length;
+            if (value.toInt() == 0) {
+              return finaldates[0].formattedDate;
+            } else if (value ==
+                    //finaldates[finaldates.length~/2].
+                    finaldates[finaldates.length ~/ 2].daysSinceMin
+                /*DateTime.parse(finaldates[finaldates.length ~/ 2]
+                            .split('/')
+                            .reversed
+                            .join('/')
+                            .replaceAll("/", "-"))
+                        .difference(minDateTime)
+                        .inDays
+                        .toDouble()*/
+                //listOfListDistinctDates.length ~/ 2
+                ) {
+              return finaldates[finaldates.length ~/ 2].formattedDate;
+            } else if (value == finaldates[finaldates.length - 1].daysSinceMin)
+              return finaldates[finaldates.length - 1].formattedDate;
+            //return finaldates[finaldates.length - 1];
+            /*else if (value.toInt() == listOfListDistinctDates.length) {
+              return finaldates[finaldates.length - 1];
+              */
+
+            return "";
+            /*
+            listOfDistinctDates.length;
+            if (value.toInt() == 0) {
+              return listOfDistinctDates[0].dateTime.month.toString() +
+                  "/" +
+                  listOfDistinctDates[0].dateTime.day.toString();
+            } else if (value.toInt() == listOfListDistinctDates.length ~/ 2) {
+              return listOfDistinctDates[listOfDistinctDates.length ~/ 2]
+                      .dateTime
+                      .month
+                      .toString() +
+                  "/" +
+                  listOfDistinctDates[listOfDistinctDates.length ~/ 2]
+                      .dateTime
+                      .day
+                      .toString();
+            } else if (value.toInt() == listOfListDistinctDates.length) {
+              return listOfDistinctDates[listOfDistinctDates.length - 1]
+                      .dateTime
+                      .month
+                      .toString() +
+                  "/" +
+                  listOfDistinctDates[listOfDistinctDates.length - 1]
+                      .dateTime
+                      .day
+                      .toString();
+            }
+            return "";*/
+
+            /*var tmp = listOfDistinctDates.singleWhere((element) =>
+                element.dateTime.difference(DateTime.now()).inDays.toInt() ==
+                value.toInt());
+
+            //)
+            String title = tmp.dateTime.day.toString() + "/";
+
+            //var title = listOfDistinctDates[0].dateTime.day + "/";
+
             title = title.substring(0, title.lastIndexOf("/"));
-            return title;
+            return title;*/
+
+            /// TODO ^above this. is this the right list? start with looking at the dates that have been set at all....
+            /// probably we should just set a hardcoded ~4 dates based on first date, today, 2 midpoints and stop worrying so much
+            /// /// TODO
+            /// /// TODO
+            /// /// TODO
+            /// /// TODO
+            /// /// TODO
+            /// /// TODO
+            /// /// TODO
+            /// /// TODO
+            /// /// TODO
+            /// /// TODO
+            /// /// TODO
+            /// /// TODO
             /*switch (value.toInt()) {
               case 2:
                 return 'SEPT';
@@ -511,12 +694,14 @@ class PrettyPRGraphs extends ChangeNotifier {
       maxY: maxY.toDouble(),
       minY: 0,
       lineBarsData: oneLiftNotAll
-          ? singleLiftLineData(listOfListDistinctDates)
+          ? singleLiftLineData(listOfListDistinctDates,
+              _getMinDateTime(prs: listOfListDistinctDates))
           : allLiftLineData(),
     );
   }
 
-  List<LineChartBarData> singleLiftLineData(List<List<Pr>> prListOfLists) {
+  List<LineChartBarData> singleLiftLineData(
+      List<List<Pr>> prListOfLists, DateTime minDateTime) {
     List<LineChartBarData> lines = List<LineChartBarData>();
     List<FlSpot> spots; // = List<FlSpot>();
 
@@ -526,12 +711,18 @@ class PrettyPRGraphs extends ChangeNotifier {
       // for this list, add every spot!
       // may need to come back later and
       elementOuter.forEach((elementInner) {
-        // X and Y axis switch between reps and weight
+        // X and Y axis switch between reps and weight. otherwise we go by x axis = 1, 2, 3 for some reason?
+        // no, use date. they aren't all equally spaced and that's going to mess up our titling too
         if (isRepNotWeight) {
-          spots.add(FlSpot(elementOuter.indexOf(elementInner).toDouble(),
+          spots.add(FlSpot(
+
+              //elementOuter.indexOf(elementInner).toDouble(),
+              elementInner.dateTime.difference(minDateTime).inDays.toDouble(),
               elementInner.weight.toDouble()));
         } else {
-          spots.add(FlSpot(elementOuter.indexOf(elementInner).toDouble(),
+          spots.add(FlSpot(
+              //elementOuter.indexOf(elementInner).toDouble(),
+              elementInner.dateTime.difference(minDateTime).inDays.toDouble(),
               elementInner.reps.toDouble()));
         }
       });
