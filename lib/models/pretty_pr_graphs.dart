@@ -22,9 +22,6 @@ class PrettyPRGraphs extends ChangeNotifier {
   int maxDistinctPrsInAnyBucket = 0;
 
   final Color barBackgroundColor = const Color(0xff72d8bf);
-  //Color barBackgroundColor = Colors.yellow;
-//final Color barBackgroundColodr = const Color(0xff72d8bf);
-  //var a = const Color(0xff81e5cd);
 
   int index;
 
@@ -36,6 +33,12 @@ class PrettyPRGraphs extends ChangeNotifier {
     Colors.orange,
     Colors.pink,
     Colors.redAccent,
+    Colors.blueAccent,
+    Colors.limeAccent,
+    Colors.deepOrangeAccent,
+    Colors.brown,
+    Colors.tealAccent,
+    Colors.white,
   ];
 
   PrettyPRGraphs(
@@ -105,46 +108,11 @@ class PrettyPRGraphs extends ChangeNotifier {
     return toReturn;
   }
 
-// bad because we have an index to pass in, and then bad because map isn't ordered.
-/*  Map<int, List<Pr>> _buildPRsByType(List<Pr> prs) {
-    List<Pr> prsToReturn = List.from(prs);
-    var map2 = Map<int, List<Pr>>();
-    if (isRepNotWeight) {
-      prsToReturn.sort((item1, item2) {
-        return item2.reps.compareTo(item1.reps);
-      });
-
-      prsToReturn.forEach((pr) {
-        if (map2[pr.reps] == null) {
-          map2[pr.reps] = List<Pr>();
-        }
-        map2[pr.reps].add(pr);
-      });
-    } else {
-      prsToReturn.sort((item1, item2) {
-        return item2.weight.compareTo(item1.weight);
-      });
-      var map2 = Map<int, List<Pr>>();
-      prs.forEach((pr) {
-        if (map2[pr.weight] == null) {
-          map2[pr.weight] = List<Pr>();
-        }
-        map2[pr.weight].add(pr);
-      });
-    }
-    return map2;
-  }*/
-
   List<List<Pr>> _buildPRsByType(List<Pr> prs) {
     List<Pr> prsToReturn = List.from(prs);
     List<List<Pr>> list2 = List<List<Pr>>();
+    if (_chartTypeIsLine) {}
     if (isRepNotWeight) {
-      // sort
-      /*prsToReturn.sort((item1, item2) {
-        return item2.reps.compareTo(item1.reps);
-      });*/
-
-      //prsToReturn.reduce((value, element) => null)
       // for every PR we have,
       for (int i = 0; i < prsToReturn.length; i++) {
         // see if we have a bucket for it, and add it to that or make a new one if not
@@ -152,10 +120,19 @@ class PrettyPRGraphs extends ChangeNotifier {
         for (int j = 0; j < list2.length; j++) {
           // if it does exist, see if it matches reps. if it does, add it to the list if it exists
           if (list2[j][0].reps == prsToReturn[i].reps) {
+            /*bool tmpLineCheck = true;
+            // this is intended to force us to only have one, and the max
+            if (_chartTypeIsLine) {
+              tmpLineCheck = !list2[j].any((element) => element.dateTime == prsToReturn[i].dateTime
+              );
+               */
+            //}
+            //if(tmpLineCheck) {
             anyBucketFound = true;
             list2[j].add(prsToReturn[i]);
             // we only cycle through as many times as we have MAX records for a given rep/weight max. increment that here
             maxDistinctPrsInAnyBucket = max(maxDistinctPrsInAnyBucket, j);
+            // }
           }
         }
         // otherwise if this bucket doesn't exist, add it
@@ -169,13 +146,7 @@ class PrettyPRGraphs extends ChangeNotifier {
         element.sort((subelement1, subelement2) =>
             subelement1.weight.compareTo(subelement2.weight));
       });
-    }
-    // TODO: this sort might be necessary though, double check
-    else {
-      /*prsToReturn.sort((item1, item2) {
-        return item2.weight.compareTo(item1.weight);
-      });*/
-      //prsToReturn.reduce((value, element) => null)
+    } else {
       // for every PR we have,
       for (int i = 0; i < prsToReturn.length; i++) {
         // see if we have a bucket for it, and add it to that or make a new one if not
@@ -202,14 +173,6 @@ class PrettyPRGraphs extends ChangeNotifier {
     }
 
     return list2;
-
-    /* mapToPrList.forEach((key, value) { 
-        return 
-        value[
-          min(currentIteratorDistinctPrs,mapToPrList[currentIteratorDistinctPrs].length - 1)
-          ].weight;
-          }
-          )*/
   }
 
   _getMaxY({@required bool currentPrs}) {
@@ -232,8 +195,6 @@ class PrettyPRGraphs extends ChangeNotifier {
       {@required int index,
       @required List<Pr> prsList,
       @required bool returnDateNotVals}) {
-    /*var prsList = prs.bothLocalAllPR(
-        liftTitle: selectedLift)[_isRepNotWeight ? "Rep" : "Weight"];*/
     if (index >= prsList.length) {
       return "";
     }
@@ -253,11 +214,6 @@ class PrettyPRGraphs extends ChangeNotifier {
         touchTooltipData: BarTouchTooltipData(
             tooltipBgColor: Colors.blueGrey,
             getTooltipItem: (group, groupIndex, rod, rodIndex) {
-              /*String maxName = getTitle(
-                index: group.x,
-                prsList: getPrsList(currentPrs: true),
-                returnDateNotVals: true,
-              );*/
               String date = getTitle(
                 index: group.x,
                 prsList: getPrsList(currentPrs: true),
@@ -329,10 +285,9 @@ class PrettyPRGraphs extends ChangeNotifier {
               color: Colors.white, fontWeight: FontWeight.bold, fontSize: 14),
           margin: 16,
           getTitles: (double value) {
-            // TODO: need to pass in the distinct'd list to this?
             return getTitle(
                 index: value.toInt(),
-                prsList: prsListDistinct, //getPrsList(currentPrs: false)//,
+                prsList: prsListDistinct,
                 returnDateNotVals: false);
           },
         ),
@@ -346,10 +301,6 @@ class PrettyPRGraphs extends ChangeNotifier {
       barGroups: List.generate(numPointsShowing, (i) {
         var thisBarIndex =
             min(currentIteratorDistinctPrs, prListOfLists[i].length - 1);
-        //var numPointsShowing = min(prs.length, maxPointsToShow);
-        /*if (numPointsShowing <= 0) {
-          numPointsShowing = 1;
-        }*/
         return makeGroupData(
             i,
             isRepNotWeight
@@ -360,75 +311,6 @@ class PrettyPRGraphs extends ChangeNotifier {
                 availableColors[
                     Random(thisBarIndex).nextInt(availableColors.length)],
             width: 220 / numPointsShowing);
-
-        //mapToPrList.entries.map((e) => null)
-        //mapToPrList.entries[0].
-
-        // we can make this work but it isn't going to be ordered nicely
-        /*List.generate(numPointsShowing, (i) {
-      return makeGroupData(
-            i,
-      mapToPrList.forEach((key, value) { 
-        return 
-        value[
-          min(currentIteratorDistinctPrs,mapToPrList[currentIteratorDistinctPrs].length - 1)
-          ].weight;
-          }
-          )
-      
-          //
-        
-        
-            isRepNotWeight
-                ? mapToPrList[i][min(currentIteratorDistinctPrs,
-                        mapToPrList[currentIteratorDistinctPrs].length - 1)]
-                    .weight
-                : mapToPrList[i][min(currentIteratorDistinctPrs,
-                        mapToPrList[currentIteratorDistinctPrs].length - 1)]
-                    .reps,
-            );*/
-
-        // instead of 'random' we'll select either
-        // 1) the next highest number if one exists else
-        // 2) the highest one
-        // this should show us the growth over time for each bucket
-        /*makeGroupData(
-            i, 1 * (isRepNotWeight ? prs[i].weight : prs[i].reps) + 0,
-            isTouched: i == touchedIndex, width: 220 / numPointsShowing);*/
-        /*switch (i) {
-          case 0:
-            
-            return makeGroupData(
-                0, (Random().nextInt(15).toDouble() + 6).toInt(),
-                barColor:
-                    availableColors[Random().nextInt(availableColors.length)]);
-          case 1:
-            return makeGroupData(1, Random().nextInt(15).toDouble().toInt() + 6,
-                barColor:
-                    availableColors[Random().nextInt(availableColors.length)]);
-          case 2:
-            return makeGroupData(2, Random().nextInt(15).toDouble().toInt() + 6,
-                barColor:
-                    availableColors[Random().nextInt(availableColors.length)]);
-          case 3:
-            return makeGroupData(3, Random().nextInt(15).toDouble().toInt() + 6,
-                barColor:
-                    availableColors[Random().nextInt(availableColors.length)]);
-          case 4:
-            return makeGroupData(4, Random().nextInt(15).toDouble().toInt() + 6,
-                barColor:
-                    availableColors[Random().nextInt(availableColors.length)]);
-          case 5:
-            return makeGroupData(5, Random().nextInt(15).toDouble().toInt() + 6,
-                barColor:
-                    availableColors[Random().nextInt(availableColors.length)]);
-          case 6:
-            return makeGroupData(6, Random().nextInt(15).toDouble().toInt() + 6,
-                barColor:
-                    availableColors[Random().nextInt(availableColors.length)]);
-          default:
-            return null;
-        }*/
       }),
     );
   }
@@ -471,12 +353,85 @@ class PrettyPRGraphs extends ChangeNotifier {
             isTouched: i == touchedIndex, width: 220 / numPointsShowing);
       });
 
-  LineChartData sampleData1() {
+  LineChartData oneLiftData(bool oneLiftNotAll) {
+    // first get the PRs list
+    var prsList = getPrsList(currentPrs: false);
+    // then we get them into buckets by type e.g. all 5RM PRs in a list to cycle through
+    //var mapToPrList = _buildPRsByType(prsList);
+
+    var prListOfLists = _buildPRsByType(prsList);
+
+    // then count the number of distinct buckets to show, if there's enough to show, else 10
+    /*int numPointsShowing = min(prListOfLists.length, maxPointsToShow);
+    if (numPointsShowing <= 0) {
+      numPointsShowing = 1;
+    }*/
+    // then get a distinct list of buckets so we can generate titles from it
+    List<Pr> prsListDistinct = List<Pr>();
+
+    // for lines, we only want to keep the maximum PR set for a given rep or weight on a day
+    //
+
+    List<List<Pr>> listOfListDistinctDates = List<List<Pr>>();
+    /*prListOfLists.forEach((element) {
+      //element.sort()
+      List<Pr> distinctDateList;
+      final seen = Set<Pr>();
+      distinctDateList = element.where((str) => seen.add(str)).toList();
+      listOfListDistinctDates.add(distinctDateList);
+    });*/
+
+    //final reducedList = [];
+
+    prListOfLists.forEach((list) {
+      List<Pr> distinctThisLine = List<Pr>();
+      list.reduce((value, element) {
+        if (value.dateTime.day != element.dateTime.day)
+          distinctThisLine.add(value);
+        return element;
+      });
+      distinctThisLine.add(list.last);
+      listOfListDistinctDates.add(distinctThisLine);
+    });
+
+    prListOfLists.forEach((element) {
+      prsListDistinct.add(element[0]);
+    });
+
+    var maxY = _getMaxY(currentPrs: isShowingMainData).toDouble();
+
     return LineChartData(
       lineTouchData: LineTouchData(
         touchTooltipData: LineTouchTooltipData(
-          tooltipBgColor: Colors.blueGrey.withOpacity(0.8),
-        ),
+            tooltipBgColor: Colors.blueGrey,
+            getTooltipItems: (items) {
+              return List.generate(items.length, (index) {
+                /*String repOrWeight = getTitle(
+                  index: index,
+                  prsList: prListOfLists[items.elementAt(index).barIndex],
+                  returnDateNotVals: false,
+                );*/
+                return LineTooltipItem(
+                    //(rod.y ~/ 1.1).toString() +
+                    listOfListDistinctDates[items.elementAt(index).barIndex]
+                                [items.elementAt(index).spotIndex]
+                            .reps
+                            .toString() +
+                        "reps, " +
+                        listOfListDistinctDates[items.elementAt(index).barIndex]
+                                [items.elementAt(index).spotIndex]
+                            .weight
+                            .toString() +
+                        "\n",
+
+                    //+
+                    //'\n' +
+                    //date,
+                    TextStyle(color: Colors.yellow));
+              });
+
+              // sooooooo the rod y value gets modified to push it up, so we need to re-adjust that here (why not just literal val?)
+            }),
         touchCallback: (LineTouchResponse touchResponse) {},
         handleBuiltInTouches: true,
       ),
@@ -486,7 +441,7 @@ class PrettyPRGraphs extends ChangeNotifier {
       titlesData: FlTitlesData(
         bottomTitles: SideTitles(
           showTitles: true,
-          reservedSize: 22,
+          //reservedSize: 22,
           getTextStyles: (value) => const TextStyle(
             color: Color(0xff72719b),
             fontWeight: FontWeight.bold,
@@ -494,7 +449,13 @@ class PrettyPRGraphs extends ChangeNotifier {
           ),
           margin: 10,
           getTitles: (value) {
-            switch (value.toInt()) {
+            var title = getTitle(
+                index: value.toInt(),
+                prsList: prsListDistinct,
+                returnDateNotVals: true);
+            title = title.substring(0, title.lastIndexOf("/"));
+            return title;
+            /*switch (value.toInt()) {
               case 2:
                 return 'SEPT';
               case 7:
@@ -502,7 +463,7 @@ class PrettyPRGraphs extends ChangeNotifier {
               case 12:
                 return 'DEC';
             }
-            return '';
+            return '';*/
           },
         ),
         leftTitles: SideTitles(
@@ -512,7 +473,8 @@ class PrettyPRGraphs extends ChangeNotifier {
             fontWeight: FontWeight.bold,
             fontSize: 14,
           ),
-          getTitles: (value) {
+          /*getTitles: (value) {
+
             switch (value.toInt()) {
               case 1:
                 return '1m';
@@ -525,8 +487,9 @@ class PrettyPRGraphs extends ChangeNotifier {
             }
             return '';
           },
+          */
           margin: 8,
-          reservedSize: 30,
+          //reservedSize: 30,
         ),
       ),
       borderData: FlBorderData(
@@ -548,38 +511,61 @@ class PrettyPRGraphs extends ChangeNotifier {
         ),
       ),
       minX: 0,
-      maxX: 14,
-      maxY: 4,
+      //maxX: 14,
+      maxY: maxY,
       minY: 0,
-      lineBarsData: linesBarData1(),
+      lineBarsData: oneLiftNotAll
+          ? singleLiftLineData(listOfListDistinctDates)
+          : allLiftLineData(),
     );
   }
 
-  List<LineChartBarData> linesBarData1() {
-    final LineChartBarData lineChartBarData1 = LineChartBarData(
-      spots: [
-        FlSpot(1, 1),
-        FlSpot(3, 1.5),
-        FlSpot(5, 1.4),
-        FlSpot(7, 3.4),
-        FlSpot(10, 2),
-        FlSpot(12, 2.2),
-        FlSpot(13, 1.8),
-      ],
-      isCurved: true,
-      colors: [
-        const Color(0xff4af699),
-      ],
-      barWidth: 8,
-      isStrokeCapRound: true,
-      dotData: FlDotData(
-        show: false,
-      ),
-      belowBarData: BarAreaData(
-        show: false,
-      ),
-    );
-    final LineChartBarData lineChartBarData2 = LineChartBarData(
+  List<LineChartBarData> singleLiftLineData(List<List<Pr>> prListOfLists) {
+    List<LineChartBarData> lines = List<LineChartBarData>();
+    List<FlSpot> spots; // = List<FlSpot>();
+
+    prListOfLists.forEach((elementOuter) {
+      var colorIndex = prListOfLists.indexOf(elementOuter);
+      spots = List<FlSpot>();
+      // for this list, add every spot!
+      // may need to come back later and
+      elementOuter.forEach((elementInner) {
+        // X and Y axis switch between reps and weight
+        if (isRepNotWeight) {
+          spots.add(FlSpot(elementOuter.indexOf(elementInner).toDouble(),
+              elementInner.weight.toDouble()));
+        } else {
+          spots.add(FlSpot(elementOuter.indexOf(elementInner).toDouble(),
+              elementInner.reps.toDouble()));
+        }
+      });
+      lines.add(LineChartBarData(
+        spots: spots,
+        /* [
+          FlSpot(1, 1),
+          FlSpot(3, 1.5),
+          FlSpot(5, 1.4),
+          FlSpot(7, 3.4),
+          FlSpot(10, 2),
+          FlSpot(12, 2.2),
+          FlSpot(13, 1.8),
+        ],*/
+        isCurved: true,
+        colors: [
+          availableColors[Random(colorIndex).nextInt(availableColors.length)],
+        ],
+        barWidth: 8,
+        isStrokeCapRound: true,
+        dotData: FlDotData(
+          show: false,
+        ),
+        belowBarData: BarAreaData(
+          show: false,
+        ),
+      ));
+    });
+    /*
+    LineChartBarData lineChartBarData2 = LineChartBarData(
       spots: [
         FlSpot(1, 1),
         FlSpot(3, 2.8),
@@ -601,7 +587,7 @@ class PrettyPRGraphs extends ChangeNotifier {
         const Color(0x00aa4cfc),
       ]),
     );
-    final LineChartBarData lineChartBarData3 = LineChartBarData(
+    LineChartBarData lineChartBarData3 = LineChartBarData(
       spots: [
         FlSpot(1, 2.8),
         FlSpot(3, 1.9),
@@ -621,15 +607,16 @@ class PrettyPRGraphs extends ChangeNotifier {
       belowBarData: BarAreaData(
         show: false,
       ),
-    );
-    return [
+    );*/
+    return lines;
+    /*[
       lineChartBarData1,
       lineChartBarData2,
       lineChartBarData3,
-    ];
+    ];*/
   }
 
-  LineChartData sampleData2() {
+  LineChartData sampleData2(List<List<Pr>> prListOfLists) {
     return LineChartData(
       lineTouchData: LineTouchData(
         enabled: false,
@@ -706,11 +693,11 @@ class PrettyPRGraphs extends ChangeNotifier {
       maxX: 14,
       maxY: 6,
       minY: 0,
-      lineBarsData: linesBarData2(),
+      lineBarsData: allLiftLineData(),
     );
   }
 
-  List<LineChartBarData> linesBarData2() {
+  List<LineChartBarData> allLiftLineData() {
     return [
       LineChartBarData(
         spots: [

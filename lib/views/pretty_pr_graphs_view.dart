@@ -16,7 +16,6 @@ class PrettyPRGraphsView extends StatefulWidget {
 class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
   bool onInit = true;
   final animationDuration = Duration(milliseconds: 250);
-  //int touchedIndex;
   bool isPlaying = false;
   PrettyPrGraphsController prettyPrGraphsController =
       PrettyPrGraphsController();
@@ -42,11 +41,7 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
             ),
             Padding(
               padding: const EdgeInsets.all(16),
-              child:
-                  //Row(children: [
-
-                  //],)
-                  Column(
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 mainAxisAlignment: MainAxisAlignment.center,
                 mainAxisSize: MainAxisSize.max,
@@ -135,9 +130,6 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                       model.currentIteratorDistinctPrs = 0;
                       refreshState(model);
                     });
-                    /*if (model.currentIteratorDistinctPrs ==
-                        model.maxDistinctPrsInAnyBucket)
-                      model.currentIteratorDistinctPrs = 0;*/
                   },
                 ),
               ),
@@ -175,7 +167,6 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                 Text(
                   'My Personal Records',
                   style: TextStyle(
-                    //color: Color(0xff827daa),
                     color: Theme.of(context)
                         .textTheme
                         .headline4
@@ -194,7 +185,6 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                           ? "Rep Maxes"
                           : "Weight Maxes"),
                   style: TextStyle(
-                      //color: Colors.white,
                       fontSize: 32,
                       fontWeight: FontWeight.bold,
                       letterSpacing: 2),
@@ -208,8 +198,8 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                     padding: const EdgeInsets.only(right: 16.0, left: 6.0),
                     child: LineChart(
                       (model.isShowingMainData ?? true)
-                          ? model.sampleData1()
-                          : model.sampleData2(),
+                          ? model.oneLiftData(true)
+                          : model.oneLiftData(false),
                       swapAnimationDuration: animationDuration,
                     ),
                   ),
@@ -232,7 +222,6 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
         child: IconButton(
           icon: Icon(
             EvilIcons.arrow_right, // .refresh,
-            //color: Colors.white.withOpacity(model.isShowingMainData ? 1.0 : 0.5),
           ),
           onPressed: () {
             setState(() {
