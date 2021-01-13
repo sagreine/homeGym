@@ -417,16 +417,11 @@ class PrettyPRGraphs extends ChangeNotifier {
                                 [items.elementAt(index).spotIndex]
                             .reps
                             .toString() +
-                        "reps, " +
+                        "x" +
                         listOfListDistinctDates[items.elementAt(index).barIndex]
                                 [items.elementAt(index).spotIndex]
                             .weight
-                            .toString() +
-                        "\n",
-
-                    //+
-                    //'\n' +
-                    //date,
+                            .toString(),
                     TextStyle(color: Colors.yellow));
               });
 

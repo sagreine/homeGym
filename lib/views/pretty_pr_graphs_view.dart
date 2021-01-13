@@ -249,47 +249,52 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
           onInit = false;
         }
 
-        return Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Visibility(
-              visible: !widget.isScreenshotting,
-              child: Column(children: [
-                SwitchListTile.adaptive(
-                    title: Text("Chart Type"),
-                    value: model.chartTypeIsLine ?? false,
-                    onChanged: (newValue) {
-                      model.chartTypeIsLine = newValue;
-                      isPlaying = false;
-                      setState(() {});
-                    }),
-                SwitchListTile.adaptive(
-                    title: Text("Rep Max not Weight Max"),
-                    value: model.isRepNotWeight ?? false,
-                    onChanged: (newValue) {
-                      model.isRepNotWeight = newValue;
-                      isPlaying = false;
-                      setState(() {});
-                    }),
-              ]),
-            ),
-            // see if it already exists. if it does, just build the chart. otherwise, futurebuild it.
-            // this is because we have Playing that forces setState repeatedly and don't want to have the future fire again and again
-            // which apparently happens even if we directly return something inside the future.
-            Provider.of<Prs>(context, listen: false).allPrs != null
-                ? _buildCharts(model)
-                : FutureBuilder(
-                    future: prettyPrGraphsController.getAllPrs(
-                        context, model.selectedLift, model.isRepNotWeight),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.done) {
-                        return _buildCharts(model);
-                      } else {
-                        return Text("Loading...");
-                      }
-                    }),
-          ],
-        );
+        return Padding(
+            padding: model.chartTypeIsLine
+                ? EdgeInsets.only(right: 6.0, left: 6.0)
+                : EdgeInsets.only(right: 0.0, left: 0.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Visibility(
+                  visible: !widget.isScreenshotting,
+                  child: Column(children: [
+                    SwitchListTile.adaptive(
+                        title: Text("Chart Type"),
+                        value: model.chartTypeIsLine ?? false,
+                        onChanged: (newValue) {
+                          model.chartTypeIsLine = newValue;
+                          isPlaying = false;
+                          setState(() {});
+                        }),
+                    SwitchListTile.adaptive(
+                        title: Text("Rep Max not Weight Max"),
+                        value: model.isRepNotWeight ?? false,
+                        onChanged: (newValue) {
+                          model.isRepNotWeight = newValue;
+                          isPlaying = false;
+                          setState(() {});
+                        }),
+                  ]),
+                ),
+                // see if it already exists. if it does, just build the chart. otherwise, futurebuild it.
+                // this is because we have Playing that forces setState repeatedly and don't want to have the future fire again and again
+                // which apparently happens even if we directly return something inside the future.
+                Provider.of<Prs>(context, listen: false).allPrs != null
+                    ? _buildCharts(model)
+                    : FutureBuilder(
+                        future: prettyPrGraphsController.getAllPrs(
+                            context, model.selectedLift, model.isRepNotWeight),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.done) {
+                            return _buildCharts(model);
+                          } else {
+                            return Text("Loading...");
+                          }
+                        }),
+              ],
+            ));
       });
     });
   }
