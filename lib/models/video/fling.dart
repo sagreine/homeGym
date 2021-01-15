@@ -7,7 +7,7 @@ import 'package:flutter_fling/remote_media_player.dart';
 // 1) set sid to custom reciever (java code) instead of firestick itself
 // 2) remotemediaplayer now extends equatable so Set works
 class FlingMediaModel extends ChangeNotifier {
-  Set<RemoteMediaPlayer> flingDevices;
+  List<RemoteMediaPlayer> flingDevices;
   RemoteMediaPlayer selectedPlayer;
   String mediaState;
   String mediaCondition;
@@ -39,7 +39,7 @@ class FlingMediaModel extends ChangeNotifier {
 
 // dispose though...
   void reset() {
-    flingDevices = Set();
+    flingDevices = List();
     mediaState = 'null';
     mediaCondition = 'null';
     mediaPosition = '0';
@@ -56,7 +56,7 @@ class FlingMediaModel extends ChangeNotifier {
       this.mediaState,
       this.httpServer,
       this.isListening}) {
-    flingDevices = Set();
+    flingDevices = List();
     isListening = false;
   }
 

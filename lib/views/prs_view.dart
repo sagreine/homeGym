@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 //import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/views/views.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
@@ -160,8 +161,9 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
     _buildPRCells(thisLiftPrs, tabName);
 
     return DirectSelectContainer(
+      //decoration: BoxDecoration(),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.start,
+        //mainAxisAlignment: MainAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Text(

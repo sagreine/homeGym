@@ -14,10 +14,13 @@ class FlingController {
 
     await FlutterFling.startDiscoveryController((status, player) {
       if (prov == null) {
-        prov.flingDevices = Set();
+        prov.flingDevices = List();
       }
       if (status == PlayerDiscoveryStatus.Found) {
         prov.addFlingDevices(player);
+        prov.flingDevices.sort((player1, player2) {
+          return player1.name.compareTo(player2.name);
+        });
       } else {
         prov.removeFlingDevice(player);
       }
