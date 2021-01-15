@@ -5,6 +5,9 @@ import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_icons/flutter_icons.dart';
 
+/*startDate: DateFormat("dd-MM-yyyy h:mma").parse("01-01-2020"),
+                            endDate: DateTime.now(),*/
+
 class PrettyPRGraphsView extends StatefulWidget {
   final bool isScreenshotting;
   PrettyPRGraphsView({this.isScreenshotting});

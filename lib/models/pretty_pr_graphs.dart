@@ -37,6 +37,8 @@ class PrettyPRGraphs extends ChangeNotifier {
   int maxPointsToShow = 10;
   int currentIteratorDistinctPrs = 0;
   int maxDistinctPrsInAnyBucket = 0;
+  DateTime startDate;
+  DateTime endDate;
 
   final Color barBackgroundColor = const Color(0xff72d8bf);
 
@@ -55,7 +57,10 @@ class PrettyPRGraphs extends ChangeNotifier {
     Colors.deepOrangeAccent,
     Colors.brown,
     Colors.tealAccent,
-    Colors.white,
+    Colors.grey,
+    Colors.cyanAccent,
+    Colors.blueGrey,
+    Colors.lightGreenAccent
   ];
 
   PrettyPRGraphs(
@@ -63,6 +68,8 @@ class PrettyPRGraphs extends ChangeNotifier {
       //this.selectedMax,
       @required this.selectedLift,
       @required this.prs,
+      //@required this.startDate,
+      //@required this.endDate,
       //@required this.barBackgroundColor,
       //@required BuildContext context
       //this.isScreenshotting,
@@ -388,8 +395,6 @@ class PrettyPRGraphs extends ChangeNotifier {
     // first get the PRs list
     var prsList = getPrsList(currentPrs: false);
     // then we get them into buckets by type e.g. all 5RM PRs in a list to cycle through
-    //var mapToPrList = _buildPRsByType(prsList);
-
     var prListOfLists = _buildPRsByType(prsList);
 
     // then count the number of distinct buckets to show, if there's enough to show, else 10
@@ -425,11 +430,6 @@ class PrettyPRGraphs extends ChangeNotifier {
           distinctThisLine.add(value);
         setOfDistinctDates.add(element);
         dates.add(EasyDate(date: element.dateTime));
-        /*dates.add(element.dateTime.year.toString() +
-            "-" +
-            element.dateTime.month.toString() +
-            "-" +
-            element.dateTime.year.toString());*/
         return element;
       });
       distinctThisLine.add(list.last);
@@ -545,103 +545,14 @@ class PrettyPRGraphs extends ChangeNotifier {
           ),
           margin: 10,
           getTitles: (value) {
-            // TODO: this is wrong though
-            // listOfListDistinctDates needs to be used somehow. not straight index though...
-            /*var title = getTitle(
-                index: value.toInt(),
-                prsList: listOfDistinctDates,
-                returnDateNotVals: true);*/
-            //if(value.toInt()
-
-            finaldates.length;
             if (value.toInt() == 0) {
               return finaldates[0].formattedDate;
             } else if (value ==
-                    //finaldates[finaldates.length~/2].
-                    finaldates[finaldates.length ~/ 2].daysSinceMin
-                /*DateTime.parse(finaldates[finaldates.length ~/ 2]
-                            .split('/')
-                            .reversed
-                            .join('/')
-                            .replaceAll("/", "-"))
-                        .difference(minDateTime)
-                        .inDays
-                        .toDouble()*/
-                //listOfListDistinctDates.length ~/ 2
-                ) {
+                finaldates[finaldates.length ~/ 2].daysSinceMin) {
               return finaldates[finaldates.length ~/ 2].formattedDate;
             } else if (value == finaldates[finaldates.length - 1].daysSinceMin)
               return finaldates[finaldates.length - 1].formattedDate;
-            //return finaldates[finaldates.length - 1];
-            /*else if (value.toInt() == listOfListDistinctDates.length) {
-              return finaldates[finaldates.length - 1];
-              */
-
             return "";
-            /*
-            listOfDistinctDates.length;
-            if (value.toInt() == 0) {
-              return listOfDistinctDates[0].dateTime.month.toString() +
-                  "/" +
-                  listOfDistinctDates[0].dateTime.day.toString();
-            } else if (value.toInt() == listOfListDistinctDates.length ~/ 2) {
-              return listOfDistinctDates[listOfDistinctDates.length ~/ 2]
-                      .dateTime
-                      .month
-                      .toString() +
-                  "/" +
-                  listOfDistinctDates[listOfDistinctDates.length ~/ 2]
-                      .dateTime
-                      .day
-                      .toString();
-            } else if (value.toInt() == listOfListDistinctDates.length) {
-              return listOfDistinctDates[listOfDistinctDates.length - 1]
-                      .dateTime
-                      .month
-                      .toString() +
-                  "/" +
-                  listOfDistinctDates[listOfDistinctDates.length - 1]
-                      .dateTime
-                      .day
-                      .toString();
-            }
-            return "";*/
-
-            /*var tmp = listOfDistinctDates.singleWhere((element) =>
-                element.dateTime.difference(DateTime.now()).inDays.toInt() ==
-                value.toInt());
-
-            //)
-            String title = tmp.dateTime.day.toString() + "/";
-
-            //var title = listOfDistinctDates[0].dateTime.day + "/";
-
-            title = title.substring(0, title.lastIndexOf("/"));
-            return title;*/
-
-            /// TODO ^above this. is this the right list? start with looking at the dates that have been set at all....
-            /// probably we should just set a hardcoded ~4 dates based on first date, today, 2 midpoints and stop worrying so much
-            /// /// TODO
-            /// /// TODO
-            /// /// TODO
-            /// /// TODO
-            /// /// TODO
-            /// /// TODO
-            /// /// TODO
-            /// /// TODO
-            /// /// TODO
-            /// /// TODO
-            /// /// TODO
-            /// /// TODO
-            /*switch (value.toInt()) {
-              case 2:
-                return 'SEPT';
-              case 7:
-                return 'OCT';
-              case 12:
-                return 'DEC';
-            }
-            return '';*/
           },
         ),
         leftTitles: SideTitles(
@@ -728,16 +639,10 @@ class PrettyPRGraphs extends ChangeNotifier {
       });
       lines.add(LineChartBarData(
         spots: spots,
-        /* [
-          FlSpot(1, 1),
-          FlSpot(3, 1.5),
-          FlSpot(5, 1.4),
-          FlSpot(7, 3.4),
-          FlSpot(10, 2),
-          FlSpot(12, 2.2),
-          FlSpot(13, 1.8),
-        ],*/
-        isCurved: true,
+        isCurved: false,
+        isStepLineChart: true,
+        lineChartStepData: LineChartStepData(
+            stepDirection: LineChartStepData.stepDirectionForward),
         colors: [
           availableColors[Random(colorIndex).nextInt(availableColors.length)],
         ],
@@ -802,7 +707,7 @@ class PrettyPRGraphs extends ChangeNotifier {
       lineChartBarData3,
     ];*/
   }
-
+/*
   LineChartData sampleData2(List<List<Pr>> prListOfLists) {
     return LineChartData(
       lineTouchData: LineTouchData(
@@ -882,7 +787,7 @@ class PrettyPRGraphs extends ChangeNotifier {
       minY: 0,
       lineBarsData: allLiftLineData(),
     );
-  }
+  }*/
 
   List<LineChartBarData> allLiftLineData() {
     return [
