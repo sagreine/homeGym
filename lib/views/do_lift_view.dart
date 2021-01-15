@@ -411,7 +411,10 @@ class _DoLiftViewState extends State<DoLiftView>
                   homeController.displayInExerciseInfo(
                       exercise: exercise, justRemovedPR: justRemovedPR); //. ;
                 } else {
-                  homeController.getNextExercise(context: context);
+                  homeController.displayInExerciseInfo(
+                      exercise: homeController.getNextExercise(
+                          context: context, lastSetOverride: true),
+                      justRemovedPR: justRemovedPR);
                 }
                 //}
                 return Column(

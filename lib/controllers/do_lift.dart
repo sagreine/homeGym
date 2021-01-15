@@ -157,11 +157,13 @@ class HomeController {
 
   // may eventually move to ExerciseDay is a collection of ExerciseSet objects...
   // but for now staying away from relational stuff.
-  ExerciseSet getNextExercise({@required BuildContext context}) {
+  ExerciseSet getNextExercise(
+      {@required BuildContext context, bool lastSetOverride}) {
     ExerciseDayController exerciseDayController = new ExerciseDayController();
     ExerciseSet toReturn;
     // if this was the last set, set it so in the description
-    if (exerciseDayController.areWeOnLastSet(context)) {
+    if (exerciseDayController.areWeOnLastSet(context) ||
+        (lastSetOverride ?? false)) {
       toReturn = new ExerciseSet(
           title: "That was the last set",
           description: "No description",

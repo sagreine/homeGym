@@ -198,7 +198,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                     //setState(() {
                                                     // sugar for toInt()
                                                     thisDay.remove((i ~/ 2));
-                                                    thisDay.sets--;
+
                                                     //thisDay.exercises
                                                     //  .removeAt((i ~/ 2));
                                                     // show snakcbar?
