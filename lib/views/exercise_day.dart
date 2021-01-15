@@ -13,6 +13,7 @@ class ExcerciseDayView extends StatefulWidget {
 class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   //ExerciseDay thisDay;
   AdmobBannerSize bannerSize;
+  final mainContainerHeight = 100.0;
 
   @override
   void didChangeDependencies() {
@@ -80,6 +81,10 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
       //});
       int currentSet =
           thisDay.justDidLastSet ? thisDay.currentSet + 1 : thisDay.currentSet;
+      // jump to the current set
+      ScrollController scrollController = ScrollController(
+          initialScrollOffset: (currentSet ?? 0) * mainContainerHeight,
+          keepScrollOffset: true);
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
@@ -109,6 +114,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                           Text("Current Set: $currentSet"),
                           Expanded(
                             child: ReorderableListView(
+                              scrollController: scrollController,
                               onReorder: (_oldIndex, _newIndex) {
                                 if (_newIndex > currentSet * 2 - 1) {
                                   //setState(() {
@@ -165,7 +171,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                           /*color: i > thisDay.currentSet * 2 - 1
                                             ? Colors.transparent
                                             : Colors.grey[500].withOpacity(.7),*/
-                                          height: 100,
+                                          height: mainContainerHeight,
                                           key: UniqueKey(),
                                           child:
                                               // this stops them from deleting or reordering the deleted items
@@ -192,6 +198,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                     //setState(() {
                                                     // sugar for toInt()
                                                     thisDay.remove((i ~/ 2));
+                                                    thisDay.sets--;
                                                     //thisDay.exercises
                                                     //  .removeAt((i ~/ 2));
                                                     // show snakcbar?

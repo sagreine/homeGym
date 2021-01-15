@@ -405,9 +405,14 @@ class _DoLiftViewState extends State<DoLiftView>
                 // we could do that, but it moves the cursor if you are rebuilding because you clicked into editing a form field, which is annoying
                 // also it would be very wasteful.
                 //if (exercise != exerciseDay.exercises[exerciseDay.currentSet]) {
-                exercise = exerciseDay.exercises[exerciseDay.currentSet];
-                homeController.displayInExerciseInfo(
-                    exercise: exercise, justRemovedPR: justRemovedPR); //. ;
+                // if we just deleted the last set of the day, go get the "we're done" text
+                if (exerciseDay.currentSet < exerciseDay.exercises.length) {
+                  exercise = exerciseDay.exercises[exerciseDay.currentSet];
+                  homeController.displayInExerciseInfo(
+                      exercise: exercise, justRemovedPR: justRemovedPR); //. ;
+                } else {
+                  homeController.getNextExercise(context: context);
+                }
                 //}
                 return Column(
                   children: <Widget>[
