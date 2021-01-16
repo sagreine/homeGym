@@ -433,6 +433,16 @@ class PrettyPRGraphs extends ChangeNotifier {
         return element;
       });
       distinctThisLine.add(list.last);
+      // need to check this last element too! and single item lists...
+      if (!dates.any((element) =>
+          list.last.dateTime
+              .difference(DateTime.parse(element.easyBackToDateTimeFormatted))
+              .inDays
+              .abs() <
+          0.5)) {
+        dates.add(EasyDate(date: list.last.dateTime));
+      }
+
       listOfListDistinctDates.add(distinctThisLine);
     });
 
