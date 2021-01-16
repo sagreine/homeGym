@@ -105,6 +105,10 @@ class _LoginViewState extends State<LoginView> {
     lifterWeightsController.updatePlate(
         context: context, plate: 10.0, plateCount: 2);
     lifterWeightsController.updatePlate(
+        context: context, plate: 15.0, plateCount: 2);
+    lifterWeightsController.updatePlate(
+        context: context, plate: 20.0, plateCount: 2);
+    lifterWeightsController.updatePlate(
         context: context, plate: 25.0, plateCount: 2);
     lifterWeightsController.updatePlate(
         context: context, plate: 35.0, plateCount: 2);
@@ -123,6 +127,8 @@ class _LoginViewState extends State<LoginView> {
         context: context, plate: 33, plateCount: 0);
     lifterWeightsController.updatePlate(
         context: context, plate: 44, plateCount: 0);
+    lifterWeightsController.updatePlate(
+        context: context, plate: 55, plateCount: 0);
   }
 
   Scaffold buildNextPage() {
