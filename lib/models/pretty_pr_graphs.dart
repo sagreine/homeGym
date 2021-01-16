@@ -39,6 +39,7 @@ class PrettyPRGraphs extends ChangeNotifier {
   int maxDistinctPrsInAnyBucket = 0;
   DateTime startDate;
   DateTime endDate;
+  double barChartMaxY = 0;
 
   final Color barBackgroundColor = const Color(0xff72d8bf);
 
@@ -232,9 +233,17 @@ class PrettyPRGraphs extends ChangeNotifier {
   String getTitle(
       {@required int index,
       @required List<Pr> prsList,
-      @required bool returnDateNotVals}) {
+      @required bool returnDateNotVals,
+
+      /// this returns just the opposite of what is normally returned, WITHOUT the prefix
+      bool switchGet}) {
     if (index >= prsList.length) {
       return "";
+    }
+    // return the opposite, with no prefix
+    if (switchGet ?? false) {
+      return (_isRepNotWeight ? prsList[index].weight : prsList[index].reps)
+          .toString();
     }
     var suffix = (_isRepNotWeight ? "RM" : "");
     var prefix = (_isRepNotWeight ? prsList[index].reps : prsList[index].weight)
@@ -258,11 +267,18 @@ class PrettyPRGraphs extends ChangeNotifier {
                 returnDateNotVals: true,
               );
               // sooooooo the rod y value gets modified to push it up, so we need to re-adjust that here (why not just literal val?)
+              String weight = getTitle(
+                  index: group.x,
+                  prsList: getPrsList(currentPrs: true),
+                  returnDateNotVals: false,
+                  switchGet: true);
               return BarTooltipItem(
-                  (rod.y ~/ 1.1).toString() +
-                      (!isRepNotWeight ? " reps" : "") +
-                      '\n' +
-                      date,
+
+                  /*(barChartMaxY >= rod.y
+                          ? (rod.y ~/ 1.1).toString()
+                          : barChartMaxY.toString()) +
+                          */
+                  weight + (!isRepNotWeight ? " reps" : "") + '\n' + date,
                   TextStyle(color: Colors.yellow));
             }),
         touchCallback: (barTouchResponse) => touchCallback(barTouchResponse),
@@ -362,6 +378,7 @@ class PrettyPRGraphs extends ChangeNotifier {
     List<int> showTooltips = const [],
   }) {
     var maxY = _getMaxY(currentPrs: isShowingMainData).toDouble();
+    barChartMaxY = maxY;
     return BarChartGroupData(
       x: x,
       barRods: [
@@ -386,8 +403,7 @@ class PrettyPRGraphs extends ChangeNotifier {
         if (numPointsShowing <= 0) {
           numPointsShowing = 1;
         }
-        return makeGroupData(
-            i, 1 * (isRepNotWeight ? prs[i].weight : prs[i].reps) + 0,
+        return makeGroupData(i, isRepNotWeight ? prs[i].weight : prs[i].reps,
             isTouched: i == touchedIndex, width: 220 / numPointsShowing);
       });
 
