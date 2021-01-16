@@ -8,12 +8,14 @@ class PickedProgram {
   int week;
   bool potentialProgressWeek;
   String type;
+  double trainingMaxPct;
 
   PickedProgram({
     this.program,
     this.week,
     this.potentialProgressWeek,
     this.type,
+    this.trainingMaxPct,
   });
 }
 

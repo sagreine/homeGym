@@ -1,5 +1,6 @@
 import 'package:admob_flutter/admob_flutter.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
@@ -123,7 +124,8 @@ class _PickDayViewState extends State<PickDayView> {
                               onTap: () {
                                 // this is lazy and bad.
                                 setState(() {
-                                  pickDayController.pickExercise(index);
+                                  pickDayController.pickExercise(
+                                      index, context);
                                 });
                               },
                               splashColor:
@@ -177,6 +179,7 @@ class _PickDayViewState extends State<PickDayView> {
                 },
               ),
             ),
+
           TextFormField(
             controller: pickDayController.programController,
             decoration: new InputDecoration(
@@ -202,6 +205,48 @@ class _PickDayViewState extends State<PickDayView> {
               setState(() {});
             },
           ),
+          SizedBox(height: 6),
+          Consumer<PickDay>(builder: (context, pickDay, child) {
+            return Visibility(
+              visible: pickDay.pickedProgram.type == "5/3/1" &&
+                  pickDayController.tmController.text != null &&
+                  pickDayController.tmController.text.length != 0,
+              child: TextFormField(
+                controller: pickDayController.tmController,
+                onChanged: (newValue) {
+                  pickDay.pickedProgram.trainingMaxPct =
+                      double.parse(pickDayController.tmController.text);
+                },
+                keyboardType: TextInputType.numberWithOptions(
+                  signed: false,
+                  decimal: false,
+                ),
+                //validator: numberValidator,
+                inputFormatters: <TextInputFormatter>[
+                  WhitelistingTextInputFormatter.digitsOnly
+                ],
+                decoration: new InputDecoration(
+                  enabledBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                      color: Colors.blueGrey, //Color(0xFF1976D2),
+                      width: 1.0,
+                      style: BorderStyle.solid,
+                    ),
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(
+                        color: Colors.blueGrey,
+                        //Color(0xFF06ac51),
+                        width: 1.0),
+                  ),
+                  labelText: "Override TM% (optional)",
+                ),
+                //onChanged: (value) => ,
+                readOnly: false,
+                style: TextStyle(fontSize: 15),
+              ),
+            );
+          }),
           SizedBox(height: 10),
 
           //),

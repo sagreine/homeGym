@@ -61,6 +61,7 @@ Future<List<PickedProgram>> getPrograms() async {
     // we'll default to 1 if this value isn't set.
     pickedProgram.week = list[index].data()["numWeeks"] ?? 1;
     pickedProgram.type = list[index].data()["type"];
+    pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
     return pickedProgram;
   })
     ..sort((e, f) => e.type.compareTo(f.type));
@@ -461,7 +462,7 @@ Future<void> getExercisesCloud({
     prSetWeek: pctAndReps.data()["PRSetWeek"],
     percentages: percentages,
     progressSet: pctAndReps.data()["progressSet"],
-    trainingMaxPct: pctAndReps.data()["trainingMaxPct"],
+    //trainingMaxPct: pctAndReps.data()["trainingMaxPct"],
     /*
     assistanceCore: new List<String>.from(pctAndReps.data()["assistance_core"]),
     assistanceCoreReps:

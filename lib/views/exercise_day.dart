@@ -141,10 +141,8 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                       thisDay.progressSet <= _newIndex ~/ 2) {
                                     thisDay.progressSet--;
                                   }
-                                  thisDay.insert(
-                                      _newIndex ~/ 2,
-                                      thisDay.exercises
-                                          .removeAt(_oldIndex ~/ 2));
+                                  thisDay.insert(_newIndex ~/ 2,
+                                      thisDay.removeAt(_oldIndex ~/ 2));
                                   //thisDay.removeAt();
 
                                   /*thisDay.exercises.insert(_newIndex ~/ 2,
@@ -197,7 +195,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                           .endToStart) {
                                                     //setState(() {
                                                     // sugar for toInt()
-                                                    thisDay.remove((i ~/ 2));
+                                                    thisDay.removeAt((i ~/ 2));
 
                                                     //thisDay.exercises
                                                     //  .removeAt((i ~/ 2));

@@ -99,6 +99,9 @@ void main() async {
     ChangeNotifierProvider(
       create: (context) => Prs(),
     ),
+    ChangeNotifierProvider(
+      create: (context) => PickDay(),
+    ),
   ], child: MyApp(savedThemeMode: savedThemeMode)));
 }
 

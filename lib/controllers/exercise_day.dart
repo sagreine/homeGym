@@ -91,7 +91,7 @@ class ExerciseDayController {
           assistancePush.length*/
       progressSet: progressSet,
       prSetWeek: prSetWeek,
-      trainingMax: trainingMaxPct,
+      //trainingMax: trainingMaxPct,
       /*
       assistanceCore: assistanceCore,
       assistanceCoreReps: assistanceCoreReps,

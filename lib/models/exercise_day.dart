@@ -66,7 +66,7 @@ class ExerciseDay extends ChangeNotifier {
     List<double> percentages,
     List<int> prSets,
     int currentSet,
-    double trainingMax,
+    //double trainingMax,
     /*
     List<int> assistanceCoreReps,
     List<int> assistancePullReps,
@@ -86,7 +86,7 @@ class ExerciseDay extends ChangeNotifier {
     this.reps = reps;
     this.percentages = percentages;
     this.currentSet = currentSet;
-    this.trainingMax = trainingMax;
+    //this.trainingMax = trainingMax;
     this.lifts = lifts;
     this.prSets = prSets;
     /*
@@ -180,17 +180,21 @@ class ExerciseDay extends ChangeNotifier {
     //justDidLastSet = true;
   }
 
-  void remove(int index) {
-    exercises.removeAt(index);
+  ExerciseSet removeAt(int index) {
+    var _return = exercises.removeAt(index);
     sets -= 1;
     // to update justDidLastSet, but also why we should probably have that as the getter for a private variable if we're doing caching like that...
     areWeOnLastSet(offset: 0);
     //displayInExerciseInfo();
     notifyListeners();
+    return _return;
   }
 
   void insert(int index, ExerciseSet exerciseSet) {
     exercises.insert(index, exerciseSet);
+    //if (increaseTotal) {
+    sets++;
+
     notifyListeners();
   }
 

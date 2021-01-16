@@ -67,6 +67,9 @@ class _ProgramsState extends State<ProgramsView> {
                       returnProgram.potentialProgressWeek =
                           (returnProgram.week == programSnap.data[index].week);
                     }
+                    returnProgram.type = programSnap.data[index].type;
+                    returnProgram.trainingMaxPct =
+                        programSnap.data[index].trainingMaxPct * 100;
                     // if they picked a week, return with it, else just play dumb
                     if (returnProgram.week != null) {
                       Navigator.pop(context, returnProgram);
