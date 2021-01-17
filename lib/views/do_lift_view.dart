@@ -451,6 +451,7 @@ class _DoLiftViewState extends State<DoLiftView>
                           children: [
                             SizedBox(height: 3),
                             TextFormField(
+                              textCapitalization: TextCapitalization.sentences,
                               decoration: new InputDecoration(
                                 focusedBorder: OutlineInputBorder(
                                   borderSide: BorderSide(
