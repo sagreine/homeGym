@@ -178,17 +178,16 @@ class _LoginViewState extends State<LoginView> {
     bool nouser =
         Provider.of<Muser>(context, listen: false)?.fAuthUser?.uid == null;
 
+    // it is necessary to know if the weight is null.
     isFirstPull =
-            /*(Provider.of<LifterWeights>(context, listen: false).squatBarWeight ==
-                null
-                 ||*/
-            nouser
-        //)
-        ;
+        (Provider.of<LifterWeights>(context, listen: false).squatBarWeight ==
+                null ||
+            nouser);
 
     return authFlag
         // this is if we have a signed in user. so, really, this should never be a new user (you can't be logging in again and be new)
-        ? FutureBuilder(
+        ? buildNextPage()
+        /*FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return buildNextPage();
@@ -198,7 +197,7 @@ class _LoginViewState extends State<LoginView> {
             // This should never fire the new user
             future: _user.isNewUser
                 ? buildDefaultUser()
-                : Future.delayed(Duration(milliseconds: 0)))
+                : Future.delayed(Duration(milliseconds: 0)))*/
         : StreamBuilder<FirebaseUser>(
             stream: FirebaseAuthUi.instance().launchAuth(
               [
