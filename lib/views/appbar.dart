@@ -765,6 +765,7 @@ class ExerciseForm {
           Text("Edit this set"),
           SizedBox(height: 8),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             //initialValue: exerciseSet.title,
             controller: titleController,
             onChanged: (value) {
