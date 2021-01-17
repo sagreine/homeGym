@@ -122,18 +122,27 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
               padding: const EdgeInsets.all(8.0),
               child: Align(
                 alignment: Alignment.topRight,
-                child: IconButton(
-                  icon: Icon(
-                    isPlaying ? Icons.pause : Icons.play_arrow,
-                    color: const Color(0xff0f4a3c),
+                child: Visibility(
+                  visible: model.prs
+                          .currentPrs[model.isRepNotWeight ? "Rep" : "Weight"]
+                          .where((element) =>
+                              element.lift.toLowerCase() ==
+                              model.selectedLift.toLowerCase())
+                          .length >
+                      1,
+                  child: IconButton(
+                    icon: Icon(
+                      isPlaying ? Icons.pause : Icons.play_arrow,
+                      color: const Color(0xff0f4a3c),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        isPlaying = !isPlaying;
+                        model.currentIteratorDistinctPrs = 0;
+                        refreshState(model);
+                      });
+                    },
                   ),
-                  onPressed: () {
-                    setState(() {
-                      isPlaying = !isPlaying;
-                      model.currentIteratorDistinctPrs = 0;
-                      refreshState(model);
-                    });
-                  },
                 ),
               ),
             )
@@ -246,6 +255,16 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
   @override
   Widget build(BuildContext context) {
     return Consumer<Prs>(builder: (context, prs, child) {
+      if (prs.currentPrs == null ||
+          (prs.currentPrs["Rep"].length <= 0) &&
+              prs.currentPrs["Weight"].length <= 0) {
+        return Center(
+            child: Text(
+          "Go set some PRs first",
+          style: TextStyle(fontSize: 32),
+        ));
+      }
+
       return Consumer<PrettyPRGraphs>(builder: (context, model, child) {
         if (onInit) {
           model.isShowingMainData = true;
@@ -283,7 +302,11 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                 // see if it already exists. if it does, just build the chart. otherwise, futurebuild it.
                 // this is because we have Playing that forces setState repeatedly and don't want to have the future fire again and again
                 // which apparently happens even if we directly return something inside the future.
-                Provider.of<Prs>(context, listen: false).allPrs != null
+                (Provider.of<Prs>(context, listen: false).allPrs != null &&
+                        Provider.of<Prs>(context, listen: false)
+                                .allPrs[model.isRepNotWeight ? "Rep" : "Weight"]
+                                .length >
+                            0)
                     ? _buildCharts(model)
                     : FutureBuilder(
                         future: prettyPrGraphsController.getAllPrs(

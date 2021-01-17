@@ -79,6 +79,9 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
     } else {
       _prs = prs.prsWeight;
     }*/
+    if (prs == null) {
+      return;
+    }
     if (prs[isRep ? "Rep" : "Weight"] != null) {
       thisLiftPrs = prs[isRep ? "Rep" : "Weight"]
           .where((element) => element.lift == lift)
@@ -433,6 +436,8 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
                       children: [
                         _buildTab("Rep"),
                         _buildTab("Weight"),
+                        // CONSUMER
+
                         ChangeNotifierProvider(
                           create: (context) => PrettyPRGraphs(
                             prs: Provider.of<Prs>(context, listen: false),
@@ -450,7 +455,7 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
                   Visibility(
                       child: Padding(
                         padding: EdgeInsets.only(bottom: 10),
-                        child: Text("HomeGymTV"),
+                        child: Text("@HomeGymTV"),
                       ), //Image.asset("assets/images/fc_logo.png"),
                       visible: isScreenshotting),
                   Visibility(

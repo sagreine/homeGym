@@ -58,7 +58,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   //TODO: well this sure isn't UI..
-  void buildDefaultUser() async {
+  Future<void> buildDefaultUser() async {
     await lifterMaxesController.update1RepMax(
         progression: false,
         context: context,
@@ -97,7 +97,8 @@ class _LoginViewState extends State<LoginView> {
 // 2) updates local with that new value (from null)
 // 3) sets the cloud to that local value (it already is that value...)
     lifterWeightsController.updateBumpers(context: context, bumpers: false);
-// add default plate counts. first, lbs
+// add default plate counts. first, lbs - kind of. some of these are kg but will show here
+// it doesn't actually matter.
     lifterWeightsController.updatePlate(
         context: context, plate: 2.5, plateCount: 4);
     lifterWeightsController.updatePlate(
@@ -105,9 +106,9 @@ class _LoginViewState extends State<LoginView> {
     lifterWeightsController.updatePlate(
         context: context, plate: 10.0, plateCount: 2);
     lifterWeightsController.updatePlate(
-        context: context, plate: 15.0, plateCount: 2);
+        context: context, plate: 15.0, plateCount: 0);
     lifterWeightsController.updatePlate(
-        context: context, plate: 20.0, plateCount: 2);
+        context: context, plate: 20.0, plateCount: 0);
     lifterWeightsController.updatePlate(
         context: context, plate: 25.0, plateCount: 2);
     lifterWeightsController.updatePlate(
@@ -115,6 +116,12 @@ class _LoginViewState extends State<LoginView> {
     lifterWeightsController.updatePlate(
         context: context, plate: 45.0, plateCount: 2);
 // add default plate counts. second, kgs
+    lifterWeightsController.updatePlate(
+        context: context, plate: 0.5, plateCount: 0);
+    lifterWeightsController.updatePlate(
+        context: context, plate: 1.0, plateCount: 0);
+    lifterWeightsController.updatePlate(
+        context: context, plate: 1.25, plateCount: 0);
     lifterWeightsController.updatePlate(
         context: context, plate: 2.75, plateCount: 0);
     lifterWeightsController.updatePlate(
@@ -135,11 +142,18 @@ class _LoginViewState extends State<LoginView> {
     if (_user.isNewUser) {
       if (isFirstPull) {
         isFirstPull = false;
-        buildDefaultUser();
+        var scaffold;
+
+        buildDefaultUser().then((value) {
+          scaffold = Scaffold(
+            body: Container(child: IntroScreenView()),
+          );
+          return scaffold;
+        });
       }
-      return Scaffold(
+      /*return Scaffold(
         body: Container(child: IntroScreenView()),
-      );
+      );*/
     } else {
       if (isFirstPull) {
         isFirstPull = false;
@@ -156,7 +170,7 @@ class _LoginViewState extends State<LoginView> {
         body: Container(child: PickDayView()),
       );
     }
-  } //
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -178,6 +192,12 @@ class _LoginViewState extends State<LoginView> {
 
     return authFlag
         ? buildNextPage()
+
+        //FutureBuilder(builder: (context, snapshot) {},
+        //future: buildDefaultUser
+
+        //)
+
         : StreamBuilder<FirebaseUser>(
             stream: FirebaseAuthUi.instance().launchAuth(
               [

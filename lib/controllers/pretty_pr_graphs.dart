@@ -9,7 +9,9 @@ class PrettyPrGraphsController {
     var prsModel = Provider.of<Prs>(context, listen: false);
     //var user = Provider.of<Muser>(context, listen: false);
     // what about if the mdodel exists and there's nothing in it? or handle that elsewhere e.g. UI <-- do that
-    if (prsModel == null || prsModel.allPrs == null) {
+    if (prsModel == null ||
+        prsModel.allPrs == null ||
+        prsModel.allPrs[_isRepNotWeight ? "Rep" : "Weight"] == null) {
       // get from the cloud
       /*prsModel.allPrs = await getAllPRsCloud(
           context: context,

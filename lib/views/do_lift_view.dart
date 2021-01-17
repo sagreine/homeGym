@@ -238,6 +238,7 @@ class _DoLiftViewState extends State<DoLiftView>
     if (exerciseDay.lift == null) {
       _noDayPickedOnEntry = true;
       //exerciseDay.lift = "Squat";
+      exerciseDay.trainingMax = 0.85;
       PickDayController pickDayController = PickDayController();
       await pickDayController.getExercises(context, "Advanced Prep", 1);
       exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
@@ -606,15 +607,17 @@ class _DoLiftViewState extends State<DoLiftView>
                         child: Consumer<Prs>(builder: (context, prs, child) {
                           var prsPulled =
                               prs.bothLocalExistingPR(lift: exercise);
-                          return Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceAround,
-                            children: [
-                              Text(
-                                  "PR for ${exercise.reps} reps: ${prsPulled["Rep"].weight}"),
-                              Text(
-                                  "PR for weight of ${exercise.weight}: ${prsPulled["Weight"].reps}")
-                            ],
-                          );
+                          if (prsPulled != null) {
+                            return Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Text(
+                                    "PR for ${exercise.reps} reps: ${prsPulled["Rep"].weight}"),
+                                Text(
+                                    "PR for weight of ${exercise.weight}: ${prsPulled["Weight"].reps}")
+                              ],
+                            );
+                          }
                         }),
                       ),
                       // this should be in a controller

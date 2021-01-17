@@ -81,6 +81,9 @@ class Prs extends ChangeNotifier {
     } else {
       prs = prsWeight;
     }*/
+    if (currentPrs == null || currentPrs[isRep ? "Rep" : "Weight"] == null) {
+      return -1;
+    }
     return currentPrs[isRep ? "Rep" : "Weight"].indexWhere((element) =>
         (isRep ? element.reps == lift.reps : element.weight == lift.weight) &&
         element.lift == lift.title);
