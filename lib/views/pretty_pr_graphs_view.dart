@@ -209,6 +209,7 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                   child: Padding(
                     padding: const EdgeInsets.only(right: 16.0, left: 6.0),
                     child: LineChart(
+                      //model.prs.allPrs[]
                       (model.isShowingMainData ?? true)
                           ? model.oneLiftData(true)
                           : model.oneLiftData(false),
@@ -276,7 +277,7 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                 ? EdgeInsets.only(right: 6.0, left: 6.0)
                 : EdgeInsets.only(right: 0.0, left: 0.0),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
+              mainAxisSize: MainAxisSize.max,
               children: [
                 Visibility(
                   visible: !widget.isScreenshotting,
@@ -301,10 +302,16 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                 ),
                 // see if it already exists. if it does, just build the chart. otherwise, futurebuild it.
                 // this is because we have Playing that forces setState repeatedly and don't want to have the future fire again and again
-                // which apparently happens even if we directly return something inside the future.
+                // which apparently happens even if we directly return something inside the future. And we need this the first time we
+                // build the chart on the way in because we're pulling PRs for the first time then.
+
+                //TODO: just put the chart inside the container instead of rebuilding the whole thing.
                 (Provider.of<Prs>(context, listen: false).allPrs != null &&
                         Provider.of<Prs>(context, listen: false)
                                 .allPrs[model.isRepNotWeight ? "Rep" : "Weight"]
+                                .where((element) =>
+                                    element.lift.toLowerCase() ==
+                                    model.selectedLift.toLowerCase())
                                 .length >
                             0)
                     ? _buildCharts(model)
@@ -315,8 +322,64 @@ class _PrettyPRGraphsViewState extends State<PrettyPRGraphsView> {
                           if (snapshot.connectionState ==
                               ConnectionState.done) {
                             return _buildCharts(model);
+                            // otherwise build the same background as the charts. this is real dumb
                           } else {
-                            return Text("Loading...");
+                            return Expanded(
+                                child: Column(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                  Expanded(
+                                      child: Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.stretch,
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      !model.chartTypeIsLine
+                                          ? Expanded(
+                                              child: Card(
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              18)),
+                                                  color: Theme.of(context)
+                                                              .brightness ==
+                                                          Brightness.light
+                                                      ? Color(0xff81e5cd)
+                                                      : Color(0xff06916f),
+                                                  child: Container(
+                                                    child: Text("Loading..."),
+                                                    alignment:
+                                                        Alignment.topCenter,
+                                                  )))
+                                          : Expanded(
+                                              child: Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius:
+                                                        BorderRadius.all(
+                                                            Radius.circular(
+                                                                18)),
+                                                    gradient: LinearGradient(
+                                                      colors: [
+                                                        Theme.of(context)
+                                                            .accentColor,
+                                                        Theme.of(context)
+                                                            .hoverColor,
+                                                      ],
+                                                      begin: Alignment
+                                                          .bottomCenter,
+                                                      end: Alignment.topCenter,
+                                                    ),
+                                                  ),
+                                                  child: Container(
+                                                    child: Text("Loading..."),
+                                                    alignment:
+                                                        Alignment.topCenter,
+                                                  ))),
+                                    ],
+                                  )),
+                                ]));
                           }
                         }),
               ],
