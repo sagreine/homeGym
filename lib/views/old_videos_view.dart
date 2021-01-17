@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flappy_search_bar/flappy_search_bar.dart';
 import 'package:flutter/foundation.dart';
@@ -378,7 +376,7 @@ class OldVideosViewState extends State<OldVideosView> {
                                 video.reps.toString() +
                                 video.weight.toString() +
                                 ".mp4";
-                            final String full = saveDir + "/" + fileName;
+                            //final String full = saveDir + "/" + fileName;
                             //var result;
 
                             //await ImageGallerySaver.saveFile(full);

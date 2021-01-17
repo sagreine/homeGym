@@ -4,13 +4,11 @@ import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 //import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/views/views.dart';
-import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:provider/provider.dart';
 import 'package:screenshot/screenshot.dart';
 import 'package:social_share_plugin/social_share_plugin.dart';
 
-import 'package:direct_select_flutter/generated/i18n.dart';
 import 'package:direct_select_flutter/direct_select_container.dart';
 import 'package:direct_select_flutter/direct_select_item.dart';
 import 'package:direct_select_flutter/direct_select_list.dart';

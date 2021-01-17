@@ -38,7 +38,6 @@ class _LoginViewState extends State<LoginView> {
   @override
   void initState() {
     super.initState();
-    //_clearOlddata();
   }
 
   @override
@@ -54,7 +53,6 @@ class _LoginViewState extends State<LoginView> {
     if (haveUser) {
       _user.isNewUser = false;
     }
-    //listener = new DataConnectionChecker().onStatusChange;
   }
 
   //TODO: well this sure isn't UI..
@@ -170,7 +168,6 @@ class _LoginViewState extends State<LoginView> {
 
     // below item failed, so instead we will rely on a combo flag of either there is no userid (probably only need this really)
     // to force a repull if they logged out and back in.
-    //bool isFromLogoutPress = ModalRoute.of(context).settings.arguments ?? false;
     bool nouser =
         Provider.of<Muser>(context, listen: false)?.fAuthUser?.uid == null;
 
@@ -180,11 +177,7 @@ class _LoginViewState extends State<LoginView> {
             nouser);
 
     return authFlag
-        ?
-
-        // buildNextPage()
-
-        FutureBuilder(
+        ? FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return buildNextPage();
