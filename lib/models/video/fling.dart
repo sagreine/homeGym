@@ -19,8 +19,14 @@ class FlingMediaModel extends ChangeNotifier {
   // in production that'd have to be a randomly selected one > 1024, not hardcoded, in case user has something there already...
   bool isListening;
 
+  // TODO: test this in the field. specifically, we use a list not a set and use this to not re-add
+  // however, we could just use a set and display as a sorted list. but, the idea is taht we might need
+  // to add a specific one and this coudl be a source of our problems. that is, see if this restriction
+  // actually solves the issue or not. if not, we should go back to Set.
   void addFlingDevices(RemoteMediaPlayer remoteMediaPlayer) {
-    flingDevices.add(remoteMediaPlayer);
+    if (!flingDevices.contains(remoteMediaPlayer)) {
+      flingDevices.add(remoteMediaPlayer);
+    }
     notifyListeners();
   }
 
