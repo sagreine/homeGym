@@ -229,6 +229,7 @@ class LifterWeightsViewState extends State<LifterWeightsView> {
                       ),
                       // split the kg and lb into separate tables to be easier to look at
                       Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           _buildDataTable(
                             platesAsList: platesAsList
