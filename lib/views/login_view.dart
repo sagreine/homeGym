@@ -62,25 +62,31 @@ class _LoginViewState extends State<LoginView> {
         context: context,
         lift: "bench",
         newMax: 100,
-        updateCloud: true);
+        updateCloud: true,
+        dontNotify: true);
     await lifterMaxesController.update1RepMax(
         progression: false,
         context: context,
         lift: "deadlift",
         newMax: 120,
-        updateCloud: true);
+        updateCloud: true,
+        dontNotify: true);
     await lifterMaxesController.update1RepMax(
         progression: false,
         context: context,
         lift: "squat",
         newMax: 110,
-        updateCloud: true);
+        updateCloud: true,
+        dontNotify: true);
     await lifterMaxesController.update1RepMax(
         progression: false,
         context: context,
         lift: "press",
         newMax: 90,
-        updateCloud: true);
+        updateCloud: true,
+        dontNotify: true);
+    // clear the cahce of local Prs
+    loginController.clearLocalPRs(context);
 // default bar weight of 45
     lifterWeightsController.updateBarWeight(
         context: context, newBarWeight: 45, lift: "Squat");
@@ -147,6 +153,7 @@ class _LoginViewState extends State<LoginView> {
         loginController.getMaxes(context);
         loginController.getBarWeights(context);
         loginController.getPlates(context);
+        loginController.clearLocalPRs(context);
         loginController.getCurrentPRs(context);
 
         if (_user.getPhotoURL() != null && _user.getPhotoURL().isNotEmpty) {
@@ -172,11 +179,15 @@ class _LoginViewState extends State<LoginView> {
         Provider.of<Muser>(context, listen: false)?.fAuthUser?.uid == null;
 
     isFirstPull =
-        (Provider.of<LifterWeights>(context, listen: false).squatBarWeight ==
-                null ||
-            nouser);
+            /*(Provider.of<LifterWeights>(context, listen: false).squatBarWeight ==
+                null
+                 ||*/
+            nouser
+        //)
+        ;
 
     return authFlag
+        // this is if we have a signed in user. so, really, this should never be a new user (you can't be logging in again and be new)
         ? FutureBuilder(
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
@@ -184,7 +195,10 @@ class _LoginViewState extends State<LoginView> {
               }
               return Text("Loading");
             },
-            future: buildDefaultUser())
+            // This should never fire the new user
+            future: _user.isNewUser
+                ? buildDefaultUser()
+                : Future.delayed(Duration(milliseconds: 0)))
         : StreamBuilder<FirebaseUser>(
             stream: FirebaseAuthUi.instance().launchAuth(
               [
@@ -211,11 +225,20 @@ class _LoginViewState extends State<LoginView> {
                 // pull in this users' information or build a default user
                 if (snapshot.data.isNewUser != false) {
                   _user.isNewUser = true;
+                  var future = buildDefaultUser();
+                  return FutureBuilder(
+                      builder: (context, snapshot2) {
+                        if (snapshot2.connectionState == ConnectionState.done) {
+                          return buildNextPage();
+                        }
+                        return Container();
+                      },
+                      future: future);
                   //buildDefaultUser();
                 } else {
                   _user.isNewUser = false;
+                  return buildNextPage();
                 }
-                return buildNextPage();
               } else {
                 return Scaffold(
                   body: Center(

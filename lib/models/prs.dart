@@ -33,6 +33,13 @@ class Prs extends ChangeNotifier {
     return toReturn;
   }
 
+  clearLocalPRs() {
+    allPrs?.clear();
+    currentPrs?.clear();
+    allPrs = null;
+    currentPrs = null;
+  }
+
   Map<String, List<Pr>> bothLocalAllPR(
       {String liftTitle, @required Map<String, List<Pr>> prs}) {
     Map<String, List<Pr>> toReturn = Map<String, List<Pr>>();

@@ -68,9 +68,13 @@ class PrsController {
     );
   }
 
-  void getCurrentPRs(BuildContext context) async {
+  void getCurrentPRs(BuildContext context, bool reset) async {
     var user = Provider.of<Muser>(context, listen: false);
     var prs = Provider.of<Prs>(context, listen: false);
+    /*if (reset) {
+      prs.allPrs?.clear();
+      prs.currentPrs?.clear();
+    }*/
     prs.createOrPopulateCurrentPrs(
         squatPRs: await getCurrentPRsCloud(
             context: context,

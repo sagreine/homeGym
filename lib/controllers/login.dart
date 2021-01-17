@@ -40,8 +40,13 @@ class LoginController {
     getPlatesCloud(context: context, userID: user.fAuthUser.uid);
   }
 
+  void clearLocalPRs(BuildContext context) {
+    var prs = Provider.of<Prs>(context, listen: false);
+    prs.clearLocalPRs();
+  }
+
   void getCurrentPRs(BuildContext context) async {
-    PrsController().getCurrentPRs(context);
+    PrsController().getCurrentPRs(context, true);
     /*var user = Provider.of<Muser>(context, listen: false);
     var prs = Provider.of<Prs>(context, listen: false);
     prs.createOrPopulateCurrentPrs(
