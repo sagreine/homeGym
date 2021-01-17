@@ -186,6 +186,7 @@ class _LoginViewState extends State<LoginView> {
 
     return authFlag
         // this is if we have a signed in user. so, really, this should never be a new user (you can't be logging in again and be new)
+        // but could use the commented out code to be safe
         ? buildNextPage()
         /*FutureBuilder(
             builder: (context, snapshot) {
