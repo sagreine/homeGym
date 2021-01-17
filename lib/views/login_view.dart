@@ -58,7 +58,7 @@ class _LoginViewState extends State<LoginView> {
   }
 
   //TODO: well this sure isn't UI..
-  Future<void> buildDefaultUser() async {
+  Future buildDefaultUser() async {
     await lifterMaxesController.update1RepMax(
         progression: false,
         context: context,
@@ -140,20 +140,9 @@ class _LoginViewState extends State<LoginView> {
 
   Scaffold buildNextPage() {
     if (_user.isNewUser) {
-      if (isFirstPull) {
-        isFirstPull = false;
-        var scaffold;
-
-        buildDefaultUser().then((value) {
-          scaffold = Scaffold(
-            body: Container(child: IntroScreenView()),
-          );
-          return scaffold;
-        });
-      }
-      /*return Scaffold(
+      return Scaffold(
         body: Container(child: IntroScreenView()),
-      );*/
+      );
     } else {
       if (isFirstPull) {
         isFirstPull = false;
@@ -191,13 +180,18 @@ class _LoginViewState extends State<LoginView> {
             nouser);
 
     return authFlag
-        ? buildNextPage()
+        ?
 
-        //FutureBuilder(builder: (context, snapshot) {},
-        //future: buildDefaultUser
+        // buildNextPage()
 
-        //)
-
+        FutureBuilder(
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return buildNextPage();
+              }
+              return Text("Loading");
+            },
+            future: buildDefaultUser())
         : StreamBuilder<FirebaseUser>(
             stream: FirebaseAuthUi.instance().launchAuth(
               [
