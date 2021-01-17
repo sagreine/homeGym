@@ -802,6 +802,7 @@ class ExerciseForm {
           ),
           SizedBox(height: 3),
           TextFormField(
+            textCapitalization: TextCapitalization.sentences,
             decoration: new InputDecoration(
               focusedBorder: OutlineInputBorder(
                 borderSide: BorderSide(
