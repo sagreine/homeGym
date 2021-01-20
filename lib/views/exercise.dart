@@ -1,5 +1,6 @@
 import 'package:direct_select_flutter/direct_select_container.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
@@ -13,12 +14,14 @@ class _ExerciseViewState extends State<ExerciseView> {
   //ProgramController programsController = ProgramController();
   bool firstBuild;
   String barbellLift;
+  String barbellLiftForPercentage;
   //Form _form;
   final _formEditKey = GlobalKey<FormState>();
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 //_formEditKey.
 
   bool showBarbellPicker;
+  bool showBarbellPercentagePicker;
   ExerciseSet exerciseSet;
   ExerciseForm fullForm;
 
@@ -27,6 +30,8 @@ class _ExerciseViewState extends State<ExerciseView> {
     //programsController.updateProgramList();
     super.initState();
     firstBuild = true;
+    // don't default to it, for now.
+    showBarbellPercentagePicker = false;
   }
 
   FloatingActionButton _getDoneButton(BuildContext context) {
@@ -50,6 +55,149 @@ class _ExerciseViewState extends State<ExerciseView> {
     );
   }
 
+  _getBarbellForWeight(
+      {bool isNotForBarbellPercentage = false,
+      @required String switchListLabel,
+      Widget trailingChild}) {
+    return Column(mainAxisSize: MainAxisSize.min, children: [
+      SwitchListTile.adaptive(
+          title: Text(switchListLabel),
+          value: isNotForBarbellPercentage
+              ? showBarbellPicker
+              : showBarbellPercentagePicker,
+          onChanged: (newValue) {
+            setState(() {
+              if (isNotForBarbellPercentage) {
+                showBarbellPicker = newValue;
+              } else {
+                showBarbellPercentagePicker = newValue;
+              }
+              if (newValue == true) {
+                if (!isNotForBarbellPercentage) {
+                  if (barbellLiftForPercentage == null)
+                    barbellLiftForPercentage =
+                        ReusableWidgets.lifts.contains(exerciseSet.title)
+                            ? exerciseSet.title
+                            : "Squat";
+                } else {
+                  if (barbellLift == null) {
+                    barbellLift =
+                        ReusableWidgets.lifts.contains(exerciseSet.title)
+                            ? exerciseSet.title
+                            : "Squat";
+                  }
+                }
+              }
+              if (newValue == false) {
+                // if they changed their mind, we don't want to use a barbell in calculating weights so disable that.
+                //exerciseSet.weight = 0;
+              }
+              //_updateToMinBarbellWeight(context, newValue);
+              // TODO: look into this vs using the finalizeWeightsAndDescription function
+              // because this doesn't trigger a recalc of weight but should...
+              _formEditKey.currentState.save();
+            });
+          }),
+      Visibility(
+        visible: isNotForBarbellPercentage
+            ? showBarbellPicker
+            : showBarbellPercentagePicker,
+        child: Column(
+          children: [
+            Container(
+                alignment: AlignmentDirectional.centerStart,
+                margin: EdgeInsets.only(left: 12),
+                child: Text("Which one?")),
+            Padding(
+              padding: EdgeInsets.fromLTRB(8, 8, 0, 8),
+              child: Container(
+                  decoration: BoxDecoration(
+                    boxShadow: <BoxShadow>[
+                      new BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        spreadRadius: 4,
+                        offset: new Offset(0.0, 0.0),
+                        blurRadius: 15.0,
+                      ),
+                    ],
+                  ),
+                  child: ReusableWidgets.getMainLiftPicker(
+                      scaffoldKey: scaffoldKey,
+                      lift: (!isNotForBarbellPercentage
+                              ? barbellLiftForPercentage
+                              : barbellLift) ??
+                          "Squat",
+                      onItemSelectedListener: (item, index, context) {
+                        if (isNotForBarbellPercentage == false) {
+                          barbellLiftForPercentage = item;
+                        } else {
+                          barbellLift = item;
+                        }
+                        // only update the weight using raw values if it is not a percentage
+                        //TODO need to implement one way for barbell and another for percentage...
+                        //if (!isNotForBarbellPercentage) {
+                        fullForm.finalizeWeightsAndDescription(
+                            context: context,
+                            exerciseSet: exerciseSet,
+                            usingBarbell: showBarbellPicker,
+                            barbellLift: (isNotForBarbellPercentage
+                                ? barbellLiftForPercentage
+                                : barbellLift),
+                            scaffoldKey: scaffoldKey);
+                        setState(() {});
+                        //}
+                      })),
+            ),
+            // TODO this will let us update the rep and weight maxes as the forms change
+            // TODO dont forget to update the ExerciseSet we pass in to be the consumer
+            // also this doesn't work at all right now and i'm not sure why
+            Consumer<ExerciseSet>(
+              builder: (context, formSet, child) {
+                return Consumer<Prs>(builder: (context, prs, child) {
+                  // temporarily set this lift to the barbell we chose
+                  var currentTitleForm = exerciseSet.title;
+                  exerciseSet.title = (isNotForBarbellPercentage
+                      ? barbellLiftForPercentage
+                      : barbellLift);
+                  var _prs = prs.bothLocalExistingPR(lift: exerciseSet
+                      /*ExerciseSet(
+                              title: barbellLift ?? "Squat",
+                              reps: exerciseSet.reps,
+                              weight: exerciseSet.weight)*/
+
+                      );
+                  // then set it back to whatever they've edited to on the form
+                  // note, don't do it this way without e.g. local variables at least.
+                  exerciseSet.title = currentTitleForm;
+                  //setState(() {});
+
+                  return Column(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: [
+                        Text("For reference"),
+                        Text(
+                            "${(isNotForBarbellPercentage ? barbellLiftForPercentage : barbellLift) ?? 'Squat'} ${formSet.reps ?? exerciseSet.reps}RM: ${_prs["Rep"].weight} "),
+                        Text(
+                            "Max reps for ${formSet.weight ?? exerciseSet.weight}: ${_prs["Weight"].reps}"),
+                      ]);
+                });
+              },
+            ),
+            if (trailingChild != null)
+              SizedBox(
+                height: 6,
+              ),
+            trailingChild != null ? trailingChild : Container(),
+            if (trailingChild != null)
+              SizedBox(
+                height: 6,
+              ),
+          ],
+        ),
+      )
+    ]);
+  }
+
   TextEditingController titleController = TextEditingController();
   TextEditingController descriptionController = TextEditingController();
   TextEditingController repsController = TextEditingController();
@@ -62,6 +210,7 @@ class _ExerciseViewState extends State<ExerciseView> {
     if (firstBuild) {
       exerciseSet = ModalRoute.of(context).settings.arguments;
       showBarbellPicker = ReusableWidgets.lifts.contains(exerciseSet.title);
+
       if (showBarbellPicker) {
         barbellLift = exerciseSet.title;
       }
@@ -107,7 +256,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                 //},
                 //),
                 SwitchListTile.adaptive(
-                    title: Text("Is this a xPR set?"),
+                    title: Text("This is a xPR set"),
                     value: exerciseSet.thisSetPRSet,
                     onChanged: (newValue) {
                       setState(() {
@@ -116,130 +265,56 @@ class _ExerciseViewState extends State<ExerciseView> {
                         //exerciseSet.updateExercise(thisSetPRSet: newValue);
                       });
                     }),
-                SwitchListTile.adaptive(
-                    title: Text("Is there a barbell used for this lift?"),
-                    value: showBarbellPicker,
-                    onChanged: (newValue) {
-                      setState(() {
-                        showBarbellPicker = newValue;
-                        if (newValue == true) {
-                          if (barbellLift == null) {
-                            barbellLift = ReusableWidgets.lifts
-                                    .contains(exerciseSet.title)
-                                ? exerciseSet.title
-                                : "Squat";
-                          }
-                        }
-                        if (newValue == false) {
-                          // if they changed their mind, we don't want to use a barbell in calculating weights so disable that.
-                          //exerciseSet.weight = 0;
-                        }
-                        //_updateToMinBarbellWeight(context, newValue);
-                        _formEditKey.currentState.save();
-                      });
-                    }),
-
-                Visibility(
-                  visible: showBarbellPicker,
-                  child: Column(
-                    children: [
-                      Container(
-                          alignment: AlignmentDirectional.centerStart,
-                          margin: EdgeInsets.only(left: 12),
-                          child: Text("Which one?")),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(8, 8, 0, 8),
-                        child: Container(
-                            decoration: BoxDecoration(
-                              boxShadow: <BoxShadow>[
-                                new BoxShadow(
-                                  color: Colors.black.withOpacity(0.06),
-                                  spreadRadius: 4,
-                                  offset: new Offset(0.0, 0.0),
-                                  blurRadius: 15.0,
-                                ),
-                              ],
-                            ),
-                            child: ReusableWidgets.getMainLiftPicker(
-                                scaffoldKey: scaffoldKey,
-                                lift: barbellLift ?? "Squat",
-                                onItemSelectedListener: (item, index, context) {
-                                  barbellLift = item;
-                                  //_updateToMinBarbellWeight(context, showBarbellPicker);
-
-                                  /*
-                                    var lifterWeights =
-                                        Provider.of<LifterWeights>(context,
-                                            listen: false);
-                                    if (exerciseSet.weight <
-                                        lifterWeights.getbarWeight(item)) {
-                                      exerciseSet.weight =
-                                          lifterWeights.getbarWeight(item);
-                                      //form.
-                                      Scaffold.of(context).showSnackBar(
-                                        SnackBar(
-                                            content: Text(
-                                                "Weight was less than weight to weight of the $item bar, now equal to it")),
-                                      );
-                                    }*/
-                                  // call to the model of exercise here...
-
-                                  //lift = ReusableWidgets.lifts[index];
-                                  /*updateThisLifPrs(
-                            prs: fullCurrentPrs, isRep: tabName == "Rep");*/
-                                  //setState(() {});
-                                  //_formEditKey.currentState.save();
-                                  fullForm.finalizeWeightsAndDescription(
-                                      context: context,
-                                      exerciseSet: exerciseSet,
-                                      usingBarbell: showBarbellPicker,
-                                      barbellLift: barbellLift,
-                                      scaffoldKey: scaffoldKey);
-                                  setState(() {});
-                                })),
+                _getBarbellForWeight(
+                    isNotForBarbellPercentage: true,
+                    switchListLabel: "There is a barbell used for this lift"),
+                _getBarbellForWeight(
+                  isNotForBarbellPercentage: false,
+                  switchListLabel: "Calculate weight from % of a Main lift 1RM",
+                  trailingChild: TextFormField(
+                    //initialValue: exerciseSet.title,
+                    //controller: titleController,
+                    onChanged: (value) {
+                      //exerciseSet.title = value;
+                    },
+                    style: TextStyle(fontSize: 30),
+                    textAlign: TextAlign.center,
+                    autocorrect: true,
+                    enableSuggestions: true,
+                    //enabled: true,
+                    // remove border and center
+                    decoration: new InputDecoration(
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.greenAccent,
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
                       ),
-                      // TODO this will let us update the rep and weight maxes as the forms change
-                      // TODO dont forget to update the ExerciseSet we pass in to be the consumer
-                      // also this doesn't work at all right now and i'm not sure why
-                      Consumer<ExerciseSet>(
-                        builder: (context, formSet, child) {
-                          return Consumer<Prs>(builder: (context, prs, child) {
-                            // temporarily set this lift to the barbell we chose
-                            var currentTitleForm = exerciseSet.title;
-                            exerciseSet.title = barbellLift;
-                            var _prs = prs.bothLocalExistingPR(lift: exerciseSet
-                                /*ExerciseSet(
-                              title: barbellLift ?? "Squat",
-                              reps: exerciseSet.reps,
-                              weight: exerciseSet.weight)*/
-
-                                );
-                            // then set it back to whatever they've edited to on the form
-                            // note, don't do it this way without e.g. local variables at least.
-                            exerciseSet.title = currentTitleForm;
-                            //setState(() {});
-
-                            return Column(
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: [
-                                  Text("For reference"),
-                                  Text(
-                                      "${barbellLift ?? 'Squat'} ${formSet.reps ?? exerciseSet.reps}RM: ${_prs["Rep"].weight} "),
-                                  Text(
-                                      "Max reps for ${formSet.weight ?? exerciseSet.weight}: ${_prs["Weight"].reps}"),
-                                ]);
-                          });
-                        },
+                      enabledBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Colors.blueGrey, width: 1.0),
                       ),
+                      labelText: "Percentage of 1RM to use",
+                    ),
+                    keyboardType: TextInputType.number,
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter.digitsOnly,
                     ],
+                    validator: (value) {
+                      //homeController.formController.validator()
+                      if (value.isEmpty) {
+                        return "Title can't be blank";
+                      }
+                      return null;
+                    },
+                    //controller: homeController.formControllerTitle,
                   ),
                 ),
               ]),
             ),
           ),
-          SizedBox(
-            height: 36,
-          ),
+
           //_getDoneButton(context),
         ])));
   }
