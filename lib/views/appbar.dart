@@ -2,6 +2,7 @@ import 'package:direct_select_flutter/direct_select_item.dart';
 import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 
@@ -293,6 +294,30 @@ class ReusableWidgets {
                   leading: Icon(Icons.video_library),
                   onTap: () {
                     newRouteName = "/lifter_videos";
+                    // if the current route is the exact location we're at (first on the stack), mark that
+                    Navigator.popUntil(context, (route) {
+                      if (route.settings.name == newRouteName) {
+                        isNewRouteSameAsCurrent = true;
+                      } else {
+                        isNewRouteSameAsCurrent = false;
+                      }
+                      return true;
+                    });
+                    // if it isn't, go to the new route
+                    if (!isNewRouteSameAsCurrent) {
+                      Navigator.pushNamed(context, newRouteName);
+                    }
+                    // again if it is, just pop the drawer away
+                    else {
+                      Navigator.pop(context);
+                    }
+                  }),
+              ListTile(
+                  title: Text("My Programs"),
+                  //leading: Icon(Icons.description),
+                  leading: Icon(EvilIcons.archive),
+                  onTap: () {
+                    newRouteName = "/lifter_programs";
                     // if the current route is the exact location we're at (first on the stack), mark that
                     Navigator.popUntil(context, (route) {
                       if (route.settings.name == newRouteName) {
