@@ -244,6 +244,8 @@ class MyApp extends StatelessWidget {
               '/today': (context) => TodayView(),
               '/prs': (context) => PrsView(),
               '/exercise': (context) => ExerciseView(),
+              "/lifter_programs": (context) => LifterProgramsView(),
+              '/program_builder_view': (context) => ProgramBuilderView(),
             },
           );
         });

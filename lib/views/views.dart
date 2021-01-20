@@ -6,6 +6,7 @@ export 'package:home_gym/views/login_view.dart';
 export 'package:home_gym/views/lifter_weights_view.dart';
 export 'package:home_gym/views/lifter_maxes_view.dart';
 export 'package:home_gym/views/lifter_programs_view.dart';
+export 'package:home_gym/views/program_builder_view.dart';
 export 'package:home_gym/views/help_view.dart';
 export 'package:home_gym/views/profile_view.dart';
 export 'package:home_gym/views/exercise_day.dart';

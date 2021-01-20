@@ -3,12 +3,15 @@ import 'package:flutter/material.dart';
 
 //part 'programs.g.dart';
 
+// TODO this is really 'program-week' and we get ourselves in trouble because of that...
 class PickedProgram {
   String program;
   int week;
   bool potentialProgressWeek;
   String type;
   double trainingMaxPct;
+  bool isCustom;
+  bool isMainLift;
 
   PickedProgram({
     this.program,
@@ -16,23 +19,23 @@ class PickedProgram {
     this.potentialProgressWeek,
     this.type,
     this.trainingMaxPct,
+    this.isCustom,
+    this.isMainLift,
   });
 }
 
 //@JsonSerializable()
 class Programs extends ChangeNotifier {
-  // we don't need these really though?
+  // we don't need these really though? it's just there for convenience but now that we have more intelligence here we should really
+  // for them not to use this and use pickedPrograms instead...
   List<String> programs;
   List<int> weeks;
+  List<bool> hasMainLifts;
 
   List<PickedProgram> pickedPrograms;
 
   // but wouldn't want them to do this? woudln't want a public constructor since the other fields are derived i mean.
-  Programs({
-    this.programs,
-    this.weeks,
-    this.pickedPrograms,
-  });
+  Programs({this.programs, this.weeks, this.pickedPrograms, this.hasMainLifts});
 
   void setProgram({
     @required List<PickedProgram> programs,

@@ -51,7 +51,19 @@ updateDatabaseRecordWithReps(
 //TODO this is extremely sloppy. stop just making random lists and pass and parse an object
 Future<List<PickedProgram>> getPrograms() async {
   List<PickedProgram> toReturn = List<PickedProgram>();
+  toReturn = await _getDefaultPrograms()
 
+    // this is untested, but the idea is to sort these then return
+    //..addAll(iterable)
+    //await _getCustomPrograms()
+
+    ..sort((e, f) => e.type.compareTo(f.type));
+
+  return toReturn;
+}
+
+Future<List<PickedProgram>> _getDefaultPrograms() async {
+  List<PickedProgram> toReturn = List<PickedProgram>();
   QuerySnapshot querySnapshot =
       await FirebaseFirestore.instance.collection('PROGRAMS').get();
   List<QueryDocumentSnapshot> list = new List.from(querySnapshot.docs.toList());
@@ -61,11 +73,37 @@ Future<List<PickedProgram>> getPrograms() async {
     // we'll default to 1 if this value isn't set.
     pickedProgram.week = list[index].data()["numWeeks"] ?? 1;
     pickedProgram.type = list[index].data()["type"];
+    //pickedProgram.isMainLift = .... from cloud
     pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
+    pickedProgram.isCustom = false;
+    //hasMainLifts = ... from cloud
     return pickedProgram;
-  })
-    ..sort((e, f) => e.type.compareTo(f.type));
+  });
+  return toReturn;
+}
 
+// TODO: not yet implemented.
+Future<List<PickedProgram>> _getCustomPrograms() async {
+  List<PickedProgram> toReturn = List<PickedProgram>();
+  //QuerySnapshot querySnapshot =
+  //  await FirebaseFirestore.instance.collection('PROGRAMS').get();
+  //List<QueryDocumentSnapshot> list = new List.from(querySnapshot.docs.toList());
+  toReturn = new List<PickedProgram>.generate(
+      /*list.length*/
+
+      // TODO this is just a random hardcode..
+      5, (index) {
+    PickedProgram pickedProgram = PickedProgram();
+    //pickedProgram.program = list[index].id;
+    // we'll default to 1 if this value isn't set.
+    //pickedProgram.week = list[index].data()["numWeeks"] ?? 1;
+    //pickedProgram.type = list[index].data()["type"];
+    //pickedProgram.isMainLift = .... from cloud
+    //pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
+    //pickedProgram.hasMainLifts = ... from cloud
+    pickedProgram.isCustom = true;
+    return pickedProgram;
+  });
   return toReturn;
 }
 
