@@ -15,6 +15,17 @@ class ProgramBuilderView extends StatefulWidget {
 class ProgramBuilderViewState extends State<ProgramBuilderView> {
   bool firstBuild;
   PickedProgram program;
+  List<Color> pageColors = [
+    const Color(0xFF607D8B),
+    Colors.greenAccent[700],
+    Colors.indigoAccent[700],
+  ];
+  List<Color> bubbleColors = [
+    Colors.blueGrey[400],
+    Colors.deepOrange[900],
+    Colors.deepPurpleAccent[100],
+  ];
+
   //TextEditingController programNameController = TextEditingController();
   //TextEditingController programTypeController = TextEditingController();
   //TextEditingController tmController = TextEditingController();
@@ -43,10 +54,12 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
   List<PageViewModel> listPagesViewModel() {
     return [
       PageViewModel(
-        pageColor: const Color(0xFF607D8B),
+        pageColor: pageColors[0],
         iconImageAssetPath: 'assets/images/pos_icon.png',
-        bubbleBackgroundColor: Colors.blueGrey[400],
-        body: TextFormField(
+        bubbleBackgroundColor: bubbleColors[0],
+        body: Container(),
+        title: Text('Program Name'),
+        mainImage: TextFormField(
           initialValue: program.program,
           textCapitalization: TextCapitalization.sentences,
           //initialValue: exerciseSet.title,
@@ -64,15 +77,14 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
           decoration: new InputDecoration(
             focusedBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: Colors.greenAccent,
-                width: 1.0,
-                style: BorderStyle.solid,
-              ),
+                  color: Colors.blueGrey[300],
+                  //Color(0xFF06ac51),
+                  width: 1.0),
             ),
             enabledBorder: OutlineInputBorder(
                 // borderSide: BorderSide(color: Colors.blueGrey, width: 1.0),
                 ),
-            //labelText: "Program Name",
+            labelText: "Unique Name",
           ),
           validator: (value) {
             //homeController.formController.validator()
@@ -91,8 +103,6 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
           },
           //controller: homeController.formControllerTitle,
         ),
-        title: Text('Program Name'),
-        mainImage: null,
         /* Image.asset(
           'assets/images/animation_1.gif',
           height: 285.0,
@@ -103,12 +113,13 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
       ),
       PageViewModel(
-        pageColor: Colors.greenAccent[700],
+        pageColor: pageColors[1],
         iconImageAssetPath: 'assets/images/pos_icon.png',
-        bubbleBackgroundColor: Colors.greenAccent[400],
-        body: TextFormField(
+        bubbleBackgroundColor: bubbleColors[1],
+        mainImage: TextFormField(
             textCapitalization: TextCapitalization.sentences,
             initialValue: program.type,
+            style: TextStyle(fontSize: 30),
             //controller: programTypeController,
             onChanged: (value) {
               program.program = value;
@@ -131,7 +142,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
               enabledBorder: OutlineInputBorder(
                   //borderSide: BorderSide(color: Colors.blueGrey, width: 1.0),
                   ),
-              labelText: "Used for sorting. E.g. '5/3/1' or 'Deload'",
+              labelText: "For sorting. E.g. '5/3/1' or 'Deload'",
             )
             //labelStyle: TextStyle(fontSize: 18)),
             //validator: (value) {
@@ -141,7 +152,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
             //controller: homeController.formControllerTitle,
             ),
         title: Text("Program Type"),
-        mainImage: Image.asset(
+        body: Image.asset(
           'assets/images/pos_icon.png',
           height: 285.0,
           width: 285.0,
@@ -151,10 +162,12 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
       ),
       PageViewModel(
-        pageColor: Colors.indigoAccent[700],
+        pageColor: pageColors[2],
         iconImageAssetPath: 'assets/images/pos_icon.png',
-        bubbleBackgroundColor: Colors.indigoAccent[700],
-        body: SingleChildScrollView(
+        bubbleBackgroundColor: bubbleColors[2],
+        body: Container(),
+        title: Text('Main Lift Day?'),
+        mainImage: SingleChildScrollView(
           physics: AlwaysScrollableScrollPhysics(),
           child: Column(
             children: [
@@ -179,20 +192,13 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
             ],
           ),
         ),
-        title: Text('Main Lift Day?'),
-        mainImage: Image.asset(
-          'assets/images/pos_icon.png',
-          height: 285.0,
-          width: 285.0,
-          alignment: Alignment.center,
-        ),
         titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
         bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
       ),
       PageViewModel(
-        pageColor: Colors.indigoAccent[700],
+        pageColor: pageColors[0],
         iconImageAssetPath: 'assets/images/pos_icon.png',
-        bubbleBackgroundColor: Colors.blueGrey[400],
+        bubbleBackgroundColor: bubbleColors[0],
         body: Container(),
         title: Text('Training Max %'),
         mainImage: SingleChildScrollView(
@@ -209,7 +215,9 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                   //pickDay.pickedProgram.trainingMaxPct =
                   program.trainingMaxPct = double.parse(newValue);
                 },
-                initialValue: (program.trainingMaxPct * 100).toInt().toString(),
+                initialValue: program.trainingMaxPct < 1
+                    ? (program.trainingMaxPct * 100).toInt().toString()
+                    : program.trainingMaxPct.toInt().toString(),
                 keyboardType: TextInputType.numberWithOptions(
                   signed: false,
                   decimal: false,
@@ -220,15 +228,15 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                 ],
                 decoration: new InputDecoration(
                   enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.blueGrey, //Color(0xFF1976D2),
+                      /*borderSide: BorderSide(
+                      color: Color(0xFF1976D2),
                       width: 1.0,
                       style: BorderStyle.solid,
-                    ),
-                  ),
+                    ),*/
+                      ),
                   focusedBorder: OutlineInputBorder(
                     borderSide: BorderSide(
-                        color: Colors.blueGrey,
+                        color: Colors.blueGrey[300],
                         //Color(0xFF06ac51),
                         width: 1.0),
                   ),
@@ -236,17 +244,12 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                 ),
                 //onChanged: (value) => ,
                 readOnly: false,
-                style: TextStyle(fontSize: 15),
+                style: TextStyle(fontSize: 30),
               ),
               Padding(
                 padding: EdgeInsets.all(8),
                 child: Column(children: <Widget>[
-                  //Text(
-                  // child:
                   Text("What's This?"),
-                  //onPressed: () {}, //=> print('Pressed button1'),
-                  //),
-
                   ExpandChild(
                     child: Text(tmPercentageExplanatory),
                   ),
@@ -254,51 +257,56 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
               ),
             ], //
           ),
-        ), //Container(),
-        /*Image.asset(
-          'assets/images/pos_icon.png',
-          height: 285.0,
-          width: 285.0,
-          alignment: Alignment.center,
-        ),*/
-        titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
-        bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
-      ),
-      PageViewModel(
-        pageColor: Colors.indigoAccent[700],
-        iconImageAssetPath: 'assets/images/pos_icon.png',
-        bubbleBackgroundColor: Colors.greenAccent[700],
-        body: SwitchListTile.adaptive(
-            title: Text("The program has > 1 distinct week(s)"),
-            // TODO: need to implmeent 'has a main day' not just do this.
-            value: program.week > 1,
-            onChanged: (newValue) {
-              setState(() {
-                //program.isMainLift = newValue;
-                if (newValue = false) {
-                  program.week = 1;
-                } else {
-                  program.week = 2;
-                }
-              });
-            }),
-        title: Text('Distinct Weeks?'),
-        mainImage: Image.asset(
-          'assets/images/pos_icon.png',
-          height: 285.0,
-          width: 285.0,
-          alignment: Alignment.center,
         ),
         titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
         bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
       ),
       PageViewModel(
-        pageColor: Colors.indigoAccent[700],
+        pageColor: pageColors[1],
         iconImageAssetPath: 'assets/images/pos_icon.png',
-        bubbleBackgroundColor: Colors.indigoAccent[700],
-        body: RaisedButton(
-            color: Colors.transparent,
-            child: Text((program.week ?? 2).toString()),
+        bubbleBackgroundColor: bubbleColors[1],
+        body: Container(),
+        title: Text('Distinct Weeks?'),
+        mainImage: SingleChildScrollView(
+            physics: AlwaysScrollableScrollPhysics(),
+            child: Column(mainAxisSize: MainAxisSize.max, children: [
+              SwitchListTile.adaptive(
+                  title: Text("The program has > 1 distinct week(s)"),
+                  // TODO: need to implmeent 'has a main day' not just do this.
+                  value: program.week > 1,
+                  onChanged: (newValue) {
+                    setState(() {
+                      //program.isMainLift = newValue;
+                      if (newValue = false) {
+                        program.week = 1;
+                      } else {
+                        program.week = 2;
+                      }
+                    });
+                  }),
+              Padding(
+                padding: EdgeInsets.all(8),
+                child: Column(children: <Widget>[
+                  Text("What's This?"),
+                  ExpandChild(
+                    child: Text(tmPercentageExplanatory),
+                  ),
+                ]),
+              ),
+            ])),
+        titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
+        bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
+      ),
+      PageViewModel(
+        pageColor: pageColors[2],
+        iconImageAssetPath: 'assets/images/pos_icon.png',
+        bubbleBackgroundColor: bubbleColors[2],
+        body: Container(),
+        title: Text(
+          'How many?',
+        ),
+        mainImage: SizedBox.expand(
+          child: FlatButton(
             onPressed: () async {
               program.week = await showDialog<int>(
                       context: context,
@@ -311,54 +319,33 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                         );
                       }) ??
                   1;
-            }),
-        title: Text('How many?'),
-        mainImage: Image.asset(
+              setState(() {});
+            },
+            child: Text(
+              (program.week ?? 2).toString(),
+              style: TextStyle(fontSize: 48),
+              //),
+            ),
+            //),
+            //),
+            //]),
+            // ),
+            //],
+            //)
+            // ),
+            //),
+          ),
+        ),
+
+        /*Image.asset(
           'assets/images/pos_icon.png',
           height: 285.0,
           width: 285.0,
           alignment: Alignment.center,
-        ),
+        ),*/
         titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
         bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
       ),
-      /*
-      PageViewModel(
-        pageColor: Colors.indigoAccent[700],
-        iconImageAssetPath: 'assets/images/pos_icon.png',
-        bubbleBackgroundColor: Colors.indigoAccent[700],
-        body: Column(
-          children: [
-            SwitchListTile.adaptive(
-                title: Text("The program has a 'Main' lift day"),
-                // TODO: need to implmeent 'has a main day' not just do this.
-                value: program.isMainLift ?? program.type == "5/3/1",
-                onChanged: (newValue) {
-                  setState(() {
-                    program.isMainLift = newValue;
-                  });
-                }),
-            Padding(
-              padding: EdgeInsets.all(8),
-              child: Column(children: <Widget>[
-                Text("What's This?"),
-                ExpandChild(
-                  child: Text(mainLiftExplanatory),
-                ),
-              ]),
-            ),
-          ],
-        ),
-        title: Text('Make it happen'),
-        mainImage: Image.asset(
-          'assets/images/pos_icon.png',
-          height: 285.0,
-          width: 285.0,
-          alignment: Alignment.center,
-        ),
-        titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
-        bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
-      ),*/
     ];
   }
 
@@ -369,21 +356,28 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       program = ModalRoute.of(context).settings.arguments;
       //programNameController.text = program.program;
       //program.type;
-      programBuilderViews = new IntroViewsFlutter(
-        listPagesViewModel(),
-        onTapDoneButton: () {
-          //Navigator.pushReplacementNamed(context, '/lifter_maxes');
-        },
-        showSkipButton: false,
-        showBackButton: true,
-        showNextButton: true,
-        pageButtonTextStyles: new TextStyle(
-          color: Colors.white,
-          fontSize: 18.0,
-          fontFamily: "Regular",
-        ),
-      );
+
     }
+    programBuilderViews = new IntroViewsFlutter(
+      listPagesViewModel(),
+      onTapDoneButton: () {
+        //Navigator.pushReplacementNamed(context, '/lifter_maxes');
+      },
+      doneText:
+          program.week > 1 ? Text("Build first week!") : Text("Build week!"),
+      showSkipButton: true,
+      skipText: Text("Cancel"),
+      onTapSkipButton: () {
+        Navigator.of(context).pop();
+      },
+      showBackButton: true,
+      showNextButton: true,
+      pageButtonTextStyles: new TextStyle(
+        color: Colors.white,
+        fontSize: 18.0,
+        fontFamily: "Regular",
+      ),
+    );
     firstBuild = false;
     return Scaffold(
       appBar: ReusableWidgets.getAppBar(),
