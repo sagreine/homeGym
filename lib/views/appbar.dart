@@ -329,7 +329,10 @@ class ReusableWidgets {
                     });
                     // if it isn't, go to the new route
                     if (!isNewRouteSameAsCurrent) {
-                      Navigator.pushNamed(context, newRouteName);
+                      Navigator.pushNamed(
+                        context,
+                        newRouteName,
+                      );
                     }
                     // again if it is, just pop the drawer away
                     else {
