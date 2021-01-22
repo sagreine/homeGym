@@ -333,6 +333,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
             ),
           ],
         ),
+        // TODO: add editable information at the set level here?
+        // e.g. copy from another week's sets. maybe just that.
         body: Container());
   }
 
@@ -385,7 +387,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
             //child:
             //ClipRect(
             //child:
-            
+
             IntroViewsFlutter(
           listPagesViewModel(),
           // TODO i don't think this will work? also we don't want to do it every time...
@@ -396,16 +398,14 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
             setState(() {});
           },
           onTapDoneButton: () {
-            Navigator.of(context).pop;
-            //Navigator.pushReplacementNamed(context, '/lifter_maxes');
+            print("Program saved!");
+            Navigator.of(context).pop();
 
             // we need to update our local Programs
 
             // then update the cloud's programs
 
             // then go back
-
-            //Navigator.pushNamed(context, "/excerciseday");
           },
           doneText: Text("Save Program!"),
           showSkipButton: true,
