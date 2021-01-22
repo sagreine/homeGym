@@ -579,10 +579,10 @@ packages:
   intro_views_flutter:
     dependency: "direct main"
     description:
-      name: intro_views_flutter
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "2.8.1"
+      path: "C:\\Users\\sagre\\Desktop\\IntroViews-Flutter-master\\IntroViews-Flutter-master"
+      relative: false
+    source: path
+    version: "2.8.2"
   io:
     dependency: transitive
     description:

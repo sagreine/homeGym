@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
@@ -49,6 +50,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
           "training max afer the first 1-2 or 1-2-3 or use RPE to progress the weights while keeping the sets and reps the same. Other times, you might simply "
               "have a single week for deload. We will have you build each of these weeks soon. Keep in mind that we say 'weeks' everywhere in this app "
               "but it can be any unit of time you like - even days, though we hope that we provide enough flexibility to build whole weeks at a time.";
+  List<PageViewModel> weekSpecificPages = List<PageViewModel>();
 
   @override
   void initState() {
@@ -58,7 +60,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
   }
 
   List<PageViewModel> listPagesViewModel() {
-    return [
+    List<PageViewModel> toReturn = List<PageViewModel>();
+    List<PageViewModel> basePages = [
       PageViewModel(
         pageColor: pageColors[0],
         iconImageAssetPath: 'assets/images/pos_icon.png',
@@ -303,6 +306,34 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
       ),
     ];
+    toReturn.addAll(basePages);
+    toReturn.addAll(weekSpecificPages);
+    return toReturn;
+  }
+
+  List<PageViewModel> _getPageModelsForWeeks(int weeks) {
+    List<PageViewModel> list = List<PageViewModel>();
+    for (int i = 0; i < weeks; ++i) {
+      list.add(_buildPageModelForWeek(i));
+    }
+    return list;
+  }
+
+  _buildPageModelForWeek(int week) {
+    return PageViewModel(
+        // humans prefer 1-3 over 0-2
+        title: Text("Week ${week + 1}"),
+        mainImage: Column(
+          children: [
+            //Text("a title"),
+            SizedBox(
+              // TODO: well lets not hardcode this now. at least use mediaquery
+              height: 367,
+              child: ExcerciseDayView(program: potentialNewPRogram),
+            ),
+          ],
+        ),
+        body: Container());
   }
 
   Widget programBuilderViews;
@@ -320,45 +351,88 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       tmController.text = potentialNewPRogram.trainingMaxPct < 1
           ? (potentialNewPRogram.trainingMaxPct * 100).toInt().toString()
           : potentialNewPRogram.trainingMaxPct.toInt().toString();
+      weekSpecificPages =
+          _getPageModelsForWeeks(potentialNewPRogram?.week ?? 1);
     }
 
     firstBuild = false;
     return Scaffold(
-      appBar: ReusableWidgets.getAppBar(),
-      drawer: ReusableWidgets.getDrawer(context),
-      body: IntroViewsFlutter(
-        listPagesViewModel(),
-        onTapDoneButton: () {
-          //Navigator.pushReplacementNamed(context, '/lifter_maxes');
+        appBar: ReusableWidgets.getAppBar(),
+        drawer: ReusableWidgets.getDrawer(context),
+        body:
 
-          // we need to update our local Programs
+            //Container(
+            //height: 400,
+            //width: 400,
+            //child:
+            //SingleChildScrollView(
+            //primary: true,
+            //clipBehavior: Clip.antiAlias,
+            //scrollDirection: Axis.horizontal,
+            // child:
+            //Container(
+            //width: 580, //double.infinity,
+            //child:
+            //SizedBox.expand(
+            //  child: Row(children: [
+            //SizedBox(
+            //  width: MediaQuery.of(context).size.width + 9000,
+            //height: MediaQuery.of(context).size.height,
+            //child: Wrap(direction: Axis.horizontal, children: [
+            //child:
+            // Row(children: [
+            //Expanded(
+            //child:
+            //ClipRect(
+            //child:
+            
+            IntroViewsFlutter(
+          listPagesViewModel(),
+          // TODO i don't think this will work? also we don't want to do it every time...
+          // needs to change based on how many weeks there are, which can change in the IntroView...
+          onTapNextButton: () {
+            weekSpecificPages =
+                _getPageModelsForWeeks(potentialNewPRogram.week);
+            setState(() {});
+          },
+          onTapDoneButton: () {
+            Navigator.of(context).pop;
+            //Navigator.pushReplacementNamed(context, '/lifter_maxes');
 
-          // then update the cloud's programs
+            // we need to update our local Programs
 
-          // then go back
+            // then update the cloud's programs
 
-          Navigator.pushNamed(context, "/excerciseday");
-        },
-        doneText: potentialNewPRogram.week > 1
-            ? Text("Build first week!")
-            : Text("Build week!"),
-        showSkipButton: true,
-        skipText: Text("Cancel"),
-        // we preserved the original program and edited the deep copy, so we don't need to do anything to restore the original.
-        onTapSkipButton: () {
-          /*if (program != null && potentialNewPRogram != null) {
+            // then go back
+
+            //Navigator.pushNamed(context, "/excerciseday");
+          },
+          doneText: Text("Save Program!"),
+          showSkipButton: true,
+          skipText: Text("Cancel"),
+          // we preserved the original program and edited the deep copy, so we don't need to do anything to restore the original.
+          onTapSkipButton: () {
+            /*if (program != null && potentialNewPRogram != null) {
             potentialNewPRogram = PickedProgram.deepCopy(program);
           }*/
-          Navigator.of(context).pop();
-        },
-        showBackButton: true,
-        showNextButton: true,
-        pageButtonTextStyles: new TextStyle(
-          color: Colors.white,
-          fontSize: 18.0,
-          fontFamily: "Regular",
-        ),
-      ),
-    );
+            Navigator.of(context).pop();
+          },
+          showBackButton: true,
+          showNextButton: true,
+          pageButtonTextStyles: new TextStyle(
+            color: Colors.white,
+            fontSize: 18.0,
+            fontFamily: "Regular",
+          ),
+          //),
+          //)
+          //)
+          //)
+
+          //)
+          //]
+          //)
+          //)
+        ));
   }
 }

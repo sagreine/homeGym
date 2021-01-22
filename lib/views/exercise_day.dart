@@ -6,6 +6,10 @@ import 'package:provider/provider.dart';
 import 'package:timeline_tile/timeline_tile.dart';
 
 class ExcerciseDayView extends StatefulWidget {
+  final // only used in building new programs.
+      PickedProgram program;
+  ExcerciseDayView({this.program});
+
   @override
   _ExcerciseDayViewState createState() => _ExcerciseDayViewState();
 }
@@ -14,11 +18,14 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   //ExerciseDay thisDay;
   AdmobBannerSize bannerSize;
   final mainContainerHeight = 100.0;
-  bool isBuildingNotUsing;
+  bool isBuildingNotUsing = false;
 
   @override
   void initState() {
     super.initState();
+    if (widget.program != null) {
+      isBuildingNotUsing = true;
+    }
 
 //    isBuildingNotUsing =
   }
@@ -32,8 +39,9 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
 
   buildFAB(BuildContext context, ExerciseDay exerciseDay) {
     return Padding(
-        padding: const EdgeInsets.only(bottom: 70.0),
+        padding: EdgeInsets.only(bottom: (isBuildingNotUsing ? 0 : 70.0)),
         child: FloatingActionButton(
+          key: ObjectKey(exerciseDay),
           child: Icon(Icons.add),
           onPressed: () {
             if (exerciseDay == null) {
@@ -95,6 +103,9 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   Widget build(BuildContext context) {
     // CONSUMER!!!
 
+    // TODO: put a way to overide this consumer, since we don't always want this - in building a program, when
+    // we go to week 2...
+
     //thisDay = Provider.of<ExerciseDay>(context, listen: false);
     return Consumer<ExerciseDay>(builder: (context, thisDay, child) {
       // if we just did the last set we want to reflect that here, otherwise just use what set it says we're on.
@@ -104,7 +115,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
       int currentSet = (thisDay.justDidLastSet ?? false)
           ? thisDay.currentSet + 1
           : thisDay.currentSet;
-      isBuildingNotUsing = currentSet == null;
+      //isBuildingNotUsing = currentSet == null;
       // jump to the current set
       ScrollController scrollController = ScrollController(
           initialScrollOffset: (currentSet ?? 0) * mainContainerHeight,
@@ -150,26 +161,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                   if (_newIndex > _oldIndex) {
                                     _newIndex -= 1;
                                   }
-                                  // if we just changed the progress set, we need to update to account for that.
-                                  // TODO this has not been tested at all.
-                                  // TODO: very much not view code....
-                                  // TODO: dead code...
-                                  /*if (thisDay.progressSet < _oldIndex ~/ 2 &&
-                                      thisDay.progressSet >= _newIndex ~/ 2) {
-                                    thisDay.progressSet++;
-                                  } else if (thisDay.progressSet ==
-                                      _oldIndex ~/ 2) {
-                                    if (thisDay.progressSet > _newIndex ~/ 2) {
-                                      thisDay.progressSet--;
-                                    } else if (thisDay.progressSet <
-                                        _newIndex ~/ 2) {
-                                      thisDay.progressSet++;
-                                    }
-                                  } else if (thisDay.progressSet >
-                                          _oldIndex ~/ 2 &&
-                                      thisDay.progressSet <= _newIndex ~/ 2) {
-                                    thisDay.progressSet--;
-                                  }*/
+
                                   thisDay.insert(_newIndex ~/ 2,
                                       thisDay.removeAt(_oldIndex ~/ 2));
                                   //thisDay.removeAt();
@@ -229,12 +221,6 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                     //thisDay.exercises
                                                     //  .removeAt((i ~/ 2));
                                                     // show snakcbar?
-                                                    // if we just changed the progress set order by deleting one..., we need to update to account for that.
-                                                    // TODO this has not been tested at all. very much not view code....
-                                                    /*if (i ~/ 2 <
-                                                        thisDay.progressSet) {
-                                                      thisDay.progressSet--;
-                                                    }*/
                                                     // });
                                                     // this would be after it already dismisses, so stop that!
                                                     // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
@@ -292,22 +278,24 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                           Container(
                             alignment: Alignment.center,
                             margin: EdgeInsets.only(top: 5, bottom: 10.0),
-                            child: AdmobBanner(
-                              adUnitId:
-                                  Provider.of<OldVideos>(context, listen: false)
-                                      .getBannerAdUnitId(),
-                              adSize: bannerSize,
-                              /* listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+                            child: isBuildingNotUsing
+                                ? Container()
+                                : AdmobBanner(
+                                    adUnitId: Provider.of<OldVideos>(context,
+                                            listen: false)
+                                        .getBannerAdUnitId(),
+                                    adSize: bannerSize,
+                                    /* listener: (AdmobAdEvent event, Map<String, dynamic> args) {
                   handleEvent(event, args, 'Banner');
                 },*/
-                              onBannerCreated:
-                                  (AdmobBannerController controller) {
-                                // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
-                                // Normally you don't need to worry about disposing this yourself, it's handled.
-                                // If you need direct access to dispose, this is your guy!
-                                // controller.dispose();
-                              },
-                            ),
+                                    onBannerCreated:
+                                        (AdmobBannerController controller) {
+                                      // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
+                                      // Normally you don't need to worry about disposing this yourself, it's handled.
+                                      // If you need direct access to dispose, this is your guy!
+                                      // controller.dispose();
+                                    },
+                                  ),
                           ),
                         ],
                       ),

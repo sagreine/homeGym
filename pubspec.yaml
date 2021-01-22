@@ -42,7 +42,10 @@ dependencies:
   flare_splash_screen: ^3.0.1
   confetti: ^0.5.4+1
   giffy_dialog: ^1.8.0
-  intro_views_flutter: '^2.8.1'
+  intro_views_flutter:
+    path: C:\Users\sagre\Desktop\IntroViews-Flutter-master\IntroViews-Flutter-master
+    #git:
+     # url: https://github.com/sagreine/IntroViews-Flutter.git      
   data_connection_checker: ^0.3.4
   timeline_tile: ^0.1.2
   google_fonts: ^1.1.0
