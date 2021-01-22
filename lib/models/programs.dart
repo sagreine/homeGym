@@ -48,6 +48,16 @@ class Programs extends ChangeNotifier {
   // but wouldn't want them to do this? woudln't want a public constructor since the other fields are derived i mean.
   Programs({this.programs, this.weeks, this.pickedPrograms, this.hasMainLifts});
 
+  // TODO: need to consider the other variables  here........ or get rid of them entirly.
+  void addProgram({PickedProgram newProgram}) {
+    if (newProgram == null) {
+      newProgram = PickedProgram();
+      newProgram.program = "New Program";
+    }
+    pickedPrograms.add(newProgram);
+    notifyListeners();
+  }
+
   void setProgram({
     @required List<PickedProgram> programs,
   }) {

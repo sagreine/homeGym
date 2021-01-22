@@ -8,10 +8,42 @@ class LifterProgramsView extends StatefulWidget {
   LifterProgramsViewState createState() => LifterProgramsViewState();
 }
 
+/*[
+                  Text("My RPE program"),
+                  Text("Push/Pull/Legs"),
+                  Text("Death by Squat"),
+                  Text("WSFSB but front squats"),
+                  Text("Crossfit program 1"),
+                  Text("TRX program 1"),
+                  Text("Full body beginner"),
+                  Text("MOAR Kettlebells"),
+                ]),*/
+
 class LifterProgramsViewState extends State<LifterProgramsView> {
-  _goToEdit(context, PickedProgram pickedProgram) {
+  _goToEdit({BuildContext context, PickedProgram pickedProgram}) {
     Navigator.pushNamed(context, '/program_builder_view',
         arguments: pickedProgram);
+  }
+
+  _copyProgram({Programs programs, PickedProgram copyingFrom}) {
+    PickedProgram copyingTo = PickedProgram.deepCopy(copyingFrom);
+    print("deep copy complete!");
+    copyingTo.isCustom = true;
+    copyingTo.program += "- copy";
+    programs.addProgram(newProgram: copyingTo);
+  }
+
+  _getFAB(BuildContext context) {
+    return FloatingActionButton(
+        isExtended: false,
+        child: //Text("Add new"),
+            Icon(Icons.add),
+        onPressed: () {
+          // TODO: this sure shouldn't be done here
+          var programs = Provider.of<Programs>(context, listen: false);
+
+          programs.addProgram();
+        });
   }
 
   @override
@@ -19,6 +51,7 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
     return Scaffold(
         appBar: ReusableWidgets.getAppBar(),
         drawer: ReusableWidgets.getDrawer(context),
+        floatingActionButton: _getFAB(context),
         body: Column(children: <Widget>[
           Text(
             "Edit or Add Programs",
@@ -49,35 +82,25 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
                               children: [
                                 IconButton(
                                     //
-
                                     icon: Icon(Icons.edit),
                                     onPressed: (_programs
                                             .pickedPrograms[index].isCustom)
-                                        ? _goToEdit(context,
-                                            _programs.pickedPrograms[index])
+                                        ? () => _goToEdit(
+                                            context: context,
+                                            pickedProgram:
+                                                _programs.pickedPrograms[index])
                                         : null),
                                 IconButton(
                                     icon: Icon(Icons.content_copy),
-                                    onPressed: () {
-                                      // add a copy to this page.
-                                    }),
+                                    onPressed: () => _copyProgram(
+                                        programs: _programs,
+                                        copyingFrom:
+                                            _programs.pickedPrograms[index])),
                               ]),
                         );
                       }),
                 );
               }),
-              Expanded(
-                child: ListView(children: <Widget>[
-                  Text("My RPE program"),
-                  Text("Push/Pull/Legs"),
-                  Text("Death by Squat"),
-                  Text("WSFSB but front squats"),
-                  Text("Crossfit program 1"),
-                  Text("TRX program 1"),
-                  Text("Full body beginner"),
-                  Text("MOAR Kettlebells"),
-                ]),
-              ),
             ],
           ))
         ]));
