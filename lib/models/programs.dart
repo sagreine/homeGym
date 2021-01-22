@@ -22,6 +22,17 @@ class PickedProgram {
     this.isCustom,
     this.isMainLift,
   });
+
+  /// This creates a new program from another program by deep copying all of the other program's variables values
+  PickedProgram.deepCopy(PickedProgram otherProgram)
+      : this(
+            program: otherProgram.program,
+            week: otherProgram.week,
+            potentialProgressWeek: otherProgram.potentialProgressWeek,
+            type: otherProgram.type,
+            trainingMaxPct: otherProgram.trainingMaxPct,
+            isCustom: otherProgram.isCustom,
+            isMainLift: otherProgram.isMainLift);
 }
 
 //@JsonSerializable()

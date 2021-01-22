@@ -6,10 +6,13 @@ part 'exercise_day.g.dart';
 
 @JsonSerializable()
 class ExerciseDay extends ChangeNotifier {
-  // sets is derivable no?
+  // sets is derivable no? - yes. either don't use or use a getter = to .length ....
   String program;
   String lift;
-  int sets;
+  int get sets {
+    return exercises.length;
+  }
+
   double trainingMax;
   int currentSet;
   // 2d list? or, list of Exercises? probably ultimately a list of exericses will be what we want to use.
@@ -36,7 +39,7 @@ class ExerciseDay extends ChangeNotifier {
   ExerciseDay({
     this.lift,
     this.program,
-    this.sets,
+    //this.sets,
     this.reps,
     this.currentSet,
     this.percentages,
@@ -56,7 +59,22 @@ class ExerciseDay extends ChangeNotifier {
     this.exercises,
     this.prSetWeek,
     this.justDidLastSet,
-  });
+  }) {
+    /*if (exercises == null) {
+      exercises = List<ExerciseSet>();
+    }*/
+  }
+
+  void addExercise(ExerciseSet exerciseSet) {
+    if (exercises == null) {
+      exercises = List<ExerciseSet>();
+    }
+    exercises.add(exerciseSet);
+    if (currentSet == null) {
+      currentSet = 0;
+    }
+    notifyListeners();
+  }
 
   void buildDay({
     String lift,
@@ -82,7 +100,7 @@ class ExerciseDay extends ChangeNotifier {
   }) {
     this.lift = lift;
     this.program = program;
-    this.sets = sets;
+    //this.sets = sets;
     this.reps = reps;
     this.percentages = percentages;
     this.currentSet = currentSet;
@@ -182,7 +200,7 @@ class ExerciseDay extends ChangeNotifier {
 
   ExerciseSet removeAt(int index) {
     var _return = exercises.removeAt(index);
-    sets -= 1;
+    //sets -= 1;
     // to update justDidLastSet, but also why we should probably have that as the getter for a private variable if we're doing caching like that...
     areWeOnLastSet(offset: 0);
     //displayInExerciseInfo();
@@ -193,7 +211,7 @@ class ExerciseDay extends ChangeNotifier {
   void insert(int index, ExerciseSet exerciseSet) {
     exercises.insert(index, exerciseSet);
     //if (increaseTotal) {
-    sets++;
+    //sets++;
 
     notifyListeners();
   }

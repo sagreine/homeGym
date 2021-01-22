@@ -14,12 +14,34 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   //ExerciseDay thisDay;
   AdmobBannerSize bannerSize;
   final mainContainerHeight = 100.0;
+  bool isBuildingNotUsing;
+
+  @override
+  void initState() {
+    super.initState();
+
+//    isBuildingNotUsing =
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     bannerSize = AdmobBannerSize.ADAPTIVE_BANNER(
         width: (MediaQuery.of(context).size.width).toInt());
+  }
+
+  buildFAB(BuildContext context, ExerciseDay exerciseDay) {
+    return Padding(
+        padding: const EdgeInsets.only(bottom: 70.0),
+        child: FloatingActionButton(
+          child: Icon(Icons.add),
+          onPressed: () {
+            if (exerciseDay == null) {
+              exerciseDay = ExerciseDay();
+            }
+            exerciseDay.addExercise(ExerciseSet());
+          },
+        ));
   }
 
   Widget _pickChild({
@@ -38,7 +60,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
     ));
 
     final isFirst = index == 0;
-    final isLast = index == thisDay.exercises.length - 1;
+    final isLast = index == (thisDay?.exercises?.length ?? 1) - 1;
     double indicatorY;
     if (isFirst) {
       indicatorY = 0.2;
@@ -79,8 +101,10 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
       //setState(() {
 
       //});
-      int currentSet =
-          thisDay.justDidLastSet ? thisDay.currentSet + 1 : thisDay.currentSet;
+      int currentSet = (thisDay.justDidLastSet ?? false)
+          ? thisDay.currentSet + 1
+          : thisDay.currentSet;
+      isBuildingNotUsing = currentSet == null;
       // jump to the current set
       ScrollController scrollController = ScrollController(
           initialScrollOffset: (currentSet ?? 0) * mainContainerHeight,
@@ -107,11 +131,16 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                 child: SafeArea(
                   child: Scaffold(
                     backgroundColor: Colors.transparent,
+                    floatingActionButton: buildFAB(context, thisDay),
                     body: Center(
                       child: Column(
                         children: <Widget>[
                           //_Header(),
-                          Text("Current Set: $currentSet"),
+                          if (!isBuildingNotUsing)
+                            Text("Current Set: $currentSet"),
+                          if (isBuildingNotUsing)
+                            Text("Add, edit, delete sets!"),
+
                           Expanded(
                             child: ReorderableListView(
                               scrollController: scrollController,
@@ -125,7 +154,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                   // TODO this has not been tested at all.
                                   // TODO: very much not view code....
                                   // TODO: dead code...
-                                  if (thisDay.progressSet < _oldIndex ~/ 2 &&
+                                  /*if (thisDay.progressSet < _oldIndex ~/ 2 &&
                                       thisDay.progressSet >= _newIndex ~/ 2) {
                                     thisDay.progressSet++;
                                   } else if (thisDay.progressSet ==
@@ -140,7 +169,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                           _oldIndex ~/ 2 &&
                                       thisDay.progressSet <= _newIndex ~/ 2) {
                                     thisDay.progressSet--;
-                                  }
+                                  }*/
                                   thisDay.insert(_newIndex ~/ 2,
                                       thisDay.removeAt(_oldIndex ~/ 2));
                                   //thisDay.removeAt();
@@ -152,7 +181,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                               },
                               children: <Widget>[
                                 for (int i = 0;
-                                    i < thisDay.exercises.length * 2;
+                                    i < (thisDay?.exercises?.length ?? 0) * 2;
                                     i++)
                                   // put each item and a divider -> the only visible divider is the one that shows
                                   // which set we're currently on.
@@ -202,10 +231,10 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                     // show snakcbar?
                                                     // if we just changed the progress set order by deleting one..., we need to update to account for that.
                                                     // TODO this has not been tested at all. very much not view code....
-                                                    if (i ~/ 2 <
+                                                    /*if (i ~/ 2 <
                                                         thisDay.progressSet) {
                                                       thisDay.progressSet--;
-                                                    }
+                                                    }*/
                                                     // });
                                                     // this would be after it already dismisses, so stop that!
                                                     // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
@@ -373,7 +402,7 @@ class _TimelineStepsChild extends StatelessWidget {
                   FractionallySizedBox(
                 widthFactor: 0.25,
                 child: Text(
-                  activity.title,
+                  activity.title ?? "Exercise",
                   maxLines: 4,
                   textAlign: TextAlign.left,
                   //textWidthBasis: TextWidthBasis.parent,
@@ -385,13 +414,15 @@ class _TimelineStepsChild extends StatelessWidget {
                 ),
               ),
               title: Text(
-                activity.reps.toString() +
-                    // if the weight is zero, don't display any weight and display 'reps' instead
-                    (activity.weight != 0
-                        ? "x" +
-                            (activity.thisSetPRSet ? "PRx" : "") +
-                            activity.weight.toString()
-                        : " reps"),
+                activity.reps == null
+                    ? "Reps and Weight"
+                    : activity.reps.toString() +
+                        // if the weight is zero, don't display any weight and display 'reps' instead
+                        (activity.weight != 0
+                            ? "x" +
+                                (activity.thisSetPRSet ? "PRx" : "") +
+                                activity.weight.toString()
+                            : " reps"),
                 textAlign: TextAlign.left,
                 softWrap: false,
                 style: TextStyle(
@@ -401,7 +432,7 @@ class _TimelineStepsChild extends StatelessWidget {
                 overflow: TextOverflow.visible,
               ),
               subtitle: Text(
-                activity.description,
+                activity.description ?? "Plates go here",
                 maxLines: 4,
                 overflow: TextOverflow.fade,
               ),
@@ -425,6 +456,7 @@ class _TimelineStepsChild extends StatelessWidget {
                         onPressed: () {
                           var thisDay =
                               Provider.of<ExerciseDay>(context, listen: false);
+                          // TODO: stop doing this. lazy, sloowwww, lose type... just build a deep copy function in the model
                           thisDay.insert(thisDay.exercises.indexOf(activity),
                               ExerciseSet.fromJson(activity.toJson()));
                           /*thisDay.exercises.insert(
