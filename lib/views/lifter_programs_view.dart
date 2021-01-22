@@ -9,6 +9,11 @@ class LifterProgramsView extends StatefulWidget {
 }
 
 class LifterProgramsViewState extends State<LifterProgramsView> {
+  _goToEdit(context, PickedProgram pickedProgram) {
+    Navigator.pushNamed(context, '/program_builder_view',
+        arguments: pickedProgram);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -16,7 +21,7 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
         drawer: ReusableWidgets.getDrawer(context),
         body: Column(children: <Widget>[
           Text(
-            "Your custom Programs",
+            "Edit or Add Programs",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(
@@ -27,10 +32,11 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
             children: [
               Consumer<Programs>(builder: (context, _programs, child) {
                 return Expanded(
+                  flex: 5,
                   child: ListView.builder(
-                      itemCount: _programs.pickedPrograms
-                          // TODO this is return non-custom until we put something in the database
-                          .where((element) => !element.isCustom)
+                      itemCount: _programs
+                          .pickedPrograms
+                          //.where((element) => !element.isCustom)
                           .length,
                       itemBuilder: (context, index) {
                         return ListTile(
@@ -43,13 +49,13 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
                               children: [
                                 IconButton(
                                     //
+
                                     icon: Icon(Icons.edit),
-                                    onPressed: () {
-                                      Navigator.pushNamed(
-                                          context, '/program_builder_view',
-                                          arguments:
-                                              _programs.pickedPrograms[index]);
-                                    }),
+                                    onPressed: (_programs
+                                            .pickedPrograms[index].isCustom)
+                                        ? _goToEdit(context,
+                                            _programs.pickedPrograms[index])
+                                        : null),
                                 IconButton(
                                     icon: Icon(Icons.content_copy),
                                     onPressed: () {
