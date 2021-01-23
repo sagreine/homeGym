@@ -53,6 +53,12 @@ class Programs extends ChangeNotifier {
     if (newProgram == null) {
       newProgram = PickedProgram();
       newProgram.program = "New Program";
+      newProgram.isCustom = true;
+      newProgram.potentialProgressWeek = false;
+      newProgram.isMainLift = false;
+      newProgram.type = "";
+      newProgram.trainingMaxPct = 0.7;
+      newProgram.week = 1;
     }
     pickedPrograms.add(newProgram);
     notifyListeners();
