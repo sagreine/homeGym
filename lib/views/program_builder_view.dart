@@ -18,6 +18,7 @@ class ProgramBuilderView extends StatefulWidget {
 
 class ProgramBuilderViewState extends State<ProgramBuilderView> {
   bool firstBuild;
+  bool firstFutureBuildComplete;
   PickedProgram program;
   List<Color> pageColors = [
     const Color(0xFF607D8B),
@@ -72,6 +73,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     //programsController.updateProgramList();
     super.initState();
     firstBuild = true;
+    firstFutureBuildComplete = false;
   }
 
   List<PageViewModel> listPagesViewModel() {
@@ -90,7 +92,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
           onChanged: (value) {
             potentialNewPRogram.program = value;
             //onValueUpdate(value);
-            setState(() {});
+            //setState(() {});
           },
           style: TextStyle(fontSize: 30),
           textAlign: TextAlign.center,
@@ -134,7 +136,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
             onChanged: (value) {
               potentialNewPRogram.type = value;
               //onValueUpdate(value);
-              setState(() {});
+              //setState(() {});
             },
             textAlign: TextAlign.center,
             autocorrect: true,
@@ -267,8 +269,9 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                   value: potentialNewPRogram.week > 1,
                   onChanged: (newValue) {
                     setState(() {
-                      if (newValue = false) {
+                      if (newValue == false) {
                         potentialNewPRogram.week = 1;
+                        weekSpecificPages = weekSpecificPages.take(1).toList();
                       } else {
                         potentialNewPRogram.week = 2;
                       }
@@ -287,39 +290,45 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
         bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
       ),
-      PageViewModel(
-        pageColor: pageColors[2],
-        iconImageAssetPath: 'assets/images/pos_icon.png',
-        bubbleBackgroundColor: bubbleColors[2],
-        body: Container(),
-        title: Text(
-          'How many?',
-        ),
-        mainImage: SizedBox.expand(
-          child: FlatButton(
-            onPressed: () async {
-              potentialNewPRogram.week = await showDialog<int>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return new NumberPickerDialog.integer(
-                          minValue: 2,
-                          maxValue: 24,
-                          title: new Text("How many weeks"),
-                          initialIntegerValue: potentialNewPRogram.week,
-                        );
-                      }) ??
-                  1;
-              setState(() {});
-            },
-            child: Text(
-              (potentialNewPRogram.week ?? 2).toString(),
-              style: TextStyle(fontSize: 48),
+      if (potentialNewPRogram.week > 1)
+        PageViewModel(
+          pageColor: pageColors[2],
+          iconImageAssetPath: 'assets/images/pos_icon.png',
+          bubbleBackgroundColor: bubbleColors[2],
+          body: Container(),
+          title: Text(
+            'How many?',
+          ),
+          mainImage: SizedBox.expand(
+            child: FlatButton(
+              onPressed: () async {
+                potentialNewPRogram.week = await showDialog<int>(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return new NumberPickerDialog.integer(
+                            minValue: 2,
+                            maxValue: 24,
+                            title: new Text("How many weeks"),
+                            initialIntegerValue: potentialNewPRogram.week,
+                          );
+                        }) ??
+                    2;
+                // drain out these since we don't need them anymore
+                weekSpecificPages =
+                    weekSpecificPages.take(potentialNewPRogram.week).toList();
+                exerciseDays =
+                    exerciseDays.take(potentialNewPRogram.week).toList();
+                setState(() {});
+              },
+              child: Text(
+                (potentialNewPRogram.week ?? 2).toString(),
+                style: TextStyle(fontSize: 48),
+              ),
             ),
           ),
+          titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
+          bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
         ),
-        titleTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
-        bodyTextStyle: TextStyle(fontFamily: 'MyFont', color: Colors.white),
-      ),
     ];
     toReturn.addAll(basePages);
     toReturn.addAll(weekSpecificPages);
@@ -334,6 +343,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       await _buildPageModelForWeek(context, i);
       //);
     }
+
     // TODO well this is dangerous. but it is needed because the other function pulls from this..
     //weekSpecificPages = list;
     //return list;
@@ -344,12 +354,13 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     // TODO but is this actually weeks
 
     //if the program has never been touched, don't bring in any contextual program
-    if (program.neverTouched == true) {
-      if (exerciseDays.length == 0) {
+    if (program.neverTouched == true || week > program.week) {
+      //if (exerciseDays.length == 0) {
+      if (exerciseDays.length < week) {
         exerciseDays.add(ExerciseDay());
         var newPage = PageViewModel(
             // humans prefer 1-3 over 0-2
-            title: Text("Week $week "),
+            title: Text("Week $week"),
             mainImage: Column(
               children: [
                 //Text("a title"),
@@ -357,7 +368,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                   // TODO: well lets not hardcode this now. at least use mediaquery
                   height: 367,
                   child: ChangeNotifierProvider.value(
-                    value: exerciseDays[0],
+                    value: exerciseDays[week - 1],
                     child: ExcerciseDayView(
                         program: PickedProgram.deepCopy(program)),
                   ),
@@ -367,24 +378,39 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
             // TODO: add editable information at the set level here?
             // e.g. copy from another week's sets. maybe just that.
             body: Container());
-        weekSpecificPages.add(newPage);
-        program.neverTouched = false;
+        if (weekSpecificPages.contains(newPage)) {
+          print(
+              "An equivalent day is already in there, just use that pageviewmodel");
+          return;
+        } else {
+          weekSpecificPages.add(newPage);
+        }
       }
+      return;
+      //}
     }
 
-    var thisweek = PickedProgram.deepCopy(program);
+    var thisweek;
+    var exerciseDay;
+    // if there could never be a week for this, just pass a blank one in - if you have a 3 week program you're copying from and add a 4th, it should be blank
+    // if () {
+    //   exerciseDays.add(ExerciseDay());
+    // } else {
+    thisweek = PickedProgram.deepCopy(program);
     thisweek.week = week;
     thisweek.program = "Widowmaker";
-    var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
-    exerciseDay.trainingMax = thisweek.trainingMaxPct;
 
+    exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
+    exerciseDay.trainingMax = thisweek.trainingMaxPct;
+    //}
     //PickDay().updatePickedProgram(thisweek);
 
     // this should be == 'were building this page for the first time'
     // it might rebuild a deleted page of a copied program but they can deal :)
     if (exerciseDays == null || exerciseDays.length < week) {
-      // only get weeks that exist.
-      if (week <= program.week) {
+      // only get weeks that exist and neverpull more than once (e.g., if you change # of weeks this could re-pull
+      // but we'll never have weeks in existence and want to get them (they can cancel out of it if necessary)).
+      if (week <= program.week && !firstFutureBuildComplete) {
         await getExercisesCloud(
             context: context, program: thisweek.program, week: week);
       }
@@ -395,23 +421,29 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     // don't want to overwrite our changes
     else if (exerciseDays.length < week) {
       if (exerciseDays[week] == exerciseDay) {
+        print(
+            "An equivalent day is already in there, just return that pageviewmodel");
         return weekSpecificPages[week];
       }
     }
     // otherwise, build the page -> if this is the very first time, we're adding it
     // otherwise we need to put it in line -> do we? shouldn't that be covered by above? yes?
     if (exerciseDays.length < week) {
-      if (!weekSpecificPages.contains(exerciseDay))
-        exerciseDays.add(ExerciseDay.deepCopy(copyingFrom: exerciseDay));
+      //if (!weekSpecificPages.contains(exerciseDay)) {
+      print("a new page model! add it in.");
+      // if this is a week that existed, add it in
+      exerciseDays.add(ExerciseDay.deepCopy(copyingFrom: exerciseDay));
+      //}
     } else {
       //exerciseDays[week] = ExerciseDay.deepCopy(copyingFrom: exerciseDay);
-      print("should never happen");
+      print(
+          "should never happen - happens on cancel press though, which is real scary");
       return;
     }
 
     var newPage = PageViewModel(
         // humans prefer 1-3 over 0-2
-        title: Text("Week $week "),
+        title: Text("Week $week"),
         mainImage: Column(
           children: [
             //Text("a title"),
@@ -445,24 +477,28 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       programNameController.text = potentialNewPRogram.program;
       programTypeController.text = potentialNewPRogram.type;
       // this is just a safe place check. but don't use 1.0 because that is == 100% and that definitely happens.
-      tmController.text = potentialNewPRogram.trainingMaxPct < 0.9999
+      tmController.text = potentialNewPRogram.trainingMaxPct < 1.00001
           ? (potentialNewPRogram.trainingMaxPct * 100).toInt().toString()
           : potentialNewPRogram.trainingMaxPct.toInt().toString();
       originalNumWeeks = program.week;
       //weekSpecificPages =
       //  await _getPageModelsForWeeks(potentialNewPRogram?.week ?? 1);
     }
-
     firstBuild = false;
+
     return Scaffold(
         appBar: ReusableWidgets.getAppBar(),
         drawer: ReusableWidgets.getDrawer(context),
         body: FutureBuilder(
-            future:
+            // if we already have some weekSpecificPages, we don't need to repull at all..
+            // ^ that isnt true, what if we just added a week?
+            future: //(weekSpecificPages?.length ?? 0) == 0
+                //?
                 _getPageModelsForWeeks(context, potentialNewPRogram?.week ?? 1),
+            //: Future.delayed(Duration(milliseconds: 0)),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
-                return IntroViewsFlutter(
+                var toReturn = IntroViewsFlutter(
                   listPagesViewModel(),
                   // TODO i don't think this will work? also we don't want to do it every time...
                   // needs to change based on how many weeks there are, which can change in the IntroView...
@@ -498,6 +534,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                     fontFamily: "Regular",
                   ),
                 );
+                firstFutureBuildComplete = true;
+                return toReturn;
               } else
                 return Container();
             }));
