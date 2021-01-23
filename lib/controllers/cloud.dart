@@ -69,6 +69,7 @@ Future<List<PickedProgram>> _getDefaultPrograms() async {
   List<QueryDocumentSnapshot> list = new List.from(querySnapshot.docs.toList());
   toReturn = new List<PickedProgram>.generate(list.length, (index) {
     PickedProgram pickedProgram = PickedProgram();
+    var tmp = list[index].data();
     pickedProgram.program = list[index].id;
     // we'll default to 1 if this value isn't set.
     pickedProgram.week = list[index].data()["numWeeks"] ?? 1;

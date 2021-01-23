@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:home_gym/controllers/controllers.dart';
+import 'package:home_gym/controllers/program_builder.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:expand_widget/expand_widget.dart';
 import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:provider/provider.dart';
 
 class ProgramBuilderView extends StatefulWidget {
   @override
@@ -27,9 +30,19 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     Colors.deepPurpleAccent[100],
   ];
 
+  @override
+  dispose() {
+    super.dispose();
+    programNameController.dispose();
+    programTypeController.dispose();
+    tmController.dispose();
+  }
+
   TextEditingController programNameController = TextEditingController();
   TextEditingController programTypeController = TextEditingController();
   TextEditingController tmController = TextEditingController();
+  ProgramBuilderController programBuilderController =
+      ProgramBuilderController();
   String mainLiftExplanatory = "Main lifts are Squat, Bench, Deadlift, and Press. \n\n" +
       "If your program has days centered around a 'main' lift, with the same rep and weight/effor scheme for each day even with different weights, " +
       "you can save time by making a single 'Main day' program by selecting this option above. " +
@@ -311,35 +324,51 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     return toReturn;
   }
 
-  List<PageViewModel> _getPageModelsForWeeks(int weeks) {
+  Future<List<PageViewModel>> _getPageModelsForWeeks(int weeks) async {
     List<PageViewModel> list = List<PageViewModel>();
-    for (int i = 0; i < weeks; ++i) {
-      list.add(_buildPageModelForWeek(i));
+    for (int i = 1; i <= weeks; ++i) {
+      list.add(await _buildPageModelForWeek(i));
     }
+    weekSpecificPages = list;
     return list;
   }
 
-  _buildPageModelForWeek(int week) {
+  _buildPageModelForWeek(int week) async {
+    //return Consumer<ExerciseDay>(builder: (context, lifterweights, child) {
+    // TODO but is this actually weeks
+    var thisweek = PickedProgram.deepCopy(program);
+    thisweek.week = week;
+    thisweek.program = "Widowmaker";
+    var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
+    exerciseDay.trainingMax = thisweek.trainingMaxPct;
+
+    //PickDay().updatePickedProgram(thisweek);
+
+    await getExercisesCloud(
+        context: context, program: thisweek.program, week: week);
+
     return PageViewModel(
         // humans prefer 1-3 over 0-2
-        title: Text("Week ${week + 1}"),
+        title: Text("Week $week "),
         mainImage: Column(
           children: [
             //Text("a title"),
             SizedBox(
               // TODO: well lets not hardcode this now. at least use mediaquery
               height: 367,
-              child: ExcerciseDayView(program: potentialNewPRogram),
+              child: ExcerciseDayView(program: thisweek),
             ),
           ],
         ),
         // TODO: add editable information at the set level here?
         // e.g. copy from another week's sets. maybe just that.
         body: Container());
+    //});
   }
 
-  Widget programBuilderViews;
+  //Widget programBuilderViews;
   PickedProgram potentialNewPRogram = PickedProgram();
+  int originalNumWeeks = 1;
   @override
   Widget build(BuildContext context) {
     if (firstBuild) {
@@ -353,86 +382,55 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       tmController.text = potentialNewPRogram.trainingMaxPct < 1
           ? (potentialNewPRogram.trainingMaxPct * 100).toInt().toString()
           : potentialNewPRogram.trainingMaxPct.toInt().toString();
-      weekSpecificPages =
-          _getPageModelsForWeeks(potentialNewPRogram?.week ?? 1);
+      originalNumWeeks = program.week;
+      //weekSpecificPages =
+      //  await _getPageModelsForWeeks(potentialNewPRogram?.week ?? 1);
     }
 
     firstBuild = false;
     return Scaffold(
         appBar: ReusableWidgets.getAppBar(),
         drawer: ReusableWidgets.getDrawer(context),
-        body:
-
-            //Container(
-            //height: 400,
-            //width: 400,
-            //child:
-            //SingleChildScrollView(
-            //primary: true,
-            //clipBehavior: Clip.antiAlias,
-            //scrollDirection: Axis.horizontal,
-            // child:
-            //Container(
-            //width: 580, //double.infinity,
-            //child:
-            //SizedBox.expand(
-            //  child: Row(children: [
-            //SizedBox(
-            //  width: MediaQuery.of(context).size.width + 9000,
-            //height: MediaQuery.of(context).size.height,
-            //child: Wrap(direction: Axis.horizontal, children: [
-            //child:
-            // Row(children: [
-            //Expanded(
-            //child:
-            //ClipRect(
-            //child:
-
-            IntroViewsFlutter(
-          listPagesViewModel(),
-          // TODO i don't think this will work? also we don't want to do it every time...
-          // needs to change based on how many weeks there are, which can change in the IntroView...
-          onTapNextButton: () {
-            weekSpecificPages =
-                _getPageModelsForWeeks(potentialNewPRogram.week);
-            setState(() {});
-          },
-          onTapDoneButton: () {
-            print("Program saved!");
-            Navigator.of(context).pop();
-
-            // we need to update our local Programs
-
-            // then update the cloud's programs
-
-            // then go back
-          },
-          doneText: Text("Save Program!"),
-          showSkipButton: true,
-          skipText: Text("Cancel"),
-          // we preserved the original program and edited the deep copy, so we don't need to do anything to restore the original.
-          onTapSkipButton: () {
-            /*if (program != null && potentialNewPRogram != null) {
-            potentialNewPRogram = PickedProgram.deepCopy(program);
-          }*/
-            Navigator.of(context).pop();
-          },
-          showBackButton: true,
-          showNextButton: true,
-          pageButtonTextStyles: new TextStyle(
-            color: Colors.white,
-            fontSize: 18.0,
-            fontFamily: "Regular",
-          ),
-          //),
-          //)
-          //)
-          //)
-
-          //)
-          //]
-          //)
-          //)
-        ));
+        body: FutureBuilder(
+            future: _getPageModelsForWeeks(potentialNewPRogram?.week ?? 1),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.done) {
+                return IntroViewsFlutter(
+                  listPagesViewModel(),
+                  // TODO i don't think this will work? also we don't want to do it every time...
+                  // needs to change based on how many weeks there are, which can change in the IntroView...
+                  onTapNextButton: () async {
+                    if (originalNumWeeks != potentialNewPRogram.week) {
+                      weekSpecificPages = await _getPageModelsForWeeks(
+                          potentialNewPRogram.week);
+                      setState(() {});
+                    }
+                  },
+                  onTapDoneButton: () {
+                    print("Program saved!");
+                    programBuilderController.saveUpdatesToProgram(
+                        originalProgram: program,
+                        updatedProgram: potentialNewPRogram);
+                    Navigator.of(context).pop();
+                  },
+                  doneText: Text("Save Program!"),
+                  showSkipButton: true,
+                  skipText: Text("Cancel"),
+                  // we preserved the original program and edited the deep copy, so we don't need to do anything to restore the original.
+                  // Skip == cancel for us.
+                  onTapSkipButton: () {
+                    Navigator.of(context).pop();
+                  },
+                  showBackButton: true,
+                  showNextButton: true,
+                  pageButtonTextStyles: new TextStyle(
+                    color: Colors.white,
+                    fontSize: 18.0,
+                    fontFamily: "Regular",
+                  ),
+                );
+              } else
+                return Container();
+            }));
   }
 }

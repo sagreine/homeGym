@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_gym/controllers/lifter_programs.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
@@ -20,17 +21,12 @@ class LifterProgramsView extends StatefulWidget {
                 ]),*/
 
 class LifterProgramsViewState extends State<LifterProgramsView> {
+  LifterProgramsController lifterProgramsController =
+      LifterProgramsController();
+
   _goToEdit({BuildContext context, PickedProgram pickedProgram}) {
     Navigator.pushNamed(context, '/program_builder_view',
         arguments: pickedProgram);
-  }
-
-  _copyProgram({Programs programs, PickedProgram copyingFrom}) {
-    PickedProgram copyingTo = PickedProgram.deepCopy(copyingFrom);
-    print("deep copy complete!");
-    copyingTo.isCustom = true;
-    copyingTo.program += "- copy";
-    programs.addProgram(newProgram: copyingTo);
   }
 
   _getFAB(BuildContext context) {
@@ -39,10 +35,7 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
         child: //Text("Add new"),
             Icon(Icons.add),
         onPressed: () {
-          // TODO: this sure shouldn't be done here
-          var programs = Provider.of<Programs>(context, listen: false);
-
-          programs.addProgram();
+          lifterProgramsController.addProgram(context);
         });
   }
 
@@ -54,7 +47,7 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
         floatingActionButton: _getFAB(context),
         body: Column(children: <Widget>[
           Text(
-            "Edit or Add Programs",
+            "Add or Edit Programs",
             style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
           ),
           SizedBox(
@@ -67,10 +60,7 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
                 return Expanded(
                   //flex: 5,
                   child: ListView.builder(
-                      itemCount: _programs
-                          .pickedPrograms
-                          //.where((element) => !element.isCustom)
-                          .length,
+                      itemCount: _programs.pickedPrograms.length,
                       itemBuilder: (context, index) {
                         return ListTile(
                           leading:
@@ -80,8 +70,8 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
+                                // Edit is disabled for non-custom programs. copy is not though!
                                 IconButton(
-                                    //
                                     icon: Icon(Icons.edit),
                                     onPressed: (_programs
                                             .pickedPrograms[index].isCustom)
@@ -92,10 +82,11 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
                                         : null),
                                 IconButton(
                                     icon: Icon(Icons.content_copy),
-                                    onPressed: () => _copyProgram(
-                                        programs: _programs,
-                                        copyingFrom:
-                                            _programs.pickedPrograms[index])),
+                                    onPressed: () =>
+                                        lifterProgramsController.copyProgram(
+                                            programs: _programs,
+                                            copyingFrom: _programs
+                                                .pickedPrograms[index])),
                               ]),
                         );
                       }),

@@ -4,6 +4,12 @@ import 'package:flutter/material.dart';
 //part 'programs.g.dart';
 
 // TODO this is really 'program-week' and we get ourselves in trouble because of that...
+// specifically, take care if we treat this as "weeks" and "week". e.g. is this telling us it is week2?
+// or is it not independent from the List<>weeks of the parent class and therefore doing both Num of Weeks and selected week duty?
+
+// TODO: add ID here since we're switching away from distinct names. we'll use that ID to query against, e.g. for if we copied
+// from another program that'll have the old id in it - will it? no, once we write, we'll have the new one .
+// i guess we could have a CopiedFrom ID here or something?
 class PickedProgram {
   String program;
   int week;
