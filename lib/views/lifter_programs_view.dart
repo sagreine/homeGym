@@ -65,7 +65,7 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
             children: [
               Consumer<Programs>(builder: (context, _programs, child) {
                 return Expanded(
-                  flex: 5,
+                  //flex: 5,
                   child: ListView.builder(
                       itemCount: _programs
                           .pickedPrograms

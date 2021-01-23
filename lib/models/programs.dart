@@ -56,8 +56,8 @@ class Programs extends ChangeNotifier {
       newProgram.isCustom = true;
       newProgram.potentialProgressWeek = false;
       newProgram.isMainLift = false;
-      newProgram.type = "";
-      newProgram.trainingMaxPct = 0.7;
+      newProgram.type = "Default - Change me!";
+      newProgram.trainingMaxPct = 1.0;
       newProgram.week = 1;
     }
     pickedPrograms.add(newProgram);
