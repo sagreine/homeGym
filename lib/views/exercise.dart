@@ -36,6 +36,8 @@ class _ExerciseViewState extends State<ExerciseView> {
 
   FloatingActionButton _getDoneButton(BuildContext context) {
     return FloatingActionButton(
+      key: ObjectKey(exerciseSet),
+      heroTag: UniqueKey(),
       child: Icon(
         Icons.done,
         //size: 200,

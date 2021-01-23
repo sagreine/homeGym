@@ -87,6 +87,9 @@ class PickDayController {
 
     // if (tmController.text != null && tmController.text.length != 0) {
     //exerciseDay.trainingMax = double.tryParse(tmController.text) / 100;
+
+    //// THIS IS NECESSARY RIGHT NOW BECAUSE OF HOW THIS FLOWS THROUGH. IT WONT B SET OTHERWISE
+    /// AND YOU WILL GET AN ERROR TRYING TO HIT ON NULL
     exerciseDay.trainingMax = model.pickedProgram.trainingMaxPct / 100;
     //}
 

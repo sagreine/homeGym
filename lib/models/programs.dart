@@ -70,6 +70,7 @@ class Programs extends ChangeNotifier {
     notifyListeners();
   }
 
+  // TODO need to set the individual pickd programs values?
   void setProgram({
     @required List<PickedProgram> programs,
   }) {

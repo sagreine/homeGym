@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'exercise_day.g.dart';
@@ -164,6 +165,23 @@ class ExerciseDay extends ChangeNotifier {
       notifyListeners();
     }
   }
+
+  ExerciseDay.deepCopy({ExerciseDay copyingFrom})
+      : this(
+          lift: copyingFrom.lift,
+          program: copyingFrom.program,
+          reps: copyingFrom.reps,
+          currentSet: copyingFrom.currentSet,
+          percentages: copyingFrom.percentages,
+          trainingMax: copyingFrom.trainingMax,
+          lifts: copyingFrom.lifts,
+          prSets: copyingFrom.prSets,
+          updateMaxIfGetReps: copyingFrom.updateMaxIfGetReps,
+          progressSet: copyingFrom.progressSet,
+          exercises: copyingFrom.exercises,
+          prSetWeek: copyingFrom.prSetWeek,
+          justDidLastSet: copyingFrom.justDidLastSet,
+        );
 
   // hmmm
   // also, previously returned true right away with no notify. might want that...

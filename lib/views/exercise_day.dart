@@ -8,7 +8,8 @@ import 'package:timeline_tile/timeline_tile.dart';
 class ExcerciseDayView extends StatefulWidget {
   final // only used in building new programs.
       PickedProgram program;
-  ExcerciseDayView({this.program});
+  final ExerciseDay exerciseDay;
+  ExcerciseDayView({this.program, this.exerciseDay});
 
   @override
   _ExcerciseDayViewState createState() => _ExcerciseDayViewState();
@@ -19,12 +20,16 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   AdmobBannerSize bannerSize;
   final mainContainerHeight = 100.0;
   bool isBuildingNotUsing = false;
+  bool isBuildingFromInput = false;
 
   @override
   void initState() {
     super.initState();
     if (widget.program != null) {
       isBuildingNotUsing = true;
+    }
+    if (widget.exerciseDay != null) {
+      isBuildingFromInput = true;
     }
 
 //    isBuildingNotUsing =
@@ -42,12 +47,14 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
         padding: EdgeInsets.only(bottom: (isBuildingNotUsing ? 0 : 70.0)),
         child: FloatingActionButton(
           key: ObjectKey(exerciseDay),
+          heroTag: UniqueKey(),
           child: Icon(Icons.add),
           onPressed: () {
             if (exerciseDay == null) {
               exerciseDay = ExerciseDay();
             }
             exerciseDay.addExercise(ExerciseSet());
+            //setState(() {});
           },
         ));
   }
@@ -64,6 +71,8 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
         child: _TimelineStepsChild(
       activity: step,
       enabled: enabled,
+      thisDay: thisDay,
+      //onCopyCallback: () => setState(() {}),
       thisSetProgressSet: step.thisSetProgressSet && thisDay.updateMaxIfGetReps,
     ));
 
@@ -99,17 +108,34 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
     );
   }
 
+  bool firstBuild = true;
+  int initialOffset = 0;
   @override
   Widget build(BuildContext context) {
     // CONSUMER!!!
 
     // TODO: put a way to overide this consumer, since we don't always want this - in building a program, when
     // we go to week 2...
+    //var exerciseDayBuliding;
+    if (isBuildingFromInput && firstBuild) {
+      //exerciseDayBuliding = widget.exerciseDay;
+      firstBuild = false;
+      initialOffset = 0;
+    } else {
+      initialOffset = 1;
+    }
 
     //thisDay = Provider.of<ExerciseDay>(context, listen: false);
     return Consumer<ExerciseDay>(builder: (context, thisDay, child) {
       // if we just did the last set we want to reflect that here, otherwise just use what set it says we're on.
       //setState(() {
+      // TODO: this is very stupid. basically, each week has the same ancestor which is no good. so,
+      // we pass in each week's ancestor here. so, we have to do this + have to setState everywhere in here to
+      // force a rebuild. very, very stupid.
+      // still broken: edit, add a week?
+      //if (isBuildingFromInput) {
+      //thisDay = widget.exerciseDay;
+      //}
 
       //});
       int currentSet = (thisDay.justDidLastSet ?? false)
@@ -118,23 +144,14 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
       //isBuildingNotUsing = currentSet == null;
       // jump to the current set
       ScrollController scrollController = ScrollController(
-          initialScrollOffset: (currentSet ?? 0) * mainContainerHeight,
+          initialScrollOffset:
+              initialOffset * (currentSet ?? 0) * mainContainerHeight,
           keepScrollOffset: true);
       return Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
           Expanded(
             child: Container(
-              /*decoration: const BoxDecoration(
-        gradient: LinearGradient(
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-          colors: [
-            Color(0xFFFCCCA9),
-            Color(0xFFFFA578),
-          ],
-        ),
-      ),*/
               child: Theme(
                 data: Theme.of(context).copyWith(
                   accentColor: const Color(0xFFFCB69F).withOpacity(0.2),
@@ -340,16 +357,20 @@ class _TimelineStepIndicator extends StatelessWidget {
 }
 
 class _TimelineStepsChild extends StatelessWidget {
-  const _TimelineStepsChild(
-      {Key key,
-      this.activity,
-      @required this.enabled,
-      @required this.thisSetProgressSet})
-      : super(key: key);
+  const _TimelineStepsChild({
+    Key key,
+    this.activity,
+    @required this.enabled,
+    @required this.thisSetProgressSet,
+    @required this.thisDay,
+    //@required this.onCopyCallback
+  }) : super(key: key);
 
   final ExerciseSet activity;
   final bool enabled;
   final bool thisSetProgressSet;
+  final ExerciseDay thisDay;
+  //final Function onCopyCallback;
 
   @override
   Widget build(BuildContext context) {
@@ -442,11 +463,13 @@ class _TimelineStepsChild extends StatelessWidget {
                     child: IconButton(
                         icon: Icon(Icons.content_copy),
                         onPressed: () {
-                          var thisDay =
-                              Provider.of<ExerciseDay>(context, listen: false);
+                          //var thisDay =
+                          //Provider.of<ExerciseDay>(context, listen: false);
                           // TODO: stop doing this. lazy, sloowwww, lose type... just build a deep copy function in the model
                           thisDay.insert(thisDay.exercises.indexOf(activity),
                               ExerciseSet.fromJson(activity.toJson()));
+                          //onCopyCallback();
+
                           /*thisDay.exercises.insert(
                               thisDay.exercises.indexOf(activity), activity);*/
                         }),

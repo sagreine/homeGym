@@ -38,6 +38,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     tmController.dispose();
   }
 
+  List<ExerciseDay> exerciseDays = List<ExerciseDay>();
+
   TextEditingController programNameController = TextEditingController();
   TextEditingController programTypeController = TextEditingController();
   TextEditingController tmController = TextEditingController();
@@ -324,16 +326,20 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     return toReturn;
   }
 
-  Future<List<PageViewModel>> _getPageModelsForWeeks(int weeks) async {
-    List<PageViewModel> list = List<PageViewModel>();
+  //Future<List<PageViewModel>>
+  _getPageModelsForWeeks(BuildContext context, int weeks) async {
+    //List<PageViewModel> list = List<PageViewModel>();
     for (int i = 1; i <= weeks; ++i) {
-      list.add(await _buildPageModelForWeek(i));
+      //list.add(
+      await _buildPageModelForWeek(context, i);
+      //);
     }
-    weekSpecificPages = list;
-    return list;
+    // TODO well this is dangerous. but it is needed because the other function pulls from this..
+    //weekSpecificPages = list;
+    //return list;
   }
 
-  _buildPageModelForWeek(int week) async {
+  _buildPageModelForWeek(BuildContext context, int week) async {
     //return Consumer<ExerciseDay>(builder: (context, lifterweights, child) {
     // TODO but is this actually weeks
     var thisweek = PickedProgram.deepCopy(program);
@@ -344,10 +350,35 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
 
     //PickDay().updatePickedProgram(thisweek);
 
-    await getExercisesCloud(
-        context: context, program: thisweek.program, week: week);
+    // this should be == 'were building this page for the first time'
+    // it might rebuild a deleted page of a copied program but they can deal :)
+    if (exerciseDays == null || exerciseDays.length < week) {
+      // only get weeks that exist.
+      if (week <= program.week) {
+        await getExercisesCloud(
+            context: context, program: thisweek.program, week: week);
+      }
+    }
+    // else if we are just hitting next to a page we haven't changed since we built , just return that page
+    // TODO: if we can do this is entirely theoretical :)
+    // but this is important for this use case: build page, edit it, revisit it -> is this going to return it for us?
+    // don't want to overwrite our changes
+    else if (exerciseDays.length < week) {
+      if (exerciseDays[week] == exerciseDay) {
+        return weekSpecificPages[week];
+      }
+    }
+    // otherwise, build the page -> if this is the very first time, we're adding it
+    // otherwise we need to put it in line -> do we? shouldn't that be covered by above? yes?
+    if (exerciseDays.length < week) {
+      if (!weekSpecificPages.contains(exerciseDay))
+        exerciseDays.add(ExerciseDay.deepCopy(copyingFrom: exerciseDay));
+    } else {
+      //exerciseDays[week] = ExerciseDay.deepCopy(copyingFrom: exerciseDay);
+      print("should never happen");
+    }
 
-    return PageViewModel(
+    var newPage = PageViewModel(
         // humans prefer 1-3 over 0-2
         title: Text("Week $week "),
         mainImage: Column(
@@ -356,14 +387,25 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
             SizedBox(
               // TODO: well lets not hardcode this now. at least use mediaquery
               height: 367,
-              child: ExcerciseDayView(program: thisweek),
-            ),
+              child:
+                  //RaisedButton(
+                  //onPressed: () {
+
+                  ChangeNotifierProvider.value(
+                value: exerciseDays[week - 1], //ExerciseDay(),
+                child: ExcerciseDayView(program: thisweek),
+                //;
+                //},
+                //),
+              ),
+            )
           ],
         ),
         // TODO: add editable information at the set level here?
         // e.g. copy from another week's sets. maybe just that.
         body: Container());
     //});
+    weekSpecificPages.add(newPage);
   }
 
   //Widget programBuilderViews;
@@ -392,7 +434,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         appBar: ReusableWidgets.getAppBar(),
         drawer: ReusableWidgets.getDrawer(context),
         body: FutureBuilder(
-            future: _getPageModelsForWeeks(potentialNewPRogram?.week ?? 1),
+            future:
+                _getPageModelsForWeeks(context, potentialNewPRogram?.week ?? 1),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.done) {
                 return IntroViewsFlutter(
@@ -401,15 +444,17 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                   // needs to change based on how many weeks there are, which can change in the IntroView...
                   onTapNextButton: () async {
                     if (originalNumWeeks != potentialNewPRogram.week) {
-                      weekSpecificPages = await _getPageModelsForWeeks(
-                          potentialNewPRogram.week);
-                      setState(() {});
+                      // _buildPageModelForWeek(potentialNewPRogram.week);
+                      //weekSpecificPages = await _getPageModelsForWeeks(
+                      //  context, potentialNewPRogram.week);
+                      //setState(() {});
                     }
                   },
                   onTapDoneButton: () {
                     print("Program saved!");
                     programBuilderController.saveUpdatesToProgram(
                         originalProgram: program,
+                        exerciseDays: exerciseDays,
                         updatedProgram: potentialNewPRogram);
                     Navigator.of(context).pop();
                   },
