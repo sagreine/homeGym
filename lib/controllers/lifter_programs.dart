@@ -9,6 +9,8 @@ class LifterProgramsController {
     print("deep copy complete!");
     copyingTo.isCustom = true;
     copyingTo.program += "- copy";
+    // dont want to do this for copy.
+    //copyingTo.neverTouched = true;
     programs.addProgram(newProgram: copyingTo);
 
     // write program to cloud

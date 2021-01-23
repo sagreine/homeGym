@@ -18,6 +18,7 @@ class PickedProgram {
   double trainingMaxPct;
   bool isCustom;
   bool isMainLift;
+  bool neverTouched;
 
   PickedProgram({
     this.program,
@@ -27,18 +28,21 @@ class PickedProgram {
     this.trainingMaxPct,
     this.isCustom,
     this.isMainLift,
-  });
+  }) {
+    this.neverTouched = false;
+  }
 
   /// This creates a new program from another program by deep copying all of the other program's variables values
   PickedProgram.deepCopy(PickedProgram otherProgram)
       : this(
-            program: otherProgram.program,
-            week: otherProgram.week,
-            potentialProgressWeek: otherProgram.potentialProgressWeek,
-            type: otherProgram.type,
-            trainingMaxPct: otherProgram.trainingMaxPct,
-            isCustom: otherProgram.isCustom,
-            isMainLift: otherProgram.isMainLift);
+          program: otherProgram.program,
+          week: otherProgram.week,
+          potentialProgressWeek: otherProgram.potentialProgressWeek,
+          type: otherProgram.type,
+          trainingMaxPct: otherProgram.trainingMaxPct,
+          isCustom: otherProgram.isCustom,
+          isMainLift: otherProgram.isMainLift,
+        );
 }
 
 //@JsonSerializable()
@@ -65,6 +69,7 @@ class Programs extends ChangeNotifier {
       newProgram.type = "Default - Change me!";
       newProgram.trainingMaxPct = 1.0;
       newProgram.week = 1;
+      newProgram.neverTouched = true;
     }
     pickedPrograms.add(newProgram);
     notifyListeners();

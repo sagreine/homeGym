@@ -342,6 +342,36 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
   _buildPageModelForWeek(BuildContext context, int week) async {
     //return Consumer<ExerciseDay>(builder: (context, lifterweights, child) {
     // TODO but is this actually weeks
+
+    //if the program has never been touched, don't bring in any contextual program
+    if (program.neverTouched == true) {
+      if (exerciseDays.length == 0) {
+        exerciseDays.add(ExerciseDay());
+        var newPage = PageViewModel(
+            // humans prefer 1-3 over 0-2
+            title: Text("Week $week "),
+            mainImage: Column(
+              children: [
+                //Text("a title"),
+                SizedBox(
+                  // TODO: well lets not hardcode this now. at least use mediaquery
+                  height: 367,
+                  child: ChangeNotifierProvider.value(
+                    value: exerciseDays[0],
+                    child: ExcerciseDayView(
+                        program: PickedProgram.deepCopy(program)),
+                  ),
+                )
+              ],
+            ),
+            // TODO: add editable information at the set level here?
+            // e.g. copy from another week's sets. maybe just that.
+            body: Container());
+        weekSpecificPages.add(newPage);
+        program.neverTouched = false;
+      }
+    }
+
     var thisweek = PickedProgram.deepCopy(program);
     thisweek.week = week;
     thisweek.program = "Widowmaker";
@@ -376,6 +406,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     } else {
       //exerciseDays[week] = ExerciseDay.deepCopy(copyingFrom: exerciseDay);
       print("should never happen");
+      return;
     }
 
     var newPage = PageViewModel(
@@ -387,16 +418,9 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
             SizedBox(
               // TODO: well lets not hardcode this now. at least use mediaquery
               height: 367,
-              child:
-                  //RaisedButton(
-                  //onPressed: () {
-
-                  ChangeNotifierProvider.value(
+              child: ChangeNotifierProvider.value(
                 value: exerciseDays[week - 1], //ExerciseDay(),
                 child: ExcerciseDayView(program: thisweek),
-                //;
-                //},
-                //),
               ),
             )
           ],
@@ -404,7 +428,6 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         // TODO: add editable information at the set level here?
         // e.g. copy from another week's sets. maybe just that.
         body: Container());
-    //});
     weekSpecificPages.add(newPage);
   }
 
@@ -421,7 +444,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       }
       programNameController.text = potentialNewPRogram.program;
       programTypeController.text = potentialNewPRogram.type;
-      tmController.text = potentialNewPRogram.trainingMaxPct < 1
+      // this is just a safe place check. but don't use 1.0 because that is == 100% and that definitely happens.
+      tmController.text = potentialNewPRogram.trainingMaxPct < 0.9999
           ? (potentialNewPRogram.trainingMaxPct * 100).toInt().toString()
           : potentialNewPRogram.trainingMaxPct.toInt().toString();
       originalNumWeeks = program.week;
