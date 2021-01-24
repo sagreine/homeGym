@@ -390,20 +390,15 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       //}
     }
 
+    // this is creating a week-specific copy of the original program - but that's wrong, right?
+    // we should be using potentiallyNewProgram to capture the new training max right?
     var thisweek;
     var exerciseDay;
-    // if there could never be a week for this, just pass a blank one in - if you have a 3 week program you're copying from and add a 4th, it should be blank
-    // if () {
-    //   exerciseDays.add(ExerciseDay());
-    // } else {
     thisweek = PickedProgram.deepCopy(program);
     thisweek.week = week;
-    //thisweek.program = "Widowmaker";
 
     exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     exerciseDay.trainingMax = thisweek.trainingMaxPct;
-    //}
-    //PickDay().updatePickedProgram(thisweek);
 
     // this should be == 'were building this page for the first time'
     // it might rebuild a deleted page of a copied program but they can deal :)
@@ -411,8 +406,18 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       // only get weeks that exist and neverpull more than once (e.g., if you change # of weeks this could re-pull
       // but we'll never have weeks in existence and want to get them (they can cancel out of it if necessary)).
       if (week <= program.week && !firstFutureBuildComplete) {
-        await getExercisesCloud(
-            context: context, program: thisweek.program, week: week);
+        // if we already have weeks, use them!
+        // TODO: aggressively untested..
+        if (program.numWeeks != null && program.numWeeks >= week) {
+          exerciseDay = program.exerciseDays[week - 1];
+        }
+        // otherwise go get more..
+        else {
+          await getExercisesCloud(
+              context: context, program: thisweek.program, week: week);
+          // untested AF
+          program.upsertExerciseDay(exerciseDay, week - 1);
+        }
       }
     }
     // else if we are just hitting next to a page we haven't changed since we built , just return that page

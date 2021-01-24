@@ -21,6 +21,7 @@ class PickedProgram {
   bool isMainLift;
   bool neverTouched;
   bool isAnewCopy;
+  // Note: lazily populated, manually by you, so be careful. and if you pull/create/store, load this local too.
   List<ExerciseDay> exerciseDays;
 
   get numWeeks => exerciseDays.length;
@@ -54,12 +55,13 @@ class PickedProgram {
     // copy over the exerciseDays too
     // TODO: untested
     List<ExerciseDay> toReturn = List<ExerciseDay>();
-    otherProgram.exerciseDays.forEach((element) {
+    otherProgram.exerciseDays?.forEach((element) {
       toReturn.add(ExerciseDay.deepCopy(copyingFrom: element));
     });
     this.exerciseDays = toReturn;
   }
 
+  // TODO: test new program - is this going to be adding to null? might need to initialize
   upsertExerciseDay(ExerciseDay exerciseDay, int index) {
     //if we try to add an exercise Day that is, say , 7 larger something has gone wrong
     assert(numWeeks - index <= 1);

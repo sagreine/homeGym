@@ -47,6 +47,12 @@ updateDatabaseRecordWithReps(
       .update({"reps": reps});
 }
 
+saveProgramCloud(
+    {@required PickedProgram program, @required String userID}) async {
+  print("saving program to cloud!");
+  return;
+}
+
 // instead of returning a naked list, we need to return the display name and # weeks for each program
 //TODO this is extremely sloppy. stop just making random lists and pass and parse an object
 Future<List<PickedProgram>> getPrograms() async {
