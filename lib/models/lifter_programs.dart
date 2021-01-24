@@ -1,4 +1,4 @@
-class LifterPrograms {
+/*class LifterPrograms {
   List<String> programs = [
     "My RPE program",
     "Push/Pull/Legs",
@@ -10,3 +10,4 @@ class LifterPrograms {
     "The only prescription is more Kettlebells",
   ];
 }
+*/

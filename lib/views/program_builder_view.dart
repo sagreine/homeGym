@@ -398,7 +398,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     // } else {
     thisweek = PickedProgram.deepCopy(program);
     thisweek.week = week;
-    thisweek.program = "Widowmaker";
+    //thisweek.program = "Widowmaker";
 
     exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     exerciseDay.trainingMax = thisweek.trainingMaxPct;
@@ -470,9 +470,16 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
   Widget build(BuildContext context) {
     if (firstBuild) {
       program = ModalRoute.of(context).settings.arguments;
+
       // this is a shallow copy and not doing what you think it is doing.
       if (program != null) {
         potentialNewPRogram = PickedProgram.deepCopy(program);
+      }
+      // TODO: this will be much more safely replaced by using the ID instead of name as the unique identifier in firestore
+      // for now, this needs to come after the point above
+      if (program.isAnewCopy) {
+        program.program =
+            program.program.substring(0, program.program.indexOf("-") ?? 99999);
       }
       programNameController.text = potentialNewPRogram.program;
       programTypeController.text = potentialNewPRogram.type;
@@ -512,11 +519,13 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                   },
                   onTapDoneButton: () {
                     print("Program saved!");
-                    programBuilderController.saveUpdatesToProgram(
-                        originalProgram: program,
+                    // save any changes to this program directly - this is for editing programs directly
+                    // and should finish editing existing programs - not adding new ones
+                    program = programBuilderController.saveUpdatesToProgram(
                         exerciseDays: exerciseDays,
                         updatedProgram: potentialNewPRogram);
-                    Navigator.of(context).pop();
+                    // return this program
+                    Navigator.pop(context, program);
                   },
                   doneText: Text("Save Program!"),
                   showSkipButton: true,

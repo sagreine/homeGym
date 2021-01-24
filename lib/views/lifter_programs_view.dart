@@ -24,8 +24,8 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
   LifterProgramsController lifterProgramsController =
       LifterProgramsController();
 
-  _goToEdit({BuildContext context, PickedProgram pickedProgram}) {
-    Navigator.pushNamed(context, '/program_builder_view',
+  _goToEdit({BuildContext context, PickedProgram pickedProgram}) async {
+    return await Navigator.pushNamed(context, '/program_builder_view',
         arguments: pickedProgram);
   }
 
@@ -34,8 +34,15 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
         isExtended: false,
         child: //Text("Add new"),
             Icon(Icons.add),
-        onPressed: () {
-          lifterProgramsController.addProgram(context);
+        onPressed: () async {
+          var newProgram =
+              await _goToEdit(context: context, pickedProgram: PickedProgram());
+          if (newProgram != null) {
+            lifterProgramsController.addProgram(context, newProgram);
+            setState(() {});
+          }
+
+          //lifterProgramsController.addProgram(context);
         });
   }
 
@@ -75,18 +82,47 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
                                     icon: Icon(Icons.edit),
                                     onPressed: (_programs
                                             .pickedPrograms[index].isCustom)
-                                        ? () => _goToEdit(
-                                            context: context,
-                                            pickedProgram:
-                                                _programs.pickedPrograms[index])
+                                        ? () async {
+                                            var potentiallyEditedProgram =
+                                                await _goToEdit(
+                                                    context: context,
+                                                    pickedProgram: _programs
+                                                        .pickedPrograms[index]);
+                                            // if we did change the program and didn't cancel
+                                            if (potentiallyEditedProgram !=
+                                                    null &&
+                                                potentiallyEditedProgram !=
+                                                    _programs.pickedPrograms[
+                                                        index]) {
+                                              // update our local repository (cough not view...) and
+                                              _programs.pickedPrograms[index] =
+                                                  potentiallyEditedProgram;
+                                              // update the cloud
+                                              lifterProgramsController
+                                                  .saveProgram(context,
+                                                      potentiallyEditedProgram);
+                                            }
+                                          }
                                         : null),
                                 IconButton(
                                     icon: Icon(Icons.content_copy),
-                                    onPressed: () =>
-                                        lifterProgramsController.copyProgram(
-                                            programs: _programs,
-                                            copyingFrom: _programs
-                                                .pickedPrograms[index])),
+                                    onPressed: () async {
+                                      var newProgram = await _goToEdit(
+                                          context: context,
+                                          pickedProgram:
+                                              lifterProgramsController
+                                                  .copyProgram(
+                                                      programs: _programs,
+                                                      copyingFrom: _programs
+                                                              .pickedPrograms[
+                                                          index]));
+                                      if (newProgram != null) {
+                                        // adds to local and cloud
+                                        lifterProgramsController.addProgram(
+                                            context, newProgram);
+                                        setState(() {});
+                                      }
+                                    }),
                               ]),
                         );
                       }),

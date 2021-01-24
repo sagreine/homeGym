@@ -9,20 +9,26 @@ class LifterProgramsController {
     print("deep copy complete!");
     copyingTo.isCustom = true;
     copyingTo.program += "- copy";
+    copyingTo.isAnewCopy = true;
     // dont want to do this for copy.
     //copyingTo.neverTouched = true;
-    programs.addProgram(newProgram: copyingTo);
-
-    // write program to cloud
-    // TODO
+    return copyingTo;
+    // no writing to cloud here. only if they add
   }
 
-  addProgram(BuildContext context) {
+  addProgram(BuildContext context, PickedProgram program) async {
     // add new locally
     var programs = Provider.of<Programs>(context, listen: false);
-    programs.addProgram();
+
+    programs.addProgram(newProgram: program ?? null);
 
     // write program to cloud
-    // TODO
+    await saveProgram(context, program);
+  }
+
+  saveProgram(BuildContext context, PickedProgram program) async {
+    // save to cloud
+
+    // save to local? shouldn't be necessary?
   }
 }

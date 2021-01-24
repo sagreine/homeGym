@@ -19,6 +19,7 @@ class PickedProgram {
   bool isCustom;
   bool isMainLift;
   bool neverTouched;
+  bool isAnewCopy;
 
   PickedProgram({
     this.program,
@@ -28,6 +29,7 @@ class PickedProgram {
     this.trainingMaxPct,
     this.isCustom,
     this.isMainLift,
+    this.isAnewCopy,
   }) {
     this.neverTouched = false;
   }
@@ -42,6 +44,7 @@ class PickedProgram {
           trainingMaxPct: otherProgram.trainingMaxPct,
           isCustom: otherProgram.isCustom,
           isMainLift: otherProgram.isMainLift,
+          isAnewCopy: otherProgram.isAnewCopy,
         );
 }
 
