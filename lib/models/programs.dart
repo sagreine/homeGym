@@ -59,6 +59,19 @@ class PickedProgram {
     });
     this.exerciseDays = toReturn;
   }
+
+  upsertExerciseDay(ExerciseDay exerciseDay, int index) {
+    //if we try to add an exercise Day that is, say , 7 larger something has gone wrong
+    assert(numWeeks - index <= 1);
+    // if we're adding one
+    if (numWeeks == index) {
+      this.exerciseDays.add(exerciseDay);
+    }
+    // if we're edting one
+    else {
+      this.exerciseDays[index] = exerciseDay;
+    }
+  }
 }
 
 //@JsonSerializable()
