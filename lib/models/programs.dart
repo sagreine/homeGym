@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_gym/models/models.dart';
 //import 'package:json_annotation/json_annotation.dart';
 
 //part 'programs.g.dart';
@@ -20,6 +21,9 @@ class PickedProgram {
   bool isMainLift;
   bool neverTouched;
   bool isAnewCopy;
+  List<ExerciseDay> exerciseDays;
+
+  get numWeeks => exerciseDays.length;
 
   PickedProgram({
     this.program,
@@ -30,22 +34,31 @@ class PickedProgram {
     this.isCustom,
     this.isMainLift,
     this.isAnewCopy,
+    this.exerciseDays,
   }) {
     this.neverTouched = false;
   }
 
   /// This creates a new program from another program by deep copying all of the other program's variables values
-  PickedProgram.deepCopy(PickedProgram otherProgram)
-      : this(
-          program: otherProgram.program,
-          week: otherProgram.week,
-          potentialProgressWeek: otherProgram.potentialProgressWeek,
-          type: otherProgram.type,
-          trainingMaxPct: otherProgram.trainingMaxPct,
-          isCustom: otherProgram.isCustom,
-          isMainLift: otherProgram.isMainLift,
-          isAnewCopy: otherProgram.isAnewCopy,
-        );
+  PickedProgram.deepCopy(PickedProgram otherProgram) {
+    this.program = otherProgram.program;
+    this.week = otherProgram.week;
+    this.potentialProgressWeek = otherProgram.potentialProgressWeek;
+    this.type = otherProgram.type;
+    this.trainingMaxPct = otherProgram.trainingMaxPct;
+    this.isCustom = otherProgram.isCustom;
+    this.isMainLift = otherProgram.isMainLift;
+    this.isAnewCopy = otherProgram.isAnewCopy;
+    // need we deep copy this too?
+
+    // copy over the exerciseDays too
+    // TODO: untested
+    List<ExerciseDay> toReturn = List<ExerciseDay>();
+    otherProgram.exerciseDays.forEach((element) {
+      toReturn.add(ExerciseDay.deepCopy(copyingFrom: element));
+    });
+    this.exerciseDays = toReturn;
+  }
 }
 
 //@JsonSerializable()
