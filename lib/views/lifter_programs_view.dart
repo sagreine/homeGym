@@ -35,8 +35,8 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
         child: //Text("Add new"),
             Icon(Icons.add),
         onPressed: () async {
-          var newProgram =
-              await _goToEdit(context: context, pickedProgram: PickedProgram());
+          var newProgram = await _goToEdit(
+              context: context, pickedProgram: PickedProgram.newBlankProgram());
           if (newProgram != null) {
             lifterProgramsController.addProgram(context, newProgram);
             setState(() {});

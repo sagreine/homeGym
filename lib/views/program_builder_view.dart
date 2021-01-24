@@ -410,12 +410,14 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         // TODO: aggressively untested..
         if (program.numWeeks != null && program.numWeeks >= week) {
           exerciseDay = program.exerciseDays[week - 1];
+          print("Using already-pulled-down exerciseDAy");
         }
         // otherwise go get more..
         else {
+          print("getting new exerciseDay from the cloud");
           await getExercisesCloud(
               context: context, program: thisweek.program, week: week);
-          // untested AF
+          // untested AF, but upsert the local copy to include this exerciseDay
           program.upsertExerciseDay(exerciseDay, week - 1);
         }
       }
@@ -482,7 +484,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       }
       // TODO: this will be much more safely replaced by using the ID instead of name as the unique identifier in firestore
       // for now, this needs to come after the point above
-      if (program.isAnewCopy) {
+      // null on new program
+      if (program?.isAnewCopy ?? false) {
         program.program =
             program.program.substring(0, program.program.indexOf("-") ?? 99999);
       }
@@ -526,6 +529,16 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                     print("Program saved!");
                     // save any changes to this program directly - this is for editing programs directly
                     // and should finish editing existing programs - not adding new ones
+                    if (exerciseDays == null ||
+                        exerciseDays.length == 0 ||
+                        exerciseDays.any((element) =>
+                            element.exercises == null ||
+                            element.exercises.length == 0)) {
+                      Scaffold.of(context).showSnackBar(SnackBar(
+                          content: Text(
+                              "Must add at least one exercise before saving program")));
+                      return;
+                    }
                     program = programBuilderController.saveUpdatesToProgram(
                         exerciseDays: exerciseDays,
                         updatedProgram: potentialNewPRogram);

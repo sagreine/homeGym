@@ -67,6 +67,18 @@ class PickedProgram {
     this.exerciseDays = toReturn;
   }
 
+  // TODO: need to consider the other variables  here........ or get rid of them entirly.
+  PickedProgram.newBlankProgram() {
+    this.program = "New Program";
+    this.isCustom = true;
+    this.potentialProgressWeek = false;
+    this.isMainLift = false;
+    this.type = "Default - Change me!";
+    this.trainingMaxPct = 1.0;
+    this.week = 1;
+    this.neverTouched = true;
+  }
+
   // TODO: test new program - is this going to be adding to null? might need to initialize
   upsertExerciseDay(ExerciseDay exerciseDay, int index) {
     //if we try to add an exercise Day that is, say , 7 larger something has gone wrong
