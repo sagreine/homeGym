@@ -47,9 +47,44 @@ updateDatabaseRecordWithReps(
       .update({"reps": reps});
 }
 
+// TODO: flag if we need to update program, exercise set, particular set. dont just write everything...
 saveProgramCloud(
-    {@required PickedProgram program, @required String userID}) async {
+    {@required PickedProgram program,
+    @required String userID,
+    @required bool anyProgramsToUpdate}) async {
+  var db = FirebaseFirestore.instance;
+
   print("saving program to cloud!");
+  DocumentReference docRef;
+  docRef = db
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("CUSTOMPROGRAMS")
+      .doc(program.id);
+
+  // first update the program if necessary
+  if (anyProgramsToUpdate) {
+    await docRef.set(program.toJson());
+  }
+
+// then upsert each exerciseDay
+  var batch = db.batch();
+
+  for (int i = 0; i < program.exerciseDays.length; ++i) {
+    for (int j = 0; j < program.exerciseDays[i].exercises.length; ++j) {
+      if (program.exerciseDays[i].exercises[j].hasBeenUpdated) {
+        var tag = docRef
+            .collection("Weeks")
+            .doc("Week" + i.toString())
+            .collection("Lifts")
+            .doc(program.exerciseDays[i].exercises[j].id);
+        //.doc(i.toString())
+        //.set(;
+        batch.set(tag, program.exerciseDays[i].exercises[j].toJson());
+      }
+    }
+  }
+  await batch.commit();
   return;
 }
 

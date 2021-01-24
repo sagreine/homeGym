@@ -618,6 +618,8 @@ class _DoLiftViewState extends State<DoLiftView>
                                     "PR for weight of ${exercise.weight}: ${prsPulled["Weight"].reps}")
                               ],
                             );
+                          } else {
+                            return Container();
                           }
                         }),
                       ),

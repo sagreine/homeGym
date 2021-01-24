@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 
@@ -23,12 +24,49 @@ class LifterProgramsController {
     programs.addProgram(newProgram: program ?? null);
 
     // write program to cloud
-    await saveProgram(context, program);
+    await saveProgram(context: context, potentiallyEditedProgram: program);
   }
 
-  saveProgram(BuildContext context, PickedProgram program) async {
-    // save to cloud
+  saveProgram(
+      {@required BuildContext context,
+      @required PickedProgram potentiallyEditedProgram,
+      PickedProgram originalProgram}) async {
+    // error check : we shouldn't be saving un-updated programs in any way
+    if (potentiallyEditedProgram == originalProgram) {
+      return;
+    }
+    bool anyProgramsToUpdate = false;
+    // next, check if we need to update program-level info
+    if (potentiallyEditedProgram.toJson() != originalProgram?.toJson()) {
+      anyProgramsToUpdate = true;
+    }
 
+    // there is not ExerciseDay-level information
+
+    // then check for each exerciseSet if we need to update --- unless we can just dump over it?
+    // also, stop doing this manually?
+    for (int i = 0; i < potentiallyEditedProgram.numWeeks; ++i) {
+      for (int j = 0;
+          j < potentiallyEditedProgram.exerciseDays[i].exercises.length;
+          ++j) {
+        if (originalProgram == null ||
+            i >= originalProgram?.exerciseDays?.length ||
+            j > originalProgram?.exerciseDays[i]?.exercises?.length ||
+
+            //originalProgram.exerciseDays[i].exercises[j]
+
+            potentiallyEditedProgram.exerciseDays[i].exercises[j] !=
+                originalProgram?.exerciseDays[i]?.exercises[j])
+          potentiallyEditedProgram.exerciseDays[i].exercises[j].hasBeenUpdated =
+              true;
+      }
+    }
+
+    // save to cloud
+    await saveProgramCloud(
+        userID: Provider.of<Muser>(context, listen: false).fAuthUser.uid,
+        program: potentiallyEditedProgram,
+        anyProgramsToUpdate: anyProgramsToUpdate);
     // save to local? shouldn't be necessary?
   }
 }

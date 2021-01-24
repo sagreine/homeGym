@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:json_annotation/json_annotation.dart';
+part 'programs.g.dart';
 //import 'package:json_annotation/json_annotation.dart';
 
 //part 'programs.g.dart';
@@ -11,6 +13,7 @@ import 'package:home_gym/models/models.dart';
 // TODO: add ID here since we're switching away from distinct names. we'll use that ID to query against, e.g. for if we copied
 // from another program that'll have the old id in it - will it? no, once we write, we'll have the new one .
 // i guess we could have a CopiedFrom ID here or something?
+@JsonSerializable()
 class PickedProgram {
   String program;
   int week;
@@ -21,7 +24,9 @@ class PickedProgram {
   bool isMainLift;
   bool neverTouched;
   bool isAnewCopy;
+  String id;
   // Note: lazily populated, manually by you, so be careful. and if you pull/create/store, load this local too.
+  @JsonKey(ignore: true)
   List<ExerciseDay> exerciseDays;
 
   get numWeeks => exerciseDays.length;
@@ -36,6 +41,7 @@ class PickedProgram {
     this.isMainLift,
     this.isAnewCopy,
     this.exerciseDays,
+    this.id,
   }) {
     this.neverTouched = false;
   }
@@ -74,6 +80,11 @@ class PickedProgram {
       this.exerciseDays[index] = exerciseDay;
     }
   }
+
+  factory PickedProgram.fromJson(Map<String, dynamic> json) =>
+      _$PickedProgramFromJson(json);
+
+  Map<String, dynamic> toJson() => _$PickedProgramToJson(this);
 }
 
 //@JsonSerializable()

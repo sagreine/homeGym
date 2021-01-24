@@ -1,8 +1,11 @@
+import 'package:flutter/material.dart';
+
 import 'package:home_gym/models/models.dart';
 
 class ProgramBuilderController {
   saveUpdatesToProgram(
-      {PickedProgram updatedProgram, List<ExerciseDay> exerciseDays}) {
+      {@required PickedProgram updatedProgram,
+      @required List<ExerciseDay> exerciseDays}) {
     // TODO: this might not belong here.
     updatedProgram.exerciseDays = exerciseDays;
 
@@ -10,11 +13,9 @@ class ProgramBuilderController {
     var originalProgram = PickedProgram.deepCopy(updatedProgram);
     originalProgram.neverTouched = false;
     originalProgram.isAnewCopy = false;
+
     return originalProgram;
 
-    // update this program's exerciseDay - ?
-
-    // update the cloud copy
-    // TODO
+    // DON'T update the cloud copy here
   }
 }

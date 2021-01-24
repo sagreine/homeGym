@@ -29,6 +29,10 @@ class ExerciseSet extends ChangeNotifier {
   bool wasWeightPRSet;
   bool wasRepPRSet;
 
+  bool hasBeenUpdated;
+  @JsonKey(ignore: true)
+  String id;
+
   // for searching, we'll popluate with keywords based on lift title
   static List<String> makeKeywords(String name) {
     List<String> arrName = [];
@@ -60,6 +64,8 @@ class ExerciseSet extends ChangeNotifier {
     this.wasWeightPRSet,
     this.wasRepPRSet,
     this.duration,
+    this.hasBeenUpdated,
+    this.id,
   }) : prescribedReps = reps {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
@@ -69,6 +75,9 @@ class ExerciseSet extends ChangeNotifier {
     this.type = "/video";
     this.thisSetPRSet = thisSetPRSet ?? false;
     this.thisSetProgressSet = thisSetProgressSet ?? false;
+    if (hasBeenUpdated == null) {
+      this.hasBeenUpdated = false;
+    }
     //this.prescribedReps = reps;
   }
 
@@ -78,7 +87,8 @@ class ExerciseSet extends ChangeNotifier {
       @required int reps,
       @required double setPct,
       bool thisSetPRSet,
-      bool thisSetProgressSet}) {
+      bool thisSetProgressSet,
+      String id}) {
     // should be using the controller here instead of doing this...
     // if we passed a title in and there wasn't already a title (that equals this one)
     if (exerciseTitle != null &&
@@ -130,6 +140,7 @@ class ExerciseSet extends ChangeNotifier {
         thisSetPRSet: thisSetPRSet,
         thisSetProgressSet: thisSetProgressSet,
         weight: calculatedWeight,
+        id: id,
         description: "Plates: " +
             (thisWeights.getPickedPlatesAsString(
                 targetWeight: targetWeight, lift: this.title)));
@@ -143,6 +154,7 @@ class ExerciseSet extends ChangeNotifier {
     int reps,
     bool thisSetPRSet,
     bool thisSetProgressSet,
+    String id,
   }) {
     // should handle this another way probably -> controller if nothing else.
     if (title != null) {
@@ -171,6 +183,9 @@ class ExerciseSet extends ChangeNotifier {
     }
     if (restPeriodAfter == null) {
       this.restPeriodAfter = 90;
+    }
+    if (id != null) {
+      this.id = id;
     }
 
     this.type = "video/";

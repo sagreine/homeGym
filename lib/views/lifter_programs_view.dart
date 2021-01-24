@@ -98,9 +98,12 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
                                               _programs.pickedPrograms[index] =
                                                   potentiallyEditedProgram;
                                               // update the cloud
-                                              lifterProgramsController
-                                                  .saveProgram(context,
-                                                      potentiallyEditedProgram);
+                                              lifterProgramsController.saveProgram(
+                                                  context: context,
+                                                  potentiallyEditedProgram:
+                                                      potentiallyEditedProgram,
+                                                  originalProgram: _programs
+                                                      .pickedPrograms[index]);
                                             }
                                           }
                                         : null),

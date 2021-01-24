@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:home_gym/models/models.dart';
-import 'package:home_gym/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'exercise_day.g.dart';
@@ -138,6 +137,12 @@ class ExerciseDay extends ChangeNotifier {
         tmp.updateExerciseFull(
           context: context,
           exerciseTitle: lift,
+          id: UniqueKey().toString() +
+              UniqueKey().toString() +
+              UniqueKey().toString() +
+              UniqueKey().toString() +
+              UniqueKey().toString() +
+              UniqueKey().toString(),
           reps: this.reps[i],
           setPct: this.percentages[mainLiftIterator],
           // this is a PR set if it is in the list of PR sets.
@@ -156,6 +161,12 @@ class ExerciseDay extends ChangeNotifier {
             // the first rep.length are the main lift, non-assistance.
             title: lifts[i],
             description: "Do the lift",
+            id: UniqueKey().toString() +
+                UniqueKey().toString() +
+                UniqueKey().toString() +
+                UniqueKey().toString() +
+                UniqueKey().toString() +
+                UniqueKey().toString(),
             weight:
                 0, // TODO: could do ternary? if there is a weight set in db, use it.
             reps: reps[i]));
