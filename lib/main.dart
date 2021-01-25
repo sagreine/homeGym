@@ -122,7 +122,8 @@ void getInitialPull(BuildContext context) async {
 void _getInitialPull(BuildContext context) async {
   var programs = Provider.of<Programs>(context, listen: false);
   // don't want await here. use .then()
-  programs.setProgram(programs: await getPrograms());
+  ProgramController().updateProgramList(context);
+  //programs.setProgram(programs: await getPrograms());
   print("Initial pull of programss: ${programs.programs}");
   FlingController flingController = FlingController();
   flingController.getCastDevices(context);

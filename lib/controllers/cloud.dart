@@ -90,15 +90,19 @@ saveProgramCloud(
 
 // instead of returning a naked list, we need to return the display name and # weeks for each program
 //TODO this is extremely sloppy. stop just making random lists and pass and parse an object
-Future<List<PickedProgram>> getPrograms() async {
+Future<List<PickedProgram>> getPrograms({
+  String userID,
+}) async {
   List<PickedProgram> toReturn = List<PickedProgram>();
-  toReturn = await _getDefaultPrograms()
+  //toReturn =
+  toReturn.addAll(await _getDefaultPrograms());
 
-    // this is untested, but the idea is to sort these then return
-    //..addAll(iterable)
-    //await _getCustomPrograms()
-
-    ..sort((e, f) => e.type.compareTo(f.type));
+  // this is untested, but the idea is to sort these then return
+  //..addAll(iterable)
+  if (userID != null) {
+    toReturn.addAll(await _getCustomPrograms(userID: userID));
+  }
+  toReturn.sort((e, f) => e.type.compareTo(f.type));
 
   return toReturn;
 }
@@ -124,24 +128,31 @@ Future<List<PickedProgram>> _getDefaultPrograms() async {
 }
 
 // TODO: not yet implemented.
-Future<List<PickedProgram>> _getCustomPrograms() async {
+Future<List<PickedProgram>> _getCustomPrograms({
+  @required String userID,
+}) async {
   List<PickedProgram> toReturn = List<PickedProgram>();
-  //QuerySnapshot querySnapshot =
-  //  await FirebaseFirestore.instance.collection('PROGRAMS').get();
-  //List<QueryDocumentSnapshot> list = new List.from(querySnapshot.docs.toList());
-  toReturn = new List<PickedProgram>.generate(
-      /*list.length*/
-
-      // TODO this is just a random hardcode..
-      5, (index) {
+  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("CUSTOMPROGRAMS")
+      .get();
+  List<QueryDocumentSnapshot> list = new List.from(querySnapshot.docs.toList());
+  toReturn = new List<PickedProgram>.generate(list.length, (index) {
     PickedProgram pickedProgram = PickedProgram();
     //pickedProgram.program = list[index].id;
     // we'll default to 1 if this value isn't set.
-    //pickedProgram.week = list[index].data()["numWeeks"] ?? 1;
-    //pickedProgram.type = list[index].data()["type"];
-    //pickedProgram.isMainLift = .... from cloud
-    //pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
-    //pickedProgram.hasMainLifts = ... from cloud
+    pickedProgram.week = list[index].data()["numWeeks"] ?? 1;
+    pickedProgram.program = list[index].data()["program"];
+    pickedProgram.type = list[index].data()["type"];
+    pickedProgram.isMainLift = list[index].data()["isMainLift"] ?? false;
+    pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
+    pickedProgram.potentialProgressWeek =
+        list[index].data()["potentialProgressWeek"];
+    //pickedProgram.hasMainLifts = list[index].data()[
+    pickedProgram.id = list[index].data()["id"];
+    pickedProgram.isAnewCopy = false;
+    pickedProgram.neverTouched = false;
     pickedProgram.isCustom = true;
     return pickedProgram;
   });

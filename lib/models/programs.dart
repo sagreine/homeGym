@@ -106,15 +106,26 @@ class Programs extends ChangeNotifier {
   List<String> programs;
   List<int> weeks;
   List<bool> hasMainLifts;
+  bool defaultsPulled;
+  bool customsPulled;
 
   List<PickedProgram> pickedPrograms;
 
   // but wouldn't want them to do this? woudln't want a public constructor since the other fields are derived i mean.
-  Programs({this.programs, this.weeks, this.pickedPrograms, this.hasMainLifts});
+  Programs(
+      {this.programs,
+      this.weeks,
+      this.pickedPrograms,
+      this.hasMainLifts,
+      this.customsPulled = false,
+      this.defaultsPulled = false});
 
   // TODO: need to consider the other variables  here........ or get rid of them entirly.
   void addProgram({PickedProgram newProgram}) {
+    print(
+        "this should never be null so i don't think we need this but here is a check: ");
     if (newProgram == null) {
+      print("Yes, this was called! so, don't get rid of this just yet");
       newProgram = PickedProgram();
       newProgram.program = "New Program";
       newProgram.isCustom = true;
@@ -126,6 +137,7 @@ class Programs extends ChangeNotifier {
       newProgram.neverTouched = true;
     }
     pickedPrograms.add(newProgram);
+    pickedPrograms.sort((e, f) => e.type.compareTo(f.type));
     notifyListeners();
   }
 
@@ -133,7 +145,12 @@ class Programs extends ChangeNotifier {
   void setProgram({
     @required List<PickedProgram> programs,
   }) {
-    this.pickedPrograms = programs;
+    // if this is the first pull, build from scratch, else add these in
+    if (this.pickedPrograms == null || this.pickedPrograms.length == 0) {
+      this.pickedPrograms = programs;
+    } else {
+      pickedPrograms.addAll(programs);
+    }
     this.programs = new List<String>.generate(
         programs.length, (index) => programs[index].program);
     this.weeks = new List<int>.generate(

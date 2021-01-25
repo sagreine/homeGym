@@ -13,9 +13,21 @@ class ProgramController {
   Future<List<PickedProgram>> updateProgramList(BuildContext context) async {
     var model = Provider.of<Programs>(context, listen: false);
     // if it is null, pull it in. could just listen instead of htis, but realistically we aren't adding programs much at all rn.
-    if (model.programs == null || model.programs.length == 0) {
-      print("model.programs was null or empty, re-pulling");
-      model.setProgram(programs: await getPrograms());
+    // try to query custom ones, at least.
+    if (model.programs == null ||
+            !(model.defaultsPulled &&
+                model
+                    .customsPulled) //model.programs.length == 0 || model.pickedPrograms.every((element) => !element.isCustom)
+        ) {
+      print(
+          "model.programs either didn't have default or the custom programs re-pulling");
+      var id = Provider.of<Muser>(context, listen: false).fAuthUser.uid;
+      //if (id != null) {
+      model.defaultsPulled = true;
+      if (id != null) {
+        model.customsPulled = true;
+      }
+      model.setProgram(programs: await getPrograms(userID: id ?? null));
       // this works but breaks the view.
     } else {
       print("model.programs already populated, using that");
