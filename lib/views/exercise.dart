@@ -20,8 +20,8 @@ class _ExerciseViewState extends State<ExerciseView> {
   GlobalKey<ScaffoldState> scaffoldKey = GlobalKey<ScaffoldState>();
 //_formEditKey.
 
-  bool showBarbellPicker;
-  bool showBarbellPercentagePicker;
+  //bool showBarbellPicker;
+  //bool showBarbellPercentagePicker;
   ExerciseSet exerciseSet;
   ExerciseForm fullForm;
 
@@ -31,7 +31,7 @@ class _ExerciseViewState extends State<ExerciseView> {
     super.initState();
     firstBuild = true;
     // don't default to it, for now.
-    showBarbellPercentagePicker = false;
+    //showBarbellPercentagePicker = false;
   }
 
   FloatingActionButton _getDoneButton(BuildContext context) {
@@ -65,14 +65,14 @@ class _ExerciseViewState extends State<ExerciseView> {
       SwitchListTile.adaptive(
           title: Text(switchListLabel),
           value: isNotForBarbellPercentage
-              ? showBarbellPicker
-              : showBarbellPercentagePicker,
+              ? exerciseSet.basedOnBarbellWeight
+              : exerciseSet.basedOnPercentageOf1RM,
           onChanged: (newValue) {
             setState(() {
               if (isNotForBarbellPercentage) {
-                showBarbellPicker = newValue;
+                exerciseSet.basedOnBarbellWeight = newValue;
               } else {
-                showBarbellPercentagePicker = newValue;
+                exerciseSet.basedOnPercentageOf1RM = newValue;
               }
               if (newValue == true) {
                 if (!isNotForBarbellPercentage) {
@@ -102,8 +102,8 @@ class _ExerciseViewState extends State<ExerciseView> {
           }),
       Visibility(
         visible: isNotForBarbellPercentage
-            ? showBarbellPicker
-            : showBarbellPercentagePicker,
+            ? exerciseSet.basedOnBarbellWeight
+            : exerciseSet.basedOnPercentageOf1RM,
         child: Column(
           children: [
             Container(
@@ -141,8 +141,8 @@ class _ExerciseViewState extends State<ExerciseView> {
                         fullForm.finalizeWeightsAndDescription(
                             context: context,
                             exerciseSet: exerciseSet,
-                            usingBarbell: showBarbellPicker,
-                            barbellLift: (isNotForBarbellPercentage
+                            usingBarbell: exerciseSet.basedOnBarbellWeight,
+                            barbellLift: (!isNotForBarbellPercentage
                                 ? barbellLiftForPercentage
                                 : barbellLift),
                             scaffoldKey: scaffoldKey);
@@ -211,11 +211,11 @@ class _ExerciseViewState extends State<ExerciseView> {
     //= ModalRoute.of(context).settings.arguments;
     if (firstBuild) {
       exerciseSet = ModalRoute.of(context).settings.arguments;
-      showBarbellPicker = ReusableWidgets.lifts.contains(exerciseSet.title);
+      //showBarbellPicker = ReusableWidgets.lifts.contains(exerciseSet.title);
 
-      if (showBarbellPicker) {
-        barbellLift = exerciseSet.title;
-      }
+      //if (showBarbellPicker) {
+      //barbellLift = exerciseSet.title;
+      //}
     }
     fullForm = ExerciseForm(
         titleController: titleController,
@@ -228,7 +228,7 @@ class _ExerciseViewState extends State<ExerciseView> {
         exerciseSet: exerciseSet,
         scaffoldKey: scaffoldKey,
         key: _formEditKey,
-        usingBarbell: showBarbellPicker,
+        usingBarbell: exerciseSet.basedOnBarbellWeight,
         barbellLift: barbellLift,
         onValueUpdate: () {
           setState(() {
@@ -277,7 +277,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                     //initialValue: exerciseSet.title,
                     //controller: titleController,
                     onChanged: (value) {
-                      //exerciseSet.title = value;
+                      exerciseSet.percentageOfTM = double.parse(value);
                     },
                     style: TextStyle(fontSize: 30),
                     textAlign: TextAlign.center,
@@ -297,7 +297,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                         borderSide:
                             BorderSide(color: Colors.blueGrey, width: 1.0),
                       ),
-                      labelText: "Percentage of 1RM to use",
+                      labelText: "Percentage of Training Max to use",
                     ),
                     keyboardType: TextInputType.number,
                     inputFormatters: <TextInputFormatter>[
@@ -306,7 +306,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                     validator: (value) {
                       //homeController.formController.validator()
                       if (value.isEmpty) {
-                        return "Title can't be blank";
+                        return "Can't be blank";
                       }
                       return null;
                     },

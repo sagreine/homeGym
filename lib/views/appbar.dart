@@ -581,7 +581,7 @@ class ExerciseForm {
     // TODO: if we really wanted to, we could populate all 'we can get this weight' up front (on login) and store it and query it here
     // to reduce latency, rather than doing it lazily
     var closestWeight = lifterWeights.getPickedOverallTotal(
-        lift: barbellLift,
+        lift: barbellLift ?? "Squat",
         targetWeight: exerciseSet.weight,
         notActuallyThisLift: true);
     if (exerciseSet.weight != closestWeight.floor()) {
@@ -596,7 +596,7 @@ class ExerciseForm {
 
     exerciseSet.description = "Plates: " +
         lifterWeights.getPickedPlatesAsString(
-            lift: barbellLift,
+            lift: barbellLift ?? "Squat",
             targetWeight: exerciseSet.weight,
             notActuallyThisLift: true);
 

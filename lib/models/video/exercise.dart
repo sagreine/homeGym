@@ -24,7 +24,10 @@ class ExerciseSet extends ChangeNotifier {
   double duration;
   List<String> keywords;
   DateTime dateTime;
-  double percentageOf1RM;
+  bool basedOnBarbellWeight;
+  //Barbell barbell;
+  bool basedOnPercentageOf1RM;
+  double percentageOfTM;
   bool thisSetPRSet;
   bool thisSetProgressSet;
   bool wasWeightPRSet;
@@ -68,7 +71,9 @@ class ExerciseSet extends ChangeNotifier {
       this.duration,
       this.hasBeenUpdated,
       this.id,
-      this.percentageOf1RM})
+      this.basedOnBarbellWeight = false,
+      this.basedOnPercentageOf1RM = false,
+      this.percentageOfTM})
       : prescribedReps = reps {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
