@@ -24,6 +24,7 @@ class ExerciseSet extends ChangeNotifier {
   double duration;
   List<String> keywords;
   DateTime dateTime;
+  double percentageOf1RM;
   bool thisSetPRSet;
   bool thisSetProgressSet;
   bool wasWeightPRSet;
@@ -47,26 +48,28 @@ class ExerciseSet extends ChangeNotifier {
   }
 
   // TODO: pro tip, construct in the constructor instead of some random function. good god this is garbage
-  ExerciseSet({
-    //this.context,
-    this.videoPath,
-    this.thumbnailPath,
-    this.title,
-    this.description,
-    this.restPeriodAfter,
-    this.weight,
-    this.reps,
-    // read the pro tip above and realize this final variable setting is one (of many) reasons...
-    this.thisSetPRSet,
-    this.aspectRatio,
-    this.dateTime,
-    this.thisSetProgressSet,
-    this.wasWeightPRSet,
-    this.wasRepPRSet,
-    this.duration,
-    this.hasBeenUpdated,
-    this.id,
-  }) : prescribedReps = reps {
+  ExerciseSet(
+      {
+      //this.context,
+      this.videoPath,
+      this.thumbnailPath,
+      this.title,
+      this.description,
+      this.restPeriodAfter,
+      this.weight,
+      this.reps,
+      // read the pro tip above and realize this final variable setting is one (of many) reasons...
+      this.thisSetPRSet,
+      this.aspectRatio,
+      this.dateTime,
+      this.thisSetProgressSet,
+      this.wasWeightPRSet,
+      this.wasRepPRSet,
+      this.duration,
+      this.hasBeenUpdated,
+      this.id,
+      this.percentageOf1RM})
+      : prescribedReps = reps {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
     if (this.dateTime == null) {

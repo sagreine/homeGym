@@ -416,13 +416,16 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         else {
           print("getting new exerciseDay from the cloud");
           // custom and default programs are stored in different tables. Access them appropriately
-          if (program.isCustom) {
-            //await getExercisesCloud(
-            //  context: context, program: thisweek.program, week: week, custom: program.isCustom );
-          } else {
-            await getExercisesCloud(
-                context: context, program: thisweek.program, week: week);
-          }
+
+          //await getExercisesCloud(
+          //  context: context, program: thisweek.program, week: week, custom: program.isCustom );
+
+          await getExercisesCloud(
+              context: context,
+              program: thisweek.program,
+              week: week,
+              isCustom: program.isCustom);
+
           // untested AF, but upsert the local copy to include this exerciseDay
           program.upsertExerciseDay(exerciseDay, week - 1);
         }

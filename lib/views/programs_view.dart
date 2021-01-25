@@ -45,9 +45,9 @@ class _ProgramsState extends State<ProgramsView> {
                 return ListTile(
                     onTap: () async {
                       //Navigator.pop(context, programSnap.data[index]);
+                      Navigator.pushNamed(context, "/lifter_programs");
                     },
-                    title:
-                        Text("Make your own! <this feature isn't built yet>"));
+                    title: Text("Make your own!"));
               }
 
               if (i.isOdd) return Divider();
@@ -58,16 +58,22 @@ class _ProgramsState extends State<ProgramsView> {
               returnProgram.week = 1;
               return ListTile(
                   onTap: () async {
+                    // start by doing a full copy (in the UI???)
+                    returnProgram =
+                        PickedProgram.deepCopy(programSnap.data[index]);
                     // this should be done in a controller....
                     if (programSnap.data[index].week > 1) {
+                      // of all weeks, have them pick one.
                       returnProgram.week = await programsController.pickWeek(
                           context, programSnap.data[index].week);
                       // this is a (potential) progressWeek if this is the last week of the program.
                       // later we'll also check if this program is allowed to progess (at any week) -> why later though?
+                      // TODO: and this is in UI ... why?
                       returnProgram.potentialProgressWeek =
                           (returnProgram.week == programSnap.data[index].week);
                     }
-                    returnProgram.type = programSnap.data[index].type;
+                    //returnProgram.type = programSnap.data[index].type;
+                    // TODO: and this is in UI ... why?
                     returnProgram.trainingMaxPct =
                         programSnap.data[index].trainingMaxPct * 100;
                     // if they picked a week, return with it, else just play dumb

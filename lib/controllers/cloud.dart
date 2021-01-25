@@ -47,8 +47,7 @@ updateDatabaseRecordWithReps(
       .update({"reps": reps});
 }
 
-// TODO: flag if we need to update program, exercise set, particular set. dont just write everything...
-saveProgramCloud(
+Future<DocumentReference> saveProgramCloud(
     {@required PickedProgram program,
     @required String userID,
     @required bool anyProgramsToUpdate}) async {
@@ -85,7 +84,7 @@ saveProgramCloud(
     }
   }
   await batch.commit();
-  return;
+  return docRef;
 }
 
 // instead of returning a naked list, we need to return the display name and # weeks for each program
@@ -150,7 +149,7 @@ Future<List<PickedProgram>> _getCustomPrograms({
     pickedProgram.potentialProgressWeek =
         list[index].data()["potentialProgressWeek"];
     //pickedProgram.hasMainLifts = list[index].data()[
-    pickedProgram.id = list[index].data()["id"];
+    pickedProgram.id = list[index].data()["id"] ?? list[index].id;
     pickedProgram.isAnewCopy = false;
     pickedProgram.neverTouched = false;
     pickedProgram.isCustom = true;
@@ -519,6 +518,29 @@ Future<void> getExercisesCloud({
   @required context,
   @required String program,
   @required int week,
+  @required bool isCustom,
+}) async {
+  if (isCustom) {
+    await getExercisesCustomCloud(
+        context: context, program: program, week: week);
+  } else {
+    await getExercisesDefaultCloud(
+        context: context, program: program, week: week);
+  }
+}
+
+Future<void> getExercisesCustomCloud({
+  @required context,
+  @required String program,
+  @required int week,
+}) async {
+  ExerciseDayController exerciseDayController = ExerciseDayController();
+}
+
+Future<void> getExercisesDefaultCloud({
+  @required context,
+  @required String program,
+  @required int week,
 }) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
   // would update the exercise model here so pass in context...
@@ -552,16 +574,5 @@ Future<void> getExercisesCloud({
     prSetWeek: pctAndReps.data()["PRSetWeek"],
     percentages: percentages,
     progressSet: pctAndReps.data()["progressSet"],
-    //trainingMaxPct: pctAndReps.data()["trainingMaxPct"],
-    /*
-    assistanceCore: new List<String>.from(pctAndReps.data()["assistance_core"]),
-    assistanceCoreReps:
-        new List<int>.from(pctAndReps.data()["assistance_core_reps"]),
-    assistancePull: new List<String>.from(pctAndReps.data()["assistance_pull"]),
-    assistancePullReps:
-        new List<int>.from(pctAndReps.data()["assistance_pull_reps"]),
-    assistancePush: new List<String>.from(pctAndReps.data()["assistance_push"]),
-    assistancePushReps:
-        new List<int>.from(pctAndReps.data()["assistance_push_reps"]),*/
   );
 }

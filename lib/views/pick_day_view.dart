@@ -207,62 +207,68 @@ class _PickDayViewState extends State<PickDayView> {
           ),
           SizedBox(height: 6),
           Consumer<PickDay>(builder: (context, pickDay, child) {
-            return Visibility(
-              visible: pickDay.pickedProgram.type == "5/3/1" &&
-                  pickDayController.tmController.text != null &&
-                  pickDayController.tmController.text.length != 0,
-              child: TextFormField(
-                controller: pickDayController.tmController,
-                onChanged: (newValue) {
-                  pickDay.pickedProgram.trainingMaxPct =
-                      double.parse(pickDayController.tmController.text);
-                },
-                keyboardType: TextInputType.numberWithOptions(
-                  signed: false,
-                  decimal: false,
-                ),
-                //validator: numberValidator,
-                inputFormatters: <TextInputFormatter>[
-                  WhitelistingTextInputFormatter.digitsOnly
-                ],
-                decoration: new InputDecoration(
-                  enabledBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                      color: Colors.blueGrey, //Color(0xFF1976D2),
-                      width: 1.0,
-                      style: BorderStyle.solid,
+            return Column(
+              children: [
+                Visibility(
+                  visible: pickDay.pickedProgram.type == "5/3/1" &&
+                      pickDayController.tmController.text != null &&
+                      pickDayController.tmController.text.length != 0,
+                  child: TextFormField(
+                    controller: pickDayController.tmController,
+                    onChanged: (newValue) {
+                      pickDay.pickedProgram.trainingMaxPct =
+                          double.parse(pickDayController.tmController.text);
+                    },
+                    keyboardType: TextInputType.numberWithOptions(
+                      signed: false,
+                      decimal: false,
                     ),
+                    //validator: numberValidator,
+                    inputFormatters: <TextInputFormatter>[
+                      WhitelistingTextInputFormatter.digitsOnly
+                    ],
+                    decoration: new InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          color: Colors.blueGrey, //Color(0xFF1976D2),
+                          width: 1.0,
+                          style: BorderStyle.solid,
+                        ),
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                            color: Colors.blueGrey,
+                            //Color(0xFF06ac51),
+                            width: 1.0),
+                      ),
+                      labelText: "Override TM% (optional)",
+                    ),
+                    //onChanged: (value) => ,
+                    readOnly: false,
+                    style: TextStyle(fontSize: 15),
                   ),
-                  focusedBorder: OutlineInputBorder(
-                    borderSide: BorderSide(
-                        color: Colors.blueGrey,
-                        //Color(0xFF06ac51),
-                        width: 1.0),
-                  ),
-                  labelText: "Override TM% (optional)",
                 ),
-                //onChanged: (value) => ,
-                readOnly: false,
-                style: TextStyle(fontSize: 15),
-              ),
+
+                SizedBox(height: 10),
+
+                //),
+                //SizedBox(height: 10),
+                //Expanded(
+                //flex: 1,
+                //child:
+                RaisedButton(
+                  child: Text("Go!", style: TextStyle(fontSize: 50)),
+                  onPressed: !pickDayController.readyToGo
+                      ? null
+                      : () => pickDayController.launchDay(
+                          context, pickDay.pickedProgram.isCustom),
+                  disabledColor: Theme.of(context).canvasColor,
+                  color: Theme.of(context).backgroundColor,
+                  //)
+                ),
+              ],
             );
           }),
-          SizedBox(height: 10),
-
-          //),
-          //SizedBox(height: 10),
-          //Expanded(
-          //flex: 1,
-          //child:
-          RaisedButton(
-            child: Text("Go!", style: TextStyle(fontSize: 50)),
-            onPressed: !pickDayController.readyToGo
-                ? null
-                : () => pickDayController.launchDay(context),
-            disabledColor: Theme.of(context).canvasColor,
-            color: Theme.of(context).backgroundColor,
-            //)
-          ),
           SizedBox(height: 10),
         ],
       ),

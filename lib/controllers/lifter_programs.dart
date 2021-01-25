@@ -63,10 +63,11 @@ class LifterProgramsController {
     }
 
     // save to cloud
-    await saveProgramCloud(
+    var programIDCloud = await saveProgramCloud(
         userID: Provider.of<Muser>(context, listen: false).fAuthUser.uid,
         program: potentiallyEditedProgram,
         anyProgramsToUpdate: anyProgramsToUpdate);
+    potentiallyEditedProgram.id = programIDCloud.id;
     // save to local? shouldn't be necessary?
   }
 }

@@ -16,6 +16,7 @@ class ExerciseDay extends ChangeNotifier {
   double trainingMax;
   int currentSet;
   // 2d list? or, list of Exercises? probably ultimately a list of exericses will be what we want to use.
+  // these are used by default programs, for now anyway.
   List<int> reps;
   List<int> prSets;
   List<double> percentages;

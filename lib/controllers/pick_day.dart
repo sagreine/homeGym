@@ -70,13 +70,14 @@ class PickDayController {
   }
 
   Future<void> getExercises(
-      BuildContext context, String program, int week) async {
-    await getExercisesCloud(context: context, program: program, week: week);
+      BuildContext context, String program, int week, bool isCustom) async {
+    await getExercisesCloud(
+        context: context, program: program, week: week, isCustom: isCustom);
   }
 
   // launch the day, which is program and exercise
   // not sure we care about context here?
-  void launchDay(BuildContext context) async {
+  void launchDay(BuildContext context, bool isCustom) async {
     // update our exercise to the selected day.
     // this should be done only by the controller.
     // also the order of this matters and it must run before the query below (which is very dumb)
@@ -92,9 +93,9 @@ class PickDayController {
     /// AND YOU WILL GET AN ERROR TRYING TO HIT ON NULL
     exerciseDay.trainingMax = model.pickedProgram.trainingMaxPct / 100;
     //}
-
-    await getExercises(
-        context, model.pickedProgram.program, model.pickedProgram.week);
+    // TODO need to make this owrk for custom...
+    await getExercises(context, model.pickedProgram.program,
+        model.pickedProgram.week, isCustom);
 
     // if we overrode the %TM percentage, update that here - need to do erro control here...
 
