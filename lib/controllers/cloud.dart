@@ -142,7 +142,7 @@ Future<List<PickedProgram>> _getCustomPrograms({
     PickedProgram pickedProgram = PickedProgram();
     //pickedProgram.program = list[index].id;
     // we'll default to 1 if this value isn't set.
-    pickedProgram.week = list[index].data()["numWeeks"] ?? 1;
+    pickedProgram.week = list[index].data()["week"] ?? 1;
     pickedProgram.program = list[index].data()["program"];
     pickedProgram.type = list[index].data()["type"];
     pickedProgram.isMainLift = list[index].data()["isMainLift"] ?? false;
