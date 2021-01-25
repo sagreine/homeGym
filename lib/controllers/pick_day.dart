@@ -7,13 +7,10 @@ import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 
 class PickDayController {
-  // this is an obviously bad idea
+  // this is an obviously bad idea and should not be here - > user the staticlly available enum.
   List<String> exercises = ["Squat", "Deadlift", "Bench", "Press"];
   List<bool> selectedExercise = [false, false, false, false];
   bool readyToGo = false;
-  //String selectedProgram;
-  //int selectedWeek;
-  //bool potentialProgressWeek;
 
   TextEditingController programController = TextEditingController();
   // TODO: not currently used for anythin.
@@ -47,7 +44,6 @@ class PickDayController {
 
   Future<void> pickProgram(BuildContext context) async {
     var model = Provider.of<PickDay>(context, listen: false);
-    //var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     // launch the page to pick them, return it when done
     /// - do this more safely obviously. if they OS-back button this goes badly.
     /// // can't just do a vanilla push named because we're returning a non primitive object
@@ -69,10 +65,19 @@ class PickDayController {
     }
   }
 
-  Future<void> getExercises(
-      BuildContext context, String program, int week, bool isCustom) async {
+  Future<void> getExercises(BuildContext context, PickedProgram program,
+      int week, bool isCustom) async {
+    var userID;
+    if (isCustom) {
+      userID =
+          Provider.of<Muser>(context, listen: false).fAuthUser.uid.toString();
+    }
     await getExercisesCloud(
-        context: context, program: program, week: week, isCustom: isCustom);
+        context: context,
+        program: program,
+        week: week,
+        isCustom: isCustom,
+        userID: userID);
   }
 
   // launch the day, which is program and exercise
@@ -83,6 +88,8 @@ class PickDayController {
     // also the order of this matters and it must run before the query below (which is very dumb)
     var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     var model = Provider.of<PickDay>(context, listen: false);
+    // this sets our "main" lift to hte one selected
+    // TODO this needs to be handled only for 'Main' lift days once that is implemented...
     exerciseDay.lift =
         exercises[selectedExercise.indexWhere((element) => element)];
 
@@ -94,8 +101,8 @@ class PickDayController {
     exerciseDay.trainingMax = model.pickedProgram.trainingMaxPct / 100;
     //}
     // TODO need to make this owrk for custom...
-    await getExercises(context, model.pickedProgram.program,
-        model.pickedProgram.week, isCustom);
+    await getExercises(
+        context, model.pickedProgram, model.pickedProgram.week, isCustom);
 
     // if we overrode the %TM percentage, update that here - need to do erro control here...
 

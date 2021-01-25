@@ -516,30 +516,59 @@ void getPlatesCloud({@required context, @required String userID}) async {
 // like this defeats the whole purpose of having this layer almost.
 Future<void> getExercisesCloud({
   @required context,
-  @required String program,
+  @required PickedProgram program,
   @required int week,
   @required bool isCustom,
+  @required String userID,
 }) async {
   if (isCustom) {
+    assert(userID != null);
     await getExercisesCustomCloud(
-        context: context, program: program, week: week);
+        context: context, program: program, week: week, userID: userID);
   } else {
     await getExercisesDefaultCloud(
         context: context, program: program, week: week);
   }
 }
 
-Future<void> getExercisesCustomCloud({
-  @required context,
-  @required String program,
-  @required int week,
-}) async {
+Future<void> getExercisesCustomCloud(
+    {@required context,
+    @required PickedProgram program,
+    @required int week,
+    @required String userID}) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
+  DocumentSnapshot pctAndReps;
+  pctAndReps = await FirebaseFirestore.instance
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("CUSTOMPROGRAMS")
+      .doc(program.id)
+      .get();
+
+  List<int> reps = new List<int>.from(pctAndReps.data()["Reps"]);
+  // a value of 100%, stored as 1, gets inferred as a int so need to deal with that.
+  var tmp = pctAndReps.data()["week" + week.toString() + "Percentages"];
+  List<double> percentages = List<double>.from(tmp.map((i) => i.toDouble()));
+  List<String> lifts = new List<String>.from(pctAndReps.data()["LIft"]);
+  // TODO: this means we have to set this array for every single program in the db. but if we don't want to do that, make it conditional here.
+  List<int> prSets = new List<int>.from(pctAndReps.data()["prSets"]);
+  //var exercise = Provider.of<ExerciseDay>(context, listen: false);
+  await exerciseDayController.updateDay(
+    updateMaxIfGetReps: pctAndReps.data()["update_max_if_get_reps"],
+    lifts: lifts,
+    program: program.program,
+    context: context,
+    reps: reps,
+    prSets: prSets,
+    prSetWeek: pctAndReps.data()["PRSetWeek"],
+    percentages: percentages,
+    progressSet: pctAndReps.data()["progressSet"],
+  );
 }
 
 Future<void> getExercisesDefaultCloud({
   @required context,
-  @required String program,
+  @required PickedProgram program,
   @required int week,
 }) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
@@ -554,7 +583,7 @@ Future<void> getExercisesDefaultCloud({
   // pull these from a .xml file
   pctAndReps = await FirebaseFirestore.instance
       .collection('PROGRAMS')
-      .doc(program)
+      .doc(program.program)
       .get();
   List<int> reps = new List<int>.from(pctAndReps.data()["Reps"]);
   // a value of 100%, stored as 1, gets inferred as a int so need to deal with that.
@@ -567,7 +596,7 @@ Future<void> getExercisesDefaultCloud({
   await exerciseDayController.updateDay(
     updateMaxIfGetReps: pctAndReps.data()["update_max_if_get_reps"],
     lifts: lifts,
-    program: program,
+    program: program.program,
     context: context,
     reps: reps,
     prSets: prSets,

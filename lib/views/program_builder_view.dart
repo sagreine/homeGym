@@ -424,7 +424,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
               context: context,
               program: thisweek.program,
               week: week,
-              isCustom: program.isCustom);
+              isCustom: program.isCustom,
+              userID: Provider.of<Muser>(context, listen: false).fAuthUser.uid);
 
           // untested AF, but upsert the local copy to include this exerciseDay
           program.upsertExerciseDay(exerciseDay, week - 1);

@@ -498,6 +498,7 @@ class ExerciseForm {
     @required String barbellLift,
     @required bool readOnlyTitle,
     @required bool usingBarbell,
+    @required bool isBuildingNotUsing,
     @required this.titleController,
     @required this.descriptionController,
     @required this.repsController,
@@ -512,6 +513,7 @@ class ExerciseForm {
         usingBarbell: usingBarbell,
         barbellLift: barbellLift,
         onValueUpdate: onValueUpdate,
+        isBuildingNotUsing: isBuildingNotUsing,
         readOnlyTitle: readOnlyTitle);
     /*this.titleController = titleController;
     this.descriptionController = descriptionController;
@@ -536,9 +538,10 @@ class ExerciseForm {
     @required bool usingBarbell,
     @required String barbellLift,
     @required GlobalKey<ScaffoldState> scaffoldKey,
+    @required bool isBuildingNotUsing,
   }) {
-    if (exerciseSet.weight != int.parse(weightController.text)) {
-      exerciseSet.weight = int.parse(weightController.text);
+    if (exerciseSet.weight != int.tryParse(weightController.text)) {
+      exerciseSet.weight = int.tryParse(weightController.text);
     }
 
     /*if (_exerciseSet.reps != int.parse(repsController.text)) {
@@ -555,7 +558,10 @@ class ExerciseForm {
     }*/
 
     // we dont need to update anything about barbells if they aren't using a barbell
-    if (!usingBarbell) {
+    // TODO: RPE will need to be done here too. -> or just have a "notSettingWeight" flag?
+    // we want this to be done in the using-the-program phase so they get the calculator, so use that bool
+    if (!usingBarbell ||
+        (exerciseSet.basedOnPercentageOfTM && isBuildingNotUsing)) {
       return;
     }
     // we dont need to update the description always, and we dont have to because the weight is the barbell at this point
@@ -693,6 +699,10 @@ class ExerciseForm {
             ),
             labelText: field,
           ),
+          // we don't allow editing of weight if this is based on a percentage...
+          // TODO: RPE ... ?
+          readOnly: exerciseSet.basedOnPercentageOfTM &&
+              field.toUpperCase() == "WEIGHT",
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
             WhitelistingTextInputFormatter.digitsOnly,
@@ -759,6 +769,7 @@ class ExerciseForm {
       @required GlobalKey<ScaffoldState> scaffoldKey,
       @required BuildContext context,
       @required Function onValueUpdate,
+      @required bool isBuildingNotUsing,
       bool usingBarbell,
       String barbellLift,
       bool readOnlyTitle}) {
@@ -772,13 +783,27 @@ class ExerciseForm {
       descriptionController.text = exerciseSet.description;
     }
     if (repsController.text != exerciseSet.reps.toString()) {
-      repsController.text = exerciseSet.reps.toString();
+      if (exerciseSet.reps != null) {
+        repsController.text = exerciseSet.reps.toString();
+      } else {
+        repsController.text = ""; //0.toString();
+      }
     }
     if (weightController.text != exerciseSet.weight.toString()) {
-      weightController.text = exerciseSet.weight.toString();
+      if (exerciseSet.weight != null) {
+        weightController.text = exerciseSet.weight.toString();
+      } else {
+        weightController.text = "";
+        // 0.toString();
+      }
     }
     if (restController.text != exerciseSet.restPeriodAfter.toString()) {
-      restController.text = exerciseSet.restPeriodAfter.toString();
+      if (exerciseSet.restPeriodAfter != null) {
+        restController.text = exerciseSet.restPeriodAfter.toString();
+      } else {
+        restController.text = "";
+        //0.toString();
+      }
     }
 
     //Consumer<ExerciseSet>(builder: (context, exerciseSet, child) {
@@ -870,7 +895,7 @@ class ExerciseForm {
                   exerciseSet: exerciseSet,
                   field: "Reps",
                   onValueUpdate: () {
-                    exerciseSet.reps = int.parse(repsController.text);
+                    exerciseSet.reps = int.tryParse(repsController.text);
                     // TODO:
                     onValueUpdate();
                   }),
@@ -881,13 +906,14 @@ class ExerciseForm {
                   exerciseSet: exerciseSet,
                   field: "Weight",
                   onValueUpdate: () {
-                    exerciseSet.weight = int.parse(weightController.text);
+                    exerciseSet.weight = int.tryParse(weightController.text);
                     finalizeWeightsAndDescription(
                         context: context,
                         exerciseSet: exerciseSet,
                         usingBarbell: usingBarbell,
                         scaffoldKey: scaffoldKey,
-                        barbellLift: barbellLift);
+                        barbellLift: barbellLift,
+                        isBuildingNotUsing: isBuildingNotUsing);
                     /*if (barbellLift != null) {
                       var lifterWeights =
                           Provider.of<LifterWeights>(context, listen: false);
@@ -916,7 +942,7 @@ class ExerciseForm {
                   field: "Rest",
                   onValueUpdate: () {
                     exerciseSet.restPeriodAfter =
-                        int.parse(restController.text);
+                        int.tryParse(restController.text);
                     onValueUpdate();
                   }),
             ],

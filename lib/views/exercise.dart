@@ -66,13 +66,13 @@ class _ExerciseViewState extends State<ExerciseView> {
           title: Text(switchListLabel),
           value: isNotForBarbellPercentage
               ? exerciseSet.basedOnBarbellWeight
-              : exerciseSet.basedOnPercentageOf1RM,
+              : exerciseSet.basedOnPercentageOfTM,
           onChanged: (newValue) {
             setState(() {
               if (isNotForBarbellPercentage) {
                 exerciseSet.basedOnBarbellWeight = newValue;
               } else {
-                exerciseSet.basedOnPercentageOf1RM = newValue;
+                exerciseSet.basedOnPercentageOfTM = newValue;
               }
               if (newValue == true) {
                 if (!isNotForBarbellPercentage) {
@@ -103,7 +103,7 @@ class _ExerciseViewState extends State<ExerciseView> {
       Visibility(
         visible: isNotForBarbellPercentage
             ? exerciseSet.basedOnBarbellWeight
-            : exerciseSet.basedOnPercentageOf1RM,
+            : exerciseSet.basedOnPercentageOfTM,
         child: Column(
           children: [
             Container(
@@ -136,12 +136,12 @@ class _ExerciseViewState extends State<ExerciseView> {
                           barbellLift = item;
                         }
                         // only update the weight using raw values if it is not a percentage
-                        //TODO need to implement one way for barbell and another for percentage...
-                        //if (!isNotForBarbellPercentage) {
+                        //TODO need to implement one way for barbell and another for percentage... that is, populate weight based on percentage here....
                         fullForm.finalizeWeightsAndDescription(
                             context: context,
                             exerciseSet: exerciseSet,
                             usingBarbell: exerciseSet.basedOnBarbellWeight,
+                            isBuildingNotUsing: true,
                             barbellLift: (!isNotForBarbellPercentage
                                 ? barbellLiftForPercentage
                                 : barbellLift),
@@ -226,6 +226,7 @@ class _ExerciseViewState extends State<ExerciseView> {
         context: context,
         readOnlyTitle: false,
         exerciseSet: exerciseSet,
+        isBuildingNotUsing: true,
         scaffoldKey: scaffoldKey,
         key: _formEditKey,
         usingBarbell: exerciseSet.basedOnBarbellWeight,

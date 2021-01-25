@@ -240,7 +240,8 @@ class _DoLiftViewState extends State<DoLiftView>
       //exerciseDay.lift = "Squat";
       exerciseDay.trainingMax = 0.85;
       PickDayController pickDayController = PickDayController();
-      await pickDayController.getExercises(context, "Advanced Prep", 1, false);
+      await pickDayController.getExercises(
+          context, PickedProgram(program: "Advanced Prep"), 1, false);
       exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     }
     exercise = exerciseDay.exercises[exerciseDay.currentSet];
