@@ -532,6 +532,7 @@ class ExerciseForm {
   /// An example of both of these is seen in exercise.dart. When we close the form, we use .save().
   /// But, when we need to update the form based on a value outside of the form, we have to reach
   /// into the form to call this function before rebuildling.
+  /// [isBuildingNotUsing] controls if description is updated or not for sets based on %. It won't update while building (true), else will.
   void finalizeWeightsAndDescription({
     @required BuildContext context,
     @required ExerciseSet exerciseSet,

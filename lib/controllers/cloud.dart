@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:provider/provider.dart';
 
 //
 //TODO: implement dispose
@@ -537,33 +538,56 @@ Future<void> getExercisesCustomCloud(
     @required int week,
     @required String userID}) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
-  DocumentSnapshot pctAndReps;
-  pctAndReps = await FirebaseFirestore.instance
+  //DocumentSnapshot
+  QuerySnapshot allSets;
+  allSets = await FirebaseFirestore.instance
       .collection("USERDATA")
       .doc(userID)
       .collection("CUSTOMPROGRAMS")
       .doc(program.id)
+      .collection("Weeks")
+      .doc("Week${week - 1}")
+      .collection("Lifts")
       .get();
-
+  List<ExerciseSet> exerciseSets = List<ExerciseSet>();
+  allSets.docs.forEach((lift) {
+    exerciseSets.add(ExerciseSet.fromCustom(
+      title: lift.data()["title"],
+      lift: Provider.of<ExerciseDay>(context, listen: false).lift,
+      // this might be set or it might not be. limit by bool of it is should be, then set to 100 if not or missing...
+      // if that bool is set, use it, else it is false
+      percentageOfTM: ((lift.data()["basedOnPercentageOfTM"] ?? false)
+              // if the bool is true, use the percentage, otherwise null
+              ? lift.data()["percentageOfTM"]
+              : null) ??
+          // if it is null (not set because it isn't based on it, or it should've been but wasn't, use 100%)
+          100.toDouble(),
+      thisSetProgressSet: lift.data()["thisSetProgressSet"],
+      thisSetPRSet: lift.data()["thisSetPRSet"],
+      reps: lift.data()["reps"],
+      weight: lift.data()["weight"],
+      id: lift.id,
+      indexForOrdering: lift.data()["indexForOrdering"],
+      isMainLift: lift.data()["isMainLift"],
+      description: lift.data()["description"],
+      basedOnPercentageOfTM: lift.data()["basedOnPercentageOfTM"],
+      restPeriodAfter: lift.data()["restPeriodAfter"],
+      basedOnBarbellWeight: lift.data()["basedOnBarbellWeight"],
+    ));
+  });
+  exerciseDayController.buildCustomProgramDay(
+    context: context,
+    exerciseSets: exerciseSets,
+  );
+/*
   List<int> reps = new List<int>.from(pctAndReps.data()["Reps"]);
   // a value of 100%, stored as 1, gets inferred as a int so need to deal with that.
   var tmp = pctAndReps.data()["week" + week.toString() + "Percentages"];
   List<double> percentages = List<double>.from(tmp.map((i) => i.toDouble()));
   List<String> lifts = new List<String>.from(pctAndReps.data()["LIft"]);
   // TODO: this means we have to set this array for every single program in the db. but if we don't want to do that, make it conditional here.
-  List<int> prSets = new List<int>.from(pctAndReps.data()["prSets"]);
+  List<int> prSets = new List<int>.from(pctAndReps.data()["prSets"]);*/
   //var exercise = Provider.of<ExerciseDay>(context, listen: false);
-  await exerciseDayController.updateDay(
-    updateMaxIfGetReps: pctAndReps.data()["update_max_if_get_reps"],
-    lifts: lifts,
-    program: program.program,
-    context: context,
-    reps: reps,
-    prSets: prSets,
-    prSetWeek: pctAndReps.data()["PRSetWeek"],
-    percentages: percentages,
-    progressSet: pctAndReps.data()["progressSet"],
-  );
 }
 
 Future<void> getExercisesDefaultCloud({

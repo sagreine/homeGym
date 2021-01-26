@@ -56,6 +56,8 @@ class PickedProgram {
     this.isCustom = otherProgram.isCustom;
     this.isMainLift = otherProgram.isMainLift;
     this.isAnewCopy = otherProgram.isAnewCopy;
+    // need to be careful with this...
+    this.id = otherProgram.id;
     // need we deep copy this too?
 
     // copy over the exerciseDays too

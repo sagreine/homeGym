@@ -10,6 +10,8 @@ class ExerciseView extends StatefulWidget {
   _ExerciseViewState createState() => _ExerciseViewState();
 }
 
+// TODO need to use setters because this needs to notify consumer on the exercise day page. don't edit here,
+// use setters with notifyListeners() on them
 class _ExerciseViewState extends State<ExerciseView> {
   //ProgramController programsController = ProgramController();
   bool firstBuild;
@@ -65,8 +67,8 @@ class _ExerciseViewState extends State<ExerciseView> {
       SwitchListTile.adaptive(
           title: Text(switchListLabel),
           value: isNotForBarbellPercentage
-              ? exerciseSet.basedOnBarbellWeight
-              : exerciseSet.basedOnPercentageOfTM,
+              ? exerciseSet.basedOnBarbellWeight ?? false
+              : exerciseSet.basedOnPercentageOfTM ?? false,
           onChanged: (newValue) {
             setState(() {
               if (isNotForBarbellPercentage) {
@@ -102,8 +104,8 @@ class _ExerciseViewState extends State<ExerciseView> {
           }),
       Visibility(
         visible: isNotForBarbellPercentage
-            ? exerciseSet.basedOnBarbellWeight
-            : exerciseSet.basedOnPercentageOfTM,
+            ? exerciseSet.basedOnBarbellWeight ?? false
+            : exerciseSet.basedOnPercentageOfTM ?? false,
         child: Column(
           children: [
             Container(
@@ -264,6 +266,17 @@ class _ExerciseViewState extends State<ExerciseView> {
                     onChanged: (newValue) {
                       setState(() {
                         exerciseSet.thisSetPRSet = newValue;
+                        // TODO: this is likely something we want, just not right now.
+                        //exerciseSet.updateExercise(thisSetPRSet: newValue);
+                      });
+                    }),
+                // TODO: make this actually happen?
+                SwitchListTile.adaptive(
+                    title: Text("If you get reps, increase lifter's 1RM max?"),
+                    value: exerciseSet.thisSetProgressSet,
+                    onChanged: (newValue) {
+                      setState(() {
+                        exerciseSet.thisSetProgressSet = newValue;
                         // TODO: this is likely something we want, just not right now.
                         //exerciseSet.updateExercise(thisSetPRSet: newValue);
                       });

@@ -210,6 +210,7 @@ class _PickDayViewState extends State<PickDayView> {
             return Column(
               children: [
                 Visibility(
+                  // TODO this is not a thing we want to do. might just make this always visible.
                   visible: pickDay.pickedProgram.type == "5/3/1" &&
                       pickDayController.tmController.text != null &&
                       pickDayController.tmController.text.length != 0,

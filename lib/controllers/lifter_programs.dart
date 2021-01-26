@@ -11,6 +11,7 @@ class LifterProgramsController {
     copyingTo.isCustom = true;
     copyingTo.program += "- copy";
     copyingTo.isAnewCopy = true;
+    copyingTo.id = null;
     // dont want to do this for copy.
     //copyingTo.neverTouched = true;
     return copyingTo;

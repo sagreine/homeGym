@@ -21,13 +21,6 @@ class ExerciseDay extends ChangeNotifier {
   List<int> prSets;
   List<double> percentages;
   List<String> lifts;
-  /*
-  List<int> assistancePullReps;
-  List<int> assistanceCoreReps;
-  List<int> assistancePushReps;
-  List<String> assistancePull;
-  List<String> assistanceCore;
-  List<String> assistancePush;*/
   bool updateMaxIfGetReps;
   bool prSetWeek;
   int progressSet;
@@ -47,14 +40,6 @@ class ExerciseDay extends ChangeNotifier {
     this.trainingMax,
     this.lifts,
     this.prSets,
-    /*
-    this.assistancePullReps,
-    this.assistanceCoreReps,
-    this.assistancePushReps,
-    this.assistanceCore,
-    this.assistancePull,
-    this.assistancePush,
-    */
     this.updateMaxIfGetReps,
     this.progressSet,
     this.exercises,
@@ -77,6 +62,42 @@ class ExerciseDay extends ChangeNotifier {
     notifyListeners();
   }
 
+  void addAllExercise(
+    List<ExerciseSet> exerciseSet,
+  ) {
+    if (exercises == null) {
+      exercises = List<ExerciseSet>();
+    }
+    exercises.addAll(exerciseSet);
+    if (currentSet == null) {
+      currentSet = 0;
+    }
+    // set the order of each element. only needed while building, not while using. stores the order.
+    // sorting first pulls in the order from the cloud.
+    // TODO: ... and overwrites with the same exact variables that are already there locally, ya?
+    // is fine, we don't shoot it off to the cloud again or anything, but still not ideal.
+    exercises.sort((lift1, lift2) =>
+        lift1.indexForOrdering.compareTo(lift2.indexForOrdering));
+
+    exercises.forEach((element) {
+      element.indexForOrdering = exercises.indexOf(element);
+    });
+
+    notifyListeners();
+  }
+
+  void buildCustomDay(
+      {@required List<ExerciseSet> exerciseSets, bool updateMaxIfGetReps}) {
+    // clear out what might've been in there before, if we picked multiple programs today
+    this.exercises = new List<ExerciseSet>();
+    this.addAllExercise(exerciseSets);
+
+    this.updateMaxIfGetReps = updateMaxIfGetReps;
+    // when building, this will be false
+    this.justDidLastSet = false;
+    //notifyListeners();
+  }
+
   void buildDay({
     String lift,
     String program,
@@ -86,13 +107,6 @@ class ExerciseDay extends ChangeNotifier {
     List<int> prSets,
     int currentSet,
     //double trainingMax,
-    /*
-    List<int> assistanceCoreReps,
-    List<int> assistancePullReps,
-    List<int> assistancePushReps,
-    List<String> assistancePull,
-    List<String> assistanceCore,
-    List<String> assistancePush,*/
     bool updateMaxIfGetReps,
     bool prSetWeek,
     int progressSet,
@@ -108,26 +122,12 @@ class ExerciseDay extends ChangeNotifier {
     //this.trainingMax = trainingMax;
     this.lifts = lifts;
     this.prSets = prSets;
-    /*
-    this.assistanceCoreReps = assistanceCoreReps;
-    this.assistancePullReps = assistancePullReps;
-    this.assistancePushReps = assistancePushReps;
-    this.assistanceCore = assistanceCore;
-    this.assistancePull = assistancePull;
-    this.assistancePush = assistancePush;
-    */
     this.updateMaxIfGetReps = updateMaxIfGetReps;
     this.progressSet = progressSet;
     this.prSetWeek = prSetWeek;
     this.justDidLastSet = false;
     // build and populate the list of exercises to do.
     this.exercises = new List<ExerciseSet>();
-    /*
-    List<String> allAssistance =
-        assistanceCore + assistancePull + assistancePush;
-    List<int> allAssistanceReps =
-        assistanceCoreReps + assistancePullReps + assistancePushReps;
-        */
     for (int i = 0, mainLiftIterator = 0; i < reps.length; ++i) {
       if (lifts[i].toUpperCase() == "MAIN") {
         // TODO: see elsewhere, but USE CONSTRUCTORS IT IS WHY THEY EXIST
@@ -238,8 +238,21 @@ class ExerciseDay extends ChangeNotifier {
     return _return;
   }
 
-  void insert(int index, ExerciseSet exerciseSet) {
+  void insert(int index, ExerciseSet exerciseSet, bool isBuildingNotUsing) {
     exercises.insert(index, exerciseSet);
+    // for each element, reset the index of
+    if (isBuildingNotUsing) {
+      exercises.forEach((element) {
+        element.indexForOrdering = exercises.indexOf(element);
+      });
+    }
+
+    //if (isBuildingNotUsing) {
+    // update this one to its new index
+    //exercises[index].indexForOrdering = index;
+    // and increment everyone after since one just came before them
+    //for(int i = index; i < exercises.length)
+    //}
     //if (increaseTotal) {
     //sets++;
 
@@ -264,14 +277,6 @@ class ExerciseDay extends ChangeNotifier {
         trainingMax,
         lifts,
         prSets,
-        /*
-        assistanceCoreReps,
-        assistancePullReps,
-        assistancePushReps,
-        assistanceCore,
-        assistancePull,
-        assistancePush,
-        */
         updateMaxIfGetReps,
         progressSet,
         exercises,

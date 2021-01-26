@@ -72,6 +72,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
       activity: step,
       enabled: enabled,
       thisDay: thisDay,
+      isBuildingNotUsing: isBuildingNotUsing,
       //onCopyCallback: () => setState(() {}),
       thisSetProgressSet: step.thisSetProgressSet && thisDay.updateMaxIfGetReps,
     ));
@@ -179,8 +180,10 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                     _newIndex -= 1;
                                   }
 
-                                  thisDay.insert(_newIndex ~/ 2,
-                                      thisDay.removeAt(_oldIndex ~/ 2));
+                                  thisDay.insert(
+                                      _newIndex ~/ 2,
+                                      thisDay.removeAt(_oldIndex ~/ 2),
+                                      isBuildingNotUsing);
                                   //thisDay.removeAt();
 
                                   /*thisDay.exercises.insert(_newIndex ~/ 2,
@@ -363,6 +366,7 @@ class _TimelineStepsChild extends StatelessWidget {
     @required this.enabled,
     @required this.thisSetProgressSet,
     @required this.thisDay,
+    @required this.isBuildingNotUsing,
     //@required this.onCopyCallback
   }) : super(key: key);
 
@@ -370,6 +374,7 @@ class _TimelineStepsChild extends StatelessWidget {
   final bool enabled;
   final bool thisSetProgressSet;
   final ExerciseDay thisDay;
+  final bool isBuildingNotUsing;
   //final Function onCopyCallback;
 
   @override
@@ -457,6 +462,10 @@ class _TimelineStepsChild extends StatelessWidget {
                           onPressed: () {
                             Navigator.pushNamed(context, '/exercise',
                                 arguments: activity);
+                            //setState?? isnt' a stateful widget though...
+                            // shouldn't be necessary becuase the parent of this is a Consumer of thisDay
+                            // and activity should be it's child.
+                            // but that requires using notifyListeners()
                           }),
                       visible: enabled),
                   Visibility(
@@ -466,8 +475,10 @@ class _TimelineStepsChild extends StatelessWidget {
                           //var thisDay =
                           //Provider.of<ExerciseDay>(context, listen: false);
                           // TODO: stop doing this. lazy, sloowwww, lose type... just build a deep copy function in the model
-                          thisDay.insert(thisDay.exercises.indexOf(activity),
-                              ExerciseSet.fromJson(activity.toJson()));
+                          thisDay.insert(
+                              thisDay.exercises.indexOf(activity),
+                              ExerciseSet.fromJson(activity.toJson()),
+                              isBuildingNotUsing);
                           //onCopyCallback();
 
                           /*thisDay.exercises.insert(
