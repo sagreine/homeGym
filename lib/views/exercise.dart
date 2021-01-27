@@ -78,29 +78,31 @@ class _ExerciseViewState extends State<ExerciseView> {
               }
               if (newValue == true) {
                 if (!isNotForBarbellPercentage) {
-                  //if (barbellLiftForPercentage == null) {
-                  if (exerciseSet.basedOnBarbellWeight) {
-                    barbellLiftForPercentage = ReusableWidgets.lifts[
-                        exerciseSet.whichLiftForPercentageofTMIndex ?? 0];
-                  } else {
-                    barbellLiftForPercentage =
-                        ReusableWidgets.lifts.contains(exerciseSet.title)
-                            ? exerciseSet.title
-                            : "Squat";
+                  // if they haven't picked a lift yet, we still want to set one -> the default
+                  if (barbellLiftForPercentage == null) {
+                    if (exerciseSet.basedOnBarbellWeight) {
+                      barbellLiftForPercentage = ReusableWidgets.lifts[
+                          exerciseSet.whichLiftForPercentageofTMIndex ?? 0];
+                    } else {
+                      barbellLiftForPercentage =
+                          ReusableWidgets.lifts.contains(exerciseSet.title)
+                              ? exerciseSet.title
+                              : "Squat";
+                    }
                   }
-                  //}
                 } else {
-                  //if (barbellLift == null) {
-                  if (exerciseSet.basedOnBarbellWeight) {
-                    barbellLift = ReusableWidgets
-                        .lifts[exerciseSet.whichBarbellIndex ?? 0];
-                  } else {
-                    barbellLift =
-                        ReusableWidgets.lifts.contains(exerciseSet.title)
-                            ? exerciseSet.title
-                            : "Squat";
+                  // if they haven't picked a lift yet, we still want to set one -> the default
+                  if (barbellLift == null) {
+                    if (exerciseSet.basedOnBarbellWeight) {
+                      barbellLift = ReusableWidgets
+                          .lifts[exerciseSet.whichBarbellIndex ?? 0];
+                    } else {
+                      barbellLift =
+                          ReusableWidgets.lifts.contains(exerciseSet.title)
+                              ? exerciseSet.title
+                              : "Squat";
+                    }
                   }
-                  //}
                 }
               }
               if (newValue == false) {
@@ -175,7 +177,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                 return Consumer<Prs>(builder: (context, prs, child) {
                   // temporarily set this lift to the barbell we chose
                   var currentTitleForm = exerciseSet.title;
-                  exerciseSet.title = (isNotForBarbellPercentage
+                  exerciseSet.title = (!isNotForBarbellPercentage
                       ? barbellLiftForPercentage
                       : barbellLift);
                   var _prs = prs.bothLocalExistingPR(lift: exerciseSet
@@ -302,7 +304,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                     switchListLabel: "There is a barbell used for this lift"),
                 SwitchListTile.adaptive(
                     title: Text("This is an RPE set"),
-                    value: exerciseSet.thisSetProgressSet,
+                    value: exerciseSet.thisIsRPESet,
                     onChanged: (newValue) {
                       setState(() {
                         exerciseSet.thisIsRPESet = newValue;

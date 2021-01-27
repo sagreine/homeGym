@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/appbar.dart';
 import 'package:provider/provider.dart';
 
 //TODO: implement dispose
@@ -52,7 +53,7 @@ class ExerciseDayController {
     // TODO this is dangerous. if we don't start with a Main lift and start with something with multiple exercises based on the selected main day
     // this is going to leave us with a null
     var liftCheck = lift ?? day.lift ?? "Squat";
-    int liftNum = ["Squat", "Press", "Deadlift", "Bench"].indexOf(liftCheck);
+    int liftNum = ReusableWidgets.lifts.indexOf(liftCheck);
 
     for (int i = 0; i < lifts.length; ++i) {
       //lifts.forEach((element) {

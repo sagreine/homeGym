@@ -567,8 +567,8 @@ class ExerciseForm {
     }
     // we dont need to update the description always, and we dont have to because the weight is the barbell at this point
     var lifterWeights = Provider.of<LifterWeights>(context, listen: false);
-    if (exerciseSet.weight ??
-        0 < lifterWeights.getbarWeight(barbellLift ?? "Squat")) {
+    if ((exerciseSet.weight ?? 0) <
+        lifterWeights.getbarWeight(barbellLift ?? "Squat")) {
       exerciseSet.weight = lifterWeights.getbarWeight(barbellLift ?? "Squat");
 
       // TODO this doesn't show on FAB press because we close right afterwards. make this function return a bool
@@ -606,7 +606,7 @@ class ExerciseForm {
             lift: barbellLift ?? "Squat",
             targetWeight: exerciseSet.weight ?? 0,
             notActuallyThisLift: true);
-
+    return;
     //return false;
   }
 
@@ -810,7 +810,7 @@ class ExerciseForm {
     //Consumer<ExerciseSet>(builder: (context, exerciseSet, child) {
 
     return form = Form(
-      autovalidate: true,
+      autovalidate: false,
 
       key: key,
       // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...

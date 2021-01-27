@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 
 class PickDayController {
   // this is an obviously bad idea and should not be here - > user the staticlly available enum.
-  List<String> exercises = ["Squat", "Deadlift", "Bench", "Press"];
+  //List<String> exercises = ["Squat", "Deadlift", "Bench", "Press"];
   List<bool> selectedExercise = [false, false, false, false];
   bool readyToGo = false;
 
@@ -90,8 +90,8 @@ class PickDayController {
     var model = Provider.of<PickDay>(context, listen: false);
     // this sets our "main" lift to hte one selected
     // TODO this needs to be handled only for 'Main' lift days once that is implemented...
-    exerciseDay.lift =
-        exercises[selectedExercise.indexWhere((element) => element)];
+    exerciseDay.lift = ReusableWidgets
+        .lifts[selectedExercise.indexWhere((element) => element)];
 
     // if (tmController.text != null && tmController.text.length != 0) {
     //exerciseDay.trainingMax = double.tryParse(tmController.text) / 100;

@@ -33,10 +33,12 @@ class ExerciseSet extends ChangeNotifier {
   bool thisSetProgressSet;
   bool wasWeightPRSet;
   bool wasRepPRSet;
+  bool thisIsRPESet;
   int indexForOrdering;
   // this is set as an index of ReusableWidgets.list
   int whichBarbellIndex;
   int whichLiftForPercentageofTMIndex;
+  int rpe;
 
   bool hasBeenUpdated;
   @JsonKey(ignore: true)
@@ -79,6 +81,7 @@ class ExerciseSet extends ChangeNotifier {
     this.basedOnPercentageOfTM = false,
     this.indexForOrdering,
     this.percentageOfTM,
+    this.thisIsRPESet = false,
     this.whichBarbellIndex,
   }) : prescribedReps = reps {
     //var day = Provider.of<LifterWeights>(context, listen: false);
@@ -119,6 +122,8 @@ class ExerciseSet extends ChangeNotifier {
       this.basedOnPercentageOfTM = false,
       this.whichLiftForPercentageofTMIndex,
       this.percentageOfTM,
+      this.rpe,
+      this.thisIsRPESet = false,
       this.type = "/video",
       bool isMainLift = false,
       @required BuildContext context,
@@ -127,6 +132,26 @@ class ExerciseSet extends ChangeNotifier {
     if (this.dateTime == null) {
       this.dateTime = DateTime.now();
     }
+    /*this.title = title;
+    this.description = description;
+    this.restPeriodAfter = restPeriodAfter;
+    this.weight = weight;
+    this.reps = reps;
+    this.thisSetPRSet = thisSetPRSet ?? false;
+    this.thisSetProgressSet = thisSetProgressSet ?? false;
+
+    this.hasBeenUpdated = hasBeenUpdated ?? false;
+    this.id = id;
+    this.indexForOrdering = indexForOrdering;
+    this.basedOnBarbellWeight = basedOnBarbellWeight ?? false;
+    this.whichBarbellIndex = whichBarbellIndex;
+    this.basedOnPercentageOfTM = basedOnPercentageOfTM ?? false;
+    this.whichLiftForPercentageofTMIndex = whichLiftForPercentageofTMIndex;
+    this.percentageOfTM = percentageOfTM;
+    this.rpe = rpe;
+    this.thisIsRPESet = thisIsRPESet;
+    */
+    //isMainLift = isMainLift ?? false;
     // try out building based on percetnage of training max. god help us
     if (this.basedOnPercentageOfTM ?? false) {
       var tmp = this.title;
@@ -138,18 +163,21 @@ class ExerciseSet extends ChangeNotifier {
               ReusableWidgets.lifts[this.whichLiftForPercentageofTMIndex],
           indexForPickingBar: this.whichBarbellIndex,
           reps: reps,
-          setPct: percentageOfTM,
+          setPct: percentageOfTM / 100,
           thisSetPRSet: thisSetPRSet,
           thisSetProgressSet: thisSetProgressSet,
           isFromCustom: true,
+          useBarbellWeight: this.basedOnBarbellWeight,
           id: id);
       this.title = tmp;
+    } else if (thisIsRPESet ?? false) {
+      this.weight = null;
     }
 
     // TODO: the order of this does NOT match the controller and is ripe for problems down the line.
     // we need to select an individual lift for each slot. the divider pipe "|" is used for this
     // with them going in order as defined in the pick_day program controller (for now) which is
-    // this, but double check: ["Squat", "Deadlift", "Bench", "Press"];
+    // this, but double check:
     // note that the inputs can be 1-4 elements.
     // write this with programming indices makes it easier to think about.......
     // if 1, use for any of the 4 items
@@ -160,7 +188,7 @@ class ExerciseSet extends ChangeNotifier {
     // this is going to leave us with a null
     var liftCheck = lift ?? "Squat";
     // TODO: this only supports 'Main' days. add support to non-string... also use reusableApp list.
-    int liftNum = ["Squat", "Press", "Deadlift", "Bench"].indexOf(liftCheck);
+    int liftNum = ReusableWidgets.lifts.indexOf(liftCheck);
     if (isMainLift ?? false) {
       //for (int i = 0; i < lifts.length; ++i) {
       //lifts.forEach((element) {
@@ -205,6 +233,7 @@ class ExerciseSet extends ChangeNotifier {
       bool thisSetPRSet,
       bool isFromCustom,
       bool thisSetProgressSet,
+      @required bool useBarbellWeight,
       String id}) {
     // should be using the controller here instead of doing this...
     // if we passed a title in and there wasn't already a title (that equals this one)
@@ -228,59 +257,57 @@ class ExerciseSet extends ChangeNotifier {
     // some sets have an override on percentage of TM. use it if they do.
     switch (this.title.toLowerCase()) {
       case "deadlift":
-        trainingMax = (thisMax.deadliftMax.toDouble() *
-            thisDay.trainingMax *
-            multiplier *
-            (this.percentageOfTM / 100 ?? 1));
+        trainingMax =
+            (thisMax.deadliftMax.toDouble() * thisDay.trainingMax * multiplier);
         break;
       case "bench":
-        trainingMax = (thisMax.benchMax.toDouble() *
-            thisDay.trainingMax *
-            multiplier *
-            (this.percentageOfTM / 100 ?? 1));
+        trainingMax =
+            (thisMax.benchMax.toDouble() * thisDay.trainingMax * multiplier);
         break;
       case "press":
-        trainingMax = (thisMax.pressMax.toDouble() *
-            thisDay.trainingMax *
-            multiplier *
-            (this.percentageOfTM / 100 ?? 1));
+        trainingMax =
+            (thisMax.pressMax.toDouble() * thisDay.trainingMax * multiplier);
         break;
       case "squat":
-        trainingMax = (thisMax.squatMax.toDouble() *
-            thisDay.trainingMax *
-            multiplier *
-            (this.percentageOfTM / 100 ?? 1));
+        trainingMax =
+            (thisMax.squatMax.toDouble() * thisDay.trainingMax * multiplier);
         break;
     }
     int targetWeight = (setPct * trainingMax).floor();
 
-    // Now though, we can only lift based on what weights we actually own.
-    // so, calculate that based on our weight and updated accordingly
-    // TODO: this higlights the absurdity of using ints vs doubles....
-    // for title we pass the name of the bar we are using (for now, eventually we'll convert to using indexes of the standard lifts)
-    int calculatedWeight = thisWeights
-        .getPickedOverallTotal(
-            targetWeight: targetWeight,
-            lift: indexForPickingBar == null
-                ? this.title
-                : ReusableWidgets.lifts[indexForPickingBar])
-        .toInt();
+// Now though, we can only lift based on what weights we actually own - but only if we're doing a barbell lift!
+// e.g. maybe they are doing a strongman thing..
+    if (useBarbellWeight) {
+      // so, calculate that based on our weight and updated accordingly
+      // TODO: this higlights the absurdity of using ints vs doubles....
+      // for title we pass the name of the bar we are using (for now, eventually we'll convert to using indexes of the standard lifts)
+      int calculatedWeight = thisWeights
+          .getPickedOverallTotal(
+              targetWeight: targetWeight,
+              lift: indexForPickingBar == null
+                  ? this.title
+                  : ReusableWidgets.lifts[indexForPickingBar])
+          .toInt();
 
-    if (calculatedWeight < targetWeight) {
-      print(
-          "Note, we had to pick a lower weight. Targetweight: $targetWeight and picked weight: $calculatedWeight");
+      if (calculatedWeight < targetWeight) {
+        print(
+            "Note, we had to pick a lower weight. Targetweight: $targetWeight and picked weight: $calculatedWeight");
+      }
+
+      this.updateExercise(
+          // reps is a straight pull
+          reps: reps,
+          thisSetPRSet: thisSetPRSet,
+          thisSetProgressSet: thisSetProgressSet,
+          weight: calculatedWeight,
+          id: id,
+          description: "Plates: " +
+              (thisWeights.getPickedPlatesAsString(
+                  targetWeight: targetWeight,
+                  lift: indexForPickingBar == null
+                      ? this.title
+                      : ReusableWidgets.lifts[indexForPickingBar])));
     }
-
-    this.updateExercise(
-        // reps is a straight pull
-        reps: reps,
-        thisSetPRSet: thisSetPRSet,
-        thisSetProgressSet: thisSetProgressSet,
-        weight: calculatedWeight,
-        id: id,
-        description: "Plates: " +
-            (thisWeights.getPickedPlatesAsString(
-                targetWeight: targetWeight, lift: this.title)));
   }
 
   void updateExercise({

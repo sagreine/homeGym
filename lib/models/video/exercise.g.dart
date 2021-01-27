@@ -29,12 +29,14 @@ ExerciseSet _$ExerciseSetFromJson(Map<String, dynamic> json) {
     basedOnPercentageOfTM: json['basedOnPercentageOfTM'] as bool,
     indexForOrdering: json['indexForOrdering'] as int,
     percentageOfTM: (json['percentageOfTM'] as num)?.toDouble(),
+    thisIsRPESet: json['thisIsRPESet'] as bool,
     whichBarbellIndex: json['whichBarbellIndex'] as int,
   )
     ..type = json['type'] as String
     ..keywords = (json['keywords'] as List)?.map((e) => e as String)?.toList()
     ..whichLiftForPercentageofTMIndex =
-        json['whichLiftForPercentageofTMIndex'] as int;
+        json['whichLiftForPercentageofTMIndex'] as int
+    ..rpe = json['rpe'] as int;
 }
 
 Map<String, dynamic> _$ExerciseSetToJson(ExerciseSet instance) =>
@@ -58,9 +60,11 @@ Map<String, dynamic> _$ExerciseSetToJson(ExerciseSet instance) =>
       'thisSetProgressSet': instance.thisSetProgressSet,
       'wasWeightPRSet': instance.wasWeightPRSet,
       'wasRepPRSet': instance.wasRepPRSet,
+      'thisIsRPESet': instance.thisIsRPESet,
       'indexForOrdering': instance.indexForOrdering,
       'whichBarbellIndex': instance.whichBarbellIndex,
       'whichLiftForPercentageofTMIndex':
           instance.whichLiftForPercentageofTMIndex,
+      'rpe': instance.rpe,
       'hasBeenUpdated': instance.hasBeenUpdated,
     };

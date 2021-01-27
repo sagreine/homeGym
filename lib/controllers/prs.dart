@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/cloud.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 
 class PrsController {
@@ -138,8 +139,7 @@ class PrsController {
     var prs = Provider.of<Prs>(context, listen: false);
 
     // we only set PRs for the main lifts.
-    var list = ["squat", "press", "deadlift", "bench"];
-    var index = list.indexOf(lift.title.toLowerCase());
+    var index = ReusableWidgets.lifts.indexOf(lift.title.toLowerCase());
     if (index == -1) {
       return false;
     }

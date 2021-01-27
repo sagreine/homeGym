@@ -55,6 +55,9 @@ class ExerciseDay extends ChangeNotifier {
     if (exercises == null) {
       exercises = List<ExerciseSet>();
     }
+    if (exerciseSet.indexForOrdering == null) {
+      exerciseSet.indexForOrdering = exercises.length - 1;
+    }
     exercises.add(exerciseSet);
     if (currentSet == null) {
       currentSet = 0;

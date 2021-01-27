@@ -574,7 +574,7 @@ Future<void> getExercisesCustomCloud(
           lift.data()["whichLiftForPercentageofTMIndex"],
       whichBarbellIndex: lift.data()["whichBarbellIndex"],
       indexForOrdering: lift.data()["indexForOrdering"],
-      isMainLift: lift.data()["isMainLift"],
+      isMainLift: program.isMainLift,
       description: lift.data()["description"],
       basedOnPercentageOfTM: lift.data()["basedOnPercentageOfTM"],
       restPeriodAfter: lift.data()["restPeriodAfter"],

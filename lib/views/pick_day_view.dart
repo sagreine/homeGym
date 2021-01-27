@@ -150,7 +150,7 @@ class _PickDayViewState extends State<PickDayView> {
                                             MainAxisAlignment.center,
                                         children: [
                                           Text(
-                                              pickDayController.exercises[index]
+                                              ReusableWidgets.lifts[index]
                                                   .toString(),
                                               style: TextStyle(fontSize: 50)),
                                         ]),
