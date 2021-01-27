@@ -552,6 +552,7 @@ Future<void> getExercisesCustomCloud(
   List<ExerciseSet> exerciseSets = List<ExerciseSet>();
   allSets.docs.forEach((lift) {
     exerciseSets.add(ExerciseSet.fromCustom(
+      context: context,
       title: lift.data()["title"],
       lift: Provider.of<ExerciseDay>(context, listen: false).lift,
       // this might be set or it might not be. limit by bool of it is should be, then set to 100 if not or missing...
@@ -567,6 +568,11 @@ Future<void> getExercisesCustomCloud(
       reps: lift.data()["reps"],
       weight: lift.data()["weight"],
       id: lift.id,
+      rpe: lift.data()["rpe"],
+      thisIsRPESet: lift.data()["thisIsRPESet"],
+      whichLiftForPercentageofTMIndex:
+          lift.data()["whichLiftForPercentageofTMIndex"],
+      whichBarbellIndex: lift.data()["whichBarbellIndex"],
       indexForOrdering: lift.data()["indexForOrdering"],
       isMainLift: lift.data()["isMainLift"],
       description: lift.data()["description"],

@@ -567,8 +567,8 @@ class ExerciseForm {
     }
     // we dont need to update the description always, and we dont have to because the weight is the barbell at this point
     var lifterWeights = Provider.of<LifterWeights>(context, listen: false);
-    if (exerciseSet.weight <
-        lifterWeights.getbarWeight(barbellLift ?? "Squat")) {
+    if (exerciseSet.weight ??
+        0 < lifterWeights.getbarWeight(barbellLift ?? "Squat")) {
       exerciseSet.weight = lifterWeights.getbarWeight(barbellLift ?? "Squat");
 
       // TODO this doesn't show on FAB press because we close right afterwards. make this function return a bool
@@ -589,7 +589,7 @@ class ExerciseForm {
     // to reduce latency, rather than doing it lazily
     var closestWeight = lifterWeights.getPickedOverallTotal(
         lift: barbellLift ?? "Squat",
-        targetWeight: exerciseSet.weight,
+        targetWeight: exerciseSet.weight ?? 0,
         notActuallyThisLift: true);
     if (exerciseSet.weight != closestWeight.floor()) {
       exerciseSet.weight = closestWeight.floor();
@@ -604,7 +604,7 @@ class ExerciseForm {
     exerciseSet.description = "Plates: " +
         lifterWeights.getPickedPlatesAsString(
             lift: barbellLift ?? "Squat",
-            targetWeight: exerciseSet.weight,
+            targetWeight: exerciseSet.weight ?? 0,
             notActuallyThisLift: true);
 
     //return false;

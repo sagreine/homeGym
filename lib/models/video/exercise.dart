@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/views.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
 
@@ -33,6 +34,9 @@ class ExerciseSet extends ChangeNotifier {
   bool wasWeightPRSet;
   bool wasRepPRSet;
   int indexForOrdering;
+  // this is set as an index of ReusableWidgets.list
+  int whichBarbellIndex;
+  int whichLiftForPercentageofTMIndex;
 
   bool hasBeenUpdated;
   @JsonKey(ignore: true)
@@ -52,31 +56,31 @@ class ExerciseSet extends ChangeNotifier {
   }
 
   // TODO: pro tip, construct in the constructor instead of some random function. good god this is garbage
-  ExerciseSet(
-      {
-      //this.context,
-      this.videoPath,
-      this.thumbnailPath,
-      this.title,
-      this.description,
-      this.restPeriodAfter,
-      this.weight,
-      this.reps,
-      // read the pro tip above and realize this final variable setting is one (of many) reasons...
-      this.thisSetPRSet,
-      this.aspectRatio,
-      this.dateTime,
-      this.thisSetProgressSet,
-      this.wasWeightPRSet,
-      this.wasRepPRSet,
-      this.duration,
-      this.hasBeenUpdated,
-      this.id,
-      this.basedOnBarbellWeight = false,
-      this.basedOnPercentageOfTM = false,
-      this.indexForOrdering,
-      this.percentageOfTM})
-      : prescribedReps = reps {
+  ExerciseSet({
+    //this.context,
+    this.videoPath,
+    this.thumbnailPath,
+    this.title,
+    this.description,
+    this.restPeriodAfter,
+    this.weight,
+    this.reps,
+    // read the pro tip above and realize this final variable setting is one (of many) reasons...
+    this.thisSetPRSet,
+    this.aspectRatio,
+    this.dateTime,
+    this.thisSetProgressSet,
+    this.wasWeightPRSet,
+    this.wasRepPRSet,
+    this.duration,
+    this.hasBeenUpdated,
+    this.id,
+    this.basedOnBarbellWeight = false,
+    this.basedOnPercentageOfTM = false,
+    this.indexForOrdering,
+    this.percentageOfTM,
+    this.whichBarbellIndex,
+  }) : prescribedReps = reps {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
     if (this.dateTime == null) {
@@ -111,16 +115,36 @@ class ExerciseSet extends ChangeNotifier {
       this.id,
       this.indexForOrdering,
       this.basedOnBarbellWeight = false,
+      @required this.whichBarbellIndex,
       this.basedOnPercentageOfTM = false,
+      this.whichLiftForPercentageofTMIndex,
       this.percentageOfTM,
       this.type = "/video",
       bool isMainLift = false,
+      @required BuildContext context,
       String lift})
       : prescribedReps = reps {
     if (this.dateTime == null) {
       this.dateTime = DateTime.now();
     }
-    //if (this.basedOnPercentageOfTM ?? false) {}
+    // try out building based on percetnage of training max. god help us
+    if (this.basedOnPercentageOfTM ?? false) {
+      var tmp = this.title;
+
+      updateExerciseFull(
+          context: context,
+          //TODO: what about the interplay here. e.g. i want 80% of squat 1RM but I'm using the deadlift bar?
+          exerciseTitle:
+              ReusableWidgets.lifts[this.whichLiftForPercentageofTMIndex],
+          indexForPickingBar: this.whichBarbellIndex,
+          reps: reps,
+          setPct: percentageOfTM,
+          thisSetPRSet: thisSetPRSet,
+          thisSetProgressSet: thisSetProgressSet,
+          isFromCustom: true,
+          id: id);
+      this.title = tmp;
+    }
 
     // TODO: the order of this does NOT match the controller and is ripe for problems down the line.
     // we need to select an individual lift for each slot. the divider pipe "|" is used for this
@@ -169,18 +193,22 @@ class ExerciseSet extends ChangeNotifier {
         // 3 mod 1 for 3
       }
     }
+    keywords = makeKeywords(title);
   }
-
+  // TODO: for legacy / stupid reasons this uses strings and title name and shit. rework it to use indices throughout, either here or in controller
   void updateExerciseFull(
       {@required context,
       String exerciseTitle,
+      int indexForPickingBar,
       @required int reps,
       @required double setPct,
       bool thisSetPRSet,
+      bool isFromCustom,
       bool thisSetProgressSet,
       String id}) {
     // should be using the controller here instead of doing this...
     // if we passed a title in and there wasn't already a title (that equals this one)
+    // TODO why are we doing this again?
     if (exerciseTitle != null &&
         (this.title == null || this.title != exerciseTitle)) {
       this.title = exerciseTitle;
@@ -196,18 +224,32 @@ class ExerciseSet extends ChangeNotifier {
     // this is really stupid. obviously not right, put it in the db...
     //bool thisSetPRSet =
     //(thisDay.prSetWeek && plannedSet == thisDay.progressSet);
+    var multiplier = (isFromCustom ?? false) ? 0.01 : 1;
+    // some sets have an override on percentage of TM. use it if they do.
     switch (this.title.toLowerCase()) {
       case "deadlift":
-        trainingMax = (thisMax.deadliftMax.toDouble() * thisDay.trainingMax);
+        trainingMax = (thisMax.deadliftMax.toDouble() *
+            thisDay.trainingMax *
+            multiplier *
+            (this.percentageOfTM / 100 ?? 1));
         break;
       case "bench":
-        trainingMax = (thisMax.benchMax.toDouble() * thisDay.trainingMax);
+        trainingMax = (thisMax.benchMax.toDouble() *
+            thisDay.trainingMax *
+            multiplier *
+            (this.percentageOfTM / 100 ?? 1));
         break;
       case "press":
-        trainingMax = (thisMax.pressMax.toDouble() * thisDay.trainingMax);
+        trainingMax = (thisMax.pressMax.toDouble() *
+            thisDay.trainingMax *
+            multiplier *
+            (this.percentageOfTM / 100 ?? 1));
         break;
       case "squat":
-        trainingMax = (thisMax.squatMax.toDouble() * thisDay.trainingMax);
+        trainingMax = (thisMax.squatMax.toDouble() *
+            thisDay.trainingMax *
+            multiplier *
+            (this.percentageOfTM / 100 ?? 1));
         break;
     }
     int targetWeight = (setPct * trainingMax).floor();
@@ -215,8 +257,13 @@ class ExerciseSet extends ChangeNotifier {
     // Now though, we can only lift based on what weights we actually own.
     // so, calculate that based on our weight and updated accordingly
     // TODO: this higlights the absurdity of using ints vs doubles....
+    // for title we pass the name of the bar we are using (for now, eventually we'll convert to using indexes of the standard lifts)
     int calculatedWeight = thisWeights
-        .getPickedOverallTotal(targetWeight: targetWeight, lift: this.title)
+        .getPickedOverallTotal(
+            targetWeight: targetWeight,
+            lift: indexForPickingBar == null
+                ? this.title
+                : ReusableWidgets.lifts[indexForPickingBar])
         .toInt();
 
     if (calculatedWeight < targetWeight) {
@@ -246,7 +293,7 @@ class ExerciseSet extends ChangeNotifier {
     bool thisSetProgressSet,
     String id,
   }) {
-    // should handle this another way probably -> controller if nothing else.
+    // should handle this another way probably -> constructor if nothing else.
     if (title != null) {
       this.title = title;
       keywords = makeKeywords(title);

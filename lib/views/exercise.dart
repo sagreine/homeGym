@@ -78,18 +78,29 @@ class _ExerciseViewState extends State<ExerciseView> {
               }
               if (newValue == true) {
                 if (!isNotForBarbellPercentage) {
-                  if (barbellLiftForPercentage == null)
+                  //if (barbellLiftForPercentage == null) {
+                  if (exerciseSet.basedOnBarbellWeight) {
+                    barbellLiftForPercentage = ReusableWidgets.lifts[
+                        exerciseSet.whichLiftForPercentageofTMIndex ?? 0];
+                  } else {
                     barbellLiftForPercentage =
                         ReusableWidgets.lifts.contains(exerciseSet.title)
                             ? exerciseSet.title
                             : "Squat";
+                  }
+                  //}
                 } else {
-                  if (barbellLift == null) {
+                  //if (barbellLift == null) {
+                  if (exerciseSet.basedOnBarbellWeight) {
+                    barbellLift = ReusableWidgets
+                        .lifts[exerciseSet.whichBarbellIndex ?? 0];
+                  } else {
                     barbellLift =
                         ReusableWidgets.lifts.contains(exerciseSet.title)
                             ? exerciseSet.title
                             : "Squat";
                   }
+                  //}
                 }
               }
               if (newValue == false) {
@@ -134,8 +145,12 @@ class _ExerciseViewState extends State<ExerciseView> {
                       onItemSelectedListener: (item, index, context) {
                         if (isNotForBarbellPercentage == false) {
                           barbellLiftForPercentage = item;
+                          exerciseSet.whichLiftForPercentageofTMIndex =
+                              ReusableWidgets.lifts.indexOf(item);
                         } else {
                           barbellLift = item;
+                          exerciseSet.whichBarbellIndex =
+                              ReusableWidgets.lifts.indexOf(item);
                         }
                         // only update the weight using raw values if it is not a percentage
                         //TODO need to implement one way for barbell and another for percentage... that is, populate weight based on percentage here....
@@ -281,9 +296,20 @@ class _ExerciseViewState extends State<ExerciseView> {
                         //exerciseSet.updateExercise(thisSetPRSet: newValue);
                       });
                     }),
+
                 _getBarbellForWeight(
                     isNotForBarbellPercentage: true,
                     switchListLabel: "There is a barbell used for this lift"),
+                SwitchListTile.adaptive(
+                    title: Text("This is an RPE set"),
+                    value: exerciseSet.thisSetProgressSet,
+                    onChanged: (newValue) {
+                      setState(() {
+                        exerciseSet.thisIsRPESet = newValue;
+                        // TODO: this is likely something we want, just not right now.
+                        //exerciseSet.updateExercise(thisSetPRSet: newValue);
+                      });
+                    }),
                 _getBarbellForWeight(
                   isNotForBarbellPercentage: false,
                   switchListLabel: "Calculate weight from % of a Main lift 1RM",
