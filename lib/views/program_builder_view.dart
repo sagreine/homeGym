@@ -49,7 +49,13 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
   String mainLiftExplanatory = "Main lifts are Squat, Bench, Deadlift, and Press. \n\n" +
       "If your program has days centered around a 'main' lift, with the same rep and weight/effor scheme for each day even with different weights, " +
       "you can save time by making a single 'Main day' program by selecting this option above. " +
-      "When you do the program we'll ask you to select what 'Day' you're doing." +
+      "When you do the program we'll ask you to select what 'Day' you're doing. " +
+      "Select 'this is a Main set' for sets that you want to be Bench on bench day, press on press day, etc., and when you pick a day they will " +
+      "be automatically populated (e.g. for bench day we'll use the Bench bar and, if you are using % of TM, the bench TM). " +
+      "If the days have different assistance lifts, you can save time by putting lifts in with a '|' between them, and every nth day will get the nth item. " +
+      "That is, if you have a squat day and a deadlift day, and you want to do a set of 20 RDLs on squat day and 20 Tricep Pushbacks on deadlift day, " +
+      "instead of making entirely seperate 'weeks' for that you can make one week and for the assistance set(s) put 'Tricep Pushbacks | RDL' and it will automatically " +
+      "pick RDL for squat day and Tricep Pushbacks for deadlift day." +
       "\nTo see an example, go to Pick Lift and select Widowmaker and see that the four Main lift options are presented.";
 
   String tmPercentageExplanatory =
