@@ -6,6 +6,7 @@ import 'package:home_gym/controllers/program_builder.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:expand_widget/expand_widget.dart';
+import 'package:intro_views_flutter/Constants/constants.dart';
 import 'package:intro_views_flutter/Models/page_view_model.dart';
 import 'package:intro_views_flutter/intro_views_flutter.dart';
 import 'package:numberpicker/numberpicker.dart';
@@ -75,6 +76,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
               "have a single week for deload. We will have you build each of these weeks soon. Keep in mind that we say 'weeks' everywhere in this app "
               "but it can be any unit of time you like - even days, though we hope that we provide enough flexibility to build whole weeks at a time.";
   List<PageViewModel> weekSpecificPages = List<PageViewModel>();
+  //List<PageViewModel> allPages = List<PageViewModel>();
+  int _activePageIndex;
 
   @override
   void initState() {
@@ -82,6 +85,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     super.initState();
     firstBuild = true;
     firstFutureBuildComplete = false;
+    _activePageIndex = 0;
   }
 
   List<PageViewModel> listPagesViewModel() {
@@ -275,15 +279,15 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
               SwitchListTile.adaptive(
                   title: Text("The program has > 1 distinct week(s)"),
                   value: potentialNewPRogram.week > 1,
-                  onChanged: (newValue) {
-                    setState(() {
-                      if (newValue == false) {
-                        potentialNewPRogram.week = 1;
-                        weekSpecificPages = weekSpecificPages.take(1).toList();
-                      } else {
-                        potentialNewPRogram.week = 2;
-                      }
-                    });
+                  onChanged: (newValue) async {
+                    if (newValue == false) {
+                      potentialNewPRogram.week = 1;
+                      weekSpecificPages = weekSpecificPages.take(1).toList();
+                    } else {
+                      potentialNewPRogram.week = 2;
+                      await _buildPageModelForWeek(context, 2);
+                    }
+                    setState(() {});
                   }),
               Padding(
                 padding: EdgeInsets.all(8),
@@ -310,6 +314,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
           mainImage: SizedBox.expand(
             child: FlatButton(
               onPressed: () async {
+                var originalValue = potentialNewPRogram.week;
                 potentialNewPRogram.week = await showDialog<int>(
                         context: context,
                         builder: (BuildContext context) {
@@ -321,11 +326,22 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                           );
                         }) ??
                     2;
-                // drain out these since we don't need them anymore
-                weekSpecificPages =
-                    weekSpecificPages.take(potentialNewPRogram.week).toList();
-                exerciseDays =
-                    exerciseDays.take(potentialNewPRogram.week).toList();
+                if (originalValue > potentialNewPRogram.week) {
+                  // drain out these since we don't need them anymore
+                  weekSpecificPages =
+                      weekSpecificPages.take(potentialNewPRogram.week).toList();
+                  exerciseDays =
+                      exerciseDays.take(potentialNewPRogram.week).toList();
+                } else {
+                  // add pages!, one for each week.
+                  for (;
+                      originalValue < potentialNewPRogram.week;
+                      originalValue++) {
+                    //PageViewModel pg =
+                    await _buildPageModelForWeek(context, originalValue);
+                    //allPages.add(pg);
+                  }
+                }
                 setState(() {});
               },
               child: Text(
@@ -340,6 +356,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     ];
     toReturn.addAll(basePages);
     toReturn.addAll(weekSpecificPages);
+    //allPages.addAll(toReturn);
     return toReturn;
   }
 
@@ -357,6 +374,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     //return list;
   }
 
+  //Future<PageViewModel>
   _buildPageModelForWeek(BuildContext context, int week) async {
     //return Consumer<ExerciseDay>(builder: (context, lifterweights, child) {
     // TODO but is this actually weeks
@@ -393,11 +411,14 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
           print(
               "An equivalent day is already in there, just use that pageviewmodel");
           return;
+          // newPage;
         } else {
           weekSpecificPages.add(newPage);
+          //return newPage;
         }
       }
       return;
+      //PageViewModel(          body: Text("what"), title: Text("what"), mainImage: Text("what"));
       //}
     }
 
@@ -481,6 +502,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       print(
           "should never happen - happens on cancel press though, which is real scary");
       return;
+      //PageViewModel(          body: Text("what"), title: Text("what"), mainImage: Text("what"));
     }
     // THIS ONE
     var newPage = PageViewModel(
@@ -512,6 +534,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
   //Widget programBuilderViews;
   PickedProgram potentialNewPRogram = PickedProgram();
   int originalNumWeeks = 1;
+  Future aFuture;
   @override
   Widget build(BuildContext context) {
     if (firstBuild) {
@@ -534,6 +557,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
           ? (potentialNewPRogram.trainingMaxPct * 100).toInt().toString()
           : potentialNewPRogram.trainingMaxPct.toInt().toString();
       originalNumWeeks = program.week;
+      aFuture = _getPageModelsForWeeks(context, potentialNewPRogram?.week ?? 1);
       //weekSpecificPages =
       //  await _getPageModelsForWeeks(potentialNewPRogram?.week ?? 1);
     }
@@ -542,72 +566,87 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     return Scaffold(
         appBar: ReusableWidgets.getAppBar(),
         drawer: ReusableWidgets.getDrawer(context),
-        body: FutureBuilder(
-            // if we already have some weekSpecificPages, we don't need to repull at all..
-            // ^ that isnt true, what if we just added a week?
-            future: //(weekSpecificPages?.length ?? 0) == 0
-                //?
-                _getPageModelsForWeeks(context, potentialNewPRogram?.week ?? 1),
-            //: Future.delayed(Duration(milliseconds: 0)),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.done) {
-                var toReturn = IntroViewsFlutter(
-                  listPagesViewModel(),
-                  // TODO i don't think this will work? also we don't want to do it every time...
-                  // needs to change based on how many weeks there are, which can change in the IntroView...
-                  onTapNextButton: () async {
-                    if (originalNumWeeks != potentialNewPRogram.week) {
-                      // _buildPageModelForWeek(potentialNewPRogram.week);
-                      //weekSpecificPages = await _getPageModelsForWeeks(
-                      //  context, potentialNewPRogram.week);
-                      //setState(() {});
-                    }
-                  },
-                  onTapDoneButton: () {
-                    print("Program saved!");
-                    // save any changes to this program directly - this is for editing programs directly
-                    // and should finish editing existing programs - not adding new ones
-                    if (exerciseDays == null ||
-                        exerciseDays.length == 0 ||
-                        exerciseDays.any((element) =>
-                            element.exercises == null ||
-                            element.exercises.length == 0)) {
-                      Scaffold.of(context).showSnackBar(SnackBar(
-                          content: Text(
-                              "Must add at least one exercise before saving program")));
-                      return;
-                    }
-                    // this is problematic - what we really want is the exerciseDays put into program when they are first created
-                    // which would store them in the original (and not need to pass this page a copy, just pass the original)
-                    // but calling this at the end is going to make it so the original program is overwritten, which is no good
-                    // because we don't do the saving here we do it on the other page (should we?)
-                    /*program = programBuilderController.saveUpdatesToProgram(
+        body:
+            /*StreamBuilder(builder: (context, snapshot) => 
+        5,
+        
+        )*/
+            FutureBuilder(
+                // if we already have some weekSpecificPages, we don't need to repull at all..
+                // ^ that isnt true, what if we just added a week?
+                future: //(allPages?.length ?? 0) == 0
+                    //?
+                    /*_getPageModelsForWeeks(
+                        context, potentialNewPRogram?.week ?? 1),*/
+                    //: Future.delayed(Duration(microseconds: 1)),
+                    //,
+                    aFuture,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.done) {
+                    var toReturn = IntroViewsFlutter(
+                      //fullTransition:
+                      //(allPages?.length ?? 0) == 0
+                      //?
+                      listPagesViewModel(),
+                      //: allPages,
+                      activePageIndex_start: _activePageIndex,
+                      onTapBackButton: () => _activePageIndex--,
+                      // TODO i don't think this will work? also we don't want to do it every time...
+                      // needs to change based on how many weeks there are, which can change in the IntroView...
+                      onTapNextButton: () async {
+                        _activePageIndex++;
+                        if (originalNumWeeks != potentialNewPRogram.week) {
+                          // _buildPageModelForWeek(potentialNewPRogram.week);
+                          //weekSpecificPages = await _getPageModelsForWeeks(
+                          //  context, potentialNewPRogram.week);
+                          //setState(() {});
+                        }
+                      },
+                      onTapDoneButton: () {
+                        print("Program saved!");
+                        // save any changes to this program directly - this is for editing programs directly
+                        // and should finish editing existing programs - not adding new ones
+                        if (exerciseDays == null ||
+                            exerciseDays.length == 0 ||
+                            exerciseDays.any((element) =>
+                                element.exercises == null ||
+                                element.exercises.length == 0)) {
+                          Scaffold.of(context).showSnackBar(SnackBar(
+                              content: Text(
+                                  "Must add at least one exercise before saving program")));
+                          return;
+                        }
+                        // this is problematic - what we really want is the exerciseDays put into program when they are first created
+                        // which would store them in the original (and not need to pass this page a copy, just pass the original)
+                        // but calling this at the end is going to make it so the original program is overwritten, which is no good
+                        // because we don't do the saving here we do it on the other page (should we?)
+                        /*program = programBuilderController.saveUpdatesToProgram(
                         exerciseDays: exerciseDays,
                         updatedProgram: potentialNewPRogram);*/
-                    // return this program
-                    potentialNewPRogram.exerciseDays = exerciseDays;
-                    Navigator.pop(context, potentialNewPRogram);
-                  },
-                  doneText: Text("Save Program!"),
-                  showSkipButton: true,
-                  skipText: Text("Cancel"),
-                  // we preserved the original program and edited the deep copy, so we don't need to do anything to restore the original.
-                  // Skip == cancel for us.
-                  onTapSkipButton: () {
-                    Navigator.of(context).pop();
-                  },
-                  showBackButton: true,
-                  showNextButton: true,
-                  pageButtonTextStyles: new TextStyle(
-                    color: Colors.white,
-                    fontSize: 18.0,
-                    fontFamily: "Regular",
-                  ),
-                );
-                firstFutureBuildComplete = true;
-                return toReturn;
-              } else
-                return Container();
-            }));
+                        // return this program
+                        potentialNewPRogram.exerciseDays = exerciseDays;
+                        Navigator.pop(context, potentialNewPRogram);
+                      },
+                      doneText: Text("Save Program!"),
+                      showSkipButton: true,
+                      skipText: Text("Cancel"),
+                      // we preserved the original program and edited the deep copy, so we don't need to do anything to restore the original.
+                      // Skip == cancel for us.
+                      onTapSkipButton: () {
+                        Navigator.of(context).pop();
+                      },
+                      showBackButton: true,
+                      showNextButton: true,
+                      pageButtonTextStyles: new TextStyle(
+                        color: Colors.white,
+                        fontSize: 18.0,
+                        fontFamily: "Regular",
+                      ),
+                    );
+                    firstFutureBuildComplete = true;
+                    return toReturn;
+                  } else
+                    return Container();
+                }));
   }
 }
