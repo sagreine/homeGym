@@ -56,6 +56,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       "That is, if you have a squat day and a deadlift day, and you want to do a set of 20 RDLs on squat day and 20 Tricep Pushbacks on deadlift day, " +
       "instead of making entirely seperate 'weeks' for that you can make one week and for the assistance set(s) put 'Tricep Pushbacks | RDL' and it will automatically " +
       "pick RDL for squat day and Tricep Pushbacks for deadlift day." +
+      "\n You can use this and 'Distinct Weeks' in concert. For example, you could have a Volume 'Week' and an 'Intensity' week and only need to populate " +
+      "two lists of exercises to get 2 weeks worth of 4 lifting days. Of course, if this is confusing, you can always hardcode it instead!" +
       "\nTo see an example, go to Pick Lift and select Widowmaker and see that the four Main lift options are presented.";
 
   String tmPercentageExplanatory =
