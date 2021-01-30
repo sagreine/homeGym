@@ -69,8 +69,5 @@ class LifterProgramsController {
         program: potentiallyEditedProgram,
         anyProgramsToUpdate: anyProgramsToUpdate);
     potentiallyEditedProgram.id = programIDCloud.id;
-
-    // save to local
-    originalProgram = potentiallyEditedProgram;
   }
 }
