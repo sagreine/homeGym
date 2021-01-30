@@ -79,6 +79,8 @@ class ExerciseSet extends ChangeNotifier {
     this.wasRepPRSet,
     this.duration,
     this.hasBeenUpdated,
+    this.type,
+    this.keywords,
     this.id,
     this.basedOnBarbellWeight = false,
     this.basedOnPercentageOfTM = false,
@@ -86,6 +88,8 @@ class ExerciseSet extends ChangeNotifier {
     this.percentageOfTM,
     this.thisIsRPESet = false,
     this.whichBarbellIndex,
+    this.whichLiftForPercentageofTMIndex,
+    this.rpe,
   }) : prescribedReps = reps {
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
@@ -100,6 +104,42 @@ class ExerciseSet extends ChangeNotifier {
     }
     //this.prescribedReps = reps;
   }
+
+  ExerciseSet.deepCopy({ExerciseSet copyingFrom})
+      : this(
+          videoPath: copyingFrom.videoPath,
+          thumbnailPath: copyingFrom.thumbnailPath,
+          aspectRatio: copyingFrom.aspectRatio,
+          // these will be passed to TV. probably won't live here in the long run tbh.
+          title: copyingFrom.title,
+          description: copyingFrom.description,
+          // TV app uses this to pick vidoes - for now
+          type: copyingFrom.type,
+          restPeriodAfter: copyingFrom.restPeriodAfter,
+          weight: copyingFrom.weight,
+          reps: copyingFrom.reps,
+          duration: copyingFrom.duration,
+          keywords: copyingFrom.keywords,
+          dateTime: copyingFrom.dateTime,
+          basedOnBarbellWeight: copyingFrom.basedOnBarbellWeight,
+          //Barbell barbell;
+          basedOnPercentageOfTM: copyingFrom.basedOnPercentageOfTM,
+          percentageOfTM: copyingFrom.percentageOfTM,
+          thisSetPRSet: copyingFrom.thisSetPRSet,
+          thisSetProgressSet: copyingFrom.thisSetProgressSet,
+          wasWeightPRSet: copyingFrom.wasRepPRSet,
+          wasRepPRSet: copyingFrom.wasRepPRSet,
+          thisIsRPESet: copyingFrom.thisIsRPESet,
+          indexForOrdering: copyingFrom.indexForOrdering,
+          // this is set as an index of ReusableWidgets.list
+          whichBarbellIndex: copyingFrom.whichBarbellIndex,
+          whichLiftForPercentageofTMIndex:
+              copyingFrom.whichLiftForPercentageofTMIndex,
+          rpe: copyingFrom.rpe,
+
+          hasBeenUpdated: copyingFrom.hasBeenUpdated,
+          id: copyingFrom.id,
+        );
   // TODO: need to actually do the percentages and etc where necessary
   ExerciseSet.fromCustom(
       {this.videoPath,

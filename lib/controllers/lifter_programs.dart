@@ -37,7 +37,7 @@ class LifterProgramsController {
       return;
     }
     bool anyProgramsToUpdate = false;
-    // next, check if we need to update program-level info
+    // TODO: absolutely not the way to do this, come on now. next, check if we need to update program-level info
     if (potentiallyEditedProgram.toJson() != originalProgram?.toJson()) {
       anyProgramsToUpdate = true;
     }
@@ -52,10 +52,10 @@ class LifterProgramsController {
           ++j) {
         if (originalProgram == null ||
             i >= originalProgram?.exerciseDays?.length ||
-            j > originalProgram?.exerciseDays[i]?.exercises?.length ||
+            j >= originalProgram?.exerciseDays[i]?.exercises?.length ||
 
             //originalProgram.exerciseDays[i].exercises[j]
-
+            // TODO this does not work. need to override == and hash...
             potentiallyEditedProgram.exerciseDays[i].exercises[j] !=
                 originalProgram?.exerciseDays[i]?.exercises[j])
           potentiallyEditedProgram.exerciseDays[i].exercises[j].hasBeenUpdated =
@@ -69,6 +69,8 @@ class LifterProgramsController {
         program: potentiallyEditedProgram,
         anyProgramsToUpdate: anyProgramsToUpdate);
     potentiallyEditedProgram.id = programIDCloud.id;
-    // save to local? shouldn't be necessary?
+
+    // save to local
+    originalProgram = potentiallyEditedProgram;
   }
 }

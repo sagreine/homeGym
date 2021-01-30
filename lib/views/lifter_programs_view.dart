@@ -78,16 +78,29 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
                               crossAxisAlignment: CrossAxisAlignment.center,
                               children: [
                                 // Edit is disabled for non-custom programs. copy is not though!
+                                // TODO: if we send a copy here, the first time we edit a program in a given
+                                // session it is ALWAYS going to compare unequal because the 'copy' has not
+                                // had its exerciseDay pulled in.
                                 IconButton(
                                     icon: Icon(Icons.edit),
                                     onPressed: (_programs
                                             .pickedPrograms[index].isCustom)
                                         ? () async {
+                                            /*var copyToSend =
+                                                PickedProgram.deepCopy(_programs
+                                                    .pickedPrograms[index]);*/
                                             var potentiallyEditedProgram =
                                                 await _goToEdit(
                                                     context: context,
-                                                    pickedProgram: _programs
-                                                        .pickedPrograms[index]);
+                                                    pickedProgram:
+                                                        // pass in a copy of this program straight away
+                                                        //copyToSend
+                                                        //PickedProgram.deepCopy(
+                                                        _programs
+                                                                .pickedPrograms[
+                                                            index]
+                                                    //)
+                                                    );
                                             // if we did change the program and didn't cancel
                                             if (potentiallyEditedProgram !=
                                                     null &&
@@ -95,16 +108,21 @@ class LifterProgramsViewState extends State<LifterProgramsView> {
                                                     _programs.pickedPrograms[
                                                         index]) {
                                               // update our local repository (cough not view...) and
+                                              // update the cloud
+                                              await lifterProgramsController
+                                                  .saveProgram(
+                                                      context: context,
+                                                      potentiallyEditedProgram:
+                                                          potentiallyEditedProgram,
+                                                      originalProgram: _programs
+                                                              .pickedPrograms[
+                                                          index]);
+                                              // save to local
                                               _programs.pickedPrograms[index] =
                                                   potentiallyEditedProgram;
-                                              // update the cloud
-                                              lifterProgramsController.saveProgram(
-                                                  context: context,
-                                                  potentiallyEditedProgram:
-                                                      potentiallyEditedProgram,
-                                                  originalProgram: _programs
-                                                      .pickedPrograms[index]);
+                                              setState(() {});
                                             }
+                                            // reflect any name changes here next.
                                           }
                                         : null),
                                 IconButton(

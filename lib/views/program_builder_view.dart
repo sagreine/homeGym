@@ -413,6 +413,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         // if we already have weeks, use them!
         // TODO: aggressively untested..
         if (program.numWeeks != null && program.numWeeks >= week) {
+          //TODO: shouldn't this be exerciseDays[week-1] ? - no, this is only called once, on entry
           exerciseDay = program.exerciseDays[week - 1];
           print("Using already-pulled-down exerciseDAy");
         }
@@ -436,6 +437,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
           //var tmp2 = Provider.of<ExerciseDay>(context, listen: false);
 
           // untested AF, but upsert the local copy to include this exerciseDay
+          // TODO: why is this program instead of potentialNewProgram??????????????????? - it is only called once, on entry, this is what we want
           program.upsertExerciseDay(
               exerciseDay
               //Provider.of<ExerciseDay>(context, listen: false)
@@ -501,7 +503,6 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     if (firstBuild) {
       program = ModalRoute.of(context).settings.arguments;
 
-      // this is a shallow copy and not doing what you think it is doing.
       if (program != null) {
         potentialNewPRogram = PickedProgram.deepCopy(program);
       }
@@ -562,11 +563,16 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                               "Must add at least one exercise before saving program")));
                       return;
                     }
-                    program = programBuilderController.saveUpdatesToProgram(
+                    // this is problematic - what we really want is the exerciseDays put into program when they are first created
+                    // which would store them in the original (and not need to pass this page a copy, just pass the original)
+                    // but calling this at the end is going to make it so the original program is overwritten, which is no good
+                    // because we don't do the saving here we do it on the other page (should we?)
+                    /*program = programBuilderController.saveUpdatesToProgram(
                         exerciseDays: exerciseDays,
-                        updatedProgram: potentialNewPRogram);
+                        updatedProgram: potentialNewPRogram);*/
                     // return this program
-                    Navigator.pop(context, program);
+                    potentialNewPRogram.exerciseDays = exerciseDays;
+                    Navigator.pop(context, potentialNewPRogram);
                   },
                   doneText: Text("Save Program!"),
                   showSkipButton: true,

@@ -182,22 +182,32 @@ class ExerciseDay extends ChangeNotifier {
     }
   }
 
-  ExerciseDay.deepCopy({ExerciseDay copyingFrom})
-      : this(
-          lift: copyingFrom.lift,
-          program: copyingFrom.program,
-          reps: copyingFrom.reps,
-          currentSet: copyingFrom.currentSet,
-          percentages: copyingFrom.percentages,
-          trainingMax: copyingFrom.trainingMax,
-          lifts: copyingFrom.lifts,
-          prSets: copyingFrom.prSets,
-          updateMaxIfGetReps: copyingFrom.updateMaxIfGetReps,
-          progressSet: copyingFrom.progressSet,
-          exercises: copyingFrom.exercises,
-          prSetWeek: copyingFrom.prSetWeek,
-          justDidLastSet: copyingFrom.justDidLastSet,
-        );
+// no idea if this will work but give it a shot!
+  factory ExerciseDay.deepCopy({ExerciseDay copyingFrom}) {
+    ExerciseDay toReturn = ExerciseDay(
+      lift: copyingFrom.lift,
+      program: copyingFrom.program,
+      reps: copyingFrom.reps,
+      currentSet: copyingFrom.currentSet,
+      percentages: copyingFrom.percentages,
+      trainingMax: copyingFrom.trainingMax,
+      lifts: copyingFrom.lifts,
+      prSets: copyingFrom.prSets,
+      updateMaxIfGetReps: copyingFrom.updateMaxIfGetReps,
+      progressSet: copyingFrom.progressSet,
+      // need to deep copy the exercises
+
+      prSetWeek: copyingFrom.prSetWeek,
+      justDidLastSet: copyingFrom.justDidLastSet,
+    );
+    // deep copy the sets.
+    List<ExerciseSet> toReturn2 = List<ExerciseSet>();
+    copyingFrom.exercises?.forEach((element) {
+      toReturn2.add(ExerciseSet.deepCopy(copyingFrom: element));
+    });
+    toReturn.exercises = toReturn2;
+    return toReturn;
+  }
 
   // hmmm
   // also, previously returned true right away with no notify. might want that...
