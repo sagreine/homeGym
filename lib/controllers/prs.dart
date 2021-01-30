@@ -139,7 +139,7 @@ class PrsController {
     var prs = Provider.of<Prs>(context, listen: false);
 
     // we only set PRs for the main lifts.
-    var index = ReusableWidgets.lifts.indexOf(lift.title.toLowerCase());
+    var index = ReusableWidgets.lifts.indexOf(lift.title);
     if (index == -1) {
       return false;
     }

@@ -29,7 +29,7 @@ class PickedProgram {
   @JsonKey(ignore: true)
   List<ExerciseDay> exerciseDays;
 
-  get numWeeks => exerciseDays.length;
+  get numWeeks => exerciseDays?.length ?? null;
 
   PickedProgram({
     this.program,
@@ -84,9 +84,12 @@ class PickedProgram {
   // TODO: test new program - is this going to be adding to null? might need to initialize
   upsertExerciseDay(ExerciseDay exerciseDay, int index) {
     //if we try to add an exercise Day that is, say , 7 larger something has gone wrong
-    assert(numWeeks - index <= 1);
+    assert((numWeeks ?? 0) - index <= 1);
     // if we're adding one
-    if (numWeeks == index) {
+    if (numWeeks == index || numWeeks == null) {
+      if (exerciseDays == null) {
+        exerciseDays = List<ExerciseDay>();
+      }
       this.exerciseDays.add(exerciseDay);
     }
     // if we're edting one

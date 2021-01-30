@@ -140,6 +140,7 @@ class ExerciseDay extends ChangeNotifier {
         // this function depends on the current set of the day, but we need to reset that at the end.
         tmp.updateExerciseFull(
           context: context,
+          useBarbellWeight: true,
           exerciseTitle: lift,
           id: UniqueKey().toString() +
               UniqueKey().toString() +

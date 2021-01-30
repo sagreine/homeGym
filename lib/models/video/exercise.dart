@@ -257,23 +257,27 @@ class ExerciseSet extends ChangeNotifier {
     // some sets have an override on percentage of TM. use it if they do.
     switch (this.title.toLowerCase()) {
       case "deadlift":
-        trainingMax =
-            (thisMax.deadliftMax.toDouble() * thisDay.trainingMax * multiplier);
+        trainingMax = (thisMax.deadliftMax.toDouble() *
+            (thisDay.trainingMax ?? 1) *
+            multiplier);
         break;
       case "bench":
-        trainingMax =
-            (thisMax.benchMax.toDouble() * thisDay.trainingMax * multiplier);
+        trainingMax = (thisMax.benchMax.toDouble() *
+            (thisDay.trainingMax ?? 1) *
+            multiplier);
         break;
       case "press":
-        trainingMax =
-            (thisMax.pressMax.toDouble() * thisDay.trainingMax * multiplier);
+        trainingMax = (thisMax.pressMax.toDouble() *
+            (thisDay.trainingMax ?? 1) *
+            multiplier);
         break;
       case "squat":
-        trainingMax =
-            (thisMax.squatMax.toDouble() * thisDay.trainingMax * multiplier);
+        trainingMax = (thisMax.squatMax.toDouble() *
+            (thisDay.trainingMax ?? 1) *
+            multiplier);
         break;
     }
-    int targetWeight = (setPct * trainingMax).floor();
+    int targetWeight = ((setPct ?? 1) * trainingMax).floor();
 
 // Now though, we can only lift based on what weights we actually own - but only if we're doing a barbell lift!
 // e.g. maybe they are doing a strongman thing..

@@ -8,11 +8,16 @@ class ExerciseDayController {
   buildCustomProgramDay(
       {BuildContext context,
       @required List<ExerciseSet> exerciseSets,
+      ExerciseDay exerciseDay,
       bool updateMaxIfGetReps}) {
     // at this point we already have the program-level info in.
     // need to populate any day-level info and bring in each individual exercise set
-
-    var day = Provider.of<ExerciseDay>(context, listen: false);
+    ExerciseDay day;
+    if (exerciseDay == null) {
+      day = Provider.of<ExerciseDay>(context, listen: false);
+    } else {
+      day = exerciseDay;
+    }
     // note that this is backwards compared to how the default programs work
     // that is, we store it at the exercise set level for custom instead of the program level. if any exercise
     // is set to progress, then we progress.
@@ -33,12 +38,18 @@ class ExerciseDayController {
     List<double> percentages,
     List<String> lifts,
     double trainingMaxPct,
+    ExerciseDay exerciseDay,
     bool updateMaxIfGetReps,
     bool prSetWeek,
     int progressSet,
     List<ExerciseSet> exercises,
   }) {
-    var day = Provider.of<ExerciseDay>(context, listen: false);
+    ExerciseDay day;
+    if (exerciseDay == null) {
+      day = Provider.of<ExerciseDay>(context, listen: false);
+    } else {
+      day = exerciseDay;
+    }
     // TODO: the order of this does NOT match the controller and is ripe for problems down the line.
     // we need to select an individual lift for each slot. the divider pipe "|" is used for this
     // with them going in order as defined in the pick_day program controller (for now) which is

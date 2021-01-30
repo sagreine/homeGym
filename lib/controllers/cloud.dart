@@ -521,14 +521,22 @@ Future<void> getExercisesCloud({
   @required int week,
   @required bool isCustom,
   @required String userID,
+  ExerciseDay exerciseDay,
 }) async {
   if (isCustom) {
     assert(userID != null);
     await getExercisesCustomCloud(
-        context: context, program: program, week: week, userID: userID);
+        context: context,
+        program: program,
+        week: week,
+        userID: userID,
+        exerciseDay: exerciseDay);
   } else {
     await getExercisesDefaultCloud(
-        context: context, program: program, week: week);
+        context: context,
+        program: program,
+        week: week,
+        exerciseDay: exerciseDay);
   }
 }
 
@@ -536,6 +544,7 @@ Future<void> getExercisesCustomCloud(
     {@required context,
     @required PickedProgram program,
     @required int week,
+    ExerciseDay exerciseDay,
     @required String userID}) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
   //DocumentSnapshot
@@ -583,6 +592,7 @@ Future<void> getExercisesCustomCloud(
   });
   exerciseDayController.buildCustomProgramDay(
     context: context,
+    exerciseDay: exerciseDay,
     exerciseSets: exerciseSets,
   );
 /*
@@ -599,6 +609,7 @@ Future<void> getExercisesCustomCloud(
 Future<void> getExercisesDefaultCloud({
   @required context,
   @required PickedProgram program,
+  ExerciseDay exerciseDay,
   @required int week,
 }) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
@@ -628,6 +639,7 @@ Future<void> getExercisesDefaultCloud({
     lifts: lifts,
     program: program.program,
     context: context,
+    exerciseDay: exerciseDay,
     reps: reps,
     prSets: prSets,
     prSetWeek: pctAndReps.data()["PRSetWeek"],

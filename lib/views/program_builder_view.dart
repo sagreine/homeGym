@@ -392,14 +392,18 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
 
     // this is creating a week-specific copy of the original program - but that's wrong, right?
     // we should be using potentiallyNewProgram to capture the new training max right?
-    var thisweek;
-    var exerciseDay;
+    PickedProgram thisweek;
+    var exerciseDay = ExerciseDay();
+
     thisweek = PickedProgram.deepCopy(program);
     thisweek.week = week;
 
-    exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
+    //exerciseDay
+    //  Provider.of<ExerciseDay>(context, listen: false);
     exerciseDay.trainingMax = thisweek.trainingMaxPct;
 
+    //var tmp = ListenableProvider.value(value: exerciseDay);
+    //tmp.createElement();
     // this should be == 'were building this page for the first time'
     // it might rebuild a deleted page of a copied program but they can deal :)
     if (exerciseDays == null || exerciseDays.length < week) {
@@ -422,13 +426,21 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
 
           await getExercisesCloud(
               context: context,
-              program: thisweek.program,
+              program: thisweek,
+              exerciseDay: exerciseDay,
               week: week,
-              isCustom: program.isCustom,
+              // it's only custom for pulling from the cloud if it is custom and not a new copy we just made
+              isCustom: (program.isCustom && !program.isAnewCopy),
               userID: Provider.of<Muser>(context, listen: false).fAuthUser.uid);
 
+          //var tmp2 = Provider.of<ExerciseDay>(context, listen: false);
+
           // untested AF, but upsert the local copy to include this exerciseDay
-          program.upsertExerciseDay(exerciseDay, week - 1);
+          program.upsertExerciseDay(
+              exerciseDay
+              //Provider.of<ExerciseDay>(context, listen: false)
+              ,
+              week - 1);
         }
       }
     }
@@ -469,6 +481,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
               height: 367,
               child: ChangeNotifierProvider.value(
                 value: exerciseDays[week - 1], //ExerciseDay(),
+                // program is just used for some random text so should replace that
                 child: ExcerciseDayView(program: thisweek),
               ),
             )

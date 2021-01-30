@@ -107,7 +107,7 @@ class HomeController {
         .lengthSync()
         .toString());*/
     if (File(File(filePath).resolveSymbolicLinksSync()).lengthSync() <
-        983977033) {
+        983977033 * 2) {
       //cloudUrl =
       url = uploadToCloudStorage(
         userID: user.fAuthUser.uid,
