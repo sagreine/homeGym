@@ -47,10 +47,13 @@ class ExerciseSet extends ChangeNotifier {
   // for searching, we'll popluate with keywords based on lift title
   static List<String> makeKeywords(String name) {
     List<String> arrName = [];
+    if (name == null) {
+      return arrName;
+    }
     String curName = '';
     // add the null string.
     arrName.add(curName);
-    name.split('').forEach((element) {
+    name?.split('')?.forEach((element) {
       curName += element.toLowerCase();
       arrName.add(curName);
     });

@@ -279,7 +279,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                 //),
                 SwitchListTile.adaptive(
                     title: Text("This is a xPR set"),
-                    value: exerciseSet.thisSetPRSet,
+                    value: exerciseSet.thisSetPRSet ?? false,
                     onChanged: (newValue) {
                       setState(() {
                         exerciseSet.thisSetPRSet = newValue;
@@ -290,7 +290,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                 // TODO: make this actually happen?
                 SwitchListTile.adaptive(
                     title: Text("If you get reps, increase lifter's 1RM max?"),
-                    value: exerciseSet.thisSetProgressSet,
+                    value: exerciseSet.thisSetProgressSet ?? false,
                     onChanged: (newValue) {
                       setState(() {
                         exerciseSet.thisSetProgressSet = newValue;
@@ -304,7 +304,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                     switchListLabel: "There is a barbell used for this lift"),
                 SwitchListTile.adaptive(
                     title: Text("This is an RPE set"),
-                    value: exerciseSet.thisIsRPESet,
+                    value: exerciseSet.thisIsRPESet ?? false,
                     onChanged: (newValue) {
                       setState(() {
                         exerciseSet.thisIsRPESet = newValue;

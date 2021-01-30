@@ -121,6 +121,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
     if (isBuildingFromInput && firstBuild) {
       //exerciseDayBuliding = widget.exerciseDay;
       firstBuild = false;
+      // this is around a dumb way to tell if we're on the last set / just did the last set
       initialOffset = 0;
     } else {
       initialOffset = 1;
@@ -475,6 +476,7 @@ class _TimelineStepsChild extends StatelessWidget {
                           //var thisDay =
                           //Provider.of<ExerciseDay>(context, listen: false);
                           // TODO: stop doing this. lazy, sloowwww, lose type... just build a deep copy function in the model
+                          // we have deepCopy already don't we?
                           thisDay.insert(
                               thisDay.exercises.indexOf(activity),
                               ExerciseSet.fromJson(activity.toJson()),

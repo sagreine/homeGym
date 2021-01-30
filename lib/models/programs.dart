@@ -1,6 +1,8 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:equatable/equatable.dart';
 part 'programs.g.dart';
 //import 'package:json_annotation/json_annotation.dart';
 
@@ -31,19 +33,21 @@ class PickedProgram {
 
   get numWeeks => exerciseDays?.length ?? null;
 
-  PickedProgram({
-    this.program,
-    this.week,
-    this.potentialProgressWeek,
-    this.type,
-    this.trainingMaxPct,
-    this.isCustom,
-    this.isMainLift,
-    this.isAnewCopy,
-    this.exerciseDays,
-    this.id,
-  }) {
-    this.neverTouched = false;
+  PickedProgram(
+      {this.program,
+      this.week,
+      this.potentialProgressWeek,
+      this.type,
+      this.trainingMaxPct,
+      this.isCustom,
+      this.isMainLift,
+      this.isAnewCopy,
+      this.exerciseDays,
+      this.id,
+      this.neverTouched}) {
+    if (neverTouched == null) {
+      this.neverTouched = false;
+    }
   }
 
   /// This creates a new program from another program by deep copying all of the other program's variables values
@@ -70,16 +74,17 @@ class PickedProgram {
   }
 
   // TODO: need to consider the other variables  here........ or get rid of them entirly.
-  PickedProgram.newBlankProgram() {
-    this.program = "New Program";
-    this.isCustom = true;
-    this.potentialProgressWeek = false;
-    this.isMainLift = false;
-    this.type = "Default - Change me!";
-    this.trainingMaxPct = 1.0;
-    this.week = 1;
-    this.neverTouched = true;
-  }
+  PickedProgram.newBlankProgram()
+      : this(
+          program: "New Program",
+          isCustom: true,
+          potentialProgressWeek: false,
+          isMainLift: false,
+          type: "Default - Change me!",
+          trainingMaxPct: 1.0,
+          week: 1,
+          neverTouched: true,
+        );
 
   // TODO: test new program - is this going to be adding to null? might need to initialize
   upsertExerciseDay(ExerciseDay exerciseDay, int index) {
