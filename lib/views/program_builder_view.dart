@@ -361,19 +361,22 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         var newPage = PageViewModel(
             // humans prefer 1-3 over 0-2
             title: Text("Week $week"),
-            mainImage: Column(
-              children: [
+            mainImage:
+                //Column(
+                //children: [
                 //Text("a title"),
                 SizedBox(
-                  // TODO: well lets not hardcode this now. at least use mediaquery
-                  height: 367,
-                  child: ChangeNotifierProvider.value(
-                    value: exerciseDays[week - 1],
-                    child: ExcerciseDayView(
-                        program: PickedProgram.deepCopy(program)),
-                  ),
-                )
-              ],
+              // TODO: well lets not hardcode this now. at least use mediaquery
+              height: 367,
+              child: SingleChildScrollView(
+                child: ChangeNotifierProvider.value(
+                  value: exerciseDays[week - 1],
+                  child: ExcerciseDayView(
+                      program: PickedProgram.deepCopy(program)),
+                ),
+                //)
+                //],
+              ),
             ),
             // TODO: add editable information at the set level here?
             // e.g. copy from another week's sets. maybe just that.
@@ -471,24 +474,27 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
           "should never happen - happens on cancel press though, which is real scary");
       return;
     }
-
+    // THIS ONE
     var newPage = PageViewModel(
         // humans prefer 1-3 over 0-2
         title: Text("Week $week"),
-        mainImage: Column(
-          children: [
+        mainImage:
+            //Column(
+            //children: [
             //Text("a title"),
+            //SingleChildScrollView(child:
             SizedBox(
-              // TODO: well lets not hardcode this now. at least use mediaquery
-              height: 367,
-              child: ChangeNotifierProvider.value(
-                value: exerciseDays[week - 1], //ExerciseDay(),
-                // program is just used for some random text so should replace that
-                child: ExcerciseDayView(program: thisweek),
-              ),
-            )
-          ],
+          // TODO: well lets not hardcode this now. at least use mediaquery
+          height: 367,
+          child: ChangeNotifierProvider.value(
+            value: exerciseDays[week - 1], //ExerciseDay(),
+            // program is just used for some random text so should replace that
+            child: ExcerciseDayView(program: thisweek),
+          ),
+          //)
+          //],
         ),
+        //),
         // TODO: add editable information at the set level here?
         // e.g. copy from another week's sets. maybe just that.
         body: Container());
