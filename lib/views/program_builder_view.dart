@@ -334,11 +334,10 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                       exerciseDays.take(potentialNewPRogram.week).toList();
                 } else {
                   // add pages!, one for each week.
-                  for (;
-                      originalValue < potentialNewPRogram.week;
-                      originalValue++) {
+                  // TODO stop writing code like an asshole
+                  for (; originalValue < potentialNewPRogram.week;) {
                     //PageViewModel pg =
-                    await _buildPageModelForWeek(context, originalValue);
+                    await _buildPageModelForWeek(context, ++originalValue);
                     //allPages.add(pg);
                   }
                 }
@@ -394,15 +393,15 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                 SizedBox(
               // TODO: well lets not hardcode this now. at least use mediaquery
               height: 367,
-              child: SingleChildScrollView(
-                child: ChangeNotifierProvider.value(
-                  value: exerciseDays[week - 1],
-                  child: ExcerciseDayView(
-                      program: PickedProgram.deepCopy(program)),
-                ),
-                //)
-                //],
+              //child: SingleChildScrollView(
+              child: ChangeNotifierProvider.value(
+                value: exerciseDays[week - 1],
+                child:
+                    ExcerciseDayView(program: PickedProgram.deepCopy(program)),
               ),
+              //)
+              //],
+              //),
             ),
             // TODO: add editable information at the set level here?
             // e.g. copy from another week's sets. maybe just that.
@@ -613,7 +612,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                                 element.exercises.length == 0)) {
                           Scaffold.of(context).showSnackBar(SnackBar(
                               content: Text(
-                                  "Must add at least one exercise before saving program")));
+                                  "Must add at least one exercise to every week before saving program")));
                           return;
                         }
                         // this is problematic - what we really want is the exerciseDays put into program when they are first created
