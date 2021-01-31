@@ -121,6 +121,7 @@ Future<List<PickedProgram>> _getDefaultPrograms() async {
     //pickedProgram.isMainLift = .... from cloud
     pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
     pickedProgram.isCustom = false;
+
     //hasMainLifts = ... from cloud
     return pickedProgram;
   });

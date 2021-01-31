@@ -480,6 +480,8 @@ class _TimelineStepsChild extends StatelessWidget {
                                 ExerciseSet.deepCopy(copyingFrom: activity);
                             await Navigator.pushNamed(context, '/exercise',
                                 arguments: activity);
+                            // tell everyone that ExerciseDay has been changed so they rebuild. bad, but a hack around
+                            // it for the edit program page which otherwise wouldnt see these changes.
                             if (activityStart != activity) {
                               thisDay.tempNotify();
                             }

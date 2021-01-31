@@ -645,11 +645,13 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                         // which would store them in the original (and not need to pass this page a copy, just pass the original)
                         // but calling this at the end is going to make it so the original program is overwritten, which is no good
                         // because we don't do the saving here we do it on the other page (should we?)
-                        /*program = programBuilderController.saveUpdatesToProgram(
-                        exerciseDays: exerciseDays,
-                        updatedProgram: potentialNewPRogram);*/
+                        //program =
+                        potentialNewPRogram =
+                            programBuilderController.saveUpdatesToProgram(
+                                exerciseDays: exerciseDays,
+                                updatedProgram: potentialNewPRogram);
                         // return this program
-                        potentialNewPRogram.exerciseDays = exerciseDays;
+                        //potentialNewPRogram.exerciseDays = exerciseDays;
                         Navigator.pop(context, potentialNewPRogram);
                       },
                       doneText: Text("Save Program!"),

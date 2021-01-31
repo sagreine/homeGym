@@ -12,6 +12,13 @@ class LifterProgramsController {
     copyingTo.program += "- copy";
     copyingTo.isAnewCopy = true;
     copyingTo.id = null;
+    // these are historical artifacts
+    if (copyingTo.potentialProgressWeek == null) {
+      copyingTo.potentialProgressWeek = false;
+    }
+    if (copyingTo.isMainLift == null) {
+      copyingTo.isMainLift = false;
+    }
     // dont want to do this for copy.
     //copyingTo.neverTouched = true;
     return copyingTo;

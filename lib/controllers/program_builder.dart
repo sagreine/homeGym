@@ -9,12 +9,12 @@ class ProgramBuilderController {
     // TODO: this might not belong here.
     updatedProgram.exerciseDays = exerciseDays;
 
-    // update our local Program
-    var originalProgram = PickedProgram.deepCopy(updatedProgram);
-    originalProgram.neverTouched = false;
-    originalProgram.isAnewCopy = false;
+    // update our local Program - dont do this we dont check this here anymore -below used to be for original but is now for updated
+    //var originalProgram = PickedProgram.deepCopy(updatedProgram);
+    updatedProgram.neverTouched = false;
+    updatedProgram.isAnewCopy = false;
 
-    return originalProgram;
+    return updatedProgram;
 
     // DON'T update the cloud copy here
   }

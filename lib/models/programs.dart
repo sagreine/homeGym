@@ -35,7 +35,7 @@ class PickedProgram {
   PickedProgram(
       {this.program,
       this.week,
-      this.potentialProgressWeek,
+      this.potentialProgressWeek = false,
       this.type,
       this.trainingMaxPct,
       this.isCustom,
