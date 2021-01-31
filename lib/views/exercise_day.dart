@@ -9,7 +9,11 @@ class ExcerciseDayView extends StatefulWidget {
   final // only used in building new programs.
       PickedProgram program;
   final ExerciseDay exerciseDay;
-  ExcerciseDayView({this.program, this.exerciseDay});
+  //final Function() callback;
+  ExcerciseDayView({
+    this.program,
+    this.exerciseDay,
+  });
 
   @override
   _ExcerciseDayViewState createState() => _ExcerciseDayViewState();
@@ -129,6 +133,11 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
 
     //thisDay = Provider.of<ExerciseDay>(context, listen: false);
     return Consumer<ExerciseDay>(builder: (context, thisDay, child) {
+      // this updates the changenotifier ... so going to cause infinite rebuild?
+      /*if (widget.exerciseDay != thisDay) {
+        widget.exerciseDay = thisDay;
+        widget?.callback?.call();
+      }*/
       // if we just did the last set we want to reflect that here, otherwise just use what set it says we're on.
       //setState(() {
       // TODO: this is very stupid. basically, each week has the same ancestor which is no good. so,
@@ -466,9 +475,14 @@ class _TimelineStepsChild extends StatelessWidget {
                       child: IconButton(
                           //
                           icon: Icon(Icons.edit),
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/exercise',
+                          onPressed: () async {
+                            var activityStart =
+                                ExerciseSet.deepCopy(copyingFrom: activity);
+                            await Navigator.pushNamed(context, '/exercise',
                                 arguments: activity);
+                            if (activityStart != activity) {
+                              thisDay.tempNotify();
+                            }
                             //setState?? isnt' a stateful widget though...
                             // shouldn't be necessary becuase the parent of this is a Consumer of thisDay
                             // and activity should be it's child.

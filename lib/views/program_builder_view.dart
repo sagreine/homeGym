@@ -391,18 +391,26 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                 //children: [
                 //Text("a title"),
                 SizedBox(
-              // TODO: well lets not hardcode this now. at least use mediaquery
-              height: 367,
-              //child: SingleChildScrollView(
-              child: ChangeNotifierProvider.value(
-                value: exerciseDays[week - 1],
-                child:
-                    ExcerciseDayView(program: PickedProgram.deepCopy(program)),
-              ),
-              //)
-              //],
-              //),
-            ),
+                    // TODO: well lets not hardcode this now. at least use mediaquery
+                    height: 367,
+                    //child: SingleChildScrollView(
+                    child: ChangeNotifierProvider.value(
+                        value: exerciseDays[week - 1],
+                        child:
+                            //Consumer<ExerciseDay>(builder: (context, prs, child) {
+                            //setState(() {});
+                            // return
+                            ExcerciseDayView(
+                                /*callback: () {
+                                  setState(() {});
+                                },*/
+                                program: PickedProgram.deepCopy(program)) //;
+                        //}
+                        )),
+            //)
+            //],
+            //),
+            //),
             // TODO: add editable information at the set level here?
             // e.g. copy from another week's sets. maybe just that.
             body: Container());
@@ -503,7 +511,12 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       return;
       //PageViewModel(          body: Text("what"), title: Text("what"), mainImage: Text("what"));
     }
-    // THIS ONE
+    // THIS ONE IS THE ONE TO EXPERIMENT WITH BECAUSE IT IS ALWAYS POPULATED
+    /*exerciseDays[week - 1].exercises.forEach((element) {
+      element.addListener(() {
+        setState(() {});
+      });
+    });*/
     var newPage = PageViewModel(
         // humans prefer 1-3 over 0-2
         title: Text("Week $week"),
@@ -515,11 +528,22 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
             SizedBox(
           // TODO: well lets not hardcode this now. at least use mediaquery
           height: 367,
+          // this needs to scope provider (right? otherweise we wont pull in this exercise day which is no good)
+          // but it also needs to consume this, for when we make changes to exercise sets within this exercise day....
           child: ChangeNotifierProvider.value(
-            value: exerciseDays[week - 1], //ExerciseDay(),
-            // program is just used for some random text so should replace that
-            child: ExcerciseDayView(program: thisweek),
-          ),
+              value: exerciseDays[week - 1], //ExerciseDay(),
+              // program is just used for some random text so should replace that
+              //Consumer<PickedProgram>(builder: (context, prs, child) {
+              //setState(() {});
+              //return
+              child: //Consumer<ExerciseDay>(builder: (context, prs, child) {
+                  //return
+                  ExcerciseDayView(program: thisweek)
+              //;
+              //}
+              //)
+              //}
+              ),
           //)
           //],
         ),

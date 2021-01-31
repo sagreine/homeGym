@@ -251,6 +251,9 @@ class _ExerciseViewState extends State<ExerciseView> {
         usingBarbell: exerciseSet.basedOnBarbellWeight,
         barbellLift: barbellLift,
         onValueUpdate: () {
+          // this should not be necessary because it should go up from exerciseSet to exerciseDay... right?
+          // a.k.a. we shouldnt really have made exerciseSet we should have done all exerciseSet editing functions at the day level...
+          //Provider.of<ExerciseDay>(context, listen: false).tempNotify();
           setState(() {
             //_updateToMinBarbellWeight(context, showBarbellPicker);
           });

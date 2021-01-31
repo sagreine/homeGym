@@ -679,7 +679,8 @@ class ExerciseForm {
                 //exerciseSet.weight = int.parse(weightController.text);
                 //},
                 );
-            exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
+            // TODO why are all these thisSetPRset????
+            //exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
             //onValueUpdate(value);
 
           }
@@ -736,7 +737,7 @@ class ExerciseForm {
                 //exerciseSet.weight = int.parse(weightController.text);
                 //},
                 );
-            exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
+            //exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
           },
           onFieldSubmitted: //(value) => exerciseSet.weight = int.parse(value),
               (value) {
@@ -746,7 +747,7 @@ class ExerciseForm {
                 //value: value,
                 updatingFromSubmit: true,
                 updateFunction: onValueUpdate);
-            exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
+            //exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
             //onValueUpdate(value);
           },
           enableSuggestions: true,
@@ -823,7 +824,8 @@ class ExerciseForm {
             //initialValue: exerciseSet.title,
             controller: titleController,
             onChanged: (value) {
-              exerciseSet.title = value;
+              //exerciseSet.title = value;
+              exerciseSet.updateExercise(title: value);
               onValueUpdate(value);
             },
             style: TextStyle(fontSize: 30),
@@ -874,7 +876,8 @@ class ExerciseForm {
             //initialValue: exerciseSet.description,
             controller: descriptionController,
             onChanged: (value) {
-              exerciseSet.description = value;
+              //exerciseSet.description = value;
+              exerciseSet.updateExercise(description: value);
               onValueUpdate();
             },
             autocorrect: true,
@@ -896,7 +899,10 @@ class ExerciseForm {
                   exerciseSet: exerciseSet,
                   field: "Reps",
                   onValueUpdate: () {
-                    exerciseSet.reps = int.tryParse(repsController.text);
+                    //exerciseSet.reps = int.tryParse(repsController.text);
+                    exerciseSet.updateExercise(
+                        reps: int.tryParse(repsController.text));
+
                     // TODO:
                     onValueUpdate();
                   }),
@@ -907,7 +913,9 @@ class ExerciseForm {
                   exerciseSet: exerciseSet,
                   field: "Weight",
                   onValueUpdate: () {
-                    exerciseSet.weight = int.tryParse(weightController.text);
+                    //exerciseSet.weight = int.tryParse(weightController.text);
+                    exerciseSet.updateExercise(
+                        weight: int.tryParse(weightController.text));
                     finalizeWeightsAndDescription(
                         context: context,
                         exerciseSet: exerciseSet,
@@ -942,8 +950,10 @@ class ExerciseForm {
                   exerciseSet: exerciseSet,
                   field: "Rest",
                   onValueUpdate: () {
-                    exerciseSet.restPeriodAfter =
-                        int.tryParse(restController.text);
+                    /*exerciseSet.restPeriodAfter =
+                        int.tryParse(restController.text);*/
+                    exerciseSet.updateExercise(
+                        restPeriodAfter: int.tryParse(restController.text));
                     onValueUpdate();
                   }),
             ],

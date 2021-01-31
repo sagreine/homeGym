@@ -65,6 +65,10 @@ class ExerciseDay extends ChangeNotifier {
     notifyListeners();
   }
 
+  void tempNotify() {
+    notifyListeners();
+  }
+
   void addAllExercise(
     List<ExerciseSet> exerciseSet,
   ) {
