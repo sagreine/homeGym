@@ -211,7 +211,9 @@ class _PickDayViewState extends State<PickDayView> {
               children: [
                 Visibility(
                   // TODO this is not a thing we want to do. might just make this always visible.
-                  visible: pickDay.pickedProgram.type == "5/3/1" &&
+                  visible: (pickDay.pickedProgram.isMainLift ?? false)
+                      //pickDay.pickedProgram.type == "5/3/1"
+                      &&
                       pickDayController.tmController.text != null &&
                       pickDayController.tmController.text.length != 0,
                   child: TextFormField(

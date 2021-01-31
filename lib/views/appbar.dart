@@ -562,7 +562,7 @@ class ExerciseForm {
     // TODO: RPE will need to be done here too. -> or just have a "notSettingWeight" flag?
     // we want this to be done in the using-the-program phase so they get the calculator, so use that bool
     if (!usingBarbell ||
-        (exerciseSet.basedOnPercentageOfTM && isBuildingNotUsing)) {
+        (exerciseSet.noPrescribedWeight && isBuildingNotUsing)) {
       return;
     }
     // we dont need to update the description always, and we dont have to because the weight is the barbell at this point

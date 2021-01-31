@@ -118,7 +118,7 @@ Future<List<PickedProgram>> _getDefaultPrograms() async {
     // we'll default to 1 if this value isn't set.
     pickedProgram.week = list[index].data()["numWeeks"] ?? 1;
     pickedProgram.type = list[index].data()["type"];
-    //pickedProgram.isMainLift = .... from cloud
+    pickedProgram.isMainLift = list[index].data()["isMainLift"];
     pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
     pickedProgram.isCustom = false;
 
