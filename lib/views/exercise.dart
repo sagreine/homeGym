@@ -109,14 +109,34 @@ class _ExerciseViewState extends State<ExerciseView> {
                   }
                 }
               }
+              // if we just said it is not using a barbell, reflect that
               if (newValue == false) {
+                if (!isNotForBarbellPercentage) {
+                  barbellLiftForPercentage = null;
+                  exerciseSet.whichLiftForPercentageofTMIndex = null;
+                } else {
+                  barbellLift = null;
+                  exerciseSet.whichBarbellIndex = null;
+                }
                 // if they changed their mind, we don't want to use a barbell in calculating weights so disable that.
                 //exerciseSet.weight = 0;
               }
               //_updateToMinBarbellWeight(context, newValue);
               // TODO: look into this vs using the finalizeWeightsAndDescription function
               // because this doesn't trigger a recalc of weight but should...
-              _formEditKey.currentState.save();
+
+              // TODO: the problem here is that the form is not built yet so it uses the old values. doesn't work even if you
+              // put it outside setState because (maybe) the key is the key, if it gets overwritten that's later's problem
+              //formEditKey.currentState.save();
+              fullForm.finalizeWeightsAndDescription(
+                  context: context,
+                  exerciseSet: exerciseSet,
+                  usingBarbell: exerciseSet.basedOnBarbellWeight,
+                  isBuildingNotUsing: true,
+                  barbellLift: (!isNotForBarbellPercentage
+                      ? barbellLiftForPercentage
+                      : barbellLift),
+                  scaffoldKey: scaffoldKey);
             });
           }),
       Visibility(
@@ -316,10 +336,12 @@ class _ExerciseViewState extends State<ExerciseView> {
                       setState(() {
                         exerciseSet.thisIsRPESet = newValue;
                         // if this is based on RPE, it is not based on weight nor % TM..
-                        exerciseSet.weight = null;
-                        exerciseSet.basedOnPercentageOfTM = false;
-                        exerciseSet.percentageOfTM = null;
-                        weightController.text = "";
+                        if (newValue == true) {
+                          exerciseSet.weight = null;
+                          exerciseSet.basedOnPercentageOfTM = false;
+                          exerciseSet.percentageOfTM = null;
+                          weightController.text = "";
+                        }
                         // TODO: this is likely something we want, just not right now.
                         //exerciseSet.updateExercise(thisSetPRSet: newValue);
                       });
