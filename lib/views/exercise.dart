@@ -109,10 +109,11 @@ class _ExerciseViewState extends State<ExerciseView> {
                   }
                 }
               }
-              // if we just said it is not using a barbell, reflect that
+              // if we just said it is not using a barbell/TM, reflect that
               if (newValue == false) {
                 if (!isNotForBarbellPercentage) {
                   barbellLiftForPercentage = null;
+                  exerciseSet.percentageOfTM = null;
                   exerciseSet.whichLiftForPercentageofTMIndex = null;
                 } else {
                   barbellLift = null;
@@ -350,7 +351,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                   isNotForBarbellPercentage: false,
                   switchListLabel: "Calculate weight from % of a Main lift 1RM",
                   trailingChild: TextFormField(
-                    //initialValue: exerciseSet.title,
+                    initialValue: (exerciseSet.percentageOfTM ?? "").toString(),
                     //controller: titleController,
                     onChanged: (value) {
                       exerciseSet.percentageOfTM = double.parse(value);

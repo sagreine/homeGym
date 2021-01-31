@@ -22,7 +22,8 @@ class PickDayController {
   void updateReadyToGo(context) {
     var model = Provider.of<PickDay>(context, listen: false);
     if (model.pickedProgram.program != null &&
-        selectedExercise.any((element) => element) &&
+        (selectedExercise.any((element) => element) ||
+            !model.pickedProgram.isMainLift) &&
         model.pickedProgram.week != null) {
       readyToGo = true;
     } else {
@@ -56,6 +57,10 @@ class PickDayController {
     // update the page we're on now
     if (_pickedProgram != null) {
       model.updatePickedProgram(_pickedProgram);
+      // unselect the main lift if there is no more main lift.
+      if (!_pickedProgram.isMainLift) {
+        selectedExercise.setAll(0, [false, false, false, false]);
+      }
 
       programController.text = _pickedProgram.program;
       tmController.text = _pickedProgram.trainingMaxPct
@@ -90,8 +95,13 @@ class PickDayController {
     var model = Provider.of<PickDay>(context, listen: false);
     // this sets our "main" lift to hte one selected
     // TODO this needs to be handled only for 'Main' lift days once that is implemented...
-    exerciseDay.lift = ReusableWidgets
-        .lifts[selectedExercise.indexWhere((element) => element)];
+    if (model.pickedProgram.isMainLift) {
+      exerciseDay.lift = ReusableWidgets
+          .lifts[selectedExercise.indexWhere((element) => element)];
+    }
+    /*else {
+      exerciseDay.lift = "Squat";
+    }*/
 
     // if (tmController.text != null && tmController.text.length != 0) {
     //exerciseDay.trainingMax = double.tryParse(tmController.text) / 100;

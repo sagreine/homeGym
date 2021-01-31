@@ -215,7 +215,7 @@ class _DoLiftViewState extends State<DoLiftView>
     doCast = false;
     _noDayPickedOnEntry = false;
     startController = false;
-    // this is bad, but whatever.
+    // TODO: stop doing this...
     homeController.formControllerRestInterval.text = "90";
     // this is stupid spaghetti code.
 
@@ -235,7 +235,7 @@ class _DoLiftViewState extends State<DoLiftView>
 
     // if they came here without picking a day first, pick squat by default and tell them about it.
     // TODO this should definitely not be in the UI though...
-    if (exerciseDay.lift == null) {
+    if (exerciseDay.exercises == null) {
       _noDayPickedOnEntry = true;
       //exerciseDay.lift = "Squat";
       exerciseDay.trainingMax = 0.85;
@@ -395,7 +395,7 @@ class _DoLiftViewState extends State<DoLiftView>
               Consumer<ExerciseDay>(builder: (context, exerciseDay, child) {
                 // this is very stupid but necessary because we didn't do MVC right. protects us from building
                 // if we haven't picked a day yet, while elsewhere we populate a default day.
-                if (exerciseDay.lift == null) {
+                if (exerciseDay.exercises == null) {
                   return Container();
                 }
 

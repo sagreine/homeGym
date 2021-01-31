@@ -40,7 +40,7 @@ class ExerciseSet extends ChangeNotifier {
   int whichLiftForPercentageofTMIndex;
   int rpe;
   // either of these mean that the prescribed weight is null (it can't be either %TM or RPE-based and have a prescribed weight)
-  get noPrescribedWeight => (basedOnPercentageOfTM || thisIsRPESet);
+  get noPrescribedWeight => (basedOnPercentageOfTM || thisIsRPESet == true);
 
   bool hasBeenUpdated;
   @JsonKey(ignore: true)
@@ -295,7 +295,9 @@ class ExerciseSet extends ChangeNotifier {
     var thisWeights = Provider.of<LifterWeights>(context, listen: false);
     // default to 0
     double trainingMax = 0;
-    this.indexForOrdering = indexForOrdering;
+    if (indexForOrdering != null) {
+      this.indexForOrdering = indexForOrdering;
+    }
     // some sets are PR sets, if the week has them and we're currently on the progress set.
     // this is really stupid. obviously not right, put it in the db...
     //bool thisSetPRSet =

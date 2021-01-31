@@ -703,8 +703,8 @@ class ExerciseForm {
           ),
           // we don't allow editing of weight if this is based on a percentage...
           // TODO: RPE ... ?
-          readOnly: (exerciseSet.noPrescribedWeight) &&
-              field.toUpperCase() == "WEIGHT",
+          readOnly: (exerciseSet.noPrescribedWeight &&
+              field.toUpperCase() == "WEIGHT"),
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
             WhitelistingTextInputFormatter.digitsOnly,
