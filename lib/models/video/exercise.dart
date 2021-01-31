@@ -274,6 +274,7 @@ class ExerciseSet extends ChangeNotifier {
       @required int reps,
       @required double setPct,
       bool thisSetPRSet,
+      int indexForOrdering,
       bool isFromCustom,
       bool thisSetProgressSet,
       @required bool useBarbellWeight,
@@ -292,6 +293,7 @@ class ExerciseSet extends ChangeNotifier {
     var thisWeights = Provider.of<LifterWeights>(context, listen: false);
     // default to 0
     double trainingMax = 0;
+    this.indexForOrdering = indexForOrdering;
     // some sets are PR sets, if the week has them and we're currently on the progress set.
     // this is really stupid. obviously not right, put it in the db...
     //bool thisSetPRSet =

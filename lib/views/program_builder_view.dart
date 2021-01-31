@@ -570,8 +570,10 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       // for now, this needs to come after the point above
       // null on new program
       if (program?.isAnewCopy ?? false) {
-        program.program =
-            program.program.substring(0, program.program.indexOf("-") ?? 99999);
+        if (program.program.indexOf("-") != -1) {
+          program.program =
+              program.program.substring(0, program.program.indexOf("-"));
+        }
       }
       programNameController.text = potentialNewPRogram.program;
       programTypeController.text = potentialNewPRogram.type;

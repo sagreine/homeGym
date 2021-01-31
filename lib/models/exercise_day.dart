@@ -153,6 +153,7 @@ class ExerciseDay extends ChangeNotifier {
               UniqueKey().toString() +
               UniqueKey().toString(),
           reps: this.reps[i],
+          indexForOrdering: i,
           setPct: this.percentages[mainLiftIterator],
           // this is a PR set if it is in the list of PR sets.
           thisSetPRSet: prSets.any((element) => element == i),
@@ -169,6 +170,7 @@ class ExerciseDay extends ChangeNotifier {
             restPeriodAfter: 90,
             // the first rep.length are the main lift, non-assistance.
             title: lifts[i],
+            indexForOrdering: i,
             description: "Do the lift",
             id: UniqueKey().toString() +
                 UniqueKey().toString() +
