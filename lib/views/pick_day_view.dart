@@ -209,47 +209,49 @@ class _PickDayViewState extends State<PickDayView> {
           Consumer<PickDay>(builder: (context, pickDay, child) {
             return Column(
               children: [
-                Visibility(
+                /*Visibility(
                   // TODO this is not a thing we want to do. might just make this always visible.
+                  // we used to only show this conditionally, but the only way to do that which makes sense
+                  // is to store "are any sets in this program based on a TM %?" and ... I don't want to? at least now
                   visible: (pickDay.pickedProgram.isMainLift ?? false)
                       //pickDay.pickedProgram.type == "5/3/1"
                       &&
                       pickDayController.tmController.text != null &&
                       pickDayController.tmController.text.length != 0,
-                  child: TextFormField(
-                    controller: pickDayController.tmController,
-                    onChanged: (newValue) {
-                      pickDay.pickedProgram.trainingMaxPct =
-                          double.parse(pickDayController.tmController.text);
-                    },
-                    keyboardType: TextInputType.numberWithOptions(
-                      signed: false,
-                      decimal: false,
-                    ),
-                    //validator: numberValidator,
-                    inputFormatters: <TextInputFormatter>[
-                      WhitelistingTextInputFormatter.digitsOnly
-                    ],
-                    decoration: new InputDecoration(
-                      enabledBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.blueGrey, //Color(0xFF1976D2),
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ),
-                      ),
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                            color: Colors.blueGrey,
-                            //Color(0xFF06ac51),
-                            width: 1.0),
-                      ),
-                      labelText: "Override TM% (optional)",
-                    ),
-                    //onChanged: (value) => ,
-                    readOnly: false,
-                    style: TextStyle(fontSize: 15),
+                  child: */
+                TextFormField(
+                  controller: pickDayController.tmController,
+                  onChanged: (newValue) {
+                    pickDay.pickedProgram.trainingMaxPct =
+                        double.parse(pickDayController.tmController.text);
+                  },
+                  keyboardType: TextInputType.numberWithOptions(
+                    signed: false,
+                    decimal: false,
                   ),
+                  //validator: numberValidator,
+                  inputFormatters: <TextInputFormatter>[
+                    WhitelistingTextInputFormatter.digitsOnly
+                  ],
+                  decoration: new InputDecoration(
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                        color: Colors.blueGrey, //Color(0xFF1976D2),
+                        width: 1.0,
+                        style: BorderStyle.solid,
+                      ),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                          color: Colors.blueGrey,
+                          //Color(0xFF06ac51),
+                          width: 1.0),
+                    ),
+                    labelText: "Override TM% (optional)",
+                  ),
+                  //onChanged: (value) => ,
+                  readOnly: false,
+                  style: TextStyle(fontSize: 15),
                 ),
 
                 SizedBox(height: 10),
