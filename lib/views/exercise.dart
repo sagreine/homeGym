@@ -75,6 +75,10 @@ class _ExerciseViewState extends State<ExerciseView> {
                 exerciseSet.basedOnBarbellWeight = newValue;
               } else {
                 exerciseSet.basedOnPercentageOfTM = newValue;
+                // if it is based on % of TM, it is not based on weight. so, set that.
+                exerciseSet.weight = null;
+                weightController.text = "";
+                exerciseSet.thisIsRPESet = false;
               }
               if (newValue == true) {
                 if (!isNotForBarbellPercentage) {
@@ -311,6 +315,11 @@ class _ExerciseViewState extends State<ExerciseView> {
                     onChanged: (newValue) {
                       setState(() {
                         exerciseSet.thisIsRPESet = newValue;
+                        // if this is based on RPE, it is not based on weight nor % TM..
+                        exerciseSet.weight = null;
+                        exerciseSet.basedOnPercentageOfTM = false;
+                        exerciseSet.percentageOfTM = null;
+                        weightController.text = "";
                         // TODO: this is likely something we want, just not right now.
                         //exerciseSet.updateExercise(thisSetPRSet: newValue);
                       });

@@ -39,6 +39,8 @@ class ExerciseSet extends ChangeNotifier {
   int whichBarbellIndex;
   int whichLiftForPercentageofTMIndex;
   int rpe;
+  // either of these mean that the prescribed weight is null (it can't be either %TM or RPE-based and have a prescribed weight)
+  get noPrescribedWeight => (basedOnPercentageOfTM || thisIsRPESet);
 
   bool hasBeenUpdated;
   @JsonKey(ignore: true)

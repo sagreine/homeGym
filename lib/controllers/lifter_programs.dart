@@ -12,7 +12,8 @@ class LifterProgramsController {
     copyingTo.program += "- copy";
     copyingTo.isAnewCopy = true;
     copyingTo.id = null;
-    // these are historical artifacts
+    // TODO these are historical artifacts of the default programs. we may be able to remove them if we move on from that approach
+    // check if this works by making a new program from a copy and see what gets written to the cloud.
     if (copyingTo.potentialProgressWeek == null) {
       copyingTo.potentialProgressWeek = false;
     }
