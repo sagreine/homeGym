@@ -93,6 +93,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     List<PageViewModel> basePages = [
       PageViewModel(
         pageColor: pageColors[0],
+        childMainImageAbsorbsDrag: false,
         iconImageAssetPath: 'assets/images/pos_icon.png',
         bubbleBackgroundColor: bubbleColors[0],
         body: Container(),
@@ -138,6 +139,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       ),
       PageViewModel(
         pageColor: pageColors[1],
+        childMainImageAbsorbsDrag: false,
         iconImageAssetPath: 'assets/images/pos_icon.png',
         bubbleBackgroundColor: bubbleColors[1],
         mainImage: TextFormField(
@@ -178,6 +180,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       ),
       PageViewModel(
         pageColor: pageColors[2],
+        childMainImageAbsorbsDrag: false,
         iconImageAssetPath: 'assets/images/pos_icon.png',
         bubbleBackgroundColor: bubbleColors[2],
         body: Container(),
@@ -234,6 +237,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       ),
       PageViewModel(
         pageColor: pageColors[0],
+        childMainImageAbsorbsDrag: false,
         iconImageAssetPath: 'assets/images/pos_icon.png',
         bubbleBackgroundColor: bubbleColors[0],
         body: Container(),
@@ -269,6 +273,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       ),
       PageViewModel(
         pageColor: pageColors[1],
+        childMainImageAbsorbsDrag: false,
         iconImageAssetPath: 'assets/images/pos_icon.png',
         bubbleBackgroundColor: bubbleColors[1],
         body: Container(),
@@ -304,6 +309,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
       ),
       if (potentialNewPRogram.week > 1)
         PageViewModel(
+          childMainImageAbsorbsDrag: false,
           pageColor: pageColors[2],
           iconImageAssetPath: 'assets/images/pos_icon.png',
           bubbleBackgroundColor: bubbleColors[2],
@@ -386,6 +392,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
         var newPage = PageViewModel(
             // humans prefer 1-3 over 0-2
             title: Text("Week $week"),
+            childMainImageAbsorbsDrag: true,
             mainImage:
                 //Column(
                 //children: [
@@ -520,6 +527,7 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
     var newPage = PageViewModel(
         // humans prefer 1-3 over 0-2
         title: Text("Week $week"),
+        childMainImageAbsorbsDrag: true,
         mainImage:
             //Column(
             //children: [
