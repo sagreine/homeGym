@@ -375,6 +375,13 @@ class _TimelineStepIndicator extends StatelessWidget {
   }
 }
 
+class EditExerciseScreenArguments {
+  final ExerciseSet activity;
+  final bool isBuildingNotUsing;
+
+  EditExerciseScreenArguments({this.activity, this.isBuildingNotUsing = false});
+}
+
 class _TimelineStepsChild extends StatelessWidget {
   const _TimelineStepsChild({
     Key key,
@@ -479,7 +486,9 @@ class _TimelineStepsChild extends StatelessWidget {
                             var activityStart =
                                 ExerciseSet.deepCopy(copyingFrom: activity);
                             await Navigator.pushNamed(context, '/exercise',
-                                arguments: activity);
+                                arguments: EditExerciseScreenArguments(
+                                    activity: activity,
+                                    isBuildingNotUsing: isBuildingNotUsing));
                             // tell everyone that ExerciseDay has been changed so they rebuild. bad, but a hack around
                             // it for the edit program page which otherwise wouldnt see these changes.
                             if (activityStart != activity) {

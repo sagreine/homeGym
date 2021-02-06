@@ -249,12 +249,16 @@ class _ExerciseViewState extends State<ExerciseView> {
   TextEditingController repsController = TextEditingController();
   TextEditingController weightController = TextEditingController();
   TextEditingController restController = TextEditingController();
+  bool isBuildingNotUsing;
 
   @override
   Widget build(BuildContext context) {
     //= ModalRoute.of(context).settings.arguments;
     if (firstBuild) {
-      exerciseSet = ModalRoute.of(context).settings.arguments;
+      final EditExerciseScreenArguments args =
+          ModalRoute.of(context).settings.arguments;
+      exerciseSet = args.activity;
+      isBuildingNotUsing = args.isBuildingNotUsing;
       //showBarbellPicker = ReusableWidgets.lifts.contains(exerciseSet.title);
 
       //if (showBarbellPicker) {
@@ -270,7 +274,7 @@ class _ExerciseViewState extends State<ExerciseView> {
         context: context,
         readOnlyTitle: false,
         exerciseSet: exerciseSet,
-        isBuildingNotUsing: true,
+        isBuildingNotUsing: isBuildingNotUsing,
         scaffoldKey: scaffoldKey,
         key: _formEditKey,
         usingBarbell: exerciseSet.basedOnBarbellWeight,

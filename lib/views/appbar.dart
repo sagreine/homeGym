@@ -817,7 +817,8 @@ class ExerciseForm {
       // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...
       child: Column(
         children: [
-          Text("Edit this set"),
+          Text("Edit this set" +
+              (isBuildingNotUsing ? "" : " - not permanent, just for today")),
           SizedBox(height: 8),
           TextFormField(
             textCapitalization: TextCapitalization.sentences,
