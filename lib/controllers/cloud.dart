@@ -578,6 +578,7 @@ Future<void> getExercisesCustomCloud(
       reps: lift.data()["reps"],
       weight: lift.data()["weight"],
       id: lift.id,
+      thisIsMainSet: lift.data()["thisIsMainSet"],
       rpe: lift.data()["rpe"],
       thisIsRPESet: lift.data()["thisIsRPESet"],
       whichLiftForPercentageofTMIndex:

@@ -287,7 +287,9 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                   onChanged: (newValue) async {
                     if (newValue == false) {
                       potentialNewPRogram.week = 1;
+                      // drop off the pages and corresponding execises
                       weekSpecificPages = weekSpecificPages.take(1).toList();
+                      exerciseDays = exerciseDays.take(1).toList();
                     } else {
                       potentialNewPRogram.week = 2;
                       await _buildPageModelForWeek(context, 2);

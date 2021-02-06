@@ -822,6 +822,7 @@ class ExerciseForm {
           SizedBox(height: 8),
           TextFormField(
             textCapitalization: TextCapitalization.sentences,
+            readOnly: readOnlyTitle ?? false,
             //initialValue: exerciseSet.title,
             controller: titleController,
             onChanged: (value) {

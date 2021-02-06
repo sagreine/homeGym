@@ -272,7 +272,7 @@ class _ExerciseViewState extends State<ExerciseView> {
         weightController: weightController,
         restController: restController,
         context: context,
-        readOnlyTitle: false,
+        readOnlyTitle: exerciseSet.thisIsMainSet,
         exerciseSet: exerciseSet,
         isBuildingNotUsing: isBuildingNotUsing,
         scaffoldKey: scaffoldKey,
@@ -315,6 +315,19 @@ class _ExerciseViewState extends State<ExerciseView> {
                     onChanged: (newValue) {
                       setState(() {
                         exerciseSet.thisSetPRSet = newValue;
+                        // TODO: this is likely something we want, just not right now.
+                        //exerciseSet.updateExercise(thisSetPRSet: newValue);
+                      });
+                    }),
+                SwitchListTile.adaptive(
+                    title: Text("This is a 'Main' set"),
+                    value: exerciseSet.thisIsMainSet ?? false,
+                    onChanged: (newValue) {
+                      setState(() {
+                        exerciseSet.thisIsMainSet = newValue;
+                        if (newValue == true) {
+                          exerciseSet.title = 'Main Lift (when picked)';
+                        }
                         // TODO: this is likely something we want, just not right now.
                         //exerciseSet.updateExercise(thisSetPRSet: newValue);
                       });

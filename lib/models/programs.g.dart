@@ -17,7 +17,8 @@ PickedProgram _$PickedProgramFromJson(Map<String, dynamic> json) {
     isMainLift: json['isMainLift'] as bool,
     isAnewCopy: json['isAnewCopy'] as bool,
     id: json['id'] as String,
-  )..neverTouched = json['neverTouched'] as bool;
+    neverTouched: json['neverTouched'] as bool,
+  );
 }
 
 Map<String, dynamic> _$PickedProgramToJson(PickedProgram instance) =>

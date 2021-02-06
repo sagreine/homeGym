@@ -455,11 +455,12 @@ class _TimelineStepsChild extends StatelessWidget {
                     ? "Reps and Weight"
                     : activity.reps.toString() +
                         // if the weight is zero, don't display any weight and display 'reps' instead
-                        (activity.weight != 0
+                        ((activity.weight != 0 && activity.weight != null)
                             ? "x" +
                                 (activity.thisSetPRSet ? "PRx" : "") +
                                 activity.weight.toString()
-                            : " reps"),
+                            : " reps" +
+                                (activity.thisSetPRSet ? " (xPR)" : "")),
                 textAlign: TextAlign.left,
                 softWrap: false,
                 style: TextStyle(

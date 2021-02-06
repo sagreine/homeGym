@@ -34,6 +34,7 @@ class ExerciseSet extends ChangeNotifier {
   bool wasWeightPRSet;
   bool wasRepPRSet;
   bool thisIsRPESet;
+  bool thisIsMainSet;
   int indexForOrdering;
   // this is set as an index of ReusableWidgets.list
   int whichBarbellIndex;
@@ -81,6 +82,7 @@ class ExerciseSet extends ChangeNotifier {
     this.wasRepPRSet,
     this.duration,
     this.hasBeenUpdated,
+    this.thisIsMainSet,
     this.type,
     this.keywords,
     this.id,
@@ -101,6 +103,7 @@ class ExerciseSet extends ChangeNotifier {
     this.type = "/video";
     this.thisSetPRSet = thisSetPRSet ?? false;
     this.thisSetProgressSet = thisSetProgressSet ?? false;
+    this.thisIsMainSet = thisIsMainSet ?? false;
     if (hasBeenUpdated == null) {
       this.hasBeenUpdated = false;
     }
@@ -122,16 +125,17 @@ class ExerciseSet extends ChangeNotifier {
           reps: copyingFrom.reps,
           duration: copyingFrom.duration,
           keywords: copyingFrom.keywords,
+          thisIsMainSet: copyingFrom.thisIsMainSet ?? false,
           dateTime: copyingFrom.dateTime,
-          basedOnBarbellWeight: copyingFrom.basedOnBarbellWeight,
+          basedOnBarbellWeight: copyingFrom.basedOnBarbellWeight ?? false,
           //Barbell barbell;
-          basedOnPercentageOfTM: copyingFrom.basedOnPercentageOfTM,
+          basedOnPercentageOfTM: copyingFrom.basedOnPercentageOfTM ?? false,
           percentageOfTM: copyingFrom.percentageOfTM,
-          thisSetPRSet: copyingFrom.thisSetPRSet,
-          thisSetProgressSet: copyingFrom.thisSetProgressSet,
-          wasWeightPRSet: copyingFrom.wasRepPRSet,
-          wasRepPRSet: copyingFrom.wasRepPRSet,
-          thisIsRPESet: copyingFrom.thisIsRPESet,
+          thisSetPRSet: copyingFrom.thisSetPRSet ?? false,
+          thisSetProgressSet: copyingFrom.thisSetProgressSet ?? false,
+          wasWeightPRSet: copyingFrom.wasRepPRSet ?? false,
+          wasRepPRSet: copyingFrom.wasRepPRSet ?? false,
+          thisIsRPESet: copyingFrom.thisIsRPESet ?? false,
           indexForOrdering: copyingFrom.indexForOrdering,
           // this is set as an index of ReusableWidgets.list
           whichBarbellIndex: copyingFrom.whichBarbellIndex,
@@ -158,6 +162,7 @@ class ExerciseSet extends ChangeNotifier {
       this.thisSetProgressSet = false,
       this.wasWeightPRSet,
       this.wasRepPRSet,
+      this.thisIsMainSet,
       this.duration,
       this.hasBeenUpdated = false,
       this.id,
@@ -392,7 +397,7 @@ class ExerciseSet extends ChangeNotifier {
     }
     if (thisSetPRSet != null) {
       this.thisSetPRSet = thisSetPRSet;
-    } else {
+    } else if (this.thisSetPRSet == null) {
       this.thisSetPRSet = false;
     }
     if (thisSetProgressSet != null) {
@@ -435,6 +440,7 @@ class ExerciseSet extends ChangeNotifier {
         keywords,
         wasRepPRSet,
         wasWeightPRSet,
+        thisIsMainSet,
         duration
       ];
 }
