@@ -141,7 +141,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
       program = Provider.of<PickedProgram>(context, listen: false);
     }*/
 
-    return Consumer<PickedProgram>(builder: (context, program, child) {
+    return Consumer<PickedProgram>(builder: (context, programConsumed, child) {
       //thisDay = Provider.of<ExerciseDay>(context, listen: false);
       return Consumer<ExerciseDay>(builder: (context, thisDay, child) {
         // this updates the changenotifier ... so going to cause infinite rebuild?
@@ -293,7 +293,10 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                         child: _pickChild(
                                                           thisDay: thisDay,
                                                           index: i ~/ 2,
-                                                          program: program,
+                                                          // this is disgusting. be an adult.
+                                                          program:
+                                                              programConsumed ??
+                                                                  program,
                                                           enabled: i >
                                                               currentSet * 2 -
                                                                   1,

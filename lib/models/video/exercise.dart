@@ -307,7 +307,12 @@ class ExerciseSet extends ChangeNotifier {
     // this is really stupid. obviously not right, put it in the db...
     //bool thisSetPRSet =
     //(thisDay.prSetWeek && plannedSet == thisDay.progressSet);
-    var multiplier = (isFromCustom ?? false) ? 0.01 : 1;
+    var multiplier = (isFromCustom ?? false)
+        ?
+        //0.0001
+        //0.01
+        1
+        : 1;
     // some sets have an override on percentage of TM. use it if they do.
     switch (this.title.toLowerCase()) {
       case "deadlift":
@@ -365,6 +370,11 @@ class ExerciseSet extends ChangeNotifier {
                   lift: indexForPickingBar == null
                       ? this.title
                       : ReusableWidgets.lifts[indexForPickingBar])));
+    }
+    // if you aren't using a barbell. really we would ideally want to do the calculation (0 pound barbell) and description update still
+    // but that can be a later feature.
+    else {
+      this.weight = targetWeight;
     }
   }
 

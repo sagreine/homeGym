@@ -85,7 +85,7 @@ class PickedProgram extends ChangeNotifier {
           potentialProgressWeek: false,
           isMainLift: false,
           type: "Default - Change me!",
-          trainingMaxPct: 1.0,
+          trainingMaxPct: 100.0,
           week: 1,
           neverTouched: true,
         );

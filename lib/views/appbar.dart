@@ -14,8 +14,9 @@ class ReusableWidgets {
     "Bench",
   ];
 
-  static getMainLiftPicker(
+  getMainLiftPicker(
       {GlobalKey<ScaffoldState> scaffoldKey,
+      bool isBuildingMainLift,
       String lift,
       Function(String, int, BuildContext) onItemSelectedListener}) {
     DirectSelectItem<String> getDropDownMenuItem(String value) {
@@ -36,6 +37,18 @@ class ReusableWidgets {
       );
     }
 
+    // if we're building a Main option, we want them to be able to pick 'Main' as an option
+    List<String> liftsUsing = List.from(lifts);
+    if (isBuildingMainLift) {
+      if (!liftsUsing.contains("Main")) {
+        liftsUsing.insert(0, "Main");
+      }
+    } else {
+      liftsUsing.remove("Main");
+      if (lift == "Main") {
+        lift = "Squat";
+      }
+    }
     return Card(
         child: Row(
       mainAxisSize: MainAxisSize.max,
@@ -43,13 +56,13 @@ class ReusableWidgets {
         Expanded(
             child: Padding(
                 child: DirectSelectList<String>(
-                  values: lifts,
+                  values: liftsUsing,
                   onUserTappedListener: () {
                     var snackBar =
                         SnackBar(content: Text('Hold and drag instead of tap'));
                     scaffoldKey.currentState.showSnackBar(snackBar);
                   },
-                  defaultItemIndex: lifts.indexOf(lift),
+                  defaultItemIndex: liftsUsing.indexOf(lift),
                   itemBuilder: (String value) => getDropDownMenuItem(value),
                   focusedItemDecoration: _getDslDecoration(),
                   onItemSelectedListener: onItemSelectedListener,

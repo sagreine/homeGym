@@ -129,15 +129,17 @@ class _ExerciseViewState extends State<ExerciseView> {
               // TODO: the problem here is that the form is not built yet so it uses the old values. doesn't work even if you
               // put it outside setState because (maybe) the key is the key, if it gets overwritten that's later's problem
               //formEditKey.currentState.save();
-              fullForm.finalizeWeightsAndDescription(
-                  context: context,
-                  exerciseSet: exerciseSet,
-                  usingBarbell: exerciseSet.basedOnBarbellWeight,
-                  isBuildingNotUsing: true,
-                  barbellLift: (!isNotForBarbellPercentage
-                      ? barbellLiftForPercentage
-                      : barbellLift),
-                  scaffoldKey: scaffoldKey);
+              if (!exerciseSet.thisIsMainSet) {
+                fullForm.finalizeWeightsAndDescription(
+                    context: context,
+                    exerciseSet: exerciseSet,
+                    usingBarbell: exerciseSet.basedOnBarbellWeight,
+                    isBuildingNotUsing: true,
+                    barbellLift: (!isNotForBarbellPercentage
+                        ? barbellLiftForPercentage
+                        : barbellLift),
+                    scaffoldKey: scaffoldKey);
+              }
             });
           }),
       Visibility(
@@ -163,12 +165,21 @@ class _ExerciseViewState extends State<ExerciseView> {
                       ),
                     ],
                   ),
-                  child: ReusableWidgets.getMainLiftPicker(
+                  child: ReusableWidgets().getMainLiftPicker(
                       scaffoldKey: scaffoldKey,
+                      // if we are Building a Main lift, there will be a 'Main' option.
+                      isBuildingMainLift: ((isBuildingNotUsing ?? false) &&
+                          (exerciseSet.thisIsMainSet ?? false)),
+                      // this is the default lift to show
                       lift: (!isNotForBarbellPercentage
                               ? barbellLiftForPercentage
                               : barbellLift) ??
                           "Squat",
+                      // TODO: need to have something here to deal with main lifts
+                      // because it isn't in the static list, but we don't want to rely on
+                      // returning -1 here because that will be a nightmare to debug in the future.
+
+                      // for now YOLO just use it.
                       onItemSelectedListener: (item, index, context) {
                         if (isNotForBarbellPercentage == false) {
                           barbellLiftForPercentage = item;
@@ -370,6 +381,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                         //exerciseSet.updateExercise(thisSetPRSet: newValue);
                       });
                     }),
+
                 _getBarbellForWeight(
                   isNotForBarbellPercentage: false,
                   switchListLabel: "Calculate weight from % of a Main lift 1RM",

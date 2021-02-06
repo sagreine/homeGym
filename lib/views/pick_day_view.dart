@@ -16,6 +16,12 @@ class _PickDayViewState extends State<PickDayView> {
   AdmobBannerSize bannerSize;
 
   @override
+  dispose() {
+    pickDayController.dispose(context);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     bannerSize = AdmobBannerSize.LEADERBOARD; //.SMART_BANNER(context);
     // somewhat sketchy, but this is used to populate childAspectRatio and allow us to
@@ -140,7 +146,8 @@ class _PickDayViewState extends State<PickDayView> {
                 //Placeholder(fallbackHeight: ,
                 //fallbackWidth: ,
                 //child:
-                (pickDay.pickedProgram.isMainLift ?? false)
+                ((pickDayController.programController.text != "") &&
+                        (pickDay?.pickedProgram?.isMainLift ?? false))
                     ? Flexible(
                         fit: FlexFit.loose,
                         child: GridView.count(

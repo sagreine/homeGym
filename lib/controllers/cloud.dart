@@ -4,6 +4,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/appbar.dart';
 import 'package:provider/provider.dart';
 
 //
@@ -147,7 +148,7 @@ Future<List<PickedProgram>> _getCustomPrograms({
     pickedProgram.program = list[index].data()["program"];
     pickedProgram.type = list[index].data()["type"];
     pickedProgram.isMainLift = list[index].data()["isMainLift"] ?? false;
-    pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
+    pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"] / 100;
     pickedProgram.potentialProgressWeek =
         list[index].data()["potentialProgressWeek"];
     //pickedProgram.hasMainLifts = list[index].data()[
@@ -560,10 +561,37 @@ Future<void> getExercisesCustomCloud(
       .collection("Lifts")
       .get();
   List<ExerciseSet> exerciseSets = List<ExerciseSet>();
+
   allSets.docs.forEach((lift) {
+    var isMain = lift.data()["thisIsMainSet"] ?? false;
+    var barbellPctIndex = lift.data()["whichLiftForPercentageofTMIndex"];
+    var barbellIndex = lift.data()["whichBarbellIndex"];
+    // for sets that are Main sets, check if their index was set to 0 (which, for Main sets, is 'Main')
+    // if they were, set them to whatever lift we have selected for the day.
+    // if it wasn't, we still need to account for 'Main' not being there by sliding up one
+    if (isMain) {
+      if (barbellPctIndex == -1) {
+        barbellPctIndex = ReusableWidgets.lifts
+            .indexOf(Provider.of<ExerciseDay>(context, listen: false).lift);
+      }
+      // thuis modification is needed here and on the other one if we populated against (4 lifts + Main) when we set this
+      /*else if (barbellPctIndex != null) {
+        barbellPctIndex--;
+      }*/
+      if (barbellIndex == -1) {
+        barbellIndex = ReusableWidgets.lifts
+            .indexOf(Provider.of<ExerciseDay>(context, listen: false).lift);
+      }
+      /*else if (barbellIndex != null) {
+        barbellIndex--;
+      }*/
+    }
+
     exerciseSets.add(ExerciseSet.fromCustom(
       context: context,
-      title: lift.data()["title"],
+      title: isMain
+          ? Provider.of<ExerciseDay>(context, listen: false).lift
+          : lift.data()["title"],
       lift: Provider.of<ExerciseDay>(context, listen: false).lift,
       // this might be set or it might not be. limit by bool of it is should be, then set to 100 if not or missing...
       // if that bool is set, use it, else it is false
@@ -578,12 +606,11 @@ Future<void> getExercisesCustomCloud(
       reps: lift.data()["reps"],
       weight: lift.data()["weight"],
       id: lift.id,
-      thisIsMainSet: lift.data()["thisIsMainSet"],
+      thisIsMainSet: isMain,
       rpe: lift.data()["rpe"],
       thisIsRPESet: lift.data()["thisIsRPESet"],
-      whichLiftForPercentageofTMIndex:
-          lift.data()["whichLiftForPercentageofTMIndex"],
-      whichBarbellIndex: lift.data()["whichBarbellIndex"],
+      whichLiftForPercentageofTMIndex: barbellPctIndex,
+      whichBarbellIndex: barbellIndex,
       indexForOrdering: lift.data()["indexForOrdering"],
       isMainLift: program.isMainLift,
       description: lift.data()["description"],

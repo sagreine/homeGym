@@ -19,6 +19,14 @@ class PickDayController {
 
   ExerciseDayController exerciseDayController = ExerciseDayController();
 
+  dispose(context) {
+    Provider.of<PickDay>(context, listen: false).pickedProgram = null;
+    programController.dispose();
+    weekController.dispose();
+    tmController.dispose();
+    //exerciseDayController.dispose();
+  }
+
   void updateReadyToGo(context) {
     var model = Provider.of<PickDay>(context, listen: false);
     if (model.pickedProgram.program != null &&
@@ -63,6 +71,10 @@ class PickDayController {
       }
 
       programController.text = _pickedProgram.program;
+      // this might not make sense here
+      if (_pickedProgram.trainingMaxPct > 150) {
+        _pickedProgram.trainingMaxPct /= 100;
+      }
       tmController.text = _pickedProgram.trainingMaxPct
           .toString(); //exerciseDay.trainingMax.toString();
       // or just... do actual state management...
@@ -108,9 +120,12 @@ class PickDayController {
 
     //// THIS IS NECESSARY RIGHT NOW BECAUSE OF HOW THIS FLOWS THROUGH. IT WONT B SET OTHERWISE
     /// AND YOU WILL GET AN ERROR TRYING TO HIT ON NULL
-    exerciseDay.trainingMax = model.pickedProgram.trainingMaxPct / 100;
+    exerciseDay.trainingMax = model.pickedProgram.trainingMaxPct; // / 100;
+    //if (!model.pickedProgram.isCustom) {
+    exerciseDay.trainingMax /= 100;
     //}
-    // TODO need to make this owrk for custom...
+    //}
+
     await getExercises(
         context, model.pickedProgram, model.pickedProgram.week, isCustom);
 
@@ -139,6 +154,8 @@ class PickDayController {
             */
     //Navigator.pushNamed(context, '/do_lift');
     //Navigator.pushNamed(context, '/excerciseday');
-    Navigator.pushNamed(context, '/today', arguments: model.pickedProgram);
+    var copy = PickedProgram.deepCopy(model.pickedProgram);
+    model.pickedProgram = null;
+    Navigator.pushNamed(context, '/today', arguments: copy);
   }
 }

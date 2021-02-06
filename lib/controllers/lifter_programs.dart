@@ -34,6 +34,8 @@ class LifterProgramsController {
 
     // write program to cloud
     await saveProgram(context: context, potentiallyEditedProgram: program);
+    // update the local copy's training max pct
+    program.trainingMaxPct /= 100;
   }
 
   saveProgram(
