@@ -151,7 +151,13 @@ class Programs extends ChangeNotifier {
       newProgram.neverTouched = true;
     }
     pickedPrograms.add(newProgram);
-    pickedPrograms.sort((e, f) => e.type.compareTo(f.type));
+    pickedPrograms.sort((e, f) {
+      if (e.type == f.type) {
+        return e.program.compareTo(f.program);
+      } else {
+        return e.type.compareTo(f.type);
+      }
+    });
     notifyListeners();
   }
 
