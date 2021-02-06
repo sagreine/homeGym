@@ -15,7 +15,7 @@ part 'programs.g.dart';
 // from another program that'll have the old id in it - will it? no, once we write, we'll have the new one .
 // i guess we could have a CopiedFrom ID here or something?
 @JsonSerializable()
-class PickedProgram {
+class PickedProgram extends ChangeNotifier {
   String program;
   int week;
   bool potentialProgressWeek;
@@ -31,6 +31,11 @@ class PickedProgram {
   List<ExerciseDay> exerciseDays;
 
   get numWeeks => exerciseDays?.length ?? null;
+
+  updateMainLift(bool newValue) {
+    isMainLift = newValue;
+    notifyListeners();
+  }
 
   PickedProgram(
       {this.program,

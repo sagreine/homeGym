@@ -250,6 +250,7 @@ class _ExerciseViewState extends State<ExerciseView> {
   TextEditingController weightController = TextEditingController();
   TextEditingController restController = TextEditingController();
   bool isBuildingNotUsing;
+  bool isExerciseFromMainLiftPRogram;
 
   @override
   Widget build(BuildContext context) {
@@ -259,6 +260,7 @@ class _ExerciseViewState extends State<ExerciseView> {
           ModalRoute.of(context).settings.arguments;
       exerciseSet = args.activity;
       isBuildingNotUsing = args.isBuildingNotUsing;
+      isExerciseFromMainLiftPRogram = args.isExerciseFromMainLiftPRogram;
       //showBarbellPicker = ReusableWidgets.lifts.contains(exerciseSet.title);
 
       //if (showBarbellPicker) {
@@ -272,7 +274,7 @@ class _ExerciseViewState extends State<ExerciseView> {
         weightController: weightController,
         restController: restController,
         context: context,
-        readOnlyTitle: exerciseSet.thisIsMainSet,
+        readOnlyTitle: exerciseSet.thisIsMainSet ?? false,
         exerciseSet: exerciseSet,
         isBuildingNotUsing: isBuildingNotUsing,
         scaffoldKey: scaffoldKey,
@@ -319,19 +321,23 @@ class _ExerciseViewState extends State<ExerciseView> {
                         //exerciseSet.updateExercise(thisSetPRSet: newValue);
                       });
                     }),
-                SwitchListTile.adaptive(
-                    title: Text("This is a 'Main' set"),
-                    value: exerciseSet.thisIsMainSet ?? false,
-                    onChanged: (newValue) {
-                      setState(() {
-                        exerciseSet.thisIsMainSet = newValue;
-                        if (newValue == true) {
-                          exerciseSet.title = 'Main Lift (when picked)';
-                        }
-                        // TODO: this is likely something we want, just not right now.
-                        //exerciseSet.updateExercise(thisSetPRSet: newValue);
-                      });
-                    }),
+                Visibility(
+                  visible: (isBuildingNotUsing &&
+                      (isExerciseFromMainLiftPRogram ?? false)),
+                  child: SwitchListTile.adaptive(
+                      title: Text("This is a 'Main' set"),
+                      value: exerciseSet.thisIsMainSet ?? false,
+                      onChanged: (newValue) {
+                        setState(() {
+                          exerciseSet.thisIsMainSet = newValue;
+                          if (newValue == true) {
+                            exerciseSet.title = 'Main Lift (when picked)';
+                          }
+                          // TODO: this is likely something we want, just not right now.
+                          //exerciseSet.updateExercise(thisSetPRSet: newValue);
+                        });
+                      }),
+                ),
                 // TODO: make this actually happen?
                 SwitchListTile.adaptive(
                     title: Text("If you get reps, increase lifter's 1RM max?"),

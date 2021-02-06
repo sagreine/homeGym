@@ -25,13 +25,17 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
   final mainContainerHeight = 100.0;
   bool isBuildingNotUsing = false;
   bool isBuildingFromInput = false;
+  PickedProgram program;
 
   @override
   void initState() {
     super.initState();
     if (widget.program != null) {
       isBuildingNotUsing = true;
-    }
+      program = widget.program;
+    } //else {
+    //program = Provider.of<PickedProgram>(context, listen: false);
+    //}
     if (widget.exerciseDay != null) {
       isBuildingFromInput = true;
     }
@@ -67,6 +71,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
     @required int index,
     @required bool enabled,
     @required ExerciseDay thisDay,
+    @required PickedProgram program,
   }) {
     final ExerciseSet step = thisDay.exercises[index];
 
@@ -75,6 +80,7 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
         child: _TimelineStepsChild(
       activity: step,
       enabled: enabled,
+      program: program,
       thisDay: thisDay,
       isBuildingNotUsing: isBuildingNotUsing,
       //onCopyCallback: () => setState(() {}),
@@ -131,218 +137,232 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
       initialOffset = 1;
     }
 
-    //thisDay = Provider.of<ExerciseDay>(context, listen: false);
-    return Consumer<ExerciseDay>(builder: (context, thisDay, child) {
-      // this updates the changenotifier ... so going to cause infinite rebuild?
-      /*if (widget.exerciseDay != thisDay) {
+    /*if (program == null) {
+      program = Provider.of<PickedProgram>(context, listen: false);
+    }*/
+
+    return Consumer<PickedProgram>(builder: (context, program, child) {
+      //thisDay = Provider.of<ExerciseDay>(context, listen: false);
+      return Consumer<ExerciseDay>(builder: (context, thisDay, child) {
+        // this updates the changenotifier ... so going to cause infinite rebuild?
+        /*if (widget.exerciseDay != thisDay) {
         widget.exerciseDay = thisDay;
         widget?.callback?.call();
       }*/
-      // if we just did the last set we want to reflect that here, otherwise just use what set it says we're on.
-      //setState(() {
-      // TODO: this is very stupid. basically, each week has the same ancestor which is no good. so,
-      // we pass in each week's ancestor here. so, we have to do this + have to setState everywhere in here to
-      // force a rebuild. very, very stupid.
-      // still broken: edit, add a week?
-      //if (isBuildingFromInput) {
-      //thisDay = widget.exerciseDay;
-      //}
+        // if we just did the last set we want to reflect that here, otherwise just use what set it says we're on.
+        //setState(() {
+        // TODO: this is very stupid. basically, each week has the same ancestor which is no good. so,
+        // we pass in each week's ancestor here. so, we have to do this + have to setState everywhere in here to
+        // force a rebuild. very, very stupid.
+        // still broken: edit, add a week?
+        //if (isBuildingFromInput) {
+        //thisDay = widget.exerciseDay;
+        //}
 
-      //});
-      int currentSet = (thisDay.justDidLastSet ?? false)
-          ? thisDay.currentSet + 1
-          : thisDay.currentSet;
-      //isBuildingNotUsing = currentSet == null;
-      // jump to the current set
-      ScrollController scrollController = ScrollController(
-          initialScrollOffset:
-              initialOffset * (currentSet ?? 0) * mainContainerHeight,
-          keepScrollOffset: true);
-      return SizedBox.expand(
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            Expanded(
-              child: Container(
-                child: Theme(
-                  data: Theme.of(context).copyWith(
-                    accentColor: const Color(0xFFFCB69F).withOpacity(0.2),
-                  ),
-                  child: SafeArea(
-                    child: Scaffold(
-                      backgroundColor: Colors.transparent,
-                      floatingActionButton: buildFAB(context, thisDay),
-                      body: Center(
-                        child: Column(
-                          children: <Widget>[
-                            //_Header(),
-                            if (!isBuildingNotUsing)
-                              Text("Current Set: $currentSet"),
-                            if (isBuildingNotUsing)
-                              Text("Add, edit, delete sets!"),
+        //});
+        int currentSet = (thisDay.justDidLastSet ?? false)
+            ? thisDay.currentSet + 1
+            : thisDay.currentSet;
+        //isBuildingNotUsing = currentSet == null;
+        // jump to the current set
+        ScrollController scrollController = ScrollController(
+            initialScrollOffset:
+                initialOffset * (currentSet ?? 0) * mainContainerHeight,
+            keepScrollOffset: true);
+        return SizedBox.expand(
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              Expanded(
+                child: Container(
+                  child: Theme(
+                    data: Theme.of(context).copyWith(
+                      accentColor: const Color(0xFFFCB69F).withOpacity(0.2),
+                    ),
+                    child: SafeArea(
+                      child: Scaffold(
+                        backgroundColor: Colors.transparent,
+                        floatingActionButton: buildFAB(context, thisDay),
+                        body: Center(
+                          child: Column(
+                            children: <Widget>[
+                              //_Header(),
+                              if (!isBuildingNotUsing)
+                                Text("Current Set: $currentSet"),
+                              if (isBuildingNotUsing)
+                                Text("Add, edit, delete sets!"),
 
-                            Expanded(
-                              child: ReorderableListView(
-                                scrollController: scrollController,
-                                onReorder: (_oldIndex, _newIndex) {
-                                  if (_newIndex > currentSet * 2 - 1) {
-                                    //setState(() {
-                                    if (_newIndex > _oldIndex) {
-                                      _newIndex -= 1;
-                                    }
+                              Expanded(
+                                child: ReorderableListView(
+                                  scrollController: scrollController,
+                                  onReorder: (_oldIndex, _newIndex) {
+                                    if (_newIndex > currentSet * 2 - 1) {
+                                      //setState(() {
+                                      if (_newIndex > _oldIndex) {
+                                        _newIndex -= 1;
+                                      }
 
-                                    thisDay.insert(
-                                        _newIndex ~/ 2,
-                                        thisDay.removeAt(_oldIndex ~/ 2),
-                                        isBuildingNotUsing);
-                                    //thisDay.removeAt();
+                                      thisDay.insert(
+                                          _newIndex ~/ 2,
+                                          thisDay.removeAt(_oldIndex ~/ 2),
+                                          isBuildingNotUsing);
+                                      //thisDay.removeAt();
 
-                                    /*thisDay.exercises.insert(_newIndex ~/ 2,
+                                      /*thisDay.exercises.insert(_newIndex ~/ 2,
                                     thisDay.exercises.removeAt(_oldIndex ~/ 2));*/
-                                    //});
-                                  }
-                                },
-                                children: <Widget>[
-                                  for (int i = 0;
-                                      i < (thisDay?.exercises?.length ?? 0) * 2;
-                                      i++)
-                                    // put each item and a divider -> the only visible divider is the one that shows
-                                    // which set we're currently on.
-                                    i.isOdd
-                                        ? Divider(
-                                            key: UniqueKey(),
-                                            thickness: 2,
-                                            height: 1,
-                                            color: i == currentSet * 2 - 1
-                                                ? Colors.blueGrey
-                                                : Colors.transparent,
-                                          )
-                                        : Container(
-                                            /*color: i > thisDay.currentSet * 2 - 1
+                                      //});
+                                    }
+                                  },
+                                  children: <Widget>[
+                                    for (int i = 0;
+                                        i <
+                                            (thisDay?.exercises?.length ?? 0) *
+                                                2;
+                                        i++)
+                                      // put each item and a divider -> the only visible divider is the one that shows
+                                      // which set we're currently on.
+                                      i.isOdd
+                                          ? Divider(
+                                              key: UniqueKey(),
+                                              thickness: 2,
+                                              height: 1,
+                                              color: i == currentSet * 2 - 1
+                                                  ? Colors.blueGrey
+                                                  : Colors.transparent,
+                                            )
+                                          : Container(
+                                              /*color: i > thisDay.currentSet * 2 - 1
                                             ? Colors.transparent
                                             : Colors.grey[500].withOpacity(.7),*/
-                                            height: mainContainerHeight,
-                                            key: UniqueKey(),
-                                            child:
-                                                // this stops them from deleting or reordering the deleted items
-                                                // but need to stop them from dragging not-yet-done items to deleted if we're going to do this.
-                                                IgnorePointer(
-                                              ignoring: i < currentSet * 2 - 1,
-                                              child: Dismissible(
-                                                direction:
-                                                    DismissDirection.endToStart,
-                                                // Each Dismissible must contain a Key. Keys allow Flutter to
-                                                // uniquely identify widgets.
-                                                key: UniqueKey(),
-                                                // Provide a function that tells the app
-                                                // what to do after an item has been swiped away.
-                                                // and only allows swipes from not-already-completed items - unnecessary protection if ignorePointer is kept..
-                                                // TODO: could use this to go back to the tab!
-                                                confirmDismiss:
-                                                    (direction) async {
-                                                  // Remove the item from the data source.
-                                                  if (i >= currentSet * 2 - 1) {
-                                                    if (direction ==
-                                                        DismissDirection
-                                                            .endToStart) {
-                                                      //setState(() {
-                                                      // sugar for toInt()
-                                                      thisDay
-                                                          .removeAt((i ~/ 2));
+                                              height: mainContainerHeight,
+                                              key: UniqueKey(),
+                                              child:
+                                                  // this stops them from deleting or reordering the deleted items
+                                                  // but need to stop them from dragging not-yet-done items to deleted if we're going to do this.
+                                                  IgnorePointer(
+                                                ignoring:
+                                                    i < currentSet * 2 - 1,
+                                                child: Dismissible(
+                                                  direction: DismissDirection
+                                                      .endToStart,
+                                                  // Each Dismissible must contain a Key. Keys allow Flutter to
+                                                  // uniquely identify widgets.
+                                                  key: UniqueKey(),
+                                                  // Provide a function that tells the app
+                                                  // what to do after an item has been swiped away.
+                                                  // and only allows swipes from not-already-completed items - unnecessary protection if ignorePointer is kept..
+                                                  // TODO: could use this to go back to the tab!
+                                                  confirmDismiss:
+                                                      (direction) async {
+                                                    // Remove the item from the data source.
+                                                    if (i >=
+                                                        currentSet * 2 - 1) {
+                                                      if (direction ==
+                                                          DismissDirection
+                                                              .endToStart) {
+                                                        //setState(() {
+                                                        // sugar for toInt()
+                                                        thisDay
+                                                            .removeAt((i ~/ 2));
 
-                                                      //thisDay.exercises
-                                                      //  .removeAt((i ~/ 2));
-                                                      // show snakcbar?
-                                                      // });
-                                                      // this would be after it already dismisses, so stop that!
-                                                      // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
+                                                        //thisDay.exercises
+                                                        //  .removeAt((i ~/ 2));
+                                                        // show snakcbar?
+                                                        // });
+                                                        // this would be after it already dismisses, so stop that!
+                                                        // https://gist.github.com/Nash0x7E2/08acca529096d93f3df0f60f9c034056
+                                                      }
+                                                      return true;
+                                                    } else {
+                                                      return false;
                                                     }
-                                                    return true;
-                                                  } else {
-                                                    return false;
-                                                  }
 
-                                                  //else {
-                                                  //widget.callback();
-                                                  //}
-                                                },
-                                                // Show a red background as the item is swiped away.
-                                                background: Container(
-                                                    color: Colors.red),
+                                                    //else {
+                                                    //widget.callback();
+                                                    //}
+                                                  },
+                                                  // Show a red background as the item is swiped away.
+                                                  background: Container(
+                                                      color: Colors.red),
 
-                                                child: Row(
-                                                  mainAxisSize:
-                                                      MainAxisSize.min,
-                                                  children: <Widget>[
-                                                    Expanded(
-                                                      child: _pickChild(
-                                                        thisDay: thisDay,
-                                                        index: i ~/ 2,
-                                                        enabled: i >
-                                                            currentSet * 2 - 1,
+                                                  child: Row(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: <Widget>[
+                                                      Expanded(
+                                                        child: _pickChild(
+                                                          thisDay: thisDay,
+                                                          index: i ~/ 2,
+                                                          program: program,
+                                                          enabled: i >
+                                                              currentSet * 2 -
+                                                                  1,
+                                                        ),
                                                       ),
-                                                    ),
-                                                    InkWell(
-                                                      child: Icon(
-                                                        Icons.delete_sweep,
-                                                        // for disabled ones, gray them out a little
-                                                        color: i >
-                                                                currentSet * 2 -
-                                                                    1
-                                                            ? Colors.red
-                                                            : Colors.red
-                                                                .withOpacity(
-                                                                    0.6),
-                                                        size: 35,
+                                                      InkWell(
+                                                        child: Icon(
+                                                          Icons.delete_sweep,
+                                                          // for disabled ones, gray them out a little
+                                                          color: i >
+                                                                  currentSet *
+                                                                          2 -
+                                                                      1
+                                                              ? Colors.red
+                                                              : Colors.red
+                                                                  .withOpacity(
+                                                                      0.6),
+                                                          size: 35,
+                                                        ),
+                                                        //onTap: () {
+                                                        //setState(() {
+                                                        //thisDay.activities.removeAt(i);
+                                                        // snackbar show..
+                                                        //});
+                                                        //},
                                                       ),
-                                                      //onTap: () {
-                                                      //setState(() {
-                                                      //thisDay.activities.removeAt(i);
-                                                      // snackbar show..
-                                                      //});
-                                                      //},
-                                                    ),
-                                                  ],
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
                                             ),
-                                          ),
-                                ],
+                                  ],
+                                ),
                               ),
-                            ),
-                            Container(
-                              alignment: Alignment.center,
-                              margin: EdgeInsets.only(top: 5, bottom: 10.0),
-                              child: isBuildingNotUsing
-                                  ? Container()
-                                  : AdmobBanner(
-                                      adUnitId: Provider.of<OldVideos>(context,
-                                              listen: false)
-                                          .getBannerAdUnitId(),
-                                      adSize: bannerSize,
-                                      /* listener: (AdmobAdEvent event, Map<String, dynamic> args) {
+                              Container(
+                                alignment: Alignment.center,
+                                margin: EdgeInsets.only(top: 5, bottom: 10.0),
+                                child: isBuildingNotUsing
+                                    ? Container()
+                                    : AdmobBanner(
+                                        adUnitId: Provider.of<OldVideos>(
+                                                context,
+                                                listen: false)
+                                            .getBannerAdUnitId(),
+                                        adSize: bannerSize,
+                                        /* listener: (AdmobAdEvent event, Map<String, dynamic> args) {
                   handleEvent(event, args, 'Banner');
                 },*/
-                                      onBannerCreated:
-                                          (AdmobBannerController controller) {
-                                        // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
-                                        // Normally you don't need to worry about disposing this yourself, it's handled.
-                                        // If you need direct access to dispose, this is your guy!
-                                        // controller.dispose();
-                                      },
-                                    ),
-                            ),
-                          ],
+                                        onBannerCreated:
+                                            (AdmobBannerController controller) {
+                                          // Dispose is called automatically for you when Flutter removes the banner from the widget tree.
+                                          // Normally you don't need to worry about disposing this yourself, it's handled.
+                                          // If you need direct access to dispose, this is your guy!
+                                          // controller.dispose();
+                                        },
+                                      ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
-        ),
-      );
+            ],
+          ),
+        );
+      });
     });
   }
 }
@@ -378,8 +398,12 @@ class _TimelineStepIndicator extends StatelessWidget {
 class EditExerciseScreenArguments {
   final ExerciseSet activity;
   final bool isBuildingNotUsing;
+  final bool isExerciseFromMainLiftPRogram;
 
-  EditExerciseScreenArguments({this.activity, this.isBuildingNotUsing = false});
+  EditExerciseScreenArguments(
+      {this.activity,
+      this.isBuildingNotUsing = false,
+      @required this.isExerciseFromMainLiftPRogram});
 }
 
 class _TimelineStepsChild extends StatelessWidget {
@@ -390,6 +414,7 @@ class _TimelineStepsChild extends StatelessWidget {
     @required this.thisSetProgressSet,
     @required this.thisDay,
     @required this.isBuildingNotUsing,
+    @required this.program,
     //@required this.onCopyCallback
   }) : super(key: key);
 
@@ -398,6 +423,7 @@ class _TimelineStepsChild extends StatelessWidget {
   final bool thisSetProgressSet;
   final ExerciseDay thisDay;
   final bool isBuildingNotUsing;
+  final PickedProgram program;
   //final Function onCopyCallback;
 
   @override
@@ -489,7 +515,9 @@ class _TimelineStepsChild extends StatelessWidget {
                             await Navigator.pushNamed(context, '/exercise',
                                 arguments: EditExerciseScreenArguments(
                                     activity: activity,
-                                    isBuildingNotUsing: isBuildingNotUsing));
+                                    isBuildingNotUsing: isBuildingNotUsing,
+                                    isExerciseFromMainLiftPRogram:
+                                        program.isMainLift));
                             // tell everyone that ExerciseDay has been changed so they rebuild. bad, but a hack around
                             // it for the edit program page which otherwise wouldnt see these changes.
                             if (activityStart != activity) {

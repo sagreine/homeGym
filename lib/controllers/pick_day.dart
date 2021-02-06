@@ -139,6 +139,6 @@ class PickDayController {
             */
     //Navigator.pushNamed(context, '/do_lift');
     //Navigator.pushNamed(context, '/excerciseday');
-    Navigator.pushNamed(context, '/today');
+    Navigator.pushNamed(context, '/today', arguments: model.pickedProgram);
   }
 }

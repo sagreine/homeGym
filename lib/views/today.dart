@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
+import 'package:provider/provider.dart';
 
 class TodayView extends StatefulWidget {
   @override
@@ -30,18 +32,22 @@ class TodayViewState extends State<TodayView>
 
   @override
   Widget build(BuildContext context) {
+    PickedProgram program = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       drawer: ReusableWidgets.getDrawer(context),
       appBar: MediaQuery.of(context).orientation == Orientation.portrait
           ? ReusableWidgets.getAppBar(
               tabController: this.defaultTabController, tabs: myTabs)
           : ReusableWidgets.getAppBar(tabController: null, tabs: myTabs),
-      body: TabBarView(
-        controller: this.defaultTabController,
-        children: [
-          DoLiftView(),
-          ExcerciseDayView(),
-        ],
+      body: ChangeNotifierProvider<PickedProgram>.value(
+        value: program,
+        child: TabBarView(
+          controller: this.defaultTabController,
+          children: [
+            DoLiftView(),
+            ExcerciseDayView(),
+          ],
+        ),
       ),
     );
   }

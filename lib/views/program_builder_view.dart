@@ -253,7 +253,8 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                       potentialNewPRogram.type == "5/3/1",
                   onChanged: (newValue) {
                     setState(() {
-                      potentialNewPRogram.isMainLift = newValue;
+                      potentialNewPRogram.updateMainLift(newValue);
+                      //potentialNewPRogram.isMainLift = newValue;
                     });
                   }),
               Padding(
@@ -403,12 +404,21 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                     // TODO: well lets not hardcode this now. at least use mediaquery
                     height: 367,
                     //child: SingleChildScrollView(
-                    child: ChangeNotifierProvider.value(
-                        value: exerciseDays[week - 1],
+                    child: MultiProvider(
+                        providers: [
+                          ChangeNotifierProvider.value(
+                            value: exerciseDays[week - 1],
+                          ),
+                          ChangeNotifierProvider.value(
+                            value: potentialNewPRogram,
+                          ),
+                        ],
                         child:
                             //Consumer<ExerciseDay>(builder: (context, prs, child) {
                             //setState(() {});
                             // return
+
+                            // we need to be able to update this if we decide the NEW program is a mian lift program (or, it toggles either way really)
                             ExcerciseDayView(
                                 /*callback: () {
                                   setState(() {});
@@ -540,8 +550,17 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
           height: 367,
           // this needs to scope provider (right? otherweise we wont pull in this exercise day which is no good)
           // but it also needs to consume this, for when we make changes to exercise sets within this exercise day....
-          child: ChangeNotifierProvider.value(
-              value: exerciseDays[week - 1], //ExerciseDay(),
+          child: MultiProvider(
+              providers: [
+                ChangeNotifierProvider.value(
+                  value: exerciseDays[week - 1],
+                ),
+                ChangeNotifierProvider.value(
+                  value: potentialNewPRogram,
+                ),
+              ],
+
+              //ExerciseDay(),
               // program is just used for some random text so should replace that
               //Consumer<PickedProgram>(builder: (context, prs, child) {
               //setState(() {});
