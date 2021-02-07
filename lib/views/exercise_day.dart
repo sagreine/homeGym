@@ -295,9 +295,8 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                           thisDay: thisDay,
                                                           index: i ~/ 2,
                                                           // this is disgusting. be an adult.
-                                                          program:
-                                                              programConsumed ??
-                                                                  program,
+                                                          program: program ??
+                                                              programConsumed,
                                                           enabled: i >
                                                               currentSet * 2 -
                                                                   1,
@@ -514,6 +513,7 @@ class _TimelineStepsChild extends StatelessWidget {
                           //
                           icon: Icon(Icons.edit),
                           onPressed: () async {
+                            // TODO this is not working - in that edits are automatically saving even without FAB
                             var activityStart =
                                 ExerciseSet.deepCopy(copyingFrom: activity);
                             await Navigator.pushNamed(context, '/exercise',
@@ -521,12 +521,34 @@ class _TimelineStepsChild extends StatelessWidget {
                                     activity: activity,
                                     isBuildingNotUsing: isBuildingNotUsing,
                                     isExerciseFromMainLiftPRogram:
-                                        program.isMainLift));
+                                        program?.isMainLift ?? false));
                             // tell everyone that ExerciseDay has been changed so they rebuild. bad, but a hack around
                             // it for the edit program page which otherwise wouldnt see these changes.
                             if (activityStart != activity) {
                               thisDay.tempNotify();
                             }
+
+// TODO this should work, but there is an issue and it doesn't. a consumer that rebuilds overwrites the updates in a build? or something. on do_lift_view...
+                            /*var activityStart =
+                                ExerciseSet.deepCopy(copyingFrom: activity);
+                            final updatedActivity = await Navigator.pushNamed(
+                                context, '/exercise',
+                                arguments: EditExerciseScreenArguments(
+                                    activity: activityStart,
+                                    isBuildingNotUsing: isBuildingNotUsing,
+                                    isExerciseFromMainLiftPRogram:
+                                        program?.isMainLift ?? false));
+                            // tell everyone that ExerciseDay has been changed so they rebuild. bad, but a hack around
+                            // it for the edit program page which otherwise wouldnt see these changes.
+                            if (activity != updatedActivity &&
+                                updatedActivity != null) {
+                              thisDay.updateSet(activity, updatedActivity);
+
+                              //thisDay.updateActivity(updatedActivity);
+                              //updateActivity(activity, updatedActivity);
+                              //thisDay.tempNotify();
+                            }*/
+
                             //setState?? isnt' a stateful widget though...
                             // shouldn't be necessary becuase the parent of this is a Consumer of thisDay
                             // and activity should be it's child.

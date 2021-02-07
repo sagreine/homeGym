@@ -36,7 +36,8 @@ class _ExerciseViewState extends State<ExerciseView> {
     //showBarbellPercentagePicker = false;
   }
 
-  FloatingActionButton _getDoneButton(BuildContext context) {
+  FloatingActionButton _getDoneButton(
+      BuildContext context, ExerciseSet activity) {
     return FloatingActionButton(
       key: ObjectKey(exerciseSet),
       heroTag: UniqueKey(),
@@ -54,7 +55,7 @@ class _ExerciseViewState extends State<ExerciseView> {
           await Future.delayed(Duration(seconds: 1));
         }*/
         //;
-        Navigator.of(context).pop();
+        Navigator.pop(context, activity);
       },
     );
   }
@@ -337,7 +338,7 @@ class _ExerciseViewState extends State<ExerciseView> {
         key: scaffoldKey,
         appBar: ReusableWidgets.getAppBar(),
         drawer: ReusableWidgets.getDrawer(context),
-        floatingActionButton: _getDoneButton(context),
+        floatingActionButton: _getDoneButton(context, exerciseSet),
         body: DirectSelectContainer(
             child: Column(children: [
           Expanded(

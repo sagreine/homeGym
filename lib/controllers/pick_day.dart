@@ -20,10 +20,10 @@ class PickDayController {
   ExerciseDayController exerciseDayController = ExerciseDayController();
 
   dispose(context) {
-    Provider.of<PickDay>(context, listen: false).pickedProgram = null;
-    programController.dispose();
-    weekController.dispose();
-    tmController.dispose();
+    //Provider.of<PickDay>(context, listen: false).pickedProgram = null;
+    //programController.dispose();
+    //weekController.dispose();
+    //tmController.dispose();
     //exerciseDayController.dispose();
   }
 
@@ -106,7 +106,7 @@ class PickDayController {
     var exerciseDay = Provider.of<ExerciseDay>(context, listen: false);
     var model = Provider.of<PickDay>(context, listen: false);
     // this sets our "main" lift to hte one selected
-    // TODO this needs to be handled only for 'Main' lift days once that is implemented...
+    // TODO this needs to be handled only for 'Main' lift days once that is implemented... - nah, this is day level.
     if (model.pickedProgram.isMainLift) {
       exerciseDay.lift = ReusableWidgets
           .lifts[selectedExercise.indexWhere((element) => element)];
@@ -114,7 +114,7 @@ class PickDayController {
     /*else {
       exerciseDay.lift = "Squat";
     }*/
-
+    var copy = PickedProgram.deepCopy(model.pickedProgram);
     // if (tmController.text != null && tmController.text.length != 0) {
     //exerciseDay.trainingMax = double.tryParse(tmController.text) / 100;
 
@@ -126,8 +126,8 @@ class PickDayController {
     //}
     //}
 
-    await getExercises(
-        context, model.pickedProgram, model.pickedProgram.week, isCustom);
+    await getExercises(context, /*model.pickedProgram*/ copy,
+        model.pickedProgram.week, isCustom);
 
     // if we overrode the %TM percentage, update that here - need to do erro control here...
 
@@ -136,7 +136,7 @@ class PickDayController {
     // 2) this is the last week of the program
     ///// orrrrrr just specify this in the db as a week to do so...
     exerciseDay.updateMaxIfGetReps = (exerciseDay.updateMaxIfGetReps &&
-        model.pickedProgram.potentialProgressWeek);
+        /*model.pickedProgram */ copy.potentialProgressWeek);
 
     // at this point we've set the week-level variable to false, need to set it to false for each
     // day element as well for safety (also i stupidly made this a requirement later..)
@@ -154,8 +154,8 @@ class PickDayController {
             */
     //Navigator.pushNamed(context, '/do_lift');
     //Navigator.pushNamed(context, '/excerciseday');
-    var copy = PickedProgram.deepCopy(model.pickedProgram);
-    model.pickedProgram = null;
+
+    //model.pickedProgram = null;
     Navigator.pushNamed(context, '/today', arguments: copy);
   }
 }

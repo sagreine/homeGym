@@ -69,6 +69,11 @@ class ExerciseDay extends ChangeNotifier {
     notifyListeners();
   }
 
+  updateSet(set1, set2) {
+    set1 = set2;
+    notifyListeners();
+  }
+
   void addAllExercise(
     List<ExerciseSet> exerciseSet,
   ) {
