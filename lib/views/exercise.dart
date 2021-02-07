@@ -205,41 +205,47 @@ class _ExerciseViewState extends State<ExerciseView> {
                         //}
                       })),
             ),
-            // TODO this will let us update the rep and weight maxes as the forms change
-            // TODO dont forget to update the ExerciseSet we pass in to be the consumer
-            // also this doesn't work at all right now and i'm not sure why
-            Consumer<ExerciseSet>(
-              builder: (context, formSet, child) {
-                return Consumer<Prs>(builder: (context, prs, child) {
-                  // temporarily set this lift to the barbell we chose
-                  var currentTitleForm = exerciseSet.title;
-                  exerciseSet.title = (!isNotForBarbellPercentage
-                      ? barbellLiftForPercentage
-                      : barbellLift);
-                  var _prs = prs.bothLocalExistingPR(lift: exerciseSet
-                      /*ExerciseSet(
+
+            // we don't want this to exist if they've picked Main
+            ((!isNotForBarbellPercentage &&
+                        barbellLiftForPercentage == "Main") ||
+                    isNotForBarbellPercentage && barbellLift == "Main")
+                ? Container()
+                :
+                // TODO this will let us update the rep and weight maxes as the forms change
+                // TODO dont forget to update the ExerciseSet we pass in to be the consumer
+                Consumer<ExerciseSet>(
+                    builder: (context, formSet, child) {
+                      return Consumer<Prs>(builder: (context, prs, child) {
+                        // temporarily set this lift to the barbell we chose
+                        var currentTitleForm = exerciseSet.title;
+                        exerciseSet.title = (!isNotForBarbellPercentage
+                            ? barbellLiftForPercentage
+                            : barbellLift);
+                        var _prs = prs.bothLocalExistingPR(lift: exerciseSet
+                            /*ExerciseSet(
                               title: barbellLift ?? "Squat",
                               reps: exerciseSet.reps,
                               weight: exerciseSet.weight)*/
 
-                      );
-                  // then set it back to whatever they've edited to on the form
-                  // note, don't do it this way without e.g. local variables at least.
-                  exerciseSet.title = currentTitleForm;
-                  //setState(() {});
+                            );
+                        // then set it back to whatever they've edited to on the form
+                        // note, don't do it this way without e.g. local variables at least.
+                        exerciseSet.title = currentTitleForm;
+                        //setState(() {});
 
-                  return Column(
-                      mainAxisAlignment: MainAxisAlignment.start,
-                      children: [
-                        Text("For reference"),
-                        Text(
-                            "${(isNotForBarbellPercentage ? barbellLiftForPercentage : barbellLift) ?? 'Squat'} ${formSet.reps ?? exerciseSet.reps}RM: ${_prs["Rep"].weight} "),
-                        Text(
-                            "Max reps for ${formSet.weight ?? exerciseSet.weight}: ${_prs["Weight"].reps}"),
-                      ]);
-                });
-              },
-            ),
+                        return Column(
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              Text("For reference"),
+                              Text(
+                                  "${(isNotForBarbellPercentage ? barbellLiftForPercentage : barbellLift) ?? 'Squat'} ${formSet.reps ?? exerciseSet.reps ?? ''}RM: ${_prs["Rep"].weight} "),
+                              Text(
+                                  "Max reps for ${formSet.weight ?? exerciseSet.weight}: ${_prs["Weight"].reps}"),
+                            ]);
+                      });
+                    },
+                  ),
             if (trailingChild != null)
               SizedBox(
                 height: 6,
