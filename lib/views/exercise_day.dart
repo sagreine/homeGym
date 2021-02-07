@@ -84,7 +84,8 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
       thisDay: thisDay,
       isBuildingNotUsing: isBuildingNotUsing,
       //onCopyCallback: () => setState(() {}),
-      thisSetProgressSet: step.thisSetProgressSet && thisDay.updateMaxIfGetReps,
+      thisSetProgressSet:
+          step.thisSetProgressSet, //&& (thisDay.updateMaxIfGetReps ?? false),
     ));
 
     final isFirst = index == 0;
