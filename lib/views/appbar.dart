@@ -765,6 +765,10 @@ class ExerciseForm {
           },
           enableSuggestions: true,
           validator: (value) {
+            if (exerciseSet.noPrescribedWeight &&
+                field.toUpperCase() == "WEIGHT") {
+              return null;
+            }
             if (value.isEmpty) {
               return "$field can't be blank";
             }

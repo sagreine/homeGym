@@ -47,15 +47,16 @@ class _ExerciseViewState extends State<ExerciseView> {
         //color: Colors.red,
       ),
       onPressed: () async {
-        _formEditKey.currentState.validate();
-        _formEditKey.currentState.save();
-        //_form.key
-        //fullForm.saveForm(showBarbellPicker);
-        /*if (_updateToMinBarbellWeight(context, showBarbellPicker)) {
+        if (_formEditKey.currentState.validate()) {
+          _formEditKey.currentState.save();
+          //_form.key
+          //fullForm.saveForm(showBarbellPicker);
+          /*if (_updateToMinBarbellWeight(context, showBarbellPicker)) {
           await Future.delayed(Duration(seconds: 1));
         }*/
-        //;
-        Navigator.pop(context, activity);
+          //;
+          Navigator.pop(context, activity);
+        }
       },
     );
   }

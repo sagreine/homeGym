@@ -295,8 +295,10 @@ class _ExcerciseDayViewState extends State<ExcerciseDayView> {
                                                           thisDay: thisDay,
                                                           index: i ~/ 2,
                                                           // this is disgusting. be an adult.
-                                                          program: program ??
-                                                              programConsumed,
+                                                          program:
+                                                              programConsumed ??
+                                                                  program ??
+                                                                  null,
                                                           enabled: i >
                                                               currentSet * 2 -
                                                                   1,
