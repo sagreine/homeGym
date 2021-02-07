@@ -205,20 +205,22 @@ class ExerciseSet extends ChangeNotifier {
     // try out building based on percetnage of training max. god help us
     if (this.basedOnPercentageOfTM ?? false) {
       var tmp = this.title;
-
-      updateExerciseFull(
-          context: context,
-          //TODO: what about the interplay here. e.g. i want 80% of squat 1RM but I'm using the deadlift bar?
-          exerciseTitle:
-              ReusableWidgets.lifts[this.whichLiftForPercentageofTMIndex],
-          indexForPickingBar: this.whichBarbellIndex,
-          reps: reps,
-          setPct: percentageOfTM / 100,
-          thisSetPRSet: thisSetPRSet,
-          thisSetProgressSet: thisSetProgressSet,
-          isFromCustom: true,
-          useBarbellWeight: this.basedOnBarbellWeight,
-          id: id);
+      // TODO very stupid, but the thought is when you edit programs and this is a main lift you want to reflect hat.
+      if (this.whichLiftForPercentageofTMIndex != -1) {
+        updateExerciseFull(
+            context: context,
+            //TODO: what about the interplay here. e.g. i want 80% of squat 1RM but I'm using the deadlift bar?
+            exerciseTitle:
+                ReusableWidgets.lifts[this.whichLiftForPercentageofTMIndex],
+            indexForPickingBar: this.whichBarbellIndex,
+            reps: reps,
+            setPct: percentageOfTM / 100,
+            thisSetPRSet: thisSetPRSet,
+            thisSetProgressSet: thisSetProgressSet,
+            isFromCustom: true,
+            useBarbellWeight: this.basedOnBarbellWeight,
+            id: id);
+      }
       this.title = tmp;
     } else if (thisIsRPESet ?? false) {
       this.weight = null;
@@ -242,7 +244,7 @@ class ExerciseSet extends ChangeNotifier {
     if (isMainLift ?? false) {
       //for (int i = 0; i < lifts.length; ++i) {
       //lifts.forEach((element) {
-      if (title.contains('|')) {
+      if (title?.contains('|') ?? false) {
         // a divider means we have 2 items at least
         var count = (title.split("|")).length;
         // for 2 count items, we start from right after the pipe (take the second item) for bench and press. else,

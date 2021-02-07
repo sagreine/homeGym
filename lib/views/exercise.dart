@@ -280,6 +280,26 @@ class _ExerciseViewState extends State<ExerciseView> {
       exerciseSet = args.activity;
       isBuildingNotUsing = args.isBuildingNotUsing;
       isExerciseFromMainLiftPRogram = args.isExerciseFromMainLiftPRogram;
+      if (exerciseSet.whichBarbellIndex != null) {
+        // this first one should only trigger while building and the exercise is Main, but isBuildingNotUsing in there for safety
+        if (exerciseSet.whichBarbellIndex == -1 && isBuildingNotUsing) {
+          barbellLift = "Main";
+        } else {
+          barbellLift = ReusableWidgets.lifts[exerciseSet.whichBarbellIndex];
+        }
+      }
+      if (exerciseSet.whichLiftForPercentageofTMIndex != null) {
+        if (exerciseSet.whichLiftForPercentageofTMIndex == -1 &&
+            isBuildingNotUsing) {
+          barbellLiftForPercentage = "Main";
+        } else {
+          barbellLiftForPercentage = ReusableWidgets
+              .lifts[exerciseSet.whichLiftForPercentageofTMIndex];
+        }
+      }
+      /*if (isBuildingNotUsing && exerciseSet.thisIsMainSet) {
+        exerciseSet.title = "Main Lift (when picked)";
+      }*/
       //showBarbellPicker = ReusableWidgets.lifts.contains(exerciseSet.title);
 
       //if (showBarbellPicker) {

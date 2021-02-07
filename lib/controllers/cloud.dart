@@ -590,7 +590,8 @@ Future<void> getExercisesCustomCloud(
     exerciseSets.add(ExerciseSet.fromCustom(
       context: context,
       title: isMain
-          ? Provider.of<ExerciseDay>(context, listen: false).lift
+          ? Provider.of<ExerciseDay>(context, listen: false).lift ??
+              lift.data()["title"]
           : lift.data()["title"],
       lift: Provider.of<ExerciseDay>(context, listen: false).lift,
       // this might be set or it might not be. limit by bool of it is should be, then set to 100 if not or missing...
