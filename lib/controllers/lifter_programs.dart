@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/views.dart';
 import 'package:provider/provider.dart';
 
 class LifterProgramsController {
@@ -34,10 +35,30 @@ class LifterProgramsController {
 
     // write program to cloud
     await saveProgram(context: context, potentiallyEditedProgram: program);
-    // update the local copy's training max pct
+    // update the local copy's training max pct and indexes (this is done on read-back-in-program from cloud, but we wont be reading back in!)
+    // so, update the local copy so that it has these changes too in case they go directly to using it.
     program.trainingMaxPct /= 100;
-
-    //programs.sortPrograms();
+    //var isMain = lift.data()["thisIsMainSet"] ?? false;
+    program.exerciseDays.forEach((day) {
+      day.exercises.forEach((lift) {
+        var barbellPctIndex = lift.whichLiftForPercentageofTMIndex;
+        var barbellIndex = lift.whichBarbellIndex;
+        if (lift.thisIsMainSet) {
+          if (barbellPctIndex == -1) {
+            barbellPctIndex = ReusableWidgets.lifts
+                .indexOf(Provider.of<ExerciseDay>(context, listen: false).lift);
+          }
+          // thuis modification is needed here and on the other one if we populated against (4 lifts + Main) when we set this
+          /*else if (barbellPctIndex != null) {
+        barbellPctIndex--;
+      }*/
+          if (barbellIndex == -1) {
+            barbellIndex = ReusableWidgets.lifts
+                .indexOf(Provider.of<ExerciseDay>(context, listen: false).lift);
+          }
+        }
+      });
+    });
   }
 
   saveProgram(
