@@ -84,11 +84,14 @@ class _ExerciseViewState extends State<ExerciseView> {
               }
               if (newValue == true) {
                 if (!isNotForBarbellPercentage) {
-                  // if they haven't picked a lift yet, we still want to set one -> the default
+                  // if they haven't picked a lift yet, we still want to set one -> the default. string and index
                   if (barbellLiftForPercentage == null) {
-                    if (exerciseSet.basedOnBarbellWeight) {
+                    if (exerciseSet.basedOnPercentageOfTM) {
                       barbellLiftForPercentage = ReusableWidgets.lifts[
                           exerciseSet.whichLiftForPercentageofTMIndex ?? 0];
+                      if (exerciseSet.whichLiftForPercentageofTMIndex == null) {
+                        exerciseSet.whichLiftForPercentageofTMIndex = 0;
+                      }
                     } else {
                       barbellLiftForPercentage =
                           ReusableWidgets.lifts.contains(exerciseSet.title)
@@ -102,6 +105,9 @@ class _ExerciseViewState extends State<ExerciseView> {
                     if (exerciseSet.basedOnBarbellWeight) {
                       barbellLift = ReusableWidgets
                           .lifts[exerciseSet.whichBarbellIndex ?? 0];
+                      if (exerciseSet.whichBarbellIndex == null) {
+                        exerciseSet.whichBarbellIndex = 0;
+                      }
                     } else {
                       barbellLift =
                           ReusableWidgets.lifts.contains(exerciseSet.title)

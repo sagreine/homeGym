@@ -679,7 +679,10 @@ class ExerciseForm {
   }
 
   _buildFormField(
-      {String field, ExerciseSet exerciseSet, Function onValueUpdate}) {
+      {String field,
+      ExerciseSet exerciseSet,
+      bool isBuildingNotUsing,
+      Function onValueUpdate}) {
     return Expanded(
       child: Focus(
         onFocusChange: (hasFocus) {
@@ -717,7 +720,8 @@ class ExerciseForm {
           // we don't allow editing of weight if this is based on a percentage...
           // TODO: RPE ... ?
           readOnly: (exerciseSet.noPrescribedWeight &&
-              field.toUpperCase() == "WEIGHT"),
+              field.toUpperCase() == "WEIGHT" &&
+              isBuildingNotUsing),
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
             WhitelistingTextInputFormatter.digitsOnly,
@@ -917,6 +921,7 @@ class ExerciseForm {
               _buildFormField(
                   exerciseSet: exerciseSet,
                   field: "Reps",
+                  isBuildingNotUsing: isBuildingNotUsing,
                   onValueUpdate: () {
                     //exerciseSet.reps = int.tryParse(repsController.text);
                     exerciseSet.updateExercise(
@@ -930,6 +935,7 @@ class ExerciseForm {
               ),
               _buildFormField(
                   exerciseSet: exerciseSet,
+                  isBuildingNotUsing: isBuildingNotUsing,
                   field: "Weight",
                   onValueUpdate: () {
                     //exerciseSet.weight = int.tryParse(weightController.text);
@@ -967,6 +973,7 @@ class ExerciseForm {
               ),
               _buildFormField(
                   exerciseSet: exerciseSet,
+                  isBuildingNotUsing: isBuildingNotUsing,
                   field: "Rest",
                   onValueUpdate: () {
                     /*exerciseSet.restPeriodAfter =
