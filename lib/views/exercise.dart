@@ -192,15 +192,17 @@ class _ExerciseViewState extends State<ExerciseView> {
                         }
                         // only update the weight using raw values if it is not a percentage
                         //TODO need to implement one way for barbell and another for percentage... that is, populate weight based on percentage here....
-                        fullForm.finalizeWeightsAndDescription(
-                            context: context,
-                            exerciseSet: exerciseSet,
-                            usingBarbell: exerciseSet.basedOnBarbellWeight,
-                            isBuildingNotUsing: true,
-                            barbellLift: (!isNotForBarbellPercentage
-                                ? barbellLiftForPercentage
-                                : barbellLift),
-                            scaffoldKey: scaffoldKey);
+                        if (!exerciseSet.thisIsMainSet) {
+                          fullForm.finalizeWeightsAndDescription(
+                              context: context,
+                              exerciseSet: exerciseSet,
+                              usingBarbell: exerciseSet.basedOnBarbellWeight,
+                              isBuildingNotUsing: true,
+                              barbellLift: (!isNotForBarbellPercentage
+                                  ? barbellLiftForPercentage
+                                  : barbellLift),
+                              scaffoldKey: scaffoldKey);
+                        }
                         setState(() {});
                         //}
                       })),
@@ -241,7 +243,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                               Text(
                                   "${(isNotForBarbellPercentage ? barbellLiftForPercentage : barbellLift) ?? 'Squat'} ${formSet.reps ?? exerciseSet.reps ?? ''}RM: ${_prs["Rep"].weight} "),
                               Text(
-                                  "Max reps for ${formSet.weight ?? exerciseSet.weight}: ${_prs["Weight"].reps}"),
+                                  "Max reps for ${formSet.weight ?? exerciseSet.weight ?? 0}: ${_prs["Weight"].reps}"),
                             ]);
                       });
                     },
