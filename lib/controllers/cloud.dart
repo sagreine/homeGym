@@ -79,6 +79,9 @@ Future<DocumentReference> saveProgramCloud(
             .doc("Week" + i.toString())
             .collection("Lifts")
             .doc(program.exerciseDays[i].exercises[j].id);
+        // we need to set this back to the ID. otherwise, if we just made the program this session,
+        // all of the exercises will not have an ID. that is, if we edit it several times, they'll get added as new sets
+        program.exerciseDays[i].exercises[j].id = tag.id;
         //.doc(i.toString())
         //.set(;
         batch.set(tag, program.exerciseDays[i].exercises[j].toJson());
@@ -86,6 +89,7 @@ Future<DocumentReference> saveProgramCloud(
     }
   }
   await batch.commit();
+
   return docRef;
 }
 

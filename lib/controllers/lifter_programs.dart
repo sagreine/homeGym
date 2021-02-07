@@ -90,9 +90,10 @@ class LifterProgramsController {
             //originalProgram.exerciseDays[i].exercises[j]
             // TODO this does not work. need to override == and hash...
             potentiallyEditedProgram.exerciseDays[i].exercises[j] !=
-                originalProgram?.exerciseDays[i]?.exercises[j])
+                originalProgram?.exerciseDays[i]?.exercises[j]) {
           potentiallyEditedProgram.exerciseDays[i].exercises[j].hasBeenUpdated =
               true;
+        }
       }
     }
 

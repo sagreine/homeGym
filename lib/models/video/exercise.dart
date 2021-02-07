@@ -3,6 +3,7 @@ import 'package:home_gym/models/models.dart';
 import 'package:home_gym/views/views.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:provider/provider.dart';
+import 'package:quiver/core.dart';
 
 part 'exercise.g.dart';
 
@@ -46,6 +47,50 @@ class ExerciseSet extends ChangeNotifier {
   bool hasBeenUpdated;
   @JsonKey(ignore: true)
   String id;
+
+  bool operator ==(o) =>
+      identical(this, o) ||
+      o is ExerciseSet &&
+          title == o.title &&
+          reps == o.reps &&
+          description == description &&
+          restPeriodAfter == o.restPeriodAfter &&
+          weight == o.weight &&
+          prescribedReps == prescribedReps &&
+          basedOnBarbellWeight == o.basedOnBarbellWeight &&
+          basedOnPercentageOfTM == o.basedOnPercentageOfTM &&
+          percentageOfTM == o.percentageOfTM &&
+          thisSetPRSet == o.thisSetPRSet &&
+          thisSetProgressSet == o.thisSetProgressSet &&
+          thisIsRPESet == o.thisIsRPESet &&
+          thisIsMainSet == o.thisIsMainSet &&
+          indexForOrdering == o.indexForOrdering &&
+          whichBarbellIndex == o.whichBarbellIndex &&
+          whichLiftForPercentageofTMIndex ==
+              o.whichLiftForPercentageofTMIndex &&
+          rpe == o.rpe;
+
+  int get hashCode => hash4(
+      hash4(
+        title,
+        reps,
+        description,
+        restPeriodAfter,
+      ),
+      hash4(
+        weight,
+        prescribedReps,
+        basedOnBarbellWeight,
+        basedOnPercentageOfTM,
+      ),
+      hash4(
+        percentageOfTM,
+        thisSetPRSet,
+        thisSetProgressSet,
+        thisIsMainSet,
+      ),
+      hash4(thisIsRPESet, indexForOrdering, whichBarbellIndex,
+          hash2(whichLiftForPercentageofTMIndex, rpe)));
 
   // for searching, we'll popluate with keywords based on lift title
   static List<String> makeKeywords(String name) {
