@@ -925,7 +925,10 @@ class ExerciseForm {
                   onValueUpdate: () {
                     //exerciseSet.reps = int.tryParse(repsController.text);
                     exerciseSet.updateExercise(
-                        reps: int.tryParse(repsController.text));
+                        reps: int.tryParse(repsController.text),
+                        prescribedReps: isBuildingNotUsing
+                            ? int.tryParse(repsController.text)
+                            : null);
 
                     // TODO:
                     onValueUpdate();

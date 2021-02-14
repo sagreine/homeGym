@@ -152,7 +152,7 @@ Future<List<PickedProgram>> _getCustomPrograms({
     pickedProgram.program = list[index].data()["program"];
     pickedProgram.type = list[index].data()["type"];
     pickedProgram.isMainLift = list[index].data()["isMainLift"] ?? false;
-    pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"] / 100;
+    pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
     pickedProgram.potentialProgressWeek =
         list[index].data()["potentialProgressWeek"];
     //pickedProgram.hasMainLifts = list[index].data()[

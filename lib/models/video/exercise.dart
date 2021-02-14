@@ -22,7 +22,7 @@ class ExerciseSet extends ChangeNotifier {
   int restPeriodAfter;
   int weight;
   int reps;
-  final int prescribedReps;
+  int prescribedReps;
   double duration;
   List<String> keywords;
   DateTime dateTime;
@@ -138,8 +138,17 @@ class ExerciseSet extends ChangeNotifier {
     this.thisIsRPESet = false,
     this.whichBarbellIndex,
     this.whichLiftForPercentageofTMIndex,
+    this.prescribedReps,
     this.rpe,
-  }) : prescribedReps = reps {
+  })
+  // this was when we could keep this as a finval variable. not so much anymore since we're 'copying' and thus need to let this
+  // be editable :(
+  //: prescribedReps = reps
+
+  {
+    if (prescribedReps == null) {
+      this.prescribedReps = reps;
+    }
     //var day = Provider.of<LifterWeights>(context, listen: false);
     //this.updateExerciseFull(context: context, exerciseTitle: "deadlift");
     if (this.dateTime == null) {
@@ -181,7 +190,7 @@ class ExerciseSet extends ChangeNotifier {
           wasWeightPRSet: copyingFrom.wasRepPRSet ?? false,
           wasRepPRSet: copyingFrom.wasRepPRSet ?? false,
           thisIsRPESet: copyingFrom.thisIsRPESet ?? false,
-          indexForOrdering: copyingFrom.indexForOrdering,
+          indexForOrdering: copyingFrom.indexForOrdering + 1,
           // this is set as an index of ReusableWidgets.list
           whichBarbellIndex: copyingFrom.whichBarbellIndex,
           whichLiftForPercentageofTMIndex:
@@ -431,6 +440,7 @@ class ExerciseSet extends ChangeNotifier {
     int restPeriodAfter,
     int weight,
     int reps,
+    int prescribedReps,
     bool thisSetPRSet,
     bool thisSetProgressSet,
     String id,
@@ -451,6 +461,9 @@ class ExerciseSet extends ChangeNotifier {
     }
     if (reps != null) {
       this.reps = reps;
+    }
+    if (prescribedReps != null) {
+      this.prescribedReps = prescribedReps;
     }
     if (thisSetPRSet != null) {
       this.thisSetPRSet = thisSetPRSet;

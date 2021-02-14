@@ -662,9 +662,11 @@ class ProgramBuilderViewState extends State<ProgramBuilderView> {
                         // and should finish editing existing programs - not adding new ones
                         if (exerciseDays == null ||
                             exerciseDays.length == 0 ||
-                            exerciseDays.any((element) =>
-                                element.exercises == null ||
-                                element.exercises.length == 0)) {
+                            exerciseDays.any((day) =>
+                                day.exercises == null ||
+                                day.exercises.length == 0 ||
+                                day.exercises.any(
+                                    (exercise) => exercise.title == null))) {
                           Scaffold.of(context).showSnackBar(SnackBar(
                               content: Text(
                                   "Must add at least one exercise to every week before saving program")));
