@@ -24,9 +24,20 @@ ExerciseSet _$ExerciseSetFromJson(Map<String, dynamic> json) {
     wasWeightPRSet: json['wasWeightPRSet'] as bool,
     wasRepPRSet: json['wasRepPRSet'] as bool,
     duration: (json['duration'] as num)?.toDouble(),
-  )
-    ..type = json['type'] as String
-    ..keywords = (json['keywords'] as List)?.map((e) => e as String)?.toList();
+    hasBeenUpdated: json['hasBeenUpdated'] as bool,
+    thisIsMainSet: json['thisIsMainSet'] as bool,
+    type: json['type'] as String,
+    keywords: (json['keywords'] as List)?.map((e) => e as String)?.toList(),
+    basedOnBarbellWeight: json['basedOnBarbellWeight'] as bool,
+    basedOnPercentageOfTM: json['basedOnPercentageOfTM'] as bool,
+    indexForOrdering: json['indexForOrdering'] as int,
+    percentageOfTM: (json['percentageOfTM'] as num)?.toDouble(),
+    thisIsRPESet: json['thisIsRPESet'] as bool,
+    whichBarbellIndex: json['whichBarbellIndex'] as int,
+    whichLiftForPercentageofTMIndex:
+        json['whichLiftForPercentageofTMIndex'] as int,
+    rpe: json['rpe'] as int,
+  );
 }
 
 Map<String, dynamic> _$ExerciseSetToJson(ExerciseSet instance) =>
@@ -43,8 +54,19 @@ Map<String, dynamic> _$ExerciseSetToJson(ExerciseSet instance) =>
       'duration': instance.duration,
       'keywords': instance.keywords,
       'dateTime': instance.dateTime?.toIso8601String(),
+      'basedOnBarbellWeight': instance.basedOnBarbellWeight,
+      'basedOnPercentageOfTM': instance.basedOnPercentageOfTM,
+      'percentageOfTM': instance.percentageOfTM,
       'thisSetPRSet': instance.thisSetPRSet,
       'thisSetProgressSet': instance.thisSetProgressSet,
       'wasWeightPRSet': instance.wasWeightPRSet,
       'wasRepPRSet': instance.wasRepPRSet,
+      'thisIsRPESet': instance.thisIsRPESet,
+      'thisIsMainSet': instance.thisIsMainSet,
+      'indexForOrdering': instance.indexForOrdering,
+      'whichBarbellIndex': instance.whichBarbellIndex,
+      'whichLiftForPercentageofTMIndex':
+          instance.whichLiftForPercentageofTMIndex,
+      'rpe': instance.rpe,
+      'hasBeenUpdated': instance.hasBeenUpdated,
     };

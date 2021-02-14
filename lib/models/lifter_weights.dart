@@ -15,7 +15,7 @@ class LifterWeights extends ChangeNotifier {
   bool bumpers;
 
   // TODO this isn't safe from e.g. null values
-  int getbarWeight(@required String lift) {
+  int getbarWeight(String lift) {
     switch (lift) {
       case "Squat":
         return squatBarWeight;

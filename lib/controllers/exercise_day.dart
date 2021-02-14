@@ -1,9 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/appbar.dart';
 import 'package:provider/provider.dart';
 
 //TODO: implement dispose
 class ExerciseDayController {
+  buildCustomProgramDay(
+      {BuildContext context,
+      @required List<ExerciseSet> exerciseSets,
+      ExerciseDay exerciseDay,
+      bool updateMaxIfGetReps}) {
+    // at this point we already have the program-level info in.
+    // need to populate any day-level info and bring in each individual exercise set
+    ExerciseDay day;
+    if (exerciseDay == null) {
+      day = Provider.of<ExerciseDay>(context, listen: false);
+    } else {
+      day = exerciseDay;
+    }
+    // note that this is backwards compared to how the default programs work
+    // that is, we store it at the exercise set level for custom instead of the program level. if any exercise
+    // is set to progress, then we progress.
+    // this is possible only if we store every week in the cloud, which we do right now. if we later change to only store a single week
+    // will need to change this because week 0 might not be a progress set while week 3 is..
+    day.buildCustomDay(
+        exerciseSets: exerciseSets,
+        updateMaxIfGetReps:
+            exerciseSets.any((element) => element.thisSetProgressSet));
+  }
+
   updateDay({
     String lift,
     BuildContext context,
@@ -13,19 +38,18 @@ class ExerciseDayController {
     List<double> percentages,
     List<String> lifts,
     double trainingMaxPct,
-    /*
-    List<String> assistanceCore,
-    List<String> assistancePull,
-    List<String> assistancePush,
-    List<int> assistanceCoreReps,
-    List<int> assistancePullReps,
-    List<int> assistancePushReps,*/
+    ExerciseDay exerciseDay,
     bool updateMaxIfGetReps,
     bool prSetWeek,
     int progressSet,
     List<ExerciseSet> exercises,
   }) {
-    var day = Provider.of<ExerciseDay>(context, listen: false);
+    ExerciseDay day;
+    if (exerciseDay == null) {
+      day = Provider.of<ExerciseDay>(context, listen: false);
+    } else {
+      day = exerciseDay;
+    }
     // TODO: the order of this does NOT match the controller and is ripe for problems down the line.
     // we need to select an individual lift for each slot. the divider pipe "|" is used for this
     // with them going in order as defined in the pick_day program controller (for now) which is
@@ -40,7 +64,7 @@ class ExerciseDayController {
     // TODO this is dangerous. if we don't start with a Main lift and start with something with multiple exercises based on the selected main day
     // this is going to leave us with a null
     var liftCheck = lift ?? day.lift ?? "Squat";
-    int liftNum = ["Squat", "Press", "Deadlift", "Bench"].indexOf(liftCheck);
+    int liftNum = ReusableWidgets.lifts.indexOf(liftCheck);
 
     for (int i = 0; i < lifts.length; ++i) {
       //lifts.forEach((element) {
@@ -85,21 +109,9 @@ class ExerciseDayController {
       percentages: percentages,
       sets: reps.length,
       prSets: prSets,
-      /*+
-          assistanceCore.length +
-          assistancePull.length +
-          assistancePush.length*/
       progressSet: progressSet,
       prSetWeek: prSetWeek,
       //trainingMax: trainingMaxPct,
-      /*
-      assistanceCore: assistanceCore,
-      assistanceCoreReps: assistanceCoreReps,
-      assistancePull: assistancePull,
-      assistancePullReps: assistancePullReps,
-      assistancePush: assistancePush,
-      assistancePushReps: assistancePushReps,
-      */
       context: context,
     );
   }

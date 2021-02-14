@@ -4,6 +4,8 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:home_gym/controllers/controllers.dart';
 import 'package:home_gym/models/models.dart';
+import 'package:home_gym/views/appbar.dart';
+import 'package:provider/provider.dart';
 
 //
 //TODO: implement dispose
@@ -47,11 +49,71 @@ updateDatabaseRecordWithReps(
       .update({"reps": reps});
 }
 
+Future<DocumentReference> saveProgramCloud(
+    {@required PickedProgram program,
+    @required String userID,
+    @required bool anyProgramsToUpdate}) async {
+  var db = FirebaseFirestore.instance;
+
+  print("saving program to cloud!");
+  DocumentReference docRef;
+  docRef = db
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("CUSTOMPROGRAMS")
+      .doc(program.id);
+
+  // first update the program if necessary
+  if (anyProgramsToUpdate) {
+    await docRef.set(program.toJson());
+  }
+
+// then upsert each exerciseDay
+  var batch = db.batch();
+
+  for (int i = 0; i < program.exerciseDays.length; ++i) {
+    for (int j = 0; j < program.exerciseDays[i].exercises.length; ++j) {
+      if (program.exerciseDays[i].exercises[j].hasBeenUpdated) {
+        var tag = docRef
+            .collection("Weeks")
+            .doc("Week" + i.toString())
+            .collection("Lifts")
+            .doc(program.exerciseDays[i].exercises[j].id);
+        // we need to set this back to the ID. otherwise, if we just made the program this session,
+        // all of the exercises will not have an ID. that is, if we edit it several times, they'll get added as new sets
+        program.exerciseDays[i].exercises[j].id = tag.id;
+        //.doc(i.toString())
+        //.set(;
+        batch.set(tag, program.exerciseDays[i].exercises[j].toJson());
+      }
+    }
+  }
+  await batch.commit();
+
+  return docRef;
+}
+
 // instead of returning a naked list, we need to return the display name and # weeks for each program
 //TODO this is extremely sloppy. stop just making random lists and pass and parse an object
-Future<List<PickedProgram>> getPrograms() async {
+Future<List<PickedProgram>> getPrograms({
+  String userID,
+}) async {
   List<PickedProgram> toReturn = List<PickedProgram>();
+  //toReturn =
+  toReturn.addAll(await _getDefaultPrograms());
 
+  // this is untested, but the idea is to sort these then return
+  //..addAll(iterable)
+  if (userID != null) {
+    toReturn.addAll(await _getCustomPrograms(userID: userID));
+  }
+  toReturn.sort((e, f) => e.type.compareTo(f.type));
+
+  return toReturn;
+}
+
+Future<List<PickedProgram>> _getDefaultPrograms() async {
+  List<PickedProgram> toReturn = List<PickedProgram>();
   QuerySnapshot querySnapshot =
       await FirebaseFirestore.instance.collection('PROGRAMS').get();
   List<QueryDocumentSnapshot> list = new List.from(querySnapshot.docs.toList());
@@ -61,11 +123,45 @@ Future<List<PickedProgram>> getPrograms() async {
     // we'll default to 1 if this value isn't set.
     pickedProgram.week = list[index].data()["numWeeks"] ?? 1;
     pickedProgram.type = list[index].data()["type"];
+    pickedProgram.isMainLift = list[index].data()["isMainLift"];
     pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
-    return pickedProgram;
-  })
-    ..sort((e, f) => e.type.compareTo(f.type));
+    pickedProgram.isCustom = false;
 
+    //hasMainLifts = ... from cloud
+    return pickedProgram;
+  });
+  return toReturn;
+}
+
+// TODO: not yet implemented.
+Future<List<PickedProgram>> _getCustomPrograms({
+  @required String userID,
+}) async {
+  List<PickedProgram> toReturn = List<PickedProgram>();
+  QuerySnapshot querySnapshot = await FirebaseFirestore.instance
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("CUSTOMPROGRAMS")
+      .get();
+  List<QueryDocumentSnapshot> list = new List.from(querySnapshot.docs.toList());
+  toReturn = new List<PickedProgram>.generate(list.length, (index) {
+    PickedProgram pickedProgram = PickedProgram();
+    //pickedProgram.program = list[index].id;
+    // we'll default to 1 if this value isn't set.
+    pickedProgram.week = list[index].data()["week"] ?? 1;
+    pickedProgram.program = list[index].data()["program"];
+    pickedProgram.type = list[index].data()["type"];
+    pickedProgram.isMainLift = list[index].data()["isMainLift"] ?? false;
+    pickedProgram.trainingMaxPct = list[index].data()["trainingMaxPct"];
+    pickedProgram.potentialProgressWeek =
+        list[index].data()["potentialProgressWeek"];
+    //pickedProgram.hasMainLifts = list[index].data()[
+    pickedProgram.id = list[index].data()["id"] ?? list[index].id;
+    pickedProgram.isAnewCopy = false;
+    pickedProgram.neverTouched = false;
+    pickedProgram.isCustom = true;
+    return pickedProgram;
+  });
   return toReturn;
 }
 
@@ -427,7 +523,127 @@ void getPlatesCloud({@required context, @required String userID}) async {
 // like this defeats the whole purpose of having this layer almost.
 Future<void> getExercisesCloud({
   @required context,
-  @required String program,
+  @required PickedProgram program,
+  @required int week,
+  @required bool isCustom,
+  @required String userID,
+  ExerciseDay exerciseDay,
+}) async {
+  if (isCustom) {
+    assert(userID != null);
+    await getExercisesCustomCloud(
+        context: context,
+        program: program,
+        week: week,
+        userID: userID,
+        exerciseDay: exerciseDay);
+  } else {
+    await getExercisesDefaultCloud(
+        context: context,
+        program: program,
+        week: week,
+        exerciseDay: exerciseDay);
+  }
+}
+
+Future<void> getExercisesCustomCloud(
+    {@required context,
+    @required PickedProgram program,
+    @required int week,
+    ExerciseDay exerciseDay,
+    @required String userID}) async {
+  ExerciseDayController exerciseDayController = ExerciseDayController();
+  //DocumentSnapshot
+  QuerySnapshot allSets;
+  allSets = await FirebaseFirestore.instance
+      .collection("USERDATA")
+      .doc(userID)
+      .collection("CUSTOMPROGRAMS")
+      .doc(program.id)
+      .collection("Weeks")
+      .doc("Week${week - 1}")
+      .collection("Lifts")
+      .get();
+  List<ExerciseSet> exerciseSets = List<ExerciseSet>();
+
+  allSets.docs.forEach((lift) {
+    var isMain = lift.data()["thisIsMainSet"] ?? false;
+    var barbellPctIndex = lift.data()["whichLiftForPercentageofTMIndex"];
+    var barbellIndex = lift.data()["whichBarbellIndex"];
+    // for sets that are Main sets, check if their index was set to 0 (which, for Main sets, is 'Main')
+    // if they were, set them to whatever lift we have selected for the day.
+    // if it wasn't, we still need to account for 'Main' not being there by sliding up one
+    if (isMain) {
+      if (barbellPctIndex == -1) {
+        barbellPctIndex = ReusableWidgets.lifts
+            .indexOf(Provider.of<ExerciseDay>(context, listen: false).lift);
+      }
+      // thuis modification is needed here and on the other one if we populated against (4 lifts + Main) when we set this
+      /*else if (barbellPctIndex != null) {
+        barbellPctIndex--;
+      }*/
+      if (barbellIndex == -1) {
+        barbellIndex = ReusableWidgets.lifts
+            .indexOf(Provider.of<ExerciseDay>(context, listen: false).lift);
+      }
+      /*else if (barbellIndex != null) {
+        barbellIndex--;
+      }*/
+    }
+
+    exerciseSets.add(ExerciseSet.fromCustom(
+      context: context,
+      title: isMain
+          ? Provider.of<ExerciseDay>(context, listen: false).lift ??
+              lift.data()["title"]
+          : lift.data()["title"],
+      lift: Provider.of<ExerciseDay>(context, listen: false).lift,
+      // this might be set or it might not be. limit by bool of it is should be, then set to 100 if not or missing...
+      // if that bool is set, use it, else it is false
+      percentageOfTM: ((lift.data()["basedOnPercentageOfTM"] ?? false)
+              // if the bool is true, use the percentage, otherwise null
+              ? lift.data()["percentageOfTM"]
+              : null) ??
+          // if it is null (not set because it isn't based on it, or it should've been but wasn't, use 100%)
+          100.toDouble(),
+      thisSetProgressSet: lift.data()["thisSetProgressSet"],
+      thisSetPRSet: lift.data()["thisSetPRSet"],
+      reps: lift.data()["reps"],
+      weight: lift.data()["weight"],
+      id: lift.id,
+      thisIsMainSet: isMain,
+      rpe: lift.data()["rpe"],
+      thisIsRPESet: lift.data()["thisIsRPESet"],
+      whichLiftForPercentageofTMIndex: barbellPctIndex,
+      whichBarbellIndex: barbellIndex,
+      indexForOrdering: lift.data()["indexForOrdering"],
+      isMainLift: program.isMainLift,
+      description: lift.data()["description"],
+      basedOnPercentageOfTM: lift.data()["basedOnPercentageOfTM"],
+      restPeriodAfter: lift.data()["restPeriodAfter"],
+      basedOnBarbellWeight: lift.data()["basedOnBarbellWeight"],
+    ));
+  });
+  exerciseDayController.buildCustomProgramDay(
+    context: context,
+    exerciseDay: exerciseDay,
+    exerciseSets: exerciseSets,
+  );
+/*
+  List<int> reps = new List<int>.from(pctAndReps.data()["Reps"]);
+  // a value of 100%, stored as 1, gets inferred as a int so need to deal with that.
+  var tmp = pctAndReps.data()["week" + week.toString() + "Percentages"];
+  List<double> percentages = List<double>.from(tmp.map((i) => i.toDouble()));
+  List<String> lifts = new List<String>.from(pctAndReps.data()["LIft"]);
+  // TODO: this means we have to set this array for every single program in the db. but if we don't want to do that, make it conditional here.
+  List<int> prSets = new List<int>.from(pctAndReps.data()["prSets"]);*/
+  //var exercise = Provider.of<ExerciseDay>(context, listen: false);
+}
+
+Future<void> getExercisesDefaultCloud({
+  @required context,
+  @required PickedProgram program,
+  ExerciseDay exerciseDay,
   @required int week,
 }) async {
   ExerciseDayController exerciseDayController = ExerciseDayController();
@@ -442,7 +658,7 @@ Future<void> getExercisesCloud({
   // pull these from a .xml file
   pctAndReps = await FirebaseFirestore.instance
       .collection('PROGRAMS')
-      .doc(program)
+      .doc(program.program)
       .get();
   List<int> reps = new List<int>.from(pctAndReps.data()["Reps"]);
   // a value of 100%, stored as 1, gets inferred as a int so need to deal with that.
@@ -455,23 +671,13 @@ Future<void> getExercisesCloud({
   await exerciseDayController.updateDay(
     updateMaxIfGetReps: pctAndReps.data()["update_max_if_get_reps"],
     lifts: lifts,
-    program: program,
+    program: program.program,
     context: context,
+    exerciseDay: exerciseDay,
     reps: reps,
     prSets: prSets,
     prSetWeek: pctAndReps.data()["PRSetWeek"],
     percentages: percentages,
     progressSet: pctAndReps.data()["progressSet"],
-    //trainingMaxPct: pctAndReps.data()["trainingMaxPct"],
-    /*
-    assistanceCore: new List<String>.from(pctAndReps.data()["assistance_core"]),
-    assistanceCoreReps:
-        new List<int>.from(pctAndReps.data()["assistance_core_reps"]),
-    assistancePull: new List<String>.from(pctAndReps.data()["assistance_pull"]),
-    assistancePullReps:
-        new List<int>.from(pctAndReps.data()["assistance_pull_reps"]),
-    assistancePush: new List<String>.from(pctAndReps.data()["assistance_push"]),
-    assistancePushReps:
-        new List<int>.from(pctAndReps.data()["assistance_push_reps"]),*/
   );
 }

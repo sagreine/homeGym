@@ -45,12 +45,7 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
   //Prs prs;
   Map<String, List<Pr>> fullCurrentPrs;
   // TODO use static
-  List<String> _lifts = [
-    "Squat",
-    "Press",
-    "Deadlift",
-    "Bench",
-  ];
+
   final GlobalKey<ScaffoldState> scaffoldKey = GlobalKey();
 
   // = ScreenshotController();
@@ -196,17 +191,18 @@ class PrsViewState extends State<PrsView> with SingleTickerProviderStateMixin {
                   Expanded(
                       child: Padding(
                           child: DirectSelectList<String>(
-                              values: _lifts,
+                              values: ReusableWidgets.lifts,
                               onUserTappedListener: () {
                                 _showScaffold();
                               },
-                              defaultItemIndex: _lifts.indexOf(lift),
+                              defaultItemIndex:
+                                  ReusableWidgets.lifts.indexOf(lift),
                               itemBuilder: (String value) =>
                                   getDropDownMenuItem(value),
                               focusedItemDecoration: _getDslDecoration(),
                               onItemSelectedListener: (item, index, context) {
                                 setState(() {
-                                  lift = _lifts[index];
+                                  lift = ReusableWidgets.lifts[index];
                                   updateThisLifPrs(
                                       prs: fullCurrentPrs,
                                       isRep: tabName == "Rep");

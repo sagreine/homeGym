@@ -107,7 +107,7 @@ class HomeController {
         .lengthSync()
         .toString());*/
     if (File(File(filePath).resolveSymbolicLinksSync()).lengthSync() <
-        983977033) {
+        983977033 * 2) {
       //cloudUrl =
       url = uploadToCloudStorage(
         userID: user.fAuthUser.uid,
@@ -197,6 +197,9 @@ class HomeController {
     }
     if (formControllerWeight.text != exercise.weight.toString()) {
       formControllerWeight.text = exercise.weight.toString();
+      if (formControllerWeight.text == "null") {
+        formControllerWeight.text = "";
+      }
     }
     if (exercise.thisSetPRSet && !justRemovedPR) {
       formControllerReps.text += "xPR";

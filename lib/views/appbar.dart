@@ -2,6 +2,7 @@ import 'package:direct_select_flutter/direct_select_item.dart';
 import 'package:direct_select_flutter/direct_select_list.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_icons/flutter_icons.dart';
 import 'package:home_gym/models/models.dart';
 import 'package:provider/provider.dart';
 
@@ -13,8 +14,9 @@ class ReusableWidgets {
     "Bench",
   ];
 
-  static getMainLiftPicker(
+  getMainLiftPicker(
       {GlobalKey<ScaffoldState> scaffoldKey,
+      bool isBuildingMainLift,
       String lift,
       Function(String, int, BuildContext) onItemSelectedListener}) {
     DirectSelectItem<String> getDropDownMenuItem(String value) {
@@ -35,6 +37,18 @@ class ReusableWidgets {
       );
     }
 
+    // if we're building a Main option, we want them to be able to pick 'Main' as an option
+    List<String> liftsUsing = List.from(lifts);
+    if (isBuildingMainLift) {
+      if (!liftsUsing.contains("Main")) {
+        liftsUsing.insert(0, "Main");
+      }
+    } else {
+      liftsUsing.remove("Main");
+      if (lift == "Main") {
+        lift = "Squat";
+      }
+    }
     return Card(
         child: Row(
       mainAxisSize: MainAxisSize.max,
@@ -42,13 +56,13 @@ class ReusableWidgets {
         Expanded(
             child: Padding(
                 child: DirectSelectList<String>(
-                  values: lifts,
+                  values: liftsUsing,
                   onUserTappedListener: () {
                     var snackBar =
                         SnackBar(content: Text('Hold and drag instead of tap'));
                     scaffoldKey.currentState.showSnackBar(snackBar);
                   },
-                  defaultItemIndex: lifts.indexOf(lift),
+                  defaultItemIndex: liftsUsing.indexOf(lift),
                   itemBuilder: (String value) => getDropDownMenuItem(value),
                   focusedItemDecoration: _getDslDecoration(),
                   onItemSelectedListener: onItemSelectedListener,
@@ -311,6 +325,33 @@ class ReusableWidgets {
                       Navigator.pop(context);
                     }
                   }),
+              ListTile(
+                  title: Text("My Programs"),
+                  //leading: Icon(Icons.description),
+                  leading: Icon(EvilIcons.archive),
+                  onTap: () {
+                    newRouteName = "/lifter_programs";
+                    // if the current route is the exact location we're at (first on the stack), mark that
+                    Navigator.popUntil(context, (route) {
+                      if (route.settings.name == newRouteName) {
+                        isNewRouteSameAsCurrent = true;
+                      } else {
+                        isNewRouteSameAsCurrent = false;
+                      }
+                      return true;
+                    });
+                    // if it isn't, go to the new route
+                    if (!isNewRouteSameAsCurrent) {
+                      Navigator.pushNamed(
+                        context,
+                        newRouteName,
+                      );
+                    }
+                    // again if it is, just pop the drawer away
+                    else {
+                      Navigator.pop(context);
+                    }
+                  }),
               /*
               ListTile(
                   title: Text("Check Form Picture"),
@@ -470,6 +511,7 @@ class ExerciseForm {
     @required String barbellLift,
     @required bool readOnlyTitle,
     @required bool usingBarbell,
+    @required bool isBuildingNotUsing,
     @required this.titleController,
     @required this.descriptionController,
     @required this.repsController,
@@ -484,6 +526,7 @@ class ExerciseForm {
         usingBarbell: usingBarbell,
         barbellLift: barbellLift,
         onValueUpdate: onValueUpdate,
+        isBuildingNotUsing: isBuildingNotUsing,
         readOnlyTitle: readOnlyTitle);
     /*this.titleController = titleController;
     this.descriptionController = descriptionController;
@@ -502,15 +545,17 @@ class ExerciseForm {
   /// An example of both of these is seen in exercise.dart. When we close the form, we use .save().
   /// But, when we need to update the form based on a value outside of the form, we have to reach
   /// into the form to call this function before rebuildling.
+  /// [isBuildingNotUsing] controls if description is updated or not for sets based on %. It won't update while building (true), else will.
   void finalizeWeightsAndDescription({
     @required BuildContext context,
     @required ExerciseSet exerciseSet,
     @required bool usingBarbell,
     @required String barbellLift,
     @required GlobalKey<ScaffoldState> scaffoldKey,
+    @required bool isBuildingNotUsing,
   }) {
-    if (exerciseSet.weight != int.parse(weightController.text)) {
-      exerciseSet.weight = int.parse(weightController.text);
+    if (exerciseSet.weight != int.tryParse(weightController.text)) {
+      exerciseSet.weight = int.tryParse(weightController.text);
     }
 
     /*if (_exerciseSet.reps != int.parse(repsController.text)) {
@@ -527,12 +572,15 @@ class ExerciseForm {
     }*/
 
     // we dont need to update anything about barbells if they aren't using a barbell
-    if (!usingBarbell) {
+    // TODO: RPE will need to be done here too. -> or just have a "notSettingWeight" flag?
+    // we want this to be done in the using-the-program phase so they get the calculator, so use that bool
+    if (!usingBarbell ||
+        (exerciseSet.noPrescribedWeight && isBuildingNotUsing)) {
       return;
     }
     // we dont need to update the description always, and we dont have to because the weight is the barbell at this point
     var lifterWeights = Provider.of<LifterWeights>(context, listen: false);
-    if (exerciseSet.weight <
+    if ((exerciseSet.weight ?? 0) <
         lifterWeights.getbarWeight(barbellLift ?? "Squat")) {
       exerciseSet.weight = lifterWeights.getbarWeight(barbellLift ?? "Squat");
 
@@ -553,8 +601,8 @@ class ExerciseForm {
     // TODO: if we really wanted to, we could populate all 'we can get this weight' up front (on login) and store it and query it here
     // to reduce latency, rather than doing it lazily
     var closestWeight = lifterWeights.getPickedOverallTotal(
-        lift: barbellLift,
-        targetWeight: exerciseSet.weight,
+        lift: barbellLift ?? "Squat",
+        targetWeight: exerciseSet.weight ?? 0,
         notActuallyThisLift: true);
     if (exerciseSet.weight != closestWeight.floor()) {
       exerciseSet.weight = closestWeight.floor();
@@ -568,10 +616,10 @@ class ExerciseForm {
 
     exerciseSet.description = "Plates: " +
         lifterWeights.getPickedPlatesAsString(
-            lift: barbellLift,
-            targetWeight: exerciseSet.weight,
+            lift: barbellLift ?? "Squat",
+            targetWeight: exerciseSet.weight ?? 0,
             notActuallyThisLift: true);
-
+    return;
     //return false;
   }
 
@@ -631,7 +679,10 @@ class ExerciseForm {
   }
 
   _buildFormField(
-      {String field, ExerciseSet exerciseSet, Function onValueUpdate}) {
+      {String field,
+      ExerciseSet exerciseSet,
+      bool isBuildingNotUsing,
+      Function onValueUpdate}) {
     return Expanded(
       child: Focus(
         onFocusChange: (hasFocus) {
@@ -644,7 +695,8 @@ class ExerciseForm {
                 //exerciseSet.weight = int.parse(weightController.text);
                 //},
                 );
-            exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
+            // TODO why are all these thisSetPRset????
+            //exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
             //onValueUpdate(value);
 
           }
@@ -665,6 +717,11 @@ class ExerciseForm {
             ),
             labelText: field,
           ),
+          // we don't allow editing of weight if this is based on a percentage...
+          // TODO: RPE ... ?
+          readOnly: (exerciseSet.noPrescribedWeight &&
+              field.toUpperCase() == "WEIGHT" &&
+              isBuildingNotUsing),
           keyboardType: TextInputType.number,
           inputFormatters: <TextInputFormatter>[
             WhitelistingTextInputFormatter.digitsOnly,
@@ -697,7 +754,7 @@ class ExerciseForm {
                 //exerciseSet.weight = int.parse(weightController.text);
                 //},
                 );
-            exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
+            //exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
           },
           onFieldSubmitted: //(value) => exerciseSet.weight = int.parse(value),
               (value) {
@@ -707,11 +764,15 @@ class ExerciseForm {
                 //value: value,
                 updatingFromSubmit: true,
                 updateFunction: onValueUpdate);
-            exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
+            //exerciseSet.updateExercise(thisSetPRSet: exerciseSet.thisSetPRSet);
             //onValueUpdate(value);
           },
           enableSuggestions: true,
           validator: (value) {
+            if (exerciseSet.noPrescribedWeight &&
+                field.toUpperCase() == "WEIGHT") {
+              return null;
+            }
             if (value.isEmpty) {
               return "$field can't be blank";
             }
@@ -731,6 +792,7 @@ class ExerciseForm {
       @required GlobalKey<ScaffoldState> scaffoldKey,
       @required BuildContext context,
       @required Function onValueUpdate,
+      @required bool isBuildingNotUsing,
       bool usingBarbell,
       String barbellLift,
       bool readOnlyTitle}) {
@@ -744,32 +806,49 @@ class ExerciseForm {
       descriptionController.text = exerciseSet.description;
     }
     if (repsController.text != exerciseSet.reps.toString()) {
-      repsController.text = exerciseSet.reps.toString();
+      if (exerciseSet.reps != null) {
+        repsController.text = exerciseSet.reps.toString();
+      } else {
+        repsController.text = ""; //0.toString();
+      }
     }
     if (weightController.text != exerciseSet.weight.toString()) {
-      weightController.text = exerciseSet.weight.toString();
+      if (exerciseSet.weight != null) {
+        weightController.text = exerciseSet.weight.toString();
+      } else {
+        weightController.text = "";
+        // 0.toString();
+      }
     }
     if (restController.text != exerciseSet.restPeriodAfter.toString()) {
-      restController.text = exerciseSet.restPeriodAfter.toString();
+      if (exerciseSet.restPeriodAfter != null) {
+        restController.text = exerciseSet.restPeriodAfter.toString();
+      } else {
+        restController.text = "";
+        //0.toString();
+      }
     }
 
     //Consumer<ExerciseSet>(builder: (context, exerciseSet, child) {
 
     return form = Form(
-      autovalidate: true,
+      autovalidate: false,
 
       key: key,
       // would want Consumer of Exercise here, to leverage Provider, but doing via controller for now...
       child: Column(
         children: [
-          Text("Edit this set"),
+          Text("Edit this set" +
+              (isBuildingNotUsing ? "" : " - not permanent, just for today")),
           SizedBox(height: 8),
           TextFormField(
             textCapitalization: TextCapitalization.sentences,
+            readOnly: readOnlyTitle ?? false,
             //initialValue: exerciseSet.title,
             controller: titleController,
             onChanged: (value) {
-              exerciseSet.title = value;
+              //exerciseSet.title = value;
+              exerciseSet.updateExercise(title: value);
               onValueUpdate(value);
             },
             style: TextStyle(fontSize: 30),
@@ -820,7 +899,8 @@ class ExerciseForm {
             //initialValue: exerciseSet.description,
             controller: descriptionController,
             onChanged: (value) {
-              exerciseSet.description = value;
+              //exerciseSet.description = value;
+              exerciseSet.updateExercise(description: value);
               onValueUpdate();
             },
             autocorrect: true,
@@ -841,8 +921,15 @@ class ExerciseForm {
               _buildFormField(
                   exerciseSet: exerciseSet,
                   field: "Reps",
+                  isBuildingNotUsing: isBuildingNotUsing,
                   onValueUpdate: () {
-                    exerciseSet.reps = int.parse(repsController.text);
+                    //exerciseSet.reps = int.tryParse(repsController.text);
+                    exerciseSet.updateExercise(
+                        reps: int.tryParse(repsController.text),
+                        prescribedReps: isBuildingNotUsing
+                            ? int.tryParse(repsController.text)
+                            : null);
+
                     // TODO:
                     onValueUpdate();
                   }),
@@ -851,15 +938,19 @@ class ExerciseForm {
               ),
               _buildFormField(
                   exerciseSet: exerciseSet,
+                  isBuildingNotUsing: isBuildingNotUsing,
                   field: "Weight",
                   onValueUpdate: () {
-                    exerciseSet.weight = int.parse(weightController.text);
+                    //exerciseSet.weight = int.tryParse(weightController.text);
+                    exerciseSet.updateExercise(
+                        weight: int.tryParse(weightController.text));
                     finalizeWeightsAndDescription(
                         context: context,
                         exerciseSet: exerciseSet,
                         usingBarbell: usingBarbell,
                         scaffoldKey: scaffoldKey,
-                        barbellLift: barbellLift);
+                        barbellLift: barbellLift,
+                        isBuildingNotUsing: isBuildingNotUsing);
                     /*if (barbellLift != null) {
                       var lifterWeights =
                           Provider.of<LifterWeights>(context, listen: false);
@@ -885,10 +976,13 @@ class ExerciseForm {
               ),
               _buildFormField(
                   exerciseSet: exerciseSet,
+                  isBuildingNotUsing: isBuildingNotUsing,
                   field: "Rest",
                   onValueUpdate: () {
-                    exerciseSet.restPeriodAfter =
-                        int.parse(restController.text);
+                    /*exerciseSet.restPeriodAfter =
+                        int.tryParse(restController.text);*/
+                    exerciseSet.updateExercise(
+                        restPeriodAfter: int.tryParse(restController.text));
                     onValueUpdate();
                   }),
             ],

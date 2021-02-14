@@ -10,7 +10,6 @@ ExerciseDay _$ExerciseDayFromJson(Map<String, dynamic> json) {
   return ExerciseDay(
     lift: json['lift'] as String,
     program: json['program'] as String,
-    sets: json['sets'] as int,
     reps: (json['reps'] as List)?.map((e) => e as int)?.toList(),
     currentSet: json['currentSet'] as int,
     percentages: (json['percentages'] as List)
@@ -34,7 +33,6 @@ Map<String, dynamic> _$ExerciseDayToJson(ExerciseDay instance) =>
     <String, dynamic>{
       'program': instance.program,
       'lift': instance.lift,
-      'sets': instance.sets,
       'trainingMax': instance.trainingMax,
       'currentSet': instance.currentSet,
       'reps': instance.reps,

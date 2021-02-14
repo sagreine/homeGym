@@ -24,7 +24,7 @@ dependencies:
   flutter:
     sdk: flutter
   
-  equatable: ^1.0.0
+  equatable: ^1.2.5
   meta: ^1.1.8
   flutter_fling: 
     path: C:\Users\sagre\Desktop\flutter_fling-master\flutter_fling-master
@@ -42,7 +42,11 @@ dependencies:
   flare_splash_screen: ^3.0.1
   confetti: ^0.5.4+1
   giffy_dialog: ^1.8.0
-  intro_views_flutter: '^2.8.1'
+  intro_views_flutter:
+    path: C:\Users\sagre\Desktop\IntroViews-Flutter-master\IntroViews-Flutter-master
+    #git:  https://github.com/sagreine/IntroViews-Flutter.git
+      #url:
+      #ref: master     
   data_connection_checker: ^0.3.4
   timeline_tile: ^0.1.2
   google_fonts: ^1.1.0
@@ -80,6 +84,8 @@ dependencies:
   fl_chart: ^0.12.2
   flutter_icons: ^1.1.0
   intl: ^0.16.1
+  expand_widget: ^1.1.0+1
+  quiver: ^2.0.0
 
 
   # The following adds the Cupertino Icons font to your application.

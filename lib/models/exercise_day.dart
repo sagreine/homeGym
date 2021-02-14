@@ -6,24 +6,21 @@ part 'exercise_day.g.dart';
 
 @JsonSerializable()
 class ExerciseDay extends ChangeNotifier {
-  // sets is derivable no?
+  // sets is derivable no? - yes. either don't use or use a getter = to .length ....
   String program;
   String lift;
-  int sets;
+  int get sets {
+    return exercises.length;
+  }
+
   double trainingMax;
   int currentSet;
   // 2d list? or, list of Exercises? probably ultimately a list of exericses will be what we want to use.
+  // these are used by default programs, for now anyway.
   List<int> reps;
   List<int> prSets;
   List<double> percentages;
   List<String> lifts;
-  /*
-  List<int> assistancePullReps;
-  List<int> assistanceCoreReps;
-  List<int> assistancePushReps;
-  List<String> assistancePull;
-  List<String> assistanceCore;
-  List<String> assistancePush;*/
   bool updateMaxIfGetReps;
   bool prSetWeek;
   int progressSet;
@@ -36,27 +33,82 @@ class ExerciseDay extends ChangeNotifier {
   ExerciseDay({
     this.lift,
     this.program,
-    this.sets,
+    //this.sets,
     this.reps,
     this.currentSet,
     this.percentages,
     this.trainingMax,
     this.lifts,
     this.prSets,
-    /*
-    this.assistancePullReps,
-    this.assistanceCoreReps,
-    this.assistancePushReps,
-    this.assistanceCore,
-    this.assistancePull,
-    this.assistancePush,
-    */
     this.updateMaxIfGetReps,
     this.progressSet,
     this.exercises,
     this.prSetWeek,
     this.justDidLastSet,
-  });
+  }) {
+    /*if (exercises == null) {
+      exercises = List<ExerciseSet>();
+    }*/
+  }
+
+  void addExercise(ExerciseSet exerciseSet) {
+    if (exercises == null) {
+      exercises = List<ExerciseSet>();
+    }
+    if (exerciseSet.indexForOrdering == null) {
+      exerciseSet.indexForOrdering = exercises.length - 1;
+    }
+    exercises.add(exerciseSet);
+    if (currentSet == null) {
+      currentSet = 0;
+    }
+    notifyListeners();
+  }
+
+  void tempNotify() {
+    notifyListeners();
+  }
+
+  updateSet(set1, set2) {
+    set1 = set2;
+    notifyListeners();
+  }
+
+  void addAllExercise(
+    List<ExerciseSet> exerciseSet,
+  ) {
+    if (exercises == null) {
+      exercises = List<ExerciseSet>();
+    }
+    exercises.addAll(exerciseSet);
+    if (currentSet == null) {
+      currentSet = 0;
+    }
+    // set the order of each element. only needed while building, not while using. stores the order.
+    // sorting first pulls in the order from the cloud.
+    // TODO: ... and overwrites with the same exact variables that are already there locally, ya?
+    // is fine, we don't shoot it off to the cloud again or anything, but still not ideal.
+    exercises.sort((lift1, lift2) =>
+        lift1.indexForOrdering.compareTo(lift2.indexForOrdering));
+
+    exercises.forEach((element) {
+      element.indexForOrdering = exercises.indexOf(element);
+    });
+
+    notifyListeners();
+  }
+
+  void buildCustomDay(
+      {@required List<ExerciseSet> exerciseSets, bool updateMaxIfGetReps}) {
+    // clear out what might've been in there before, if we picked multiple programs today
+    this.exercises = new List<ExerciseSet>();
+    this.addAllExercise(exerciseSets);
+
+    this.updateMaxIfGetReps = updateMaxIfGetReps;
+    // when building, this will be false
+    this.justDidLastSet = false;
+    //notifyListeners();
+  }
 
   void buildDay({
     String lift,
@@ -67,13 +119,6 @@ class ExerciseDay extends ChangeNotifier {
     List<int> prSets,
     int currentSet,
     //double trainingMax,
-    /*
-    List<int> assistanceCoreReps,
-    List<int> assistancePullReps,
-    List<int> assistancePushReps,
-    List<String> assistancePull,
-    List<String> assistanceCore,
-    List<String> assistancePush,*/
     bool updateMaxIfGetReps,
     bool prSetWeek,
     int progressSet,
@@ -82,33 +127,19 @@ class ExerciseDay extends ChangeNotifier {
   }) {
     this.lift = lift;
     this.program = program;
-    this.sets = sets;
+    //this.sets = sets;
     this.reps = reps;
     this.percentages = percentages;
     this.currentSet = currentSet;
     //this.trainingMax = trainingMax;
     this.lifts = lifts;
     this.prSets = prSets;
-    /*
-    this.assistanceCoreReps = assistanceCoreReps;
-    this.assistancePullReps = assistancePullReps;
-    this.assistancePushReps = assistancePushReps;
-    this.assistanceCore = assistanceCore;
-    this.assistancePull = assistancePull;
-    this.assistancePush = assistancePush;
-    */
     this.updateMaxIfGetReps = updateMaxIfGetReps;
     this.progressSet = progressSet;
     this.prSetWeek = prSetWeek;
     this.justDidLastSet = false;
     // build and populate the list of exercises to do.
     this.exercises = new List<ExerciseSet>();
-    /*
-    List<String> allAssistance =
-        assistanceCore + assistancePull + assistancePush;
-    List<int> allAssistanceReps =
-        assistanceCoreReps + assistancePullReps + assistancePushReps;
-        */
     for (int i = 0, mainLiftIterator = 0; i < reps.length; ++i) {
       if (lifts[i].toUpperCase() == "MAIN") {
         // TODO: see elsewhere, but USE CONSTRUCTORS IT IS WHY THEY EXIST
@@ -118,8 +149,16 @@ class ExerciseDay extends ChangeNotifier {
         // this function depends on the current set of the day, but we need to reset that at the end.
         tmp.updateExerciseFull(
           context: context,
+          useBarbellWeight: true,
           exerciseTitle: lift,
+          id: UniqueKey().toString() +
+              UniqueKey().toString() +
+              UniqueKey().toString() +
+              UniqueKey().toString() +
+              UniqueKey().toString() +
+              UniqueKey().toString(),
           reps: this.reps[i],
+          indexForOrdering: i,
           setPct: this.percentages[mainLiftIterator],
           // this is a PR set if it is in the list of PR sets.
           thisSetPRSet: prSets.any((element) => element == i),
@@ -136,7 +175,14 @@ class ExerciseDay extends ChangeNotifier {
             restPeriodAfter: 90,
             // the first rep.length are the main lift, non-assistance.
             title: lifts[i],
+            indexForOrdering: i,
             description: "Do the lift",
+            id: UniqueKey().toString() +
+                UniqueKey().toString() +
+                UniqueKey().toString() +
+                UniqueKey().toString() +
+                UniqueKey().toString() +
+                UniqueKey().toString(),
             weight:
                 0, // TODO: could do ternary? if there is a weight set in db, use it.
             reps: reps[i]));
@@ -145,6 +191,33 @@ class ExerciseDay extends ChangeNotifier {
       //this.currentSet = 0;
       notifyListeners();
     }
+  }
+
+// no idea if this will work but give it a shot!
+  factory ExerciseDay.deepCopy({ExerciseDay copyingFrom}) {
+    ExerciseDay toReturn = ExerciseDay(
+      lift: copyingFrom.lift,
+      program: copyingFrom.program,
+      reps: copyingFrom.reps,
+      currentSet: copyingFrom.currentSet,
+      percentages: copyingFrom.percentages,
+      trainingMax: copyingFrom.trainingMax,
+      lifts: copyingFrom.lifts,
+      prSets: copyingFrom.prSets,
+      updateMaxIfGetReps: copyingFrom.updateMaxIfGetReps,
+      progressSet: copyingFrom.progressSet,
+      // need to deep copy the exercises
+
+      prSetWeek: copyingFrom.prSetWeek,
+      justDidLastSet: copyingFrom.justDidLastSet,
+    );
+    // deep copy the sets.
+    List<ExerciseSet> toReturn2 = List<ExerciseSet>();
+    copyingFrom.exercises?.forEach((element) {
+      toReturn2.add(ExerciseSet.deepCopy(copyingFrom: element));
+    });
+    toReturn.exercises = toReturn2;
+    return toReturn;
   }
 
   // hmmm
@@ -182,7 +255,7 @@ class ExerciseDay extends ChangeNotifier {
 
   ExerciseSet removeAt(int index) {
     var _return = exercises.removeAt(index);
-    sets -= 1;
+    //sets -= 1;
     // to update justDidLastSet, but also why we should probably have that as the getter for a private variable if we're doing caching like that...
     areWeOnLastSet(offset: 0);
     //displayInExerciseInfo();
@@ -190,10 +263,23 @@ class ExerciseDay extends ChangeNotifier {
     return _return;
   }
 
-  void insert(int index, ExerciseSet exerciseSet) {
+  void insert(int index, ExerciseSet exerciseSet, bool isBuildingNotUsing) {
     exercises.insert(index, exerciseSet);
+    // for each element, reset the index of
+    if (isBuildingNotUsing) {
+      exercises.forEach((element) {
+        element.indexForOrdering = exercises.indexOf(element);
+      });
+    }
+
+    //if (isBuildingNotUsing) {
+    // update this one to its new index
+    //exercises[index].indexForOrdering = index;
+    // and increment everyone after since one just came before them
+    //for(int i = index; i < exercises.length)
+    //}
     //if (increaseTotal) {
-    sets++;
+    //sets++;
 
     notifyListeners();
   }
@@ -216,14 +302,6 @@ class ExerciseDay extends ChangeNotifier {
         trainingMax,
         lifts,
         prSets,
-        /*
-        assistanceCoreReps,
-        assistancePullReps,
-        assistancePushReps,
-        assistanceCore,
-        assistancePull,
-        assistancePush,
-        */
         updateMaxIfGetReps,
         progressSet,
         exercises,
