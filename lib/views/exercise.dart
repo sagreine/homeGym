@@ -299,7 +299,7 @@ class _ExerciseViewState extends State<ExerciseView> {
                             children: [
                               Text("For reference"),
                               Text(
-                                  "${(isNotForBarbellPercentage ? barbellLiftForPercentage : barbellLift) ?? 'Squat'} ${formSet.reps ?? exerciseSet.reps ?? ''}RM: ${_prs["Rep"].weight} "),
+                                  "${(isNotForBarbellPercentage ? barbellLift : barbellLiftForPercentage) ?? 'Squat'} ${formSet.reps ?? exerciseSet.reps ?? ''}RM: ${_prs["Rep"].weight} "),
                               Text(
                                   "Max reps for ${formSet.weight ?? exerciseSet.weight ?? 0}: ${_prs["Weight"].reps}"),
                             ]);
