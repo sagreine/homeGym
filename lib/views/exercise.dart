@@ -36,6 +36,53 @@ class _ExerciseViewState extends State<ExerciseView> {
     //showBarbellPercentagePicker = false;
   }
 
+  _buildPctTMFormField() {
+    return TextFormField(
+      initialValue: (exerciseSet.percentageOfTM ?? "").toString(),
+      key: _pctTMFieldKey,
+      //controller: titleController,
+      onChanged: (value) {
+        if (value == "" || value == null) {
+          exerciseSet.percentageOfTM = null;
+        } else {
+          exerciseSet.percentageOfTM = double.parse(value);
+        }
+      },
+      style: TextStyle(fontSize: 30),
+      textAlign: TextAlign.center,
+      autocorrect: true,
+      enableSuggestions: true,
+      //enabled: true,
+      // remove border and center
+      decoration: new InputDecoration(
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(
+            color: Colors.greenAccent,
+            width: 1.0,
+            style: BorderStyle.solid,
+          ),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: Colors.blueGrey, width: 1.0),
+        ),
+        labelText: "Percentage of Training Max to use",
+      ),
+      keyboardType: TextInputType.number,
+      autovalidate: exerciseSet.basedOnPercentageOfTM ?? false,
+      inputFormatters: <TextInputFormatter>[
+        WhitelistingTextInputFormatter.digitsOnly,
+      ],
+      validator: (value) {
+        //homeController.formController.validator()
+        if (value.isEmpty || double.tryParse(value) == 0.0) {
+          return "Can't be blank";
+        }
+        return null;
+      },
+      //controller: homeController.formControllerTitle,
+    );
+  }
+
   FloatingActionButton _getDoneButton(
       BuildContext context, ExerciseSet activity) {
     return FloatingActionButton(
@@ -55,7 +102,10 @@ class _ExerciseViewState extends State<ExerciseView> {
           await Future.delayed(Duration(seconds: 1));
         }*/
           //;
-          Navigator.pop(context, activity);
+          if (!activity.basedOnPercentageOfTM ||
+              _pctTMFieldKey.currentState.validate()) {
+            Navigator.pop(context, activity);
+          }
         }
       },
     );
@@ -278,6 +328,8 @@ class _ExerciseViewState extends State<ExerciseView> {
   TextEditingController restController = TextEditingController();
   bool isBuildingNotUsing;
   bool isExerciseFromMainLiftPRogram;
+  final _pctTMFieldKey = GlobalKey<FormFieldState>();
+  TextFormField pctTrainingMaxFormField;
 
   @override
   Widget build(BuildContext context) {
@@ -305,6 +357,7 @@ class _ExerciseViewState extends State<ExerciseView> {
               .lifts[exerciseSet.whichLiftForPercentageofTMIndex];
         }
       }
+
       /*if (isBuildingNotUsing && exerciseSet.thisIsMainSet) {
         exerciseSet.title = "Main Lift (when picked)";
       }*/
@@ -314,6 +367,10 @@ class _ExerciseViewState extends State<ExerciseView> {
       //barbellLift = exerciseSet.title;
       //}
     }
+    if (exerciseSet.basedOnPercentageOfTM) {
+      pctTrainingMaxFormField = _buildPctTMFormField();
+    }
+
     fullForm = ExerciseForm(
         titleController: titleController,
         descriptionController: descriptionController,
@@ -421,45 +478,10 @@ class _ExerciseViewState extends State<ExerciseView> {
                 _getBarbellForWeight(
                   isNotForBarbellPercentage: false,
                   switchListLabel: "Calculate weight from % of a Main lift 1RM",
-                  trailingChild: TextFormField(
-                    initialValue: (exerciseSet.percentageOfTM ?? "").toString(),
-                    //controller: titleController,
-                    onChanged: (value) {
-                      exerciseSet.percentageOfTM = double.parse(value);
-                    },
-                    style: TextStyle(fontSize: 30),
-                    textAlign: TextAlign.center,
-                    autocorrect: true,
-                    enableSuggestions: true,
-                    //enabled: true,
-                    // remove border and center
-                    decoration: new InputDecoration(
-                      focusedBorder: OutlineInputBorder(
-                        borderSide: BorderSide(
-                          color: Colors.greenAccent,
-                          width: 1.0,
-                          style: BorderStyle.solid,
-                        ),
-                      ),
-                      enabledBorder: OutlineInputBorder(
-                        borderSide:
-                            BorderSide(color: Colors.blueGrey, width: 1.0),
-                      ),
-                      labelText: "Percentage of Training Max to use",
-                    ),
-                    keyboardType: TextInputType.number,
-                    inputFormatters: <TextInputFormatter>[
-                      WhitelistingTextInputFormatter.digitsOnly,
-                    ],
-                    validator: (value) {
-                      //homeController.formController.validator()
-                      if (value.isEmpty) {
-                        return "Can't be blank";
-                      }
-                      return null;
-                    },
-                    //controller: homeController.formControllerTitle,
-                  ),
+                  trailingChild: pctTrainingMaxFormField,
+                ),
+                SizedBox(
+                  height: 12,
                 ),
               ]),
             ),
